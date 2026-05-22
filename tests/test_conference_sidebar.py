@@ -68,8 +68,14 @@ class ConferenceSidebarTest(unittest.TestCase):
             paper_md = tmp_path / "docs" / "conference" / "icml-2025" / "openreview-icml-2025-abc123-a-conference-paper.md"
             self.assertTrue(paper_md.exists())
             md_text = paper_md.read_text(encoding="utf-8")
-            self.assertIn("# A Conference Paper", md_text)
-            self.assertIn("## 命中理由", md_text)
+            self.assertIn("selection_source: conference_retrieval", md_text)
+            self.assertIn("motivation:", md_text)
+            self.assertIn("method:", md_text)
+            self.assertIn("result:", md_text)
+            self.assertIn("conclusion:", md_text)
+            self.assertIn("## Original Abstract", md_text)
+            self.assertNotIn("# A Conference Paper", md_text)
+            self.assertNotIn("## 命中理由", md_text)
 
     def test_update_sidebar_replaces_existing_conference_block(self):
         with tempfile.TemporaryDirectory() as tmp:

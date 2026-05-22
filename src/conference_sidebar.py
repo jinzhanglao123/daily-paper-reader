@@ -102,6 +102,40 @@ def get_tldr(ranked_item: Dict[str, Any]) -> str:
     return norm_text(ranked_item.get("tldr_cn") or ranked_item.get("tldr_en"))
 
 
+def ensure_sentence(value: str) -> str:
+    text = re.sub(r"\s+", " ", norm_text(value)).strip()
+    if not text:
+        return ""
+    if text[-1] in ".。！？!?":
+        return text
+    return text + "。"
+
+
+def first_sentence(value: str) -> str:
+    text = re.sub(r"\s+", " ", norm_text(value)).strip()
+    if not text:
+        return ""
+    match = re.search(r"(.+?[。！？!?]|.+?\.(?:\s|$))", text)
+    return norm_text(match.group(1)) if match else text[:180].strip()
+
+
+def build_glance_fields(paper: Dict[str, Any], ranked_item: Dict[str, Any]) -> Dict[str, str]:
+    title = norm_text(paper.get("title")) or "该论文"
+    abstract = norm_text(paper.get("abstract"))
+    evidence = get_evidence(ranked_item)
+    tldr = get_tldr(ranked_item) or evidence or first_sentence(abstract)
+    query_text = norm_text(ranked_item.get("matched_query_text"))
+    return {
+        "tldr": ensure_sentence(tldr or f"{title} 是一篇会议检索命中的相关论文"),
+        "motivation": ensure_sentence(evidence or first_sentence(abstract) or "本文关注会议检索需求中的相关研究问题"),
+        "method": ensure_sentence(first_sentence(abstract) or "方法细节可参考摘要与 OpenReview 原文"),
+        "result": ensure_sentence(tldr or evidence or "结果与实验结论可参考摘要与原文"),
+        "conclusion": ensure_sentence(
+            f"该论文与检索需求“{query_text}”相关" if query_text else "该论文与当前会议检索需求相关"
+        ),
+    }
+
+
 def load_json(path: Path) -> Dict[str, Any]:
     with path.open("r", encoding="utf-8") as f:
         data = json.load(f)
@@ -209,7 +243,7 @@ def build_conference_markdown(
     abstract = norm_text(paper.get("abstract")) or "No abstract is available."
     evidence = get_evidence(ranked_item)
     tldr = get_tldr(ranked_item)
-    query_text = norm_text(ranked_item.get("matched_query_text"))
+    glance = build_glance_fields(paper, ranked_item)
     score = ranked_item.get("score", ranked_item.get("star_rating", ""))
     try:
         score_text = f"{float(score):.1f}"
@@ -235,35 +269,19 @@ def build_conference_markdown(
         lines.append(f"evidence: {yaml_escape_value(evidence)}")
     if tldr:
         lines.append(f"tldr: {yaml_escape_value(tldr)}")
+    if abstract:
+        lines.append(f"abstract_en: {yaml_escape_value(abstract)}")
     if source:
         lines.append(f"source: {yaml_escape_value(source)}")
     lines.append("selection_source: conference_retrieval")
     lines.append(f"tags: [{', '.join(yaml_escape_value(tag) for tag in tags)}]")
+    lines.append(f"motivation: {yaml_escape_value(glance['motivation'])}")
+    lines.append(f"method: {yaml_escape_value(glance['method'])}")
+    lines.append(f"result: {yaml_escape_value(glance['result'])}")
+    lines.append(f"conclusion: {yaml_escape_value(glance['conclusion'])}")
     lines.append("---")
     lines.append("")
-    lines.append(f"# {title}")
-    lines.append("")
-    lines.append(f"- 会议：{build_conference_label(conference, years)}")
-    lines.append(f"- 作者：{authors_text}")
-    lines.append(f"- 日期：{published}")
-    if score_text:
-        lines.append(f"- 评分：{score_text}/10")
-    if link:
-        lines.append(f"- 原文：[{link}]({link})")
-    lines.append("")
-    if evidence:
-        lines.append("## 命中理由")
-        lines.append(evidence)
-        lines.append("")
-    if tldr:
-        lines.append("## TLDR")
-        lines.append(tldr)
-        lines.append("")
-    if query_text:
-        lines.append("## 对应检索需求")
-        lines.append(query_text)
-        lines.append("")
-    lines.append("## Abstract")
+    lines.append("## Original Abstract")
     lines.append(abstract)
     lines.append("")
     return "\n".join(lines)
