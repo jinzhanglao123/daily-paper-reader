@@ -26,53 +26,47 @@ subscriptions:
     diff_threshold_pct: 15
   keyword_recall_mode: or
   intent_profiles:
-    - tag: drl-inspect
-      description: 用DRL优化无人机输电线路巡检，解决混合动作空间与长链条奖励分配问题
+    - tag: UAV-DRL
+      description: 使用深度强化学习优化无人机输电线路巡检，包括缺陷检测建模与混合动作空间奖励分配
       enabled: true
       paper_sources:
         - arxiv
       keywords:
         - keyword: deep reinforcement learning
           keyword_cn: 深度强化学习
-          query: deep reinforcement learning for unmanned aerial vehicle inspection of power transmission lines
+          query: deep reinforcement learning for UAV inspection tasks
         - keyword: unmanned aerial vehicle
           keyword_cn: 无人机
-          query: unmanned aerial vehicle inspection of power lines
-        - keyword: power transmission line inspection
-          keyword_cn: 电力传输线路巡检
-          query: automated inspection of power transmission lines using unmanned aerial vehicles
+          query: UAV inspection of power transmission lines
+        - keyword: transmission line inspection
+          keyword_cn: 输电线路巡检
+          query: automated inspection of transmission lines using drones
+        - keyword: defect detection
+          keyword_cn: 缺陷检测
+          query: transmission line defect detection from UAV imagery
         - keyword: hybrid action space
           keyword_cn: 混合动作空间
-          query: handling hybrid action space in reinforcement learning for UAV inspection
-        - keyword: long-term credit assignment
-          keyword_cn: 长期信用分配
-          query: long-term credit assignment for sparse reward in UAV inspection
-        - keyword: reward function design
-          keyword_cn: 奖励函数设计
-          query: designing reward functions for sparse reward problems in transmission line inspection
+          query: reinforcement learning with hybrid action space
+        - keyword: reward assignment
+          keyword_cn: 奖励分配
+          query: long-horizon reward assignment in reinforcement learning
       intent_queries:
-        - query: >-
-            deep reinforcement learning for autonomous UAV inspection of power transmission lines with hybrid action
-            space
-          query_cn: 深度强化学习用于具有混合动作空间的自主无人机输电线路巡检
+        - query: deep reinforcement learning for UAV power line inspection with hybrid action space and long horizon reward
+          query_cn: 基于深度强化学习的无人机电力线巡检，包含混合动作空间和长程奖励
           enabled: true
           source: manual
           note: ''
-        - query: >-
-            modeling UAV inspection trajectories along power lines and solving long sequence credit assignment using
-            reinforcement learning
-          query_cn: 建模沿电力线的无人机巡检轨迹并使用强化学习解决长序列信用分配问题
+        - query: UAV transmission line defect detection using DRL and reward assignment
+          query_cn: 使用深度强化学习和奖励分配的无人机输电线路缺陷检测
           enabled: true
           source: manual
           note: ''
-        - query: >-
-            optimizing power line inspection process with deep reinforcement learning addressing sparse rewards and
-            continuous discrete actions
-          query_cn: 使用深度强化学习优化电力线巡检过程，解决稀疏奖励和连续 离散动作问题
+        - query: autonomous drone inspection of power lines via deep reinforcement learning with mixed action space
+          query_cn: 通过深度强化学习实现混合动作空间的自主无人机电力线巡检
           enabled: true
           source: manual
           note: ''
-      updated_at: '2026-05-29T15:17:39.160Z'
+      updated_at: '2026-05-29T15:22:54.980Z'
 source_backends:
   arxiv:
     papers_table: arxiv_papers
