@@ -25,3 +25,66 @@ subscriptions:
     stage: A
     diff_threshold_pct: 15
   keyword_recall_mode: or
+  intent_profiles:
+    - tag: drl-inspect
+      description: 用DRL优化无人机输电线路巡检，解决混合动作空间与长链条奖励分配问题
+      enabled: true
+      paper_sources:
+        - arxiv
+      keywords:
+        - keyword: deep reinforcement learning
+          keyword_cn: 深度强化学习
+          query: deep reinforcement learning for unmanned aerial vehicle inspection of power transmission lines
+        - keyword: unmanned aerial vehicle
+          keyword_cn: 无人机
+          query: unmanned aerial vehicle inspection of power lines
+        - keyword: power transmission line inspection
+          keyword_cn: 电力传输线路巡检
+          query: automated inspection of power transmission lines using unmanned aerial vehicles
+        - keyword: hybrid action space
+          keyword_cn: 混合动作空间
+          query: handling hybrid action space in reinforcement learning for UAV inspection
+        - keyword: long-term credit assignment
+          keyword_cn: 长期信用分配
+          query: long-term credit assignment for sparse reward in UAV inspection
+        - keyword: reward function design
+          keyword_cn: 奖励函数设计
+          query: designing reward functions for sparse reward problems in transmission line inspection
+      intent_queries:
+        - query: >-
+            deep reinforcement learning for autonomous UAV inspection of power transmission lines with hybrid action
+            space
+          query_cn: 深度强化学习用于具有混合动作空间的自主无人机输电线路巡检
+          enabled: true
+          source: manual
+          note: ''
+        - query: >-
+            modeling UAV inspection trajectories along power lines and solving long sequence credit assignment using
+            reinforcement learning
+          query_cn: 建模沿电力线的无人机巡检轨迹并使用强化学习解决长序列信用分配问题
+          enabled: true
+          source: manual
+          note: ''
+        - query: >-
+            optimizing power line inspection process with deep reinforcement learning addressing sparse rewards and
+            continuous discrete actions
+          query_cn: 使用深度强化学习优化电力线巡检过程，解决稀疏奖励和连续 离散动作问题
+          enabled: true
+          source: manual
+          note: ''
+      updated_at: '2026-05-29T15:17:39.160Z'
+source_backends:
+  arxiv:
+    papers_table: arxiv_papers
+    use_vector_rpc: true
+    vector_rpc: match_arxiv_papers
+    vector_rpc_exact: match_arxiv_papers_exact
+    use_bm25_rpc: true
+    bm25_rpc: match_arxiv_papers_bm25
+    sync_table: arxiv_sync_status
+    sync_success_value: success
+    schema: public
+    kind: supabase
+    enabled: true
+    url: https://lyucdwgefyfbmaiopjbk.supabase.co
+    anon_key: sb_publishable_lX-oi64Uxyd7SIVv3_w2Uw_MTOojeKq
