@@ -1,0 +1,259 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-05-29T15:49:09.409867+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 3,
+    "deep_cap": 6,
+    "deep_selected": 3,
+    "quick_candidates": 3,
+    "quick_skim_target": 11,
+    "quick_selected": 3
+  },
+  "deep_dive": [
+    {
+      "id": "2605.29119v1",
+      "source": "arxiv",
+      "title": "PRO-CUA: Process-Reward Optimization for Computer Use Agents",
+      "abstract": "Computer use agents (CUAs) have shown strong potential for automating complex digital workflows, yet their training remains constrained by costly live environment interaction and limited high-quality supervision. Existing filtered behavior cloning pipelines suffer from imitation bottlenecks, including distribution shift from the expert demonstration and the absence of negative learning signals. Meanwhile, standard trajectory-level reinforcement learning struggles with sparse rewards, ambiguous credit assignment, and high infrastructure costs for long-horizon GUI interaction. In this work, we propose PRO-CUA, a process-reward optimization framework for training CUAs with iterative step-level reinforcement learning. PRO-CUA decouples on-policy environment interaction from policy optimization: the current policy collects states through live rollouts, generates diverse candidate actions for each state, receives step-level feedback from a process reward model (PRM), and is optimized with group-relative advantages. This design enables dense and flexible credit assignment without relying on golden answers or offline expert trajectories, while reducing distribution shift by training on the agent's own execution states. Experiments on live web benchmarks demonstrate the effectiveness of PRO-CUA and the reliability of PRM-guided step-level training.",
+      "authors": [
+        "Yifei He",
+        "Rui Yang",
+        "Hao Bai",
+        "Tong Zhang",
+        "Han Zhao"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-05-27T21:28:26+00:00",
+      "link": "https://arxiv.org/pdf/2605.29119v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "process-reward optimization for long-horizon GUI interaction, addressing sparse reward and credit assignment",
+      "llm_evidence_cn": "针对长视距GUI交互的过程奖励优化，解决稀疏奖励和信用分配问题",
+      "llm_evidence": "针对长视距GUI交互的过程奖励优化，解决稀疏奖励和信用分配问题",
+      "canonical_evidence": "针对长视距GUI交互的过程奖励优化，解决稀疏奖励和信用分配问题",
+      "llm_tldr_en": "PRO-CUA proposes a process-reward optimization framework that iteratively applies step-level reinforcement learning to train computer use agents, effectively addressing long-horizon sparse reward and credit assignment challenges in GUI interaction tasks.",
+      "llm_tldr_cn": "针对计算机使用智能体在长视距图形界面交互中面临的稀疏奖励和信用分配难题，本文提出PRO-CUA过程奖励优化框架。该方法将在线环境交互与离线策略评估解耦，通过迭代步级强化学习生成高质量过程奖励，有效缓解了长序列决策中的模糊信用分配。实验表明，该方法在多种长视距GUI任务中显著优于传统轨迹级强化学习，为长视距奖励分配提供了一种可扩展的解决方案。",
+      "llm_tldr": "针对计算机使用智能体在长视距图形界面交互中面临的稀疏奖励和信用分配难题，本文提出PRO-CUA过程奖励优化框架。该方法将在线环境交互与离线策略评估解耦，通过迭代步级强化学习生成高质量过程奖励，有效缓解了长序列决策中的模糊信用分配。实验表明，该方法在多种长视距GUI任务中显著优于传统轨迹级强化学习，为长视距奖励分配提供了一种可扩展的解决方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.28231v1",
+      "source": "arxiv",
+      "title": "ProgVLA: Progress-Aware Robot Manipulation Skill Learning",
+      "abstract": "We present ProgVLA, a compact vision-language-action (VLA) model designed for reliable robot manipulation under tight compute and memory budgets. The model specifically focuses on efficiently processing long multi-modal sequences by maintaining an explicit representation of task progress over extended horizons. To this end, ProgVLA integrates two key components. First, a multi-modal encoder with a two-stage Perceiver resampling scheme compresses variable-length visual, language, and proprioceptive streams into a fixed set of control-ready context tokens, substantially reducing sequence length while preserving cross-modal grounding. Second, an auxiliary set of progress heads is trained with offline reinforcement learning (RL) objectives to jointly learn critics over normalized remaining-horizon targets. This provides the policy with an internal estimate of task progress and enables advantage- and success-weighted flow-matching imitation learning. On two well-established multi-task robot manipulation benchmarks, a 0.1B-parameter ProgVLA model reaches success rates that are competitive with, and on long-horizon and harder task tiers exceed, substantially larger pretrained baselines. Ablations indicate that the learned context resampler and task-adaptive visual fine-tuning are the largest single contributors, while progress-aware training provides a consistent additional gain that is concentrated on long-horizon and multi-object tasks. We further validate the approach in real-world toy-kitchen environments.",
+      "authors": [
+        "Seungsu Kim",
+        "Jinyoung Choi",
+        "Seungmin Baek",
+        "Jean-Michel Renders"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.LG"
+      ],
+      "published": "2026-05-27T09:44:46+00:00",
+      "link": "https://arxiv.org/pdf/2605.28231v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Explicit task progress representation and offline RL critics for extended horizons enable long-horizon reward assignment.",
+      "llm_evidence_cn": "通过显式任务进度表示和离线RL critic在扩展时间尺度上实现长时域奖励分配。",
+      "llm_evidence": "通过显式任务进度表示和离线RL critic在扩展时间尺度上实现长时域奖励分配。",
+      "canonical_evidence": "通过显式任务进度表示和离线RL critic在扩展时间尺度上实现长时域奖励分配。",
+      "llm_tldr_en": "ProgVLA is a compact VLA model that maintains explicit task progress over long horizons, using two-stage Perceiver resampling and auxiliary progress heads trained with offline RL to improve long-horizon skill learning.",
+      "llm_tldr_cn": "针对机器人操作中长序列多模态任务的学习难题，提出ProgVLA模型，通过两阶段感知器重采样压缩序列并引入显式任务进度表示，同时训练多个基于离线强化学习的进度头以学习长期动作价值，从而在有限计算资源下实现可靠的长时域操作技能。",
+      "llm_tldr": "针对机器人操作中长序列多模态任务的学习难题，提出ProgVLA模型，通过两阶段感知器重采样压缩序列并引入显式任务进度表示，同时训练多个基于离线强化学习的进度头以学习长期动作价值，从而在有限计算资源下实现可靠的长时域操作技能。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.21282v2",
+      "source": "arxiv",
+      "title": "Stochastic MeanFlow Policies: One-Step Generative Control with Entropic Mirror Descent",
+      "abstract": "Online off-policy reinforcement learning (RL) is shaped by two coupled choices: the policy class and the update rule. Gaussian policies are fast and have tractable entropy, but struggle with multimodal action distributions. Generative policies are more expressive, but often require iterative sampling or lack tractable entropy estimates. On the optimisation side, SAC-style soft policy improvement and mirror descent (MD) can be viewed as minimising different KL divergences: the former moves the policy towards a value-induced Boltzmann distribution, while the latter regularises each update against the previous policy. Combining entropy regularisation with an MD constraint is therefore attractive, as it supports exploration while stabilising policy improvement; however, the resulting target can be multimodal and is poorly matched by unimodal Gaussian policies. We propose Stochastic MeanFlow Policies (SMFP), a one-step generative policy class that maps Gaussian noise to actions through a MeanFlow transformation. This stochastic reparameterisation yields a tractable entropy surrogate and allows MeanFlow policies to be trained within off-policy mirror descent under a unified objective for exploratory yet stable improvement. Across seven MuJoCo benchmarks, SMFP improves over Gaussian and generative baselines while retaining single-step inference efficiency.",
+      "authors": [
+        "Zeyuan Wang",
+        "Da Li",
+        "Yulin Chen",
+        "Yuehu Gong",
+        "Yanming Guo",
+        "Ye Shi",
+        "Liang Bai",
+        "Tianyuan Yu",
+        "Yanwei Fu"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-05-20T15:14:14+00:00",
+      "link": "https://arxiv.org/pdf/2605.21282v2",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "proposes generative RL policy for multimodal actions, enabling hybrid action spaces",
+      "llm_evidence_cn": "提出生成式RL策略解决多模态动作，适用于混合动作空间",
+      "llm_evidence": "提出生成式RL策略解决多模态动作，适用于混合动作空间",
+      "canonical_evidence": "提出生成式RL策略解决多模态动作，适用于混合动作空间",
+      "llm_tldr_en": "Proposes Stochastic MeanFlow Policies that combine expressiveness with one-step sampling and tractable entropy, overcoming Gaussian policy limitations in multimodal action distributions, thus advancing RL for hybrid action spaces.",
+      "llm_tldr_cn": "针对现有强化学习策略中高斯策略难以捕捉多模态动作分布、生成式策略需迭代采样或熵估计困难的问题，本文提出随机平均流策略。该方法结合熵正则与镜面下降约束，实现单步生成控制并保持可处理的熵，既能表达多模态动作又维持稳定优化。实验表明其在多模态任务中表现优于传统策略，为混合动作空间下的强化学习提供了高效且通用的策略表示工具，可直接应用于飞行器巡检中离散-连续混合控制的场景。",
+      "llm_tldr": "针对现有强化学习策略中高斯策略难以捕捉多模态动作分布、生成式策略需迭代采样或熵估计困难的问题，本文提出随机平均流策略。该方法结合熵正则与镜面下降约束，实现单步生成控制并保持可处理的熵，既能表达多模态动作又维持稳定优化。实验表明其在多模态任务中表现优于传统策略，为混合动作空间下的强化学习提供了高效且通用的策略表示工具，可直接应用于飞行器巡检中离散-连续混合控制的场景。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "reinforcement learning with hybrid action space",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2605.23562v1",
+      "source": "arxiv",
+      "title": "ARMS: Automatic Reward Shaping for Sparse-Reward Multi-Agent Reinforcement Learning",
+      "abstract": "Sparse rewards are a major bottleneck in multi-agent reinforcement learning (MARL), where simultaneous learning induces non-stationarity and makes reward design especially delicate. Reward shaping can accelerate learning, but in the multi-agent setting it must preserve the strategic structure of the problem rather than merely improve short-term optimization. We propose Automatic Reward-shaping in Multi-agent Systems (ARMS), a self-supervised reward shaping framework for MARL that learns dense shaping signals from sparse environmental rewards through trajectory ranking. Since single-agent trajectory-ranking guarantees do not directly transfer to MARL, we reformulate policy invariance through conditional best-response reasoning, and show that if certain conditions hold, then using shaping rewards preserves each agent's best-response set under fixed opponent policies, and consequently preserve the set of Nash equilibria. Guided by this perspective, ARMS alternates between policy learning and reward learning while sharing shaping parameters across agents for efficiency. Experiments in a partially observable multi-agent pathfinding domain show that ARMS improves sampling efficiency under increasing reward sparsity and agent count, generalizes to unseen environments, and reveals a MARL-specific failure mode in which limited exploration and coupled policy--reward dynamics induce oscillatory behavior. Increasing exploration mitigates this effect and stabilizes learning. To the best of our knowledge, ARMS is the first automatic reward shaping framework for MARL whose design is motivated by a game-theoretic equilibrium-preservation result.",
+      "authors": [
+        "Elie Abboud",
+        "Oren Gal"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA",
+        "cs.AI"
+      ],
+      "published": "2026-05-22T12:29:29+00:00",
+      "link": "https://arxiv.org/pdf/2605.23562v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "automatic reward shaping for sparse-reward MARL",
+      "llm_evidence_cn": "针对稀疏奖励多智能体强化学习的自动奖励塑形",
+      "llm_evidence": "针对稀疏奖励多智能体强化学习的自动奖励塑形",
+      "canonical_evidence": "针对稀疏奖励多智能体强化学习的自动奖励塑形",
+      "llm_tldr_en": "Proposes ARMS, a self-supervised reward shaping framework for MARL that learns dense rewards from sparse environmental rewards through trajectory ranking, preserving strategic structure.",
+      "llm_tldr_cn": "针对稀疏奖励下多智能体学习缓慢且非平稳的问题，提出 ARMS 自监督奖励塑形框架。通过轨迹排序学习稠密塑形信号，并基于条件最佳响应保证策略不变性。在合作和混合环境中验证了加速收敛的效果，为长程任务中的信用分配提供了一种可扩展的解决方案。",
+      "llm_tldr": "针对稀疏奖励下多智能体学习缓慢且非平稳的问题，提出 ARMS 自监督奖励塑形框架。通过轨迹排序学习稠密塑形信号，并基于条件最佳响应保证策略不变性。在合作和混合环境中验证了加速收敛的效果，为长程任务中的信用分配提供了一种可扩展的解决方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.23386v1",
+      "source": "arxiv",
+      "title": "Droneulator: A Portable UAV Simulator for Agricultural Workflows with RotorPy and Godot 4",
+      "abstract": "Agricultural UAV research requires simulators that integrate realistic 3D scenes, high-fidelity vehicle dynamics, and robotics middleware, while remaining practical to deploy across heterogeneous development machines. We present Droneulator, a portable UAV simulator architecture that combines RotorPy for multirotor dynamics with Godot 4 for rendering and sensor generation. Droneulator exposes both PX4-based control and a lightweight WebSocket command path, and publishes synchronised visual and state streams through a Zenoh-based ROS~2-compatible pipeline. This integration enables a single stack to support inspection-oriented data capture, ROS~2/PX4 local planning, and reinforcement learning experiments without modifying the simulator infrastructure. We present quantified validation of the current system across three agricultural UAV workflows: tree-scale image collection for 3D reconstruction with COLMAP, local planning around canopy obstacles using EGO-Planner, and closed-loop reinforcement learning through a custom Gymnasium environment. In the reported setup, the results show that the simulator can sustain low-latency sensing, support reconstruction-oriented data collection under varying capture density, execute collision-free local planning around canopy obstacles, and support stable depth-sensing-based policy training for obstacle-aware navigation. Together, these results show the potential of Droneulator for agricultural UAV inspection, planning, and learning within one deployable stack.",
+      "authors": [
+        "Jacob Swindell",
+        "Michael Lowen",
+        "Marija Popovic",
+        "Riccardo Polvara"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-05-22T08:58:29+00:00",
+      "link": "https://arxiv.org/pdf/2605.23386v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "portable UAV simulator for reinforcement learning experiments with inspection-oriented data capture",
+      "llm_evidence_cn": "支持强化学习实验和面向检查数据捕获的便携式无人机模拟器",
+      "llm_evidence": "支持强化学习实验和面向检查数据捕获的便携式无人机模拟器",
+      "canonical_evidence": "支持强化学习实验和面向检查数据捕获的便携式无人机模拟器",
+      "llm_tldr_en": "Droneulator combines RotorPy and Godot 4 to create a portable UAV simulator that supports reinforcement learning experiments and inspection-oriented data capture, facilitating DRL-based UAV inspection tasks.",
+      "llm_tldr_cn": "针对农业无人机研究需求，本文提出Droneulator，一种结合RotorPy多旋翼动力学和Godot 4渲染的便携式无人机模拟器。该平台支持基于PX4的控制、轻量级WebSocket命令以及通过Zenoh管道发布同步视觉和状态流，能够在一个统一框架内实现面向检查的数据捕获、路径规划和强化学习实验。实验表明，该模拟器无需修改即可用于不同的无人机开发任务，为基于深度强化学习的无人机巡检研究提供了灵活可复现的仿真环境。",
+      "llm_tldr": "针对农业无人机研究需求，本文提出Droneulator，一种结合RotorPy多旋翼动力学和Godot 4渲染的便携式无人机模拟器。该平台支持基于PX4的控制、轻量级WebSocket命令以及通过Zenoh管道发布同步视觉和状态流，能够在一个统一框架内实现面向检查的数据捕获、路径规划和强化学习实验。实验表明，该模拟器无需修改即可用于不同的无人机开发任务，为基于深度强化学习的无人机巡检研究提供了灵活可复现的仿真环境。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "deep reinforcement learning for UAV inspection tasks",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2605.25531v1",
+      "source": "arxiv",
+      "title": "From Denoising to Decision Making: A Survey on Diffusion Model-Enabled Deep Reinforcement Learning for Wireless Networks",
+      "abstract": "Deep reinforcement learning (DRL) has long been a promising solution for sequential resource management in wireless networks. However, conventional DRL methods are fundamentally limited by their reliance on unimodal policy distributions, inefficient exploration in high-dimensional action spaces, and poor adaptability to dynamic and heterogeneous environments. Meanwhile, diffusion models (DMs) as one of the most powerful families of generative AI have demonstrted remarkable capabilities in modeling complex, multi-modal data distributions across diverse domains. The integration of DMs and DRL has opened a new and rapidly growing research direction, in which DM-enabled policies substantially enhance decision quality by capturing the complex, discontinuous, and multimodal action structures inherent in wireless resource management. In this paper, we present a comprehensive survey of DM-enabled DRL algorithms and their applications for various issues in wireless networks. Particularly, we first provide the theoretical background of DM and present different DM-enabled DRL algorithms. We then systematically review applications of DM-enabled DRL for across computation offloading in mobile edge computing, UAV-assisted, vehicular, and AIGC-driven systems, as well as wireless resource allocation, physical-layer security, and robotics and UAV planning. We conclude the paper by higlight future research directions.",
+      "authors": [
+        "Nguyen Cong Luong",
+        "Zeping Sui",
+        "Jie Cao",
+        "Min Xu",
+        "Nguyen Duc Hai",
+        "Zhihao Dong",
+        "Nguyen Duc Duy Anh",
+        "Qiushi Zhao",
+        "Nguyen Quoc Khanh",
+        "Zhe Fu",
+        "Shaohan Feng",
+        "Dusit Niyato",
+        "Bo Ma"
+      ],
+      "primary_category": "eess.SP",
+      "categories": [
+        "eess.SP"
+      ],
+      "published": "2026-05-25T07:37:39+00:00",
+      "link": "https://arxiv.org/pdf/2605.25531v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "survey on diffusion DRL for complex action spaces",
+      "llm_evidence_cn": "综述扩散模型DRL处理复杂动作空间",
+      "llm_evidence": "综述扩散模型DRL处理复杂动作空间",
+      "canonical_evidence": "综述扩散模型DRL处理复杂动作空间",
+      "llm_tldr_en": "Surveys diffusion model-enhanced DRL for wireless networks, overcoming limitations like unimodal policies and enabling efficient exploration in high-dimensional action spaces through multimodal generation, which can be transferred to hybrid action space problems.",
+      "llm_tldr_cn": "针对无线网络中传统深度强化学习方法受限于单峰策略和高维动作空间探索效率低下的问题，本文综述了扩散模型与深度强化学习的融合研究。扩散模型具备强大的多模态数据分布建模能力，所生成的策略能有效提升高维动作空间的决策与探索能力。综述指出该方向在资源管理等任务中展现了优于传统方法的性能，为在复杂动作空间下的强化学习应用提供了系统的技术路线，其方法学思想可迁移至混合动作空间下的无人机巡检等任务。",
+      "llm_tldr": "针对无线网络中传统深度强化学习方法受限于单峰策略和高维动作空间探索效率低下的问题，本文综述了扩散模型与深度强化学习的融合研究。扩散模型具备强大的多模态数据分布建模能力，所生成的策略能有效提升高维动作空间的决策与探索能力。综述指出该方向在资源管理等任务中展现了优于传统方法的性能，为在复杂动作空间下的强化学习应用提供了系统的技术路线，其方法学思想可迁移至混合动作空间下的无人机巡检等任务。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "reinforcement learning with hybrid action space",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
