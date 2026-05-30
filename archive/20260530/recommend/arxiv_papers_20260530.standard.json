@@ -1,0 +1,100 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-05-30T19:59:18.967005+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2605.27899v1",
+      "source": "arxiv",
+      "title": "SKILLC: Learning Autonomous Skill Internalization in LLM Agents via Contrastive Credit Assignment",
+      "abstract": "Structured skill prompts improve exploration in long-horizon agentic reinforcement learning (RL). Skill-augmented RL methods retain external skills at inference, while skill-internalization RL methods withdraw them during training to enable autonomous performance. However, existing internalization approaches only use skill-helpfulness contrast for curriculum control, leaving the policy update unchanged and unable to distinguish skill-dependent from autonomous success. We propose SkillC, a framework based on Contrastive Skill Credit Assignment (CSCA) that converts this contrast into a direct learning signal for internalization. \\textsc{SkillC} samples paired skill-injected and skill-free rollouts for tasks from active skill types within the same policy update, and injects their task-level contrast into optimization via a dual-stream advantage estimator that preserves global ranking while applying a one-sided correction toward skill-free success. A smoothed validation-level signal further drives an adaptive curriculum over attribution strength, rollout allocation, and monotonic active-set pruning. Experiments on ALFWorld and WebShop show that, without runtime skill access, SkillC surpasses the strongest prior skill-internalization RL baseline by 5.5\\% and 4.4\\%, respectively, while remaining competitive with skill-augmented RL methods.",
+      "authors": [
+        "Hongxiang Lin",
+        "Zhirui Kuai",
+        "Erpeng Xue",
+        "Lei Wang"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-05-27T03:21:19+00:00",
+      "link": "https://arxiv.org/pdf/2605.27899v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "contrastive skill credit assignment for long-horizon RL",
+      "llm_evidence_cn": "用于长时域强化学习的对比技能信用分配",
+      "llm_evidence": "用于长时域强化学习的对比技能信用分配",
+      "canonical_evidence": "用于长时域强化学习的对比技能信用分配",
+      "llm_tldr_en": "SKILLC introduces contrastive skill credit assignment to differentiate skill-dependent from autonomous success in long-horizon RL, enabling effective skill internalization in LLM agents without retaining external skills at inference.",
+      "llm_tldr_cn": "针对现有技能内化方法无法在策略更新中区分技能依赖与自主成功的问题，SKILLC框架提出对比技能信用分配，通过采样技能注入与无技能轨迹对，将其转化为直接学习信号。实验表明该方法能有效实现长时域任务中技能的自主内化，提升代理的独立性能。",
+      "llm_tldr": "针对现有技能内化方法无法在策略更新中区分技能依赖与自主成功的问题，SKILLC框架提出对比技能信用分配，通过采样技能注入与无技能轨迹对，将其转化为直接学习信号。实验表明该方法能有效实现长时域任务中技能的自主内化，提升代理的独立性能。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.25507v1",
+      "source": "arxiv",
+      "title": "Credit Assignment with Resets in Language Model Reasoning",
+      "abstract": "Contemporary reinforcement learning with verifiable reward methods post-train language models on multi-step reasoning by assigning a single outcome reward uniformly across all tokens in a trajectory. Such uniform assignment ignores which steps contributed to success or failure. Improving credit assignment can address this limitation by enabling targeted refinement of faulty reasoning steps, rather than updating entire trajectories uniformly. Resets are one such simple mechanism, enabling more precise credit assignment by returning to an intermediate state and resampling counterfactual continuations, so that outcome differences can be attributed to decisions made at that point. We propose two such methods: Random-Reset Policy Optimization (RRPO), where reset states are drawn randomly from reasoning steps, and Self-Reset Policy Optimization (SRPO), where the model self-localizes the erroneous step in an incorrect trajectory and resets there. We analyze these methods within the Conservative Policy Iteration (CPI) framework. Extending CPI with a credit-assignment oracle that targets improvable states yields provable improvements over random resets. Across models and reasoning benchmarks, SRPO consistently outperforms standard GRPO and RRPO by sampling multiple suffix continuations at a self-localized reset and learning from their rewards, using only the model itself with no external supervision.",
+      "authors": [
+        "Ankur Samanta",
+        "Akshayaa Magesh",
+        "Ayush Jain",
+        "Youliang Yu",
+        "Daniel Jiang",
+        "Kavosh Asadi",
+        "Daniel Jiang",
+        "Kaveh Hassani",
+        "Paul Sajda",
+        "Jalaj Bhandari",
+        "Yonathan Efroni"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-05-25T07:11:50+00:00",
+      "link": "https://arxiv.org/pdf/2605.25507v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Credit assignment with resets for multi-step RL",
+      "llm_evidence_cn": "多步强化学习中的重置信用分配",
+      "llm_evidence": "多步强化学习中的重置信用分配",
+      "canonical_evidence": "多步强化学习中的重置信用分配",
+      "llm_tldr_en": "Proposes reset-based credit assignment methods (RRPO and MRPO) for language model reasoning, enabling precise attribution of step-level contributions.",
+      "llm_tldr_cn": "针对语言模型多步推理中统一奖励分配忽略步骤贡献的问题，提出基于重置的信用分配方法RRPO和MRPO。通过回到中间状态重采样反事实延续，将结果差异归因于特定决策，从而实现更精细的信用分配。该方法为长序列决策任务中的奖励分配提供了新思路，可迁移至无人机巡检等长时域强化学习任务。",
+      "llm_tldr": "针对语言模型多步推理中统一奖励分配忽略步骤贡献的问题，提出基于重置的信用分配方法RRPO和MRPO。通过回到中间状态重采样反事实延续，将结果差异归因于特定决策，从而实现更精细的信用分配。该方法为长序列决策任务中的奖励分配提供了新思路，可迁移至无人机巡检等长时域强化学习任务。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

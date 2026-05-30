@@ -6,31 +6,29 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-05-29
-- 运行时间：2026-05-29 21:01:23 UTC
+- 最新运行日期：2026-05-30
+- 运行时间：2026-05-30 20:02:02 UTC
 - 运行状态：成功
-- 本次总论文数：3
-- 精读区：2
-- 速读区：1
+- 本次总论文数：2
+- 精读区：0
+- 速读区：2
 
 ### 今日简报（AI）
-今天啃了两篇顶会满分论文，全在教智能体如何“聪明地”自我提升。  
-核心方向指向：用检索交互作为信用信号，或基于步骤感知的偏好蒸馏，都能让推理智能体的强化学习更高效。  
-感兴趣的读者可以优先精读这两篇，它们很可能会刷新你对智能体训练范式的认知。
-- 详情：[/202605/29/README](/202605/29/README)
+今日速览两篇论文，聚焦大模型智能体如何通过信用分配自主习得技能。  
+最值得关注的方向是：利用对比信用分配让智能体无需人工标注即可内部化技能，以及引入重置机制来纠正推理链中的错误归因。  
+建议读者对比这两种信用分配思路，思考如何让AI在复杂任务中更精准地归功与纠错。
+- 详情：[/202605/30/README](/202605/30/README)
 
 ### 精读区论文标签
-1. [RICE-PO: Turning Retrieval Interactions into Credit Signals for Reasoning Agents](/202605/29/2605.26352v1-rice-po-turning-retrieval-interactions-into-credit-signals-for-reasoning-agents)  
-   标签：评分：9.0/10、query:uav-drl
-   evidence：解决强化学习中的信用分配难题，将检索交互转化为局部学习信号
-2. [StepOPSD: Step-Aware Online Preference Distillation for Agent Reinforcement Learning](/202605/29/2605.27140v1-stepopsd-step-aware-online-preference-distillation-for-agent-reinforcement-learning)  
-   标签：评分：9.0/10、query:uav-drl
-   evidence：解决强化学习智能体中的长时域信用分配不匹配问题
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Scaling up Energy-Aware Multi-Agent Reinforcement Learning for Mission-Oriented Drone Networks with Individual Reward](/202605/29/2605.24992v1-scaling-up-energy-aware-multi-agent-reinforcement-learning-for-mission-oriented-drone-networks-with-individual-reward)  
+1. [SKILLC: Learning Autonomous Skill Internalization in LLM Agents via Contrastive Credit Assignment](/202605/30/2605.27899v1-skillc-learning-autonomous-skill-internalization-in-llm-agents-via-contrastive-credit-assignment)  
    标签：评分：7.0/10、query:uav-drl
-   evidence：面向任务型无人机网络的深度强化学习，具有个体奖励函数设计
+   evidence：用于长时域强化学习的对比技能信用分配
+2. [Credit Assignment with Resets in Language Model Reasoning](/202605/30/2605.25507v1-credit-assignment-with-resets-in-language-model-reasoning)  
+   标签：评分：6.0/10、query:uav-drl
+   evidence：多步强化学习中的重置信用分配
 
 
 <div class="dpr-home-promo-card">
