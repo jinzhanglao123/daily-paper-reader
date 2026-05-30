@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "extractor": "papercropper",
+  "tables": [
+    {
+      "url": "assets/tables/openreview/openreview-icml-2025-ooaice3sy7/table-001.webp",
+      "caption": "",
+      "page": 0,
+      "index": 1,
+      "width": 855,
+      "height": 319,
+      "label": "Table"
+    }
+  ]
+}

@@ -1,0 +1,3080 @@
+Title: Minimax Optimal Regret Bound for  Reinforcement Learning with Trajectory Feedback
+
+URL Source: https://openreview.net/pdf?id=oOAICE3sY7
+
+Number of Pages: 22
+
+Markdown Content:
+# Minimax Optimal Regret Bound for Reinforcement Learning with Trajectory Feedback 
+
+Zihan Zhang 1 Yuxin Chen 2 Jason D. Lee 3 Simon S. Du 1 Ruosong Wang 4
+
+## Abstract 
+
+In this work, we study reinforcement learning (RL) with trajectory feedback. Compared to the standard RL setting, in RL with trajectory feed-back, the agent only observes the accumulative reward along the trajectory, and therefore, this model is particularly suitable for scenarios where querying the reward in each single step incurs pro-hibitive cost. For a finite-horizon Markov Deci-sion Process (MDP) with S states, A actions and a horizon length of H, we develop an algorithm that enjoys an asymptotically nearly optimal regret of 
+
+˜O
+
+√SAH 3K
+
+
+
+in K episodes. To achieve this result, our new technical ingredients include (i) constructing a tighter confidence region for the reward function by incorporating the RL with tra-jectory feedback setting with techniques in linear bandits and (ii) constructing a reference transition model to better guide the exploration process. 
+
+## 1. Introduction 
+
+In the standard reinforcement learning (RL) framework, it is assumed that the agent acts in an unknown environment, and in each step, the agent receives feedback in the form of a state-action dependent reward signal, and then transits to the next state. Although such an interaction model might be reasonable when a simulator is available, for real-life applications, such feedback model could be hard to realize. For practical scenarios, querying the reward function could be costly, or even impossible in certain circumstances. As a motivating example, in healthcare, a doctor repeatedly interacts with a patient for the purpose of treatment. In      
+
+> 1Paul G. Allen School of CSE, University of Washington
+> 2Wharton Statistics and Data Science, University of Pennsylvania
+> 3Department of ECE, Princeton University 4CFCS and School of Computer Science, Peking University. Correspondence to: Ru-osong Wang <ruosongwang@pku.edu.cn >.
+> Proceedings of the 42 nd International Conference on Machine Learning , Vancouver, Canada. PMLR 267, 2025. Copyright 2025 by the author(s).
+
+each step, the doctor decides an action (e.g., taking certain medicines) and observes the new state (e.g., information like body temperature or blood pressure). On the other hand, the state-action dependent reward signal could be costly to observe, since the extent to which the disease has been cured might be expensive to measure as it requires comprehensive medical tests. In this case, in order to apply the RL framework, it is more reasonable to assume that the agent observes only the current state in each step, and the cumulative reward value is revealed only after a whole trajectory is finished. As another example (which was also discussed in prior work on RL with trajectory feedback (Efroni et al., 2021)), in autonomous car driving, defining a state-action dependent reward function could be a challenging task, as it requires associating all possible state-action pairs with a real number. A possible workaround is to have human experts involved to produce the reward signals. However, defining reward signals could be a highly subjective matter, and waiting for reward values from human experts could take unacceptable amount of time for RL algorithms. To circumvent issues mentioned above, practitioners often rely on heuristics (e.g., reward shaping (Ng et al., 1999)). RL with trajectory feedback has been recently proposed by Efroni et al. (2021) as a more principled framework. In this framework, the agent no longer has access to a per state-action reward function. Instead, it receives the cumulative reward on the trajectory as well as all the visited state-action pairs. Clearly, this new feedback model is harder than the standard RL setting and could be more applicable for real-life scenarios like healthcare or autonomous driving as men-tioned in previous paragraphs. In the work by Efroni et al. (2021), algorithms based on the principle of optimism and Thompson sampling were proposed for RL with trajectory feedback. Although the algorithms in (Efroni et al., 2021) achieve √K-type regret bounds, the dependence on the number of states is far from being asymptotically optimal, 1
+
+and obtaining asymptotically nearly optimal regret bounds   
+
+> 1In this paper, by asymptotically nearly optimal, we mean that the regret bound is optimal up to logarithm factors when the number of episodes Kapproaches infinity, which is standard in the RL theory literature (cf. (Azar et al., 2017; Agarwal et al., 2020)).
+
+1Minimax Optimal Regret Bound for Reinforcement Learning with Trajectory Feedback 
+
+in this setting is the main focus of the present paper. 
+
+Our contribution. In this paper, we prove the first asymp-totically nearly optimal regret for RL with trajectory feed-back. Our main result is summarized as follows. 
+
+Theorem 1.1 (Informal version of Theorem 5.6) . Fix δ > 0.There exists an algorithm (Algorithm 1) such that for any episodic MDP with trajectory feedback, with probabil-ity 1 − δ, the regret in K episodes is upper bounded by 
+
+˜O
+
+√SAH 3K
+
+2 for sufficiently large K. 3 Here S is the number of states, A is the number of actions, H is the hori-zon length, and K is the total number of episodes. 
+
+It is known that for episodic MDPs, even if the agent has access to the per state-action reward function, the regret bound of any RL algorithm is lower bounded by 
+
+Ω( √SAH 3K) (Jin et al., 2018; Domingues et al., 2021). 4
+
+Thus, the regret bound in Theorem 1.1 has nearly optimal dependence on S, A and H as K approaches infinity, and therefore, our regret bound is asymptotically nearly optimal. Conceptually, Theorem 1.1 shows that RL with trajectory feedback, a seemingly harder setting, has the same asymp-totically optimal regret bound as the standard RL setting. Therefore, at least statistically, RL with trajectory feedback is no harder than the standard setting. 
+
+Why trajectory-feedback is no harder. It is well-known that in tabular MDPs, learning the transition kernel is harder than learning the reward, and RL algorithms usually pay more for learning the transition kernel. As a result, if the price of learning the rewards in RL with trajectory feedback is upper bounded by that of learning the transition kernel, RL with trajectory feedback would have the same asymp-totically optimal regret bound as the standard RL setting. As will be shown later in Section 4, the regret incurred by learning the reward is indeed upper bounded by that of learn-ing the transition kernel, and therefore, RL with trajectory feedback is no harder than the standard setting statistically. 
+
+Computational efficiency. Despite achieving an asymp-totically nearly optimal regret bound, the algorithm for achieving Theorem 1.1 is not computationally efficient as it requires maintaining a set of deterministic policies whose cardinality could be exponential in S and H, and an in-triguing open problem is to design computationally-efficient algorithms for RL with trajectory feedback with asymptot-                
+
+> 2Throughout, we use ˜O(·)to suppress logarithmic factors.
+> 3As our main focus is to obtain asymptotically nearly optimal regret bounds, here we consider the case that Kapproaches infinity while S,Aand Hare all fixed.
+> 4In fact, the regret lower bound proved by Jin et al. (2018) is Ω( √SAH 2T)with T=KH , which would be translated to
+> Ω( √SAH 3K)using our notations.
+
+ically nearly optimal regret bounds, or show that such an algorithm does not exist. 
+
+## 2. Related Work 
+
+RL with limited feedback. As mentioned in the intro-duction, RL with trajectory feedback was first introduced by Efroni et al. (2021). Compared to the results in Efroni et al. (2021), our regret bound is asymptotically nearly op-timal, while the results in Efroni et al. (2021) are not. In Section 4, a detailed comparison with the results in Efroni et al. (2021) from a technical perspective will be provided. Cohen et al. (2021) designed an algorithm with √K-type regret bound that works for RL with trajectory feedback even when the noise is adversarially chosen. However, the regret bound by Cohen et al. (2021) is not asymptotically nearly optimal. Chatterji et al. (2021) considered a more general setting, where the reward revealed to the learner is no longer the cumulative reward on the sampled trajectory, but instead drawn from a logistic model. It is an interesting future direction to generalize our techniques to their setting and obtain asymptotically nearly optimal regret bounds. Very recently, Cassel et al. (2024) considered RL with tra-jectory feedback in linear MDPs (Yang & Wang, 2019; Jin et al., 2020) and achieved a regret bound of ˜O(√d5H7K).Translating their regret bound to the tabular setting con-sidered in the present paper, the regret bound would be 
+
+˜O(√S5A5H7K) which is far from being asymptotically optimal. It would be interesting to generalize our techniques to RL with trajectory feedback when function approxima-tion schemes are used and obtain improved regret bounds. Preference-based RL (PbRL) (Wirth et al., 2017) is another RL paradigm to deal with the lack of reward signals. In PbRL, the agent receives feedback in terms of preferences over a trajectory pair instead of numerical rewards values. Compared to RL with trajectory feedback, PbRL is concep-tually harder due to the lack of numerical feedback, and indeed, existing regret bounds for PbRL in the tabular set-ting (Novoseller et al., 2020; Xu et al., 2020b; Saha et al., 2023) is much worse than the nearly optimal regret bound obtained in this paper. PbRL was also studied in function approximation settings (Chen et al., 2022; Wu & Sun, 2023; Wang et al., 2023) and the bandit setting (Yue et al., 2012; Falahatgar et al., 2017; Bengs et al., 2021; Xu et al., 2020a). 
+
+Linear bandits. Linear bandit is a classical setting for modeling sequential decision-making problems, and various sample complexity bounds and regret bounds have been obtained in this setting and its generalizations (Dani et al., 2008; Abbasi-Yadkori et al., 2011; Li et al., 2019; Filippi et al., 2010; Li et al., 2019). We refer readers to Lattimore & Szepesv ´ari (2020) for a comprehensive survey on this 2Minimax Optimal Regret Bound for Reinforcement Learning with Trajectory Feedback 
+
+topic. As observed in Efroni et al. (2021), there is a deep connection between RL with trajectory feedback and linear bandits. More specifically, RL with trajectory feedback can be understood as an instance of linear bandits over a convex set. Such a connection is also exploited in the present paper which will be discussed in more details in Section 4. 
+
+Regret bounds in the standard RL setting. There is a long line of work studying regret minimization in RL (Kakade, 2003; Jaksch et al., 2010; Azar et al., 2017; Jin et al., 2018; Zanette & Brunskill, 2019; Zhang & Ji, 2019; Zhang et al., 2020; Li et al., 2021; Zhang et al., 2022b; 2024). In particular, an asymptotically nearly optimal regret upper bound of ˜O
+
+√SAH 3K
+
+
+
+has been known in the lit-erature (Azar et al., 2017), and more recent work typically focuses on the lower order terms, i.e., by considering the case where the total number of episodes K is not that large compared to the number of states S, the number of actions 
+
+A and the horizon length H. In particular, the most recent work by Zhang et al. (2024) shows that an upper bound of 
+
+˜O
+
+√SAH 3K + KH 
+
+
+
+can be achieved for any K ≥ 1.In this paper, to learn the transition kernel, we use a pol-icy elimination framework similar to that in Zhang et al. (2022b). Compared to our algorithm, the algorithm in Zhang et al. (2022b) is designed for the standard RL setting and does not require the tighter confidence region construction for rewards. Such confidence region construction is the main technical contribution of the present paper. 
+
+## 3. Preliminaries 
+
+Throughout this paper, for an integer N ≥ 1, we use [N ] to denote the set {1, 2, . . . , N }.
+
+Episodic RL with trajectory feedback. An MDP is defined as M = ⟨S , A, R, P, μ ⟩, where S is the state space, A is the action space, R =
+
+{Rh(s, a )}(s,a )∈S×A ,h ∈[H] is the unknown reward distribu-tion, P = {Ps,a,h }(s,a )∈S×A ,h ∈[H] is the unknown transi-tion kernel and μ is the initial distribution. For a state-action pair (s, a ) ∈ S × A , a level h ∈ [H] and state s′ ∈ S ,
+
+Ps,a,h,s ′ is the probability of transiting from s to s′ at level 
+
+h after taking action a. We assume that the reward distribu-tion Rh(s, a ) is supported on [0 , 1] with mean Rh(s, a ).A (deterministic) policy π can be viewed as a collection of mappings {πh}Hh=1 where each πh : S → A is a mapping from the state space to the action space. We use Πdet to denote the set of all deterministic policies. We also consider mixtures of deterministic policies which can be seen as a distributions over Πdet . A policy π induced a random trajectory (s1, a 1, s 2, a 2, . . . , s H , a H ), where s1 ∼ μ, ah =
+
+πh(sh) and sh+1 ∼ Psh,a h,h for all h ∈ [H].In each episode, the agent decides a policy and observes the induced trajectory (s1, a 1, s 2, a 2, . . . , s H , a H ). At the end of each episode, the agent also receives a trajectory reward feedback Y = PHh=1 rh, where each rh is independently drawn from Rh(sh, a h). We use T denote the set of all possible trajectories. Note that |T | = ( SA )H .For a policy π, the Q-function and V -function are given by 
+
+Qπh (s, a ) = Eπ
+
+" HX
+
+> h′=h
+
+rh′ (sh′ , a h′ ) (sh, a h) = ( s, a )
+
+#
+
+;
+
+V πh (s) = Eπ
+
+" HX
+
+> h′=h
+
+rh′ (sh′ , a h′ ) sh = s
+
+#
+
+.
+
+The optimal Q-function and V -function are given by 
+
+Q∗
+
+> h
+
+(s, a ) = sup 
+
+> π∈Πdet
+
+Qπh (s, a ); 
+
+V ∗ 
+
+> h
+
+(s) = max 
+
+> π∈Πdet
+
+V πh (s) = max  
+
+> a
+
+Q∗
+
+> h
+
+(s, a ).
+
+We use π∗ to denote an optimal deterministic policy 5 such that Q∗
+
+> h
+
+(s, a ) = Qπ∗ 
+
+> h
+
+(s, a ) for all (s, a, h ). Moreover, for a given transition kernel p and reward distribution r, define 
+
+W π (r, p ) = Eπ,p 
+
+" HX
+
+> h=1
+
+rh(sh, a h)
+
+#
+
+;
+
+W ∗(r, p ) = max 
+
+> π∈Πdet
+
+W π (r, p ).
+
+Let πk be the policy executed by the agent in the k-th episode, the regret is defined by 
+
+Regret( K) := 
+
+> K
+
+X
+
+> k=1
+
+
+
+W ∗(R, P ) − W πk
+
+(R, P )
+
+
+
+.
+
+Other Notations. Given a policy π and a transition kernel 
+
+p, we use Eπ,p [·] (Pr π,p [·]) to denote the expectation (proba-bility) under the policy π and transition kernel p. In particu-lar, for a trajectory τ = {(sh, a h)}Hh=1 , Pr π,p [τ ] is the prob-ability of observing τ under π and p. We also define the oc-cupancy function dπp (s, a, h ) = Eπ,p [I[( sh, a h) = ( s, a )]] .
+
+We use dπp to denote the SAH -dimensional vector 
+
+{dπp (s, a, h )}(s,a,h )∈S×A× [H]. We may also regard R
+
+as a SAH -dimensional vector {Rh(s, a )}(s,a,h )∈S×A× [H].Given a trajectory τ = {(sh, a h)}Hh=1 , we let ϕτ ∈ RSAH 
+
+to be the vector such that ϕτ (s′, a ′, h ) = I[( s′, a ′) =(sh, a h)] . We use I to denote the SAH -dimensional identity matrix. We use EC to denote the complement of the set E.
+
+## 4. Technical Overview 
+
+In this section, we give an overview of the technical chal-lenges for obtaining the asymptotically nearly optimal regret 
+
+> 5
+
+It is well known that optimal Q-function and V -function can be achived by a deterministic policy. 
+
+3Minimax Optimal Regret Bound for Reinforcement Learning with Trajectory Feedback 
+
+bound for RL with trajectory feedback, together with our approaches to tackle these challenges. To explain the high-level ideas, we first consider the simpler setting that the transition kernel P is known, and then switch to the general setting in which case the transition kernel is unknown. 
+
+Connection with linear bandits. As observed in prior work (Efroni et al., 2021), when the transition kernel P is known, RL with trajectory feedback can be seen as an in-stance of linear bandits. More specifically, in each episode, suppose the trajectory observed by the agent is τ , the ex-pected trajectory reward feedback would be ϕ⊤ 
+
+> τ
+
+R, i.e., a linear function with respect to ϕτ . Based on this observa-tion, Efroni et al. (2021) showed how to build appropri-ate confidence regions for RL with trajectory feedback by adapting analysis for linear bandits algorithm and obtained a regret bound of ˜O
+
+√S2A2H4K
+
+
+
+. Although it is plau-sible to improve their regret bound to ˜O
+
+√S2AH 3K
+
+
+
+by a more refined analysis, it is unclear how to improve the dependence on S in their regret bound. Indeed, in the work by Efroni et al. (2021), RL with trajectory feedback is na ¨ıvely treated as an instance of linear bandits with feature dimension d = SAH , and the best known regret bound for any linear bandits algorithm is ˜O(d√T ) (Dani et al., 2008), or O(√dT log K) for linear bandits with K arms (Bubeck et al., 2012). Since there are ASH policies for an MDP, and each of them can be seen as an arm in the linear bandits problem instance, improving the order of S in the regret bound of prior work requires fundamentally new ideas. 
+
+Tighter confidence region based on trajectories. In or-der to achieve a minimax optimal regret bound, our first new idea is to build a tighter confidence region by exploiting structures of the linear bandits instance associated with RL with trajectory feedback. Before getting into more details, we first review least squares regression (LSR), an estimator commonly used in linear bandits algorithms (also in prior work on RL with trajectory feedback (Efroni et al., 2021)). Given a set of data points {πt, τ t, Y t}Tt=1 , where for each 
+
+1 ≤ t ≤ T , πt is the policy executed in the t-th episode, τ t
+
+is the trajectory sampled by executing πt and the Y t is the trajectory reward feedback. Clearly, E[Y t] = ϕ⊤  
+
+> τt
+
+R, which motivates the design of the LSR estimator 
+
+ˆR = arg min 
+
+> rT
+
+X
+
+> t=1
+
+ Y t − ϕ⊤  
+
+> τt
+
+r2 + λ∥r∥22 = Λ −1
+
+> T
+
+X
+
+> t=1
+
+ϕτ t Y t,
+
+(1) where Λ = λI + PTt=1 ϕτ t ϕ⊤  
+
+> τt
+
+is the information matrix. Optimism-based linear bandits algorithms typically main-tain a set of arms, and eliminate arms outside the confidence region during the execution of the algorithm. For RL with trajectory feedback, each arm in the linear bandits instance corresponds to a deterministic policy in the original MDP. Our construction of the tighter confidence region is based on the following two observations: • Although the total number of deterministic policies could be as large as ASH , the number of trajectories is 
+
+|T | = ( SA )H which is much smaller than the number of deterministic policies; • For any deterministic policy π, dπP = P  
+
+> τ∈T
+
+Pr π,P [τ ]·
+
+ϕτ which is a convex combination of {ϕτ }τ ∈T .Based on these observations, instead of building confidence region for |(dπP )⊤( ˆR − R)| for each deterministic policy π
+
+and applying a union bound over all policies which result in suboptimal regret bounds, we consider the following event 
+
+E := 
+
+(
+
+∀τ ∈ T , ϕ⊤ 
+
+> τ
+
+( ˆR − R)
+
+≤ c min 
+
+(s 
+
+ϕ⊤ 
+
+> τ
+
+Λ−1ϕτ σ2 log 
+
+ |T | 
+
+δ
+
+
+
+, H 
+
+)! ) 
+
+, (2) where c is an absolute constant and σ2 ≤ H is a constant such that {Y t − ϕ⊤  
+
+> τt
+
+R}Tt=1 is a group of independent zero-mean σ2-subgaussian random variables. By standard con-centration arguments, E holds with probability at least 1 − δ.We assume E holds in the remaining part of the discussion. Note that second observation mentioned above implies that for any policy π,
+
+(dπP )⊤( ˆR − R)
+
+≤ X 
+
+> τ∈T
+
+Pr π,P [τ ] ϕ⊤ 
+
+> τ
+
+( ˆR − R)
+
+≤ O X 
+
+> τ∈T
+
+Pr π,P [τ ] min 
+
+q 
+
+ϕ⊤ 
+
+> τ
+
+Λ−1ϕτ H log(2 |T | /δ ), H 
+
+!
+
+≤ ˜O
+
+H
+
+sX 
+
+> τ∈T
+
+Pr π,P [τ ] min {ϕ⊤ 
+
+> τ
+
+Λ−1ϕτ , 1}
+
+ , (3) where the last step holds by Cauchy-Schwarz inequality, the fact that |T | = ( SA )H , and suppressing log( SA ) factors into the ˜O(·) notation. 
+
+Exploration by optimal design. During the execution of the algorithm, we maintain a set of deterministic policies Π
+
+that have not been eliminated. According to (3) , in order to prove a uniform upper bound for (dπP )⊤( ˆR − R) for all deterministic policies π ∈ Π, it suffices to bound 
+
+max 
+
+> π∈Π
+
+X 
+
+> τ∈T
+
+Pr π,P [τ ] min ϕ⊤ 
+
+> τ
+
+Λ−1ϕτ , 1 . (4) 4Minimax Optimal Regret Bound for Reinforcement Learning with Trajectory Feedback 
+
+For this purpose, we need to carefully choose a set of poli-cies {πt}Tt=1 , so that the quantity in (4) is upper bounded. As another new technical ingredient, we show how to generalize the classical Kiefer–Wolfowitz Theorem (see Lemma B.1) to our setting. In particular, in Lemma B.2 in the supplementary material, we show that there exists ¯π
+
+which is a mixture of deterministic policies, such that 
+
+max 
+
+> π∈Π
+
+X 
+
+> τ∈T
+
+Pr π,P [τ ]ϕ⊤ 
+
+> τ
+
+Λ−1¯π ϕτ = SAH, (5) where Λ¯π := P  
+
+> τ∈T
+
+Pr ¯π,P [τ ]ϕτ ϕ⊤ 
+
+> τ
+
+. Therefore, by running 
+
+¯π for T steps, we could collect an information matrix Λ ≽
+
+cT Λ¯π with high probability for some absolute constant c > 
+
+0. Combining (3) and (5), we obtain that 
+
+max  
+
+> π∈Π
+
+(dπP )⊤( ˆR − R) ≤ ˜O
+
+
+
+HpSAH/T 
+
+
+
+. (6) In summary, with the arguments above, for any policy set 
+
+Π, we are able to collect a dataset {πt, τ t, Y t}Tt=1 in T
+
+episodes to obtain ˆR, such that 
+
+max  
+
+> π∈Π
+
+W π ( ˆR, P ) − W π (R, P ) = max  
+
+> π∈Π
+
+(dπP )⊤( ˆR − R)
+
+≤ ˜O
+
+p SAH 3/T 
+
+
+
+.
+
+(7) 
+
+Online batch learning by policy elimination. Finally, we show how to combine the two technical ingredients mentioned above into the framework of online policy elimi-nation. In this framework, the learning process is divided into consecutive batches. The algorithm maintains a policy set during its execution. Suppose the policy set maintained is Πℓ at the beginning of the ℓ-th batch. The algorithm will eliminate a subset of policies from Πℓ to form Πℓ+1 in the 
+
+ℓ-th batch. Initially, we set Π1 to be the set of all determin-istic policies. Moreover, there are O(log log K) batches for the whole algorithm, and there are Kℓ = 2 K1− 12ℓ episodes in the ℓ-th batch. As an invariant, during the execution of the algorithm, we always have that the optimal policy π∗ ∈ Πℓ for all ℓ. By (7) ,for each ℓ, we obtain a set of estimated reward values ˆRℓ
+
+such that 
+
+max 
+
+> π∈Πℓ
+
+W π ( ˆR, P ) − W π (R, P ) ≤ ˜O
+
+p SAH 3/K ℓ
+
+
+
+.
+
+By setting 
+
+Πℓ+1 =
+
+
+
+π ∈ Πℓ : max 
+
+> π′∈Πℓ
+
+W π′
+
+( ˆR, P ) − W π ( ˆR, P ) ≤ ϵℓ
+
+
+
+(8) where ϵℓ = ˜O
+
+pSAH 3/K ℓ
+
+
+
+, it holds that π∗ ∈ Πℓ+1 
+
+and 
+
+W ∗(R, P ) − W π (R, P ) ≤ ˜O
+
+p SAH 3/K ℓ
+
+
+
+for any π ∈ Πℓ+1 . Therefore, the regret in the (ℓ + 1) -th batch is bounded by 
+
+˜O(Kℓ+1 
+
+pSAH 3/K ℓ) = ˜O(√SAH 3K),
+
+which means that the total regret is at most ˜O(√SAH 3K).
+
+Dealing with unknown transition kernels. In the discus-sion above, we assume that the transition kernel P is known. Now we discuss how to remove such an assumption by learning the transition kernel in an online fashion. In order to implement the elimination-based online batch learning process mentioned above, we only need the transition kernel (i) to design the exploration policy so that (5) is ensured and (ii) to ensure the policy elimination step in (8) can be accurately implemented. To achieve (i) and (ii), we first obtain a reference transition kernel ˜P , which serves as an efficient tool to help design the exploration policy . Following the regret analysis for online batch learning in (Zhang et al., 2022b), the regret stemming from learning ˜P can be bounded by ˜O(√SAH 3K) (with lower order terms ignored). Moreover, for (i), an exact solution for (5) is not necessary. Instead, an approximate solution with a constant competitive ratio is sufficient to guide the exploration process, which could be found with the assistance of a reference model. For (ii), by using samples obtained by executing the exploration policy found in (i), we could build an empirical transition kernel which would be sufficient for implementing the policy elimination step in (8). 
+
+Computational efficiency. Given an approximate transi-tion kernel, the algorithm by Zhang et al. (2022b) achieves computationally efficient batch learning in the standard RL setting. In contrast, in the RL with trajectory feedback set-ting studied in this work, even with full knowledge of the transition kernel, we suffer from computational inefficiency due to the lack of reward information. In our algorithm, we maintain a subset of deterministic policies and solve opti-mization problems over the remaining policies (cf. Line 4 in Algorithm 3). Recall that initially we include all deter-ministic policies, and therefore the number of remaining policies could be exponential in S and H during the execu-tion of the algorithm. To our best of knowledge, no existing algorithm could solve such optimization problem efficiently even if the transition kernel is known and approximation is allowed, and therefore, our algorithm is also not com-putationally efficient. We leave obtaining computationally efficient algorithm as an interesting future direction. 5Minimax Optimal Regret Bound for Reinforcement Learning with Trajectory Feedback 
+
+## 5. Algorithm 
+
+In this section, we present our algorithm. The specific choice of the parameters could be found in Appendix A. The main algorithm (Algorithm 1) has two stages. The first stage (Line 3 in Algorithm 1) serves to acquire a coarse approximation p of the transition kernel P , guiding the design of exploration policy. Instead of approximating 
+
+P to the L1-norm, it is required the trajectory distribution under P could be covered by that under p up to a constant ratio. Formally, we have the definition below to measure the similarity between two transition kernels. 
+
+Definition 5.1. For two transition kernels p and p′, we say 
+
+p is an (n, x )-approximation of p′ with respect to a set of policies Π iff S × A × S × [H] could be divided into two sets K and KC such that 
+
+e− log( n) 
+
+> H
+
+p′ 
+
+> s,a,h,s ′
+
+≤ ps,a,h,s ′ ≤ e log( n) 
+
+> H
+
+p′ 
+
+> s,a,h,s ′
+
+,
+
+∀(s, a, h, s ′) ∈ K ; (9) 
+
+Pr π,p [KC] = 0 , ∀π ∈ Πdet ; (10) 
+
+max  
+
+> π∈Π
+
+Pr π,p ′ [KC] ≤ x, (11) where Pr π,q [KC] is the probability of visiting KC under policy π and transition kernel q.The second stage consists of several consecutive batches. In each batch of the second stage (Line 5 in Algorithm 1), we search for an exploration policy ¯π by using the coarse model p obtained during the first stage. Subsequently, we execute ¯π to collect the trajectory feedback, and construct reward confidence region R with least squares regression to conduct policy elimination. 
+
+Algorithm 1  
+
+> 1:
+
+Input: total number of episodes K. 
+
+> 2:
+
+Initialization: Set K0, L, {Kℓ}1≤ℓ≤L, ϵ 0, σ 0, κ ac-cording to Appendix A;  
+
+> 3:
+
+{ ˜P , Π1} ← Ref-Model (K0, K ); 
+
+> 4:
+
+for ℓ = 1 , 2, . . . , L do  
+
+> 5:
+
+Πℓ+1 ← Traj-Learning ( ˜P , K ℓ, Πℓ); 
+
+> 6:
+
+end for 5.1. Learning the Reference Model (the First Stage) 
+
+We present the algorithm for learning the reference model in Algorithm 2. The algorithm consists of four stages. Initially, the goal is to acquire a coarse reference model. In the sub-sequent stage, the focus shifts to learning a coarse reward estimator. The third stage involves gathering samples to execute policy elimination, ensuring that the remaining poli-cies are approximately O(ϵ0)-optimal. In the final stage, we invoke Raw-Exploration with a larger length to obtain a more refined reference model. 
+
+Raw exploration. In Algorithm 2, we invoke 
+
+Raw-Exploration (see Algorithm 6 in Appendix C) to learn a proper reference model. This algorithm is based on Algorithm 2 (Zhang et al., 2022b), with slight modification so that it could be applied to general policy set Π.
+
+Algorithm 2 Ref-Model (K0, K ) 
+
+> 1:
+
+Input: length K0, total length K; 
+
+> 2:
+
+¯K1 = 1000 √SAHK , ¯K2 = K0 − 3 ¯K1 
+
+> 3:
+
+ˆP1 ← Raw-Exploration (Π det , ¯K1); 
+
+> 4:
+
+ˆR ← Reward-Regression (P1, Πdet , ¯K1); 
+
+> 5:
+
+Π1 ← Plan ( ˆR, ˆP1, ¯K1, Πdet , ϵ 0); 
+
+> 6:
+
+ˆP2 ← Raw-Exploration (Π 1, ¯K2); 
+
+> 7:
+
+return: { ˆP2, Π1}.Properties of the learned model are summarized as below. 
+
+Lemma 5.2. By running Ref-Model (K0, K ), with prob-ability 1 − δ, it holds that 
+
+• ˆP2 is a (3 , σ 0)-approximation of P w.r.t. Π1;
+
+• π∗ ∈ Π1;
+
+• W π (R, P ) ≥ W ∗(R, P ) − 2ϵ0 for any π ∈ Π1.
+
+The proof of Lemma 5.2 is postponed to Appendix D.1 
+
+5.2. Policy Elimination with Reward Regression (the Second Stage) Algorithm 3 Traj-Learning (p, ˇK, Π)  
+
+> 1:
+
+Input: reference model p, length ˇK, policy set Π; 
+
+> 2:
+
+ˆR ← Reward-Regression (p, ˇK, Π) ; 
+
+> 3:
+
+Πnext ← Plan ( ˆR, p, ˇK, Π, κ ); 
+
+> 4:
+
+return: Πnext .We present the algorithm for reward regression and policy elimination in Algorithm 3, which has two parts. In the first part, the goal is to learn the reward by least squares regression, while the goal of the second part is to eliminate policies in Π based on the reward learned in the first part. Throughout Algorithm 3, the agent only executes policies within Π, and therefore, the regret incurred by running Al-gorithm 3 is upper bounded by ˇK · max π∈Π(W ∗(R, P ) −
+
+W π (R, P )) where ˇK is the total number of episodes. 
+
+Reward regression. We compute the optimal design pol-icy according to the reference model p, and then collect trajectory feedback to learn the reward function. It is worth noting that the least squares regression estimator ¯R (see Line 12 in Algorithm 4) might escape [0 , 1] SAH , and thus we construct a reward confidence region R (see Line 13 6Minimax Optimal Regret Bound for Reinforcement Learning with Trajectory Feedback 
+
+Algorithm 4 Reward-Regression (p, ˇK, Π) 
+
+1: Input: reference model p, length ˇK, policy set Π;
+
+2: λ ← 1  
+
+> SAH 2ˇK
+
+, Λ ← λI , ˇK1 ← ˇK  
+
+> 54 log( 2dδ)
+
+3: for t = 1 , 2, . . . , ˇK1 do 
+
+4: πt ← arg max 
+
+> π∈Π
+
+P 
+
+> τ∈T
+
+Pr π,p [τ ] · min {ϕ⊤ 
+
+> τ
+
+Λ−1ϕτ , 1};
+
+5: Λ ← Λ + P  
+
+> τ∈T
+
+Pr πt,p [τ ]ϕτ ϕ⊤ 
+
+> τ
+
+· 1max {ϕ⊤   
+
+> τΛ−1ϕτ,1}
+
+;
+
+6: end for 
+
+7: ¯π be the mixed policy which plays πt with probability 
+
+1/ ˇK1 for each 1 ≤ t ≤ ˇK1;
+
+8: for t = 1 , 2, . . . , ˇK do 
+
+9: Run ¯π to get trajectory τ t and trajectory reward feed-back Y t;
+
+10: end for 
+
+11: ˆΛ ← 18 λ log(2 d/δ )I + P ˇKt=1 ϕτ t ϕ⊤  
+
+> τt
+
+;
+
+12: ¯R ← ¯Λ−1 P ˇKt=1 Y tϕτ t
+
+13: R ← { ˜R ∈ [0 , 1] SAH : |ϕ⊤ 
+
+> τ
+
+( ˜R − ¯R)|≤ 8
+
+q
+
+H2 log 2( 4SAH δ )ϕ⊤ 
+
+> τ
+
+ˆΛ−1ϕτ , ∀τ ∈ T } ;
+
+14: if R̸ = ∅ then 
+
+15: Choose ˆR ∈ R ;
+
+16: else 
+
+17: ˆR ← 0;
+
+18: end if 
+
+19: return: ˆR
+
+in Algorithm 4) instead. For Algorithm 4, we have the following lemma to bound the error of reward regression. 
+
+Lemma 5.3. If p is a (3 , x )-approximation of P with respect to Π for some x ≥ 0, with probability 1 − δ, it holds that 
+
+max  
+
+> π∈Π
+
+W π ( ˆR, P ) − W π (R, P )
+
+≤ H
+
+s
+
+log 2
+
+ 4SAH δ
+
+
+
+·
+
+x + 325 
+
+s
+
+SAH log 2( 2SAH ˇKδ )ˇK
+
+ ,
+
+where ˆR = Reward-Regression (p, ˇK, Π) .
+
+Policy elimination. With the reward estimator ˆR, we pro-ceed to construct the confidence region to facilitate policy elimination. As described in Algorithm 5, for every batch, we use the reference model p and policy design to find an exploration policy ¯π with nearly optimal coverage. By ex-ecuting ¯π, we obtain an empirical transition model which is then used to eliminate policies. Formally, we have the uniform convergence guarantee for Algorithm 5. 
+
+Lemma 5.4. Fix x, y, z, ϵ ≥ 0. Assume that 
+
+• π∗ ∈ Π;
+
+• p is a (3 , x )-approximation of P w.r.t. Π;
+
+• W π (u, P ) ≥ W ∗(u, P ) − y for any π ∈ Π;
+
+• max π∈Π |W π (u, P ) − W π (R, P )| ≤ z;
+
+• ϵ ≥ 2( b + z), where 
+
+b = 30 
+
+s
+
+SAH 2(H + Sy ) log   8SAH δ
+
+
+
+ˇK
+
++ 360 S2AH 3 log   8SAH δ
+
+
+
+ˇK + 4 SAH 2x. 
+
+Let Πnext = Plan (u, p, ˇK, Π, ϵ ). With probability 1 − δ, it holds that: 
+
+• the optimal policy π∗ ∈ Πnext ;
+
+• W π (R, P ) ≥ W ∗(R, P ) − 2ϵ for any π ∈ Πnext .
+
+Lemma 5.4 states that, given some proper reference tran-sition kernel p and a policy set Π such that π∗ ∈ Π, Al-gorithm 5 could return a policy set with better confidence bounds by policy elimination. 
+
+Algorithm 5 Plan (u, p, ˇK, Π, ϵ )
+
+1: Input: reward function u, reference model p, episode length ˇK, policy set Π, threshold ϵ
+
+2: ¯π ← Design (Π , p );
+
+3: Execute ¯π in the next ˇK episodes, and collect samples as D;
+
+4: Nh(s, a ) ← the count of (s, a, h ) in D;
+
+5: for (s, a, h ) ∈ S × A × [H] do 
+
+6: ˆps,a,h ← the empirical transition probability of the samples of (s, a, h ) in D;
+
+7: end for 
+
+8: Πnext ←
+
+n
+
+π ∈ Π : W π (u, ˆp) ≥ max π′∈Π W π′
+
+(u, ˆp) − ϵ
+
+o
+
+9: return: Πnext .
+
+10: Function: Design (Π , p );
+
+11: Let λ = {λπ }π∈Π ∈ ∆Π be the distribution 
+
+λ ← argmin λ′={λ′  
+
+> π}π∈Π∈∆Π
+
+max 
+
+> π∗∈Π
+
+X
+
+> s,a,h
+
+dπ∗ 
+
+> p
+
+(s, a, h )
+
+P 
+
+> π
+
+λ′ 
+
+> π
+
+dπp (s, a, h ) ;
+
+12: return: ¯π be the mixed policy which plays π ∈ Π with probability λπ ;Based on Lemma 5.3 and Lemma 5.4, we summarize the guarantees of Algorithm 3 as below. 
+
+Lemma 5.5. Let ι = log 2  16 SAH ˇKδ
+
+
+
+. Let Πnext =
+
+Traj-Learning (p, ˇK, Π) . Fix ˜x, ˜y, κ ≥ 0. Assume that 
+
+• π∗ ∈ Π;
+
+• p is a (3 , ˜x)-approximation of P with respect to Π;
+
+7Minimax Optimal Regret Bound for Reinforcement Learning with Trajectory Feedback 
+
+• W π (R, P ) ≥ W ∗(R, P ) − ˜y for any π ∈ Π;
+
+• κ ≥ 20  72 
+
+q SAH 3ι 
+
+> ˇK
+
++ 6 
+
+q S2AH 2 ˜yι  
+
+> ˇK
+
++ 100 S2AH 3ι 
+
+> ˇK
+
++
+
+SAH 2 ˜xι .With probability 1 − δ, it holds that π∗ ∈ Π and 
+
+W π (R, P ) ≥ W ∗(R, P ) − 2κ
+
+for any π ∈ Πnext .
+
+The full proofs of Lemma 5.3, Lemma 5.4 and Lemma 5.5 are presented in Appendix D. 
+
+5.3. The Final Regret Bound Theorem 5.6. Fix δ > 0. For any episodic MDP with trajectory feedback, with probability 1 − δ, the regret in K
+
+episodes of Algorithm 1 is upper bounded by 
+
+Regret( K) ≤ ˜O √SAH 3K + √S3A2H3K 38
+
++ √S11 A3H19 K 14 + √S17 A3H27 .
+
+Below we sketch the proof of Theorem 5.6. 
+
+Regret in the first stage. Recall the definition of Π1 in Line 3 Algorithm 1. By Lemma 5.2 and the fact that π∗ ∈
+
+Πdet with probability 1 − δ, we have that • π∗ ∈ Π1;• ˜P is a (3 , σ 0)-approximation of P with respect to Π1,hence it is also a (3 , σ 0)-approximation of P with re-spect to Πℓ for any ℓ ≥ 1;• W π (R, P ) ≥ W ∗(R, P ) − 2ϵ0 for all π ∈ Π1.By the third property, the regret in the first stage is at most 
+
+O   ¯K2ϵ0 + ¯K1H
+
+= ˜O
+
+√SAH 3K + S 11 2 A 32 H 19 2 K 14 + S 17 2 A 32 H 27 2
+
+
+
+,
+
+(12) where ¯K1 = 1000 √SAHK and ¯K2 = K0 − 3 ¯K1 are defined in Algorithm 2 and Appendix A. 
+
+Regret in the second stage. Recall that the second stage comprises consecutive batches. We bound the regret in each batch separately. Fix 1 ≤ ℓ ≤ L = O(log log( K)) and assume π∗ ∈ Πℓ. Re-call that ι = log 2   16 SAK δ
+
+. Set ˜x = σ0, ˜y = 2 ϵℓ, and ϵℓ =20 
+
+
+
+72 
+
+q SAH 3ιKℓ +9 
+
+q S2AH 2ϵ0ιKℓ + 100 S2AH 3ιKℓ +SAH 2σ0ι
+
+
+
+.
+
+We can then verify the conditions in Lemma 5.5: • π∗ ∈ Πℓ;• ˜P is a (3 , ˜x)-approximation of P with respect to Πℓ;• W π (R, P ) ≥ W ∗(R, P ) − ˜y for any π ∈ Πℓ;• ϵℓ ≥ 20  72 
+
+q SAH 3ιKℓ + 6 
+
+q S2AH 2 ˜yι Kℓ + 100 S2AH 3ιKℓ +
+
+SAH 2 ˜xι .
+
+Using Lemma 5.5, with probability 1 − δ, it holds that: (1) π∗ ∈ Πℓ+1 ; (2) W π (R, P ) ≥ W ∗(R, P ) − 2ϵℓ for any π ∈ Πℓ+1 . By induction on ℓ = 1 , 2, . . . , L , with probability 1 − Lδ  
+
+> (L+1)
+
+, it holds that 
+
+W π (R, P ) ≥ W ∗(R, P ) − 2ϵℓ.
+
+Recall that Kℓ = 2 K1− 12l for 1 ≤ ℓ ≤ L − 1 and KL ≤
+
+2K1− 12L . The regret in the (ℓ + 1) -th batch is bounded by 
+
+O(Kℓ+1 ϵℓ) = ˜O √SAH 3K + √S3A2H3K 38
+
++ √S6A2H7K 14 + S2AH 3K 12ℓ+1 
+
+
+
+(13) for 1 ≤ ℓ ≤ L − 1. Moreover, the regret incurred in the first batch is bounded by O(K1H) = O(√KH 2).
+
+Putting all together. By (12) and (13) , we obtain that the total regret is bounded by Regret (K) ≤ O ¯K2ϵ0 + ¯K1 +
+
+> L
+
+X
+
+> ℓ=2
+
+Kℓϵℓ−1 + K1H
+
+!
+
+= ˜O √SAH 3K + √S3A2H3K 38
+
++ √S11 A3H19 K 14 + √S17 A3H27 .
+
+The proof is finished by replacing δ with δ 
+
+> 16 S2AH (L+1)
+
+.
+
+## 6. Conclusion 
+
+In this work, we design an algorithm to achieve an asymptot-ically nearly optimal regret bound of ˜O(√SAH 3K) for RL with trajectory feedback. However, the proposed algorithm is based on elimination, resulting in exponential running time. An intriguing future direction to investigate whether the optimal regret bound is achievable using a computation-ally efficient algorithm. Additionally, another interesting future direction involves minimizing the lower-order terms in the regret bound. 
+
+## Acknowledgments 
+
+Y. Chen is supported in part by the Sloan Research Fel-lowship, the Google Research Scholar Award, the AFOSR 8Minimax Optimal Regret Bound for Reinforcement Learning with Trajectory Feedback 
+
+grant FA9550-22-1-0198, the ONR grant N00014-22-1-2354, and the NSF grants CCF-2221009 and CCF-1907661. JDL acknowledges support of Open Philanthropy, NSF IIS-2107304, NSF CCF-2212262, ONR Young Investigator Award, NSF CAREER Award 2144994, and NSF CCF-2019844. SSD acknowledges the support of NSF IIS-2110170, NSF DMS-2134106, NSF CCF-2212261, NSF IIS-2143493, NSF CCF-2019844, NSF IIS-2229881, and the Sloan Research Fellowship. 
+
+## Impact Statement 
+
+This paper discusses research aimed at advancing the field of theoretical reinforcement learning. While our work may have various potential societal impacts, we believe none of them require specific emphasis in this context. 
+
+## References 
+
+Abbasi-Yadkori, Y., P ´al, D., and Szepesv ´ari, C. Improved algorithms for linear stochastic bandits. Advances in neural information processing systems , 24, 2011. Agarwal, A., Kakade, S., and Yang, L. F. Model-based rein-forcement learning with a generative model is minimax optimal. In Conference on Learning Theory , pp. 67–83, 2020. Azar, M. G., Osband, I., and Munos, R. Minimax regret bounds for reinforcement learning. In Proceedings of the 34th International Conference on Machine Learning , pp. 263–272, 2017. Bengs, V., Busa-Fekete, R., El Mesaoudi-Paul, A., and H ¨ullermeier, E. Preference-based online learning with dueling bandits: A survey. Journal of Machine Learning Research , 22(7):1–108, 2021. Bubeck, S., Cesa-Bianchi, N., and Kakade, S. M. Towards minimax policies for online linear optimization with ban-dit feedback. In Conference on Learning Theory , pp. 41– 1. JMLR Workshop and Conference Proceedings, 2012. Cassel, A., Luo, H., Rosenberg, A., and Sotnikov, D. Near-optimal regret in linear mdps with aggregate bandit feed-back. In Proceedings of the 41st International Conference on Machine Learning , pp. 5757–5791, 2024. Chatterji, N., Pacchiano, A., Bartlett, P., and Jordan, M. On the theory of reinforcement learning with once-per-episode feedback. Advances in Neural Information Pro-cessing Systems , 34:3401–3412, 2021. Chen, X., Zhong, H., Yang, Z., Wang, Z., and Wang, L. Human-in-the-loop: Provably efficient preference-based reinforcement learning with general function approxima-tion. In International Conference on Machine Learning ,pp. 3773–3793. PMLR, 2022. Cohen, A., Kaplan, H., Koren, T., and Mansour, Y. Online markov decision processes with aggregate bandit feed-back. In Conference on Learning Theory , pp. 1301–1329. PMLR, 2021. Dani, V., Hayes, T. P., and Kakade, S. M. Stochastic linear optimization under bandit feedback. In COLT , volume 2, pp. 3, 2008. Domingues, O. D., M ´enard, P., Kaufmann, E., and Valko, M. Episodic reinforcement learning in finite mdps: Minimax lower bounds revisited. In Algorithmic Learning Theory ,pp. 578–598, 2021. Efroni, Y., Merlis, N., and Mannor, S. Reinforcement learn-ing with trajectory feedback. In Proceedings of the AAAI conference on artificial intelligence , volume 35, pp. 7288– 7295, 2021. Falahatgar, M., Hao, Y., Orlitsky, A., Pichapati, V., and Ravindrakumar, V. Maxing and ranking with few as-sumptions. Advances in Neural Information Processing Systems , 30, 2017. Filippi, S., Cappe, O., Garivier, A., and Szepesv ´ari, C. Para-metric bandits: The generalized linear case. In Advances in Neural Information Processing Systems , pp. 586–594, 2010. Jaksch, T., Ortner, R., and Auer, P. Near-optimal regret bounds for reinforcement learning. Journal of Machine Learning Research , 11(Apr):1563–1600, 2010. Jin, C., Allen-Zhu, Z., Bubeck, S., and Jordan, M. I. Is Q-learning provably efficient? In Advances in Neural Information Processing Systems , pp. 4863–4873, 2018. Jin, C., Yang, Z., Wang, Z., and Jordan, M. I. Provably efficient reinforcement learning with linear function ap-proximation. In Conference on Learning Theory , pp. 2137–2143, 2020. Kakade, S. M. On the sample complexity of reinforcement learning . PhD thesis, University of London London, England, 2003. Kiefer, J. and Wolfowitz, J. The equivalence of two ex-tremum problems. Canadian Journal of Mathematics , 12: 363–366, 1960. Lattimore, T. and Szepesv ´ari, C. Bandit algorithms . Cam-bridge University Press, 2020. 9Minimax Optimal Regret Bound for Reinforcement Learning with Trajectory Feedback 
+
+Li, G., Shi, L., Chen, Y., Gu, Y., and Chi, Y. Breaking the sample complexity barrier to regret-optimal model-free reinforcement learning. Advances in Neural Information Processing Systems , 34:17762–17776, 2021. Li, Y., Wang, Y., and Zhou, Y. Nearly minimax-optimal regret for linearly parameterized bandits. In Conference on Learning Theory , pp. 2173–2174. PMLR, 2019. Maurer, A. and Pontil, M. Empirical Bernstein bounds and sample variance penalization. In Conference on Learning Theory , 2009. Ng, A. Y., Harada, D., and Russell, S. Policy invariance under reward transformations: Theory and application to reward shaping. In ICML , volume 99, pp. 278–287, 1999. Novoseller, E., Wei, Y., Sui, Y., Yue, Y., and Burdick, J. Dueling posterior sampling for preference-based rein-forcement learning. In Conference on Uncertainty in Artificial Intelligence , pp. 1029–1038. PMLR, 2020. Saha, A., Pacchiano, A., and Lee, J. Dueling rl: Reinforce-ment learning with trajectory preferences. In Interna-tional Conference on Artificial Intelligence and Statistics ,pp. 6263–6289. PMLR, 2023. Wang, Y., Liu, Q., and Jin, C. Is rlhf more difficult than standard rl? a theoretical perspective. Advances in Neural Information Processing Systems , 36, 2023. Wirth, C., Akrour, R., Neumann, G., and F ¨urnkranz, J. A survey of preference-based reinforcement learning meth-ods. Journal of Machine Learning Research , 18(136): 1–46, 2017. Wu, R. and Sun, W. Making rl with preference-based feed-back efficient via randomization. In The Twelfth Interna-tional Conference on Learning Representations , 2023. Xu, Y., Joshi, A., Singh, A., and Dubrawski, A. Zeroth order non-convex optimization with dueling-choice bandits. In 
+
+Conference on Uncertainty in Artificial Intelligence , pp. 899–908. PMLR, 2020a. Xu, Y., Wang, R., Yang, L., Singh, A., and Dubrawski, A. Preference-based reinforcement learning with finite-time guarantees. Advances in Neural Information Processing Systems , 33:18784–18794, 2020b. Yang, L. and Wang, M. Sample-optimal parametric Q-learning using linearly additive features. In International Conference on Machine Learning , pp. 6995–7004, 2019. Yue, Y., Broder, J., Kleinberg, R., and Joachims, T. The k-armed dueling bandits problem. Journal of Computer and System Sciences , 78(5):1538–1556, 2012. Zanette, A. and Brunskill, E. Tighter problem-dependent regret bounds in reinforcement learning without domain knowledge using value function bounds. In International Conference on Machine Learning , pp. 7304–7312, 2019. Zhang, Z. and Ji, X. Regret minimization for reinforce-ment learning by evaluating the optimal bias function. In 
+
+Advances in Neural Information Processing Systems , pp. 2823–2832, 2019. Zhang, Z., Zhou, Y., and Ji, X. Almost optimal model-free reinforcement learning via reference-advantage decom-position. In Advances in Neural Information Processing Systems , 2020. Zhang, Z., Ji, X., and Zhou, Y. Almost optimal batch-regret tradeoff for batch linear contextual bandits. arXiv preprint arXiv:2110.08057 , 2021. Zhang, Z., Ji, X., and Du, S. Horizon-free reinforcement learning in polynomial time: the power of stationary policies. In Conference on Learning Theory , pp. 3858– 3904, 2022a. Zhang, Z., Jiang, Y., Zhou, Y., and Ji, X. Near-optimal regret bounds for multi-batch reinforcement learning. Advances in Neural Information Processing Systems , 35:24586– 24596, 2022b. Zhang, Z., Chen, Y., Lee, J. D., and Du, S. S. Settling the sample complexity of online reinforcement learning. In The Thirty Seventh Annual Conference on Learning Theory , pp. 5213–5219. PMLR, 2024. 10 Minimax Optimal Regret Bound for Reinforcement Learning with Trajectory Feedback 
+
+## A. Parameter Settings 
+
+Set K0 = 100000 S 92 A 32 H 17 2 K 12 log   SAHK δ
+
+ and Kℓ = 2 K1− 12ℓ for ℓ ≥ 1. Let L := min ℓ′ (K0 + Pℓ′ 
+
+> ℓ=1
+
+Kℓ) ≥
+
+K. Set ϵ0 = 90000 log 3( SAHK δ )
+
+ SAH 2 
+
+> K14
+
++ S4AH 6 
+
+> K12
+
+
+
+, σ0 = 1       
+
+> S32A12H72K12
+
+, ι = log 2   16 SAHT δ
+
+ and κ =20 
+
+
+
+72 
+
+q SAH 3ιT + 9 
+
+q S2AH 2ϵ0ιT + 100 S2AH 3ιT + SAH 2σ0ι
+
+
+
+.By this definition, we have L ≤ 2 log 2 log( K). With a slightly abuse of notation, we re-define KL = K − (K0 + PL−1 
+
+> ℓ=1
+
+Lℓ).It then holds that K0 + PLℓ=1 Kℓ = K.
+
+## B. Technical Lemmas 
+
+Lemma B.1 (General Equivalence Theorem in (Kiefer & Wolfowitz, 1960)) . For any bounded subset X ⊂ Rd, there exists a distribution K(X) supported on X, such that for any ϵ > 0, it holds that 
+
+max  
+
+> x∈X
+
+x⊤  ϵI + Ey∼K (X)[yy ⊤]−1 x ≤ d. (14) 
+
+Furthermore, there exists a mapping πG, which maps a context X to a distribution over X such that 
+
+max  
+
+> x∈X
+
+x⊤(ϵI + Ey∼πG(X)[yy ⊤]) −1x ≤ 2d. (15) 
+
+In particular, when supp( X) has a finite size, πG(X) could be implemented within poly( |supp( X)|) time. 
+
+Lemma B.2 (Generalized KW Theorem) . For any policy set Π ⊂ Πdet ,
+
+min 
+
+> ¯π∈∆Π
+
+max 
+
+> π∈Π
+
+X 
+
+> τ∈T
+
+Pr π,P [τ ]ϕ⊤ 
+
+> τ
+
+(Λ(¯ π)) −1ϕτ = SAH, (16) 
+
+where Λ( π) := P  
+
+> τ∈T
+
+Pr π,P [τ ]ϕτ ϕ⊤ 
+
+> τ
+
+.Proof of Lemma B.2. Let F (π) := log(det(Λ( π))) for π ∈ ∆Π. Because ∆Π is a closed set and F (π) ≤ d log( d) for any π ∈ ∆Π with d = SAH , there exists some ¯π such that ¯π = arg max π∈∆Π F (π). We assume that det(Λ(¯ π)) ̸ = 0 .Otherwise det(Λ( π)) is always 0, which implies there is redundant dimension. Because ¯π could be viewed as a distribution over Π, we use λ(¯ π, π ) to denote the probability that ¯π distributes on π for 
+
+π ∈ Π. It then holds that P 
+
+> π∈Π
+
+λ(¯ π, π ) = 1 and 
+
+Λ(¯ π) = X
+
+> π∈Π
+
+λ(¯ π, π )Λ( π).
+
+As a result, F (¯ π) could be viewed as a multi-variable function with respect to the distribution {λ(¯ π, π )}π∈Π. For two different π1, π 2 ∈ Π such that λ(¯ π, π 1) > 0, λ (¯ π, π 2) > 0 , by the condition that ¯π = arg max π∈∆Π F (π), we have that 
+
+∂F (¯ π)
+
+∂λ (¯ π, π 1) = ∂F (¯ π)
+
+∂λ (¯ π, π 2) , (17) which means that 
+
+X 
+
+> τ∈T
+
+Pr π1,P [τ ]ϕ⊤ 
+
+> τ
+
+(Λ(¯ π)) −1ϕτ = X 
+
+> τ∈T
+
+Pr π2,P [τ ]ϕ⊤ 
+
+> τ
+
+(Λ(¯ π)) −1ϕτ .
+
+For π1, π 2 such that λ(¯ π, π 1) > 0 and λ(¯ π, π 2) = 0 , we have that 
+
+∂F (¯ π)
+
+∂λ (¯ π, π 1) ≥ ∂F (¯ π)
+
+∂λ (¯ π, π 2) ,
+
+11 Minimax Optimal Regret Bound for Reinforcement Learning with Trajectory Feedback 
+
+which implies 
+
+X 
+
+> τ∈T
+
+Pr π1,P [τ ]ϕ⊤ 
+
+> τ
+
+(Λ(¯ π)) −1ϕτ ≥ X 
+
+> τ∈T
+
+Pr π2,P [τ ]ϕ⊤ 
+
+> τ
+
+(Λ(¯ π)) −1ϕτ .
+
+Therefore, max π∈Π
+
+P  
+
+> τ∈T
+
+Pr π,P [τ ]ϕ⊤ 
+
+> τ
+
+(Λ(¯ π)) −1ϕτ is reached by any π such that λ(¯ π, π ) > 0. Assume this value is x.That is, 
+
+λ(¯ π, π ) X 
+
+> τ∈T
+
+Pr π,P [τ ]ϕ⊤ 
+
+> τ
+
+(Λ(¯ π)) −1ϕτ = λ(¯ π, π )x
+
+for all π ∈ Π. Taking sum over π ∈ Π, we have that 
+
+x = Trace(Λ(¯ π)(Λ(¯ π)) −1) = d = SAH. (18) The proof is completed. 
+
+Lemma B.3 (Lemma 1 in (Zhang et al., 2022b)) . Let d > 0 be an integer. Let X ⊂ (∆ d)m. Then there exists a distribution 
+
+D over X , such that 
+
+max 
+
+> x={xi}dm i=1 ∈X
+> dm
+
+X
+
+> i=1
+
+xi
+
+yi
+
+= md, 
+
+where y = {yi}dm i=1 = Ex∼D [x].
+
+Lemma B.4 (Bennet’s inequality) . Let Z, Z 1, ..., Z n be i.i.d. random variables with values in [0 , 1] and let δ > 0. Define 
+
+VZ = E (Z − EZ)2. Then we have 
+
+P
+
+"
+
+E [Z] − 1
+
+n
+
+> n
+
+X
+
+> i=1
+
+Zi >
+
+r 2VZ ln(2 /δ )
+
+n + ln(2 /δ )
+
+n
+
+#
+
+≤ δ. 
+
+Lemma B.5 (Theorem 4 in (Maurer & Pontil, 2009) ) . Let Z, Z 1, ..., Z n (n ≥ 2) be i.i.d. random variables with values in 
+
+[0 , 1] and let δ > 0. Define ¯Z = 1
+
+> n
+
+Pni=1 Zi and ˆVn = 1
+
+> n
+
+Pni=1 (Zi − ¯Z)2. Then we have 
+
+P
+
+ E [Z] − 1
+
+n
+
+> n
+
+X
+
+> i=1
+
+Zi >
+
+s
+
+2 ˆVn ln(2 /δ )
+
+n − 1 + 7 ln(2 /δ )3( n − 1) 
+
+ ≤ δ. 
+
+Lemma B.6 (Lemma 10 in (Zhang et al., 2022a)) . Let X1, X 2, . . . be a sequence of random variables taking value in [0 , l ].For any k ≥ 1, let Fk be the σ-algebra generated by (X1, X 2, . . . , X k), and define Yk := E[Xk | F k−1]. Then for any 
+
+δ > 0, we have 
+
+P
+
+"
+
+∃n, 
+
+> n
+
+X
+
+> k=1
+
+Xk ≥ 3
+
+> n
+
+X
+
+> k=1
+
+Yk + l log 1
+
+δ
+
+#
+
+≤ δ
+
+P
+
+"
+
+∃n, 
+
+> n
+
+X
+
+> k=1
+
+Yk ≥ 3
+
+> n
+
+X
+
+> k=1
+
+Xk + l log 1
+
+δ
+
+#
+
+≤ δ. 
+
+Lemma B.7. Fix d > 0. Let Λ ∈ Rd×d be a PSD matrix and x ∈ Rd be a vector such that x⊤Λ−1x ≤ 1. Then we have that 
+
+log(det(Λ + xx ⊤)) − log(det(Λ)) ≥ 2x⊤Λ−1x. 
+
+Proof. Direct computation gives that 
+
+log(det(Λ + xx ⊤)) − log(det(Λ)) = log(det( I + x⊤Λ−1x⊤)) = log(1 + x⊤Λ−1x) ≥ 12 x⊤Λ−1x. 
+
+12 Minimax Optimal Regret Bound for Reinforcement Learning with Trajectory Feedback 
+
+Lemma B.8 (Proposition 1 in (Zhang et al., 2021)) . Consider a sequence of independent PSD (positive semi-definite) matrices X1, X 2, . . . , X n ∈ Rd×d such that Xk ≼ W for a fixed PSD matrix W and all 1 ≤ k ≤ n. For every δ > 0 and 
+
+ϵ ∈ (0 , 1) , it holds that 
+
+Pr 
+
+" nX
+
+> k=1
+
+Xk ≼ 3
+
+> n
+
+X
+
+> k=1
+
+E[Xk] + 3 log( d/δ )W
+
+#
+
+≥ 1 − δ; (19) 
+
+Pr 
+
+" nX
+
+> k=1
+
+Xk ≽ 13
+
+> n
+
+X
+
+> k=1
+
+E[Xk] − 3 log( d/δ )W
+
+#
+
+≥ 1 − δ. (20) 
+
+Lemma B.9. Assume p is an (n, x )-approximation of p′ with respec to Π. It then holds that 
+
+1
+
+n Eπ,p [I[( sh, a h) = ( s, a )]] ≤ Eπ,p ′ [I[( sh, a h) = ( s, a )]] ≤ nEπ,p [I[( sh, a h) = ( s, a )]] + x (21) 
+
+for any π ∈ Π and (s, a, h ).Proof. By (9) and (10), for any trajectory τ , we have that 1 
+
+> n
+
+Pr p[τ ] ≤ Pr p′ [τ ′]. It then holds that 
+
+1
+
+n Eπ,p [I[( sh, a h) = ( s, a )]] ≤ Eπ,p ′ [I[( sh, a h) = ( s, a )]] .
+
+On the other hand, 
+
+Eπ,p ′ [I[( sh, a h) = ( s, a )]] 
+
+≤ Eπ,p ′ [I[( sh, a h) = ( s, a )] ∩ I[( sh′ , a h′ , s h+1 , h ′) ∈ K , ∀1 ≤ h′ ≤ h]] + max 
+
+> π∈Πdet
+
+Pr π,p ′ [KC]
+
+≤ nEπ,p [I[( sh, a h) = ( s, a )]] + x. (22) 
+
+Lemma B.10. Assume p is an (n, x )-approximation of p′. It then holds that 
+
+max 
+
+> π∈Πdet
+
+Pr π,p ′ [Tbad ] ≤ x, 
+
+where Tbad := {τ : Pr p′ [τ ] ≥ nPr p[τ ]}.Proof. Let τ = {sh, a h}Hh=1 be an element in Tbad . By definition, there exists h such that (sh, a h, h, s h+1 ) ∈ K C. As a result, max π∈Πdet Pr π,p ′ [Tbad ] ≤ max π∈Πdet pr π,p ′ [KC] ≤ x.
+
+## C. The Raw-Exploration Algorithm and Analysis 
+
+Lemma C.1. By running Raw-Exploration with input (Π , ˇK, δ ), with probability 1 − δ, the output p is an 
+
+3, 11000 S3AH 4 log( SAH/δ )ˇK
+
+
+
+-approximation of P with respect to Π.Proof. Let Dh be the value of D after the h-th iteration. Let Ph = Confidence-Region (Dh) and ¯P be the final value of P. Let N hh′ (s, a, s ′) be the count of (s, a, h ′, s ′) in Dh and N hh′ (s, a ) := min {P 
+
+> s′
+
+N hh′ (s, a, s ′), 1}. Let ˆphs,a,h ′ =     
+
+> Nhh′(s,a,s ′)
+> Nhh′(s,a )
+
+be the empirical transition probability computed by Dh.By Lemma B.4, with probability 1 − δ/ 2,
+
+ˆphs,a,h ′,s ′ − Ps,a,h,s ′ ≤
+
+s
+
+4N hh′ (s, a, s ′)ι
+
+(N hh′ (s, a )) 2 + 5ιN h′ 
+
+> h
+
+(s, a ) (23) 13 Minimax Optimal Regret Bound for Reinforcement Learning with Trajectory Feedback 
+
+Algorithm 6 Raw-Exploration (Π , ˇK)
+
+1: Input : policy set Π, length ˇK ;
+
+2: Initialize: ˇK1 ← ˇKSAH , ι ← log 
+
+ 2S2AH 2
+
+> δ
+
+
+
+, D ← ∅ ;
+
+3: for h = 1 , 2, . . . , H do 
+
+4: P ← Confidence-Region (D);
+
+5: for (s, a ) ∈ S × A do 
+
+6: {πs,a,h , p s,a,h } ← arg max π∈Π,p ∈P Eπ,p [I[( sh, a h) = ( s, a )]] ;
+
+7: end for 
+
+8: for (s, a, h ) ∈ S × A × [H] do 
+
+9: Execute πs,a,h for ˇK1 episodes, and collect the samples as Ds,a,h ;
+
+10: end for 
+
+11: D ← D ∪ (∪s,a,h Ds,a,h );
+
+12: end for 
+
+13: P ← Confidence-Region (D);
+
+14: p ← arbitrary element in P
+
+15: return: p;
+
+16: Function : Confidence-Region (D):
+
+17: Nh(s, a, s ′) ← count of (s, a, h, s ′) in D, for all (s, a, s ′);
+
+18: Nh(s, a ) ← max {P 
+
+> s′
+
+Nh(s, a, s ′), 1} for all (s, a );
+
+19: ˆps,a,h,s ′ ← Nh(s,a,s ′) 
+
+> Nh(s,a )
+
+, ∀(s, a, h, s ′);
+
+20: W ← { (s, a, h, s ′) : Nh(s, a, s ′) ≥ 200 H2ι};
+
+21: ˜Ps,a,h ←
+
+n
+
+p ∈ ∆S | | ps′ − ˆps,a,h,s ′ | ≤ 
+
+q 4Nh(s,a,s ′)ιN 2  
+
+> h(s,a )
+
++ 5ιNh(s,a ) , ∀s′ ∈ S 
+
+o
+
+, ∀(h, s, a );
+
+22: Ps,a,h ← { clip (p, W) : p ∈ ˜Ps,a,h }, ∀(s, a, h );
+
+23: Return : ⊗s,a,h Ps,a,h .
+
+24: Function : clip (p, W)
+
+25: p′ 
+
+> s,a,h,s ′
+
+← ps,a,h,s ′ , ∀(h, s, a, s ) ∈ W ;
+
+26: p′ 
+
+> s,a,h,s ′
+
+← 0, ∀(s, a, h, s ′) /∈ W ;
+
+27: p′ 
+
+> s,a,h,z
+
+← P  
+
+> s′:( s,a,h,s ′)/∈W
+
+ps,a,h,s ′ , ∀(h, s, a ) ∈ [H] × S × A ;
+
+28: p′ 
+
+> z,a,h
+
+← 1z , ∀(h, a ) ∈ [H] × A ;
+
+29: Return : p.holds for all (s, a, h ′, s ′) and h ∈ [H]. We proceeds the analysis conditioned on (23) . Let Nh(s, a, s ′) denote the count of 
+
+(s, a, h, s ′) in Dh,s,a and Nh(s, a ) = max {P 
+
+> s′
+
+Nh(s, a, s ′), 1}. Define 
+
+Kh := {(s, a, s ′) : Nh(s, a, s ′) ≥ 200 H2ι}
+
+where ι = log 
+
+ 2S2AH 2
+
+> δ
+
+
+
+.By (23), for any (s, a, s ′) ∈ K h and any h′ ≥ h, we have that 
+
+ˆph′ 
+
+> s,a,h,s ′
+
+− Ps,a,h,s ′ ≤ ˆph′ 
+
+> s,a,h,s ′
+
+·
+
+r 150 H2 + 140 H2
+
+!
+
+,
+
+which implies that 
+
+ˆph′ 
+
+> s,a,h,s ′
+
+− Ps,a,h,s ′ ≤ 16H Ps,a,h,s ′ . (24) Moreover, by definition of Ph, using similar arguments, we have 
+
+|ps,a,h,s ′ − Ps,a,h,s ′ | ≤ 13H Ps,a,h,s ′ (25) 14 Minimax Optimal Regret Bound for Reinforcement Learning with Trajectory Feedback 
+
+for any (s, a, h, s ′) ∈ K h and p ∈ P h.We set K = ∪hKh and verify the three conditions in Definition 5.1. The first condition (9) holds by (25) , and the second condition (10) holds because ps,a,h,s ′ = 0 for any p ∈ P and (s, a, s ′) ∈ K C 
+
+> h
+
+. As for the third condition (11) , we analyze as below. Fix h ∈ [H]. By (24) and definition of {πs,a,h +1 , p s,a,h +1 }, we have that 
+
+Eπs,a,h +1 ,P [I[( sh+1 , a h+1 ) = ( s, a )]] 
+
+≥
+
+
+
+1 − 13H
+
+H
+
+Eπs,a,h +1 ,p s,a,h +1 [I[( sh+1 , a h+1 ) = ( s, a )]]] 
+
+≥ 13 Eπs,a,h +1 ,p s,a,h +1 [I[( sh+1 , a h+1 ) = ( s, a )]]] 
+
+≥ 13 max  
+
+> π∈Π
+
+Eπ,p s,a,h +1 [I[( sh+1 , a h+1 ) = ( s, a )]]] 
+
+≥ 19 max  
+
+> π∈Π
+
+Eπ,P [I[( sh′ , a h′ , s h′+1 ) ∈ K h, ∀1 ≤ h′ ≤ h] · I[( sh+1 , a h+1 ) = ( s, a )]] . (26) Here (26) holds because for any trajectory τ = {sh′ , a h′ }hh′=1 such that (sh′ , a h′ , s h′+1 ) ∈ K h′ , Pr π,p [τ ] ≥ 13 Pr π,P [τ ] for any p ∈ P h and any π ∈ Π. Consequently, 
+
+Eπs,a,h +1 ,P [I[( sh+1 , a h+1 , s h+2 ) = ( s, a, s ′)]] 
+
+≥ 19 max  
+
+> π,P
+
+max  
+
+> π∈Π
+
+Eπ,P [I[( sh′ , a h′ , s h′+1 ) ∈ K h, ∀1 ≤ h′ ≤ h] · I[( sh+1 , a h+1 , s h+2 ) = ( s, a, s ′)]] . (27) On the other side, by Lemma B.6, with probability 1 − δ 
+
+> 2S2AH 2
+
+, it holds that 
+
+Nh+1 (s, a, s ′)
+
+≥ 13 ˇK1Eπs,a,h +1 ,P [I[( sh+1 , a h+1 , s h+2 ) = ( s, a, s ′)]] − log 
+
+ 2S2AH 2
+
+δ
+
+
+
+≥ 127 ˇK1 max  
+
+> π∈Π
+
+Eπ,P [I[( sh′ , a h′ , s h′+1 ) ∈ K h, ∀1 ≤ h′ ≤ h] · I[( sh+1 , a h+1 ) = ( s, a )]] − log 
+
+ 2S2AH 2
+
+δ
+
+
+
+,
+
+which implies that 
+
+max  
+
+> π∈Π
+
+Eπ,P [I[( sh′ , a h′ , s h′+1 ) ∈ K h, ∀1 ≤ h′ ≤ h] · I[( sh+1 , a h+1 ) = ( s, a )]] ≤ 5427 H2ι
+
+ˇK1
+
+(28) for (s, a, s ′) ∈ K C
+
+> h+1
+
+Taking sum over all (s, a, s ′) ∈ K C
+
+> h+1
+
+, we learn that 
+
+max  
+
+> π∈Π
+
+Eπ,P 
+
+I[( s, a, s ′) ∈ K Ch+1 ] · I [sh′ , a h′ , s h′+1 ) ∈ K h, ∀1 ≤ h′ ≤ h] ≤ 5427 S2AH 2ι
+
+ˇK1
+
+. (29) Taking sum over h ∈ [H], we learn that 
+
+max  
+
+> π
+
+Pr π,P [∪hKC 
+
+> h
+
+]
+
+≤
+
+> H
+
+X
+
+> h=1
+
+max  
+
+> π∈Π
+
+Eπ,P 
+
+I[( s, a, s ′) ∈ K Ch+1 ] · I [sh′ , a h′ , s h′+1 ) ∈ K h, ∀1 ≤ h′ ≤ h]
+
+≤ 5427 S2AH 3ι
+
+ˇK1
+
+.
+
+Therefore (11) holds with x = 5427 S2AH 3ι
+
+> ˇK1
+
+. The proof is completed by noting ˇK1 = ˇKSAH .15 Minimax Optimal Regret Bound for Reinforcement Learning with Trajectory Feedback 
+
+## D. Missing Algorithms and Proofs 
+
+D.1. Proof of Lemma 5.2 
+
+Proof. By Lemma C.1, with probability 1 − δ 
+
+> 4( L+1)
+
+, ˆP2 is an (3 , 11000 S3AH 3 log(4 SAH (L+1) /δ )¯K2 )-approximation of P with respect to Π1. By noting that 
+
+¯K2 ≥ 96000 S 92 A 32 H 15 2 K 12 log 
+
+ SAHK δ
+
+
+
+and 
+
+σ0 ≥ 11000 S3AH 3 log(4 SAH (L + 1) /δ )¯K2
+
+,
+
+we conclude that ˆP2 is an (3 , σ 0)-approximation of P with respect to Π1, and thus is an (3 , σ 0)-approximation of P with respect to Πℓ for any ℓ ≥ 1.Let b1 := 11000 S3AH 4 log ( 4SAH δ ) 
+
+> ¯K1
+
+. By Lemma C.1, with probability 1 − δ 
+
+> 4
+
+ˆP1 is an (3 , b 1)-approximation of P with respect to Πdet . By Lemma 5.3, with probability 1 − δ 
+
+> 4
+
+, we learn that 
+
+max 
+
+> π∈Πdet
+
+W π ( ˆR, P ) − W π (R, P )
+
+≤ Hplog( SAH ) log(16 /δ )
+
+b1 + 325 
+
+s
+
+SAH log( K) log(8 SAH/δ )¯K1
+
+
+
+≤ 1000 log 2
+
+ SAHK δ
+
+
+
+·
+
+ SAH 2
+
+K 14
+
++ 4 SAH 2b1
+
+
+
+. (30) By Lemma 5.4 with parameters as: 
+
+Π = Π det ;
+
+x = b1 = 11000 S3AH 4 log   4SAH δ
+
+
+
+¯K1
+
+;
+
+y = H;
+
+z := 1000 log 2
+
+ SAHK δ
+
+
+
+·
+
+ SAH 2
+
+K 14
+
++ S4AH 6
+
+K 12
+
+
+
+b = 30 
+
+s
+
+2S2AH 2 log   32 SAH δ
+
+
+
+¯K1
+
++ 360 S2AH 3 log   32 SAH δ
+
+
+
+¯K1
+
++44000 S3AH 4 log 
+
+ 32 S2AH 2
+
+> δ
+
+
+
+¯K1
+
+;
+
+ϵ = ϵ0 = 90000 log 3
+
+ SAHK δ
+
+  SAH 2
+
+K 14
+
++ S4AH 6
+
+K 12
+
+
+
+≥ 2( b + z) (31) we have that: with probability 1 − δ 
+
+> 4
+
+, it holds that (1) π∗ ∈ Π1; (2) W π (R, P ) ≥ W ∗(R, P ) − 2ϵ for any π ∈ Π1.The proof is finished. 
+
+D.2. Proof of Lemma 5.3 
+
+Proof. Let d = SAH . Fix π ∈ Π. By definition, we have that 
+
+W π ( ˆR, P ) − W π (R, P ) ≤ X 
+
+> τ∈T
+
+Pr π,P [τ ] · | ϕ⊤ 
+
+> τ
+
+( ˆR − R)|.
+
+16 Minimax Optimal Regret Bound for Reinforcement Learning with Trajectory Feedback 
+
+By Lemma D.2, with probability 1 − δ/ 2, it holds that R ∈ R , which implies that 
+
+W π ( ˆR, P ) − W π (R, P ) ≤ X 
+
+> τ∈T
+
+Pr π,P [τ ] · | ϕ⊤ 
+
+> τ
+
+( ˆR − R)|≤ X 
+
+> τ∈T
+
+Pr π,P [τ ] · min {8
+
+q
+
+H2 log( SAH ) log(4 /δ )ϕ⊤ 
+
+> τ
+
+ˆΛ−1ϕτ , H }≤ Hplog( SAH ) log(4 /δ ) X 
+
+> τ∈T
+
+Pr π,P [τ ] min 
+
+
+
+8
+
+q
+
+ϕ⊤ 
+
+> τ
+
+ˆΛ−1ϕτ , 1
+
+
+
+(32) By Lemma D.3, with probability 1 − δ/ 2, ˆΛ ≽ 3˜Λ. Consequently, we have that 
+
+W π ( ˆR, P ) − W π (R, P ) ≤ Hplog( SAH ) log(4 /δ ) X 
+
+> τ∈T
+
+Pr π,P [τ ] min 
+
+
+
+5
+
+q
+
+ϕ⊤ 
+
+> τ
+
+˜Λ−1ϕτ , 1
+
+
+
+≤ Hplog( SAH ) log(4 /δ ) · x + 3 X 
+
+> τ∈T
+
+Pr π,p [τ ] min 
+
+
+
+5
+
+q
+
+ϕ⊤ 
+
+> τ
+
+˜Λ−1ϕτ , 1
+
+!
+
+(33) 
+
+≤ Hplog( SAH ) log(4 /δ ) ·
+
+x + 15 
+
+sX 
+
+> τ∈T
+
+Pr π,p [τ ] min 
+
+n
+
+ϕ⊤ 
+
+> τ
+
+˜Λ−1ϕτ , 1
+
+o (34) 
+
+≤ Hplog( SAH ) log(4 /δ ) ·
+
+x + 325 
+
+s
+
+SAH log( ˇK) log(2 d/δ )ˇK
+
+ . (35) Here (33) holds by Lemma B.10, (34) is by Cauchy’s inequality, and (35) is by Lemma D.1. The proof is finished. 
+
+Lemma D.1. Let ˜Λ be the final value of Λ in Algorithm 4. It then holds that 
+
+max 
+
+> π∈Π
+
+X 
+
+> τ∈T
+
+Pr π,p [τ ] min {ϕ⊤ 
+
+> τ
+
+˜Λ−1ϕτ , 1} ≤ 432 SAH log( ˇK) log(2 d/δ )ˇK (36) 
+
+Proof. Let ˇK1 = ˇK 
+
+> 54 log(2 d/δ )
+
+. Let Λt be the value of Λ before the t-th iteration. For any policy π ∈ Π, we have that 
+
+X 
+
+> τ∈T
+
+Pr π,p [τ ] · min {ϕ⊤ 
+
+> τ
+
+˜Λ−1ϕτ , 1} ≤ 1ˇK1ˇK1X
+
+> t=1
+
+X 
+
+> τ∈T
+
+Pr π,p [τ ] · min {ϕ⊤ 
+
+> τ
+
+(Λ t)−1ϕτ , 1}≤ 1ˇK1ˇK1X
+
+> t=1
+
+X 
+
+> τ∈T
+
+Pr πt,p [τ ] · min {ϕ⊤ 
+
+> τ
+
+(Λ t)−1ϕτ , 1}≤ 1ˇK1
+
+· 4 log det( ˜Λ) 
+
+λSAH 
+
+!
+
+(37) 
+
+≤ 432 SAH log( ˇK) log(2 d/δ )ˇK .
+
+Here (37) is derived as following. Let zt,τ = ϕτ · 1√max {ϕ⊤   
+
+> τ(Λ t)−1ϕτ,1}
+
+. Then we have that Λt+1 = Λt +
+
+P  
+
+> τ∈T
+
+Pr πt,p [τ ]zt,τ z⊤ 
+
+> t,τ
+
+. Because zt,τ z⊤ 
+
+> t,τ
+
+≼ Λt, it holds that P  
+
+> τ∈T
+
+Pr πt,p [τ ]zt,τ z⊤ 
+
+> t,τ
+
+≼ Λt. Let ≺ be an order over all possible trajectories and Λ( τ ) = Λ t + P  
+
+> τ′≺τ
+
+Pr πt,p [τ ′]zt,τ ′ z⊤  
+
+> t,τ ′
+
+) ≼ 2Λ t.17 Minimax Optimal Regret Bound for Reinforcement Learning with Trajectory Feedback 
+
+As a result, we have that 
+
+log 
+
+ det(Λ t+1 )det(Λ t)
+
+
+
+= X 
+
+> τ∈T
+
+ log(det(Λ( τ ) + Pr πt,p [τ ]zt,τ z⊤ 
+
+> t,τ
+
+) − log(det(Λ( τ )) 
+
+≥ 12
+
+X 
+
+> τ∈T
+
+Pr πt,p [τ ]z⊤ 
+
+> t,τ
+
+(Λ( τ )) −1zt,τ (38) 
+
+≥ 14
+
+X 
+
+> τ∈T
+
+Pr πt,p [τ ]z⊤ 
+
+> t,τ
+
+(Λ t)−1zt,τ . (39) Here (38) is by Lemma B.7. 
+
+Lemma D.2. With probability 1 − δ/ 2, R ∈ R .Proof. Let λ′ = 18 λ log(2 d/δ ). It is easy to see R ∈ [0 , 1] SAH . It suffices to verify that 
+
+|ϕ⊤ 
+
+> τ
+
+R − ϕ⊤ 
+
+> τ
+
+¯R| ≤ 8
+
+q
+
+H2 log( SAH ) log(2 /δ )ϕ⊤ 
+
+> τ
+
+ˆΛ−1ϕτ , ∀τ. 
+
+Let τ t = {(sth, a th)}Hh=1 . Let ζt := Yt − PHh=1 Rh(sth, a th). Noting that Y t = PHh=1 rh(sth, a th) where each rh(sth, a th) are drawn according to Rh(sth, a th) independently, we have that E[exp( zζ t)] ≤ exp( Hz 2/2) for any z ≥ 0. For fixed τ , we note that 
+
+ϕ⊤ 
+
+> τ
+
+¯R − ϕ⊤ 
+
+> τ
+
+R = ϕ⊤ 
+
+> τ
+
+ˆΛ−1ˇKX
+
+> t=1
+
+ϕτ t ζt − λ′ϕ⊤ 
+
+> τ
+
+ˆΛ−1R
+
+≤ ϕ⊤ 
+
+> τ
+
+Λ−1ˇKX
+
+> t=1
+
+ϕτ t ζt + λ′H∥ϕτ ˆΛ−1∥2
+
+≤ ϕ⊤ 
+
+> τ
+
+Λ−1ˇKX
+
+> t=1
+
+ϕτ t ζt + H
+
+q
+
+λ′ϕ⊤ 
+
+> τ
+
+ˆΛ−1ϕτ (40) 
+
+≤ 2 ϕ⊤ 
+
+> τ
+
+Λ−1ˇKX
+
+> t=1
+
+ϕτ t ζt . (41) Here (40) holds by the fact that ˆΛ − λ′I is PSD and (41) is by the fact that 18 λ log(2 d/δ )H2 ≤ 1.Note that {ζt} ˇKt=1 does not change the distribution of {ϕτ t }Tt=1 . Therefore, it holds that 
+
+Pr 
+
+ ϕ⊤ 
+
+> τ
+
+Λ−1ˇKX
+
+> t=1
+
+ϕτ t ζt ≥ x ·
+
+q
+
+ϕ⊤ 
+
+> τ
+
+ˆΛ−1ϕτ
+
+ ≤ 2 exp 
+
+
+
+− x2
+
+2H
+
+
+
+. (42) With a union bound of all possible choices of τ , we learn that, with probability 1 − δ, for any τ , it holds that 
+
+ϕ⊤ 
+
+> τ
+
+¯R − ϕ⊤ 
+
+> τ
+
+R ≤ 8
+
+q
+
+H2 log( SAH ) log(4 /δ )ϕ⊤ 
+
+> τ
+
+ˆΛ−1ϕτ .
+
+The proof is completed. 
+
+Lemma D.3. With probability 1 − δ/ 2, it holds that 
+
+ˆΛ ≽ 3˜Λ.
+
+18 Minimax Optimal Regret Bound for Reinforcement Learning with Trajectory Feedback 
+
+Proof. Let Λt ≼ ˜Λ be the value of Λ before the t-th round in line 4. Let zt = ϕτ t
+
+q 1max {ϕ⊤   
+
+> τ t˜Λ−1ϕτ t,1}
+
+. It is then easy to verify that ˜Λ ≽ ztz⊤ 
+
+> t
+
+. By Lemma B.10, we have Pr p[τ ] ≤ 3Pr p′ [τ ] for any τ . By noting that 
+
+˜Λ = 
+
+> ˇK1
+
+X
+
+> t=1
+
+Eπt,p 
+
+"X 
+
+> τ∈T
+
+Pr πt,p ϕτ ϕ⊤ 
+
+> τ
+
+· 1max {ϕ⊤ 
+
+> τ
+
+(Λ t)−1ϕτ , 1}
+
+#
+
+≼
+
+> ˇK1
+
+X
+
+> t=1
+
+Eπt,p 
+
+"X 
+
+> τ∈T
+
+Pr πt,p ϕτ ϕ⊤ 
+
+> τ
+
+· 1max {ϕ⊤ 
+
+> τ
+
+˜Λ−1ϕτ , 1}
+
+#
+
+= ˇK1E¯π,p 
+
+"X 
+
+> τ∈T
+
+Pr ¯π,p ϕτ ϕ⊤ 
+
+> τ
+
+· 1max {ϕ⊤ 
+
+> τ
+
+˜Λ−1ϕτ , 1}
+
+#
+
+,
+
+we have 
+
+18 log(2 d/δ )λI + Eπt,P 
+
+
+
+> ˇK
+
+X
+
+> t=1
+
+ztz⊤
+
+> t
+
+
+
+≽ 18 log(2 d/δ )λI + 13 E¯π,p 
+
+
+
+> ˇK
+
+X
+
+> t=1
+
+ϕτ t ϕ⊤  
+
+> τt
+
+· 1max {ϕ⊤  
+
+> τt
+
+˜Λ−1ϕτ t , 1}
+
+
+
+≽ 18 log(2 d/δ )˜Λ. (43) By Lemma B.8, with probability 1 − δ/ 2,
+
+> ˇK
+
+X
+
+> t=1
+
+ztz⊤ 
+
+> t
+
+≽ 13 E
+
+
+
+> ˇK
+
+X
+
+> t=1
+
+ztz⊤
+
+> t
+
+ − 3 log(2 d/δ )˜Λ ≽ 3 log(2 d/δ )˜Λ − 18 λ log(2 d/δ )I,
+
+which means that 
+
+ˆΛ ≽ 18 λ log(2 d/δ )I +
+
+> ˇK
+
+X
+
+> t=1
+
+ztz⊤ 
+
+> t
+
+≽ 3˜Λ.
+
+The proof is completed. 
+
+D.3. Proof of Lemma 5.5 
+
+Let ˆR be the reward function in line 3 Algorithm 3. By Lemma 5.3, with probability 1 − δ/ 2,
+
+max  
+
+> π∈Π
+
+W π ( ˆR, P ) − W π (R, P ) ≤ b1 := Hplog( SAH ) log(8 /δ ) ·
+
+˜x + 325 
+
+s
+
+SAH log( ˇK) log( 4SAH δ )ˇK
+
+ .
+
+As a result, for any π ∈ Π,
+
+W π ( ˆR, P ) − W ∗( ˆR, P ) ≥ W π (R, P ) − W ∗(R, P ) − 2 max  
+
+> π∈Π
+
+W π ( ˆR, P ) − W π (R, P ) ≥ ˜y + 2 b1. (44) Let x = x1, y = ˜ y + 2 b1, z = b1. Let b = 30 
+
+r
+
+> SAH 2(H+Sy ) log
+
+( 16 SAH δ ) 
+
+> ˇK
+
++ 360 S2AH 3 log ( 16 SAH δ ) 
+
+> ˇK
+
++ 4 SAH 2 ˜x.By Lemma 5.4 and the assumption that κ ≥ 2( b + z) = 2( b + b1), it then holds that π∗ ∈ Πnext and 
+
+W π (R, P ) ≥ W ∗(R, P ) − 2κ
+
+for any π ∈ Πnext 
+
+19 Minimax Optimal Regret Bound for Reinforcement Learning with Trajectory Feedback 
+
+D.4. Proof of Lemma 5.4 Additional notations. We use {vπh (s)} ({v∗
+
+> h
+
+(s)}) to denote the (optimal) value function under the policy π, transition P
+
+and reward u. With a slight abuse of notation, we define d¯πP (s, a, h ) = E¯π,P [I[( sh, a h) = ( s, a )]] . For two vector x, y with the same dimension, we write the inner product x⊤y as xy for simplicity. Let p ∈ ∆S be a probability distribution over [S]
+
+and v ∈ RS , we define the variance function as V(p, v ) = pv 2 − (pv )2. Define c(s, a, h ) = E¯π,p [I[( sh, a h) = ( s, a )]] for all (s, a, h ).Because p is an (3 , x )−approximation of P with respect to Π, by Lemma B.9 we have that 
+
+13 c(s, a, h ) ≤ d¯πP (s, a, h ) ≤ 3c(s, a, h ) + x. (45) Let L := {(s, a, h ) : c(s, a, h ) ≥ max {x, 36 log(8 SAH/δ )ˇK }} . By (45) , d¯πP (s, a, h ) ≤ 4x for (s, a, h ) /∈ L . By noting that 
+
+ˆpsh,a h,h is independent of v∗
+
+> h+1
+
+, using Bernstein’s inequality, with probability 1 − δ/ 8,
+
+(ˆ ps,a,h − Ps,a,h )v∗ 
+
+> h+1
+
+≤ 2
+
+s
+
+V(Ps,a,h , v ∗
+
+> h+1
+
+) log(8 SAH/δ )
+
+Nh(s, a ) + H log(8 SAh/δ )
+
+Nh(s, a ) , ∀(s, a, h ); (46) 
+
+|ˆps,a,h,s ′ − Ps,a,h,s ′ | ≤ 2
+
+s
+
+Ps,a,h,s ′ log(8 SAH/δ )
+
+Nh(s, a ) + H log(8 SAH/δ )
+
+Nh(s, a ) , ∀(s, a, h, s ′). (47) We continue the analysis conditioned on (46) and (47) . Fix π ∈ Π. Using policy difference lemma, and noting that 
+
+dπP (s, a, h ) ≤ 4x for (s, a, h ) /∈ L , we have that 
+
+W π ( ˆR, ˆp) − W π ( ˆR, P ) = Eπ,P 
+
+" HX
+
+> h=1
+
+(ˆ psh,a h,h − Psh,a h,h )vπh+1 
+
+#
+
+≤ X
+
+> (s,a,h )∈L
+
+d¯πP (s, a, h )(ˆ ps,a,h − Ps,a,h )vπh+1 + 4 SAH 2
+
+
+
+x + 36 log(8 SAH/δ )
+
+T
+
+
+
+. (48) Let F = 4 SAH 2
+
+
+
+x + 36 log(8 SAH/δ )ˇK
+
+
+
+. By definition of E1, we further have that, 
+
+W π ( ˆR, ˆp) − W π ( ˆR, P ) (49) 
+
+≤ X
+
+> (s,a,h )∈L
+
+dπP (s, a, h )(ˆ ps,a,h − Ps,a,h )v∗ 
+
+> h+1
+
++ X
+
+> (s,a,h )∈L
+
+dπP (s, a, h )(ˆ ps,a,h − Ps,a,h )( vπh+1 − v∗
+
+> h+1
+
+) + F
+
+≤ X
+
+> (s,a,h )∈L
+
+dπP (s, a, h )
+
+2
+
+s
+
+V(Ps,a,h , v ∗
+
+> h+1
+
+) log   8SAH δ
+
+
+
+Nh(s, a ) + H log   8SAH δ
+
+
+
+Nh(s, a )
+
+
+
++ X
+
+> (s,a,h )∈L
+
+dπP (s, a, h )
+
+2
+
+s
+
+SV(Ps,a,h , v ∗ 
+
+> h+1
+
+− vπh+1 ) log   8SAH δ
+
+
+
+Nh(s, a ) + SH log   8SAH δ
+
+
+
+Nh(s, a )
+
+ + F
+
+≤ 2
+
+vuuutlog 
+
+ 8SAH δ
+
+  X
+
+> (s,a,h )∈L
+
+dπP (s, a, h )
+
+Nh(s, a )
+
+ ·
+
+vuutE
+
+" HX
+
+> h=1
+
+ V(Psh,a h,h , v ∗
+
+> h+1
+
+) + SV(Psh,a h,h , v ∗ 
+
+> h+1
+
+− vπh+1 )#
+
++ 2 SH log 
+
+ 8SAH δ
+
+  X
+
+> (s,a,h )∈L
+
+dπP (s, a, h )
+
+Nh(s, a )
+
+ + F. (50) We then bound the terms in (50) separately. 20 Minimax Optimal Regret Bound for Reinforcement Learning with Trajectory Feedback 
+
+The doubling count term. By definition of L, we have that 
+
+X
+
+> (s,a,h )∈L
+
+dπP (s, a, h )
+
+Nh(s, a ) ≤ 4 X
+
+> s,a,h
+
+dπp (s, a, h )
+
+Nh(s, a ) . (51) By Lemma B.6, we further have that, with probability 1 − δ 
+
+> 8
+
+, it holds that 
+
+Nh(s, a ) ≥ 19 ˇKc (s, a, h ) − log(8 SAH/δ ). (52) for any (s, a, h ). Conditioned on this event, we have that 
+
+X
+
+> (s,a,h )∈L
+
+dπP (s, a, h )
+
+Nh(s, a ) ≤ 108 ˇK
+
+X
+
+> s,a,h
+
+dπp (s, a, h )
+
+c(s, a, h ) ≤ 108 SAH 
+
+ˇK . (53) In the last inequality, we use the fact that 
+
+max 
+
+> π∗∈Π
+
+X
+
+> s,a,h
+
+dπ∗ 
+
+> p
+
+(s, a, h )
+
+c(s, a, h ) = SAH, (54) which is a direct result following Lemma B.3. 
+
+The variance terms. Direct computation gives that 
+
+Eπ,P 
+
+" HX
+
+> h=1
+
+V(Psh,a h,h , v ∗
+
+> h+1
+
+)
+
+#
+
+= Eπ,P 
+
+" HX
+
+> h=1
+
+ (v∗
+
+> h+1
+
+(sh+1 )) 2 − (Psh,a h,h v∗
+
+> h+1
+
+)2#
+
+≤ Eπ,P 
+
+" HX
+
+> h=1
+
+ (v∗
+
+> h
+
+(sh)) 2 − (Psh,a h,h v∗
+
+> h+1
+
+)2#
+
+≤ 2HEπ,P 
+
+" HX
+
+> h=1
+
+ v∗
+
+> h
+
+(sh) − Psh,a h,h v∗
+
+> h+1
+
+#
+
+= 2 HEπ,P 
+
+" HX
+
+> h=1
+
+ v∗
+
+> h
+
+(sh) − v∗
+
+> h+1
+
+(sh+1 )#
+
+≤ 2H2 (55) 21 Minimax Optimal Regret Bound for Reinforcement Learning with Trajectory Feedback 
+
+and 
+
+Eπ, P
+
+" HX
+
+> h=1
+
+V(Psh,a h,h , v ∗
+
+> h+1
+
+) + SV(Psh,a h,h , v ∗ 
+
+> h+1
+
+− vπh+1 )
+
+#
+
+= Eπ,P 
+
+" HX
+
+> h=1
+
+ (v∗
+
+> h+1
+
+(sh+1 ) − vπh+1 (sh+1 )) 2 − (Psh,a h,h (v∗ 
+
+> h+1
+
+− vπh+1 )) 2#
+
+≤ Eπ,P 
+
+" HX
+
+> h=1
+
+ (v∗
+
+> h
+
+(sh) − vπh (sh)) 2 − (Psh,a h,h (v∗ 
+
+> h+1
+
+− vπh+1 )) 2#
+
+≤ HEπ,P 
+
+" HX
+
+> h=1
+
+(v∗
+
+> h
+
+(sh) − Psh,a h,h v∗
+
+> h+1
+
+) − (vπh (sh) − Psh,a h,h vπh+1 )
+
+#
+
+= 2 HEπ,P 
+
+" HX
+
+> h=1
+
+(v∗
+
+> h
+
+(sh) − Psh,a h,h v∗
+
+> h+1
+
+) − ˆRh(sh, a h)
+
+#
+
+= 2 HEπ,P 
+
+" HX
+
+> h=1
+
+ v∗
+
+> h
+
+(sh) − uh(sh, a h) − Psh,a h,h v∗
+
+> h+1
+
+#
+
+(56) 
+
+2H(W ∗(u, P ) − W π (u, P )) 
+
+≤ 2Hy. (57) Here (56) holds by the fact that v∗
+
+> h
+
+(sh) ≥ uh(sh, a h) + Psh,a h,h v∗
+
+> h+1
+
+.
+
+Putting together. By (50), (53) (55) and (57), we have that 
+
+|W π (u, ˆp) − W π (u, P )| ≤ 30 
+
+s
+
+SAH 2(H + Sy ) log   8SAH δ
+
+
+
+ˇK + 360 S2AH 3 log   8SAH δ
+
+
+
+ˇK + 4 SAH 2x = b. (58) Now we verify that π∗ ∈ Πnext .It suffices to show that 
+
+W π∗
+
+(u, ˆp) ≥ max  
+
+> π′∈Π
+
+W π′
+
+(u, ˆp) − ϵ. (59) By the assumptions and (58), we have that 
+
+W π∗
+
+(u, ˆp) ≥ W π∗
+
+(u, P ) − b ≥ W π∗
+
+(R, P ) − b − zW π (μ, ˆp) ≤ W π (u, P ) + b ≤ W π (R, P ) + b + z ≤ W π∗
+
+(R, P ) + b + z. 
+
+Noting that ϵ ≥ 2( b + z), we conclude that π∗ ∈ Πnext . On the other hand, for any π ∈ Πnext , we have that 
+
+W π (R, P ) ≥ W π (u, ˆp) − (b + z) ≥ W π∗
+
+(u, ˆp) − 2( b + z) ≥ W π∗
+
+(R, P ) − 3( b + z) ≥ W π∗
+
+(R, P ) − 2ϵ. 
+
+The proof is finished. 22
