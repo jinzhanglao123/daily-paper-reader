@@ -6,29 +6,31 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-05-30
-- 运行时间：2026-05-30 20:02:02 UTC
+- 最新运行日期：2026-05-31
+- 运行时间：2026-05-31 20:24:28 UTC
 - 运行状态：成功
-- 本次总论文数：2
-- 精读区：0
+- 本次总论文数：3
+- 精读区：1
 - 速读区：2
 
 ### 今日简报（AI）
-今日速览两篇论文，聚焦大模型智能体如何通过信用分配自主习得技能。  
-最值得关注的方向是：利用对比信用分配让智能体无需人工标注即可内部化技能，以及引入重置机制来纠正推理链中的错误归因。  
-建议读者对比这两种信用分配思路，思考如何让AI在复杂任务中更精准地归功与纠错。
-- 详情：[/202605/30/README](/202605/30/README)
+1) 聚焦强化学习里的时空规划，精读“何时行动”比“去哪里”更关键的RLVR时间调度，并速读两篇离线目标条件新作。
+2) 今天最值得带走的结论是：在RLVR中显式建模时间调度能显著提升策略质量，而离线目标条件任务里，隐空间对齐与自适应粗到细的子目标优化是破解长程任务的利器。
+3) 建议尝试在长序列决策任务中，给策略加上时间索引，或把子目标生成从静态选择转为由粗到细的动态进化，效果可能远超预期。
+- 详情：[/202605/31/README](/202605/31/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [Not only where, But when: Temporal Scheduling for RLVR](/202605/31/2605.25381v1-not-only-where-but-when-temporal-scheduling-for-rlvr)  
+   标签：评分：8.0/10、query:uav-drl
+   evidence：RLVR中信用分配的时序调度
 
 ### 速读区论文标签
-1. [SKILLC: Learning Autonomous Skill Internalization in LLM Agents via Contrastive Credit Assignment](/202605/30/2605.27899v1-skillc-learning-autonomous-skill-internalization-in-llm-agents-via-contrastive-credit-assignment)  
+1. [Latent Representation Alignment for Offline Goal-Conditioned Reinforcement Learning](/202605/31/2605.25740v1-latent-representation-alignment-for-offline-goal-conditioned-reinforcement-learning)  
    标签：评分：7.0/10、query:uav-drl
-   evidence：用于长时域强化学习的对比技能信用分配
-2. [Credit Assignment with Resets in Language Model Reasoning](/202605/30/2605.25507v1-credit-assignment-with-resets-in-language-model-reasoning)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：多步强化学习中的重置信用分配
+   evidence：解决长程目标条件强化学习挑战
+2. [Adaptive Coarse-to-Fine Subgoal Refinement for Long-Horizon Offline Goal-Conditioned Reinforcement Learning](/202605/31/2605.28127v1-adaptive-coarse-to-fine-subgoal-refinement-for-long-horizon-offline-goal-conditioned-reinforcement-learning)  
+   标签：评分：7.0/10、query:uav-drl
+   evidence：提出面向长程GCRL的自适应子目标细化方法
 
 
 <div class="dpr-home-promo-card">

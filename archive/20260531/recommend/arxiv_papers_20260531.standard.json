@@ -1,0 +1,132 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-05-31T20:20:08.440208+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2605.25381v1",
+      "source": "arxiv",
+      "title": "Not only where, But when: Temporal Scheduling for RLVR",
+      "abstract": "Reinforcement learning with verifiable rewards (RLVR) has become a core technique for post-training of Large Language Models (LLMs). While policy optimization is driven by all sampled tokens under a globally broadcast scalar reward, the heterogeneous policy behaviors exhibited along trajectories are largely overlooked without differentiation. Existing works address this by credit allocation, including token-level advantage reweighting, and selective token optimization, however, the allocation criterion are principally stagnant throughout training, limiting resilient policy evolution. In this work, we argue that \\textit{when} learning signals are scheduled can be as important as \\textit{where} they are allocated across tokens, and introduce the temporal dimension that scheduling the credit allocation criteria over the course of RLVR optimization. We find that prioritizing targeted tokens emphasized with specific policy behaviors, and gradually attenuating toward general optimization leads to more stable and efficient learning dynamics. Furthermore, we show that simple trajectory percentiles provide a natural perspective for distinguishing policy behaviors, and works effectively with temporal scheduling. Our analysis reveals that standard optimization substantially sacrifices policy entropy when simultaneously accommodating heterogeneous behaviors, whereas temporal scheduling yields healthier policy evolution dynamics. Experiments across mathematical and general reasoning benchmarks demonstrate consistent improvements, suggesting that temporal scheduling constitutes a promising optimization dimension.",
+      "authors": [
+        "Jinghao Zhang",
+        "Ruilin Li",
+        "Feng Zhao",
+        "Jiaqi Wang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-05-25T03:10:51+00:00",
+      "link": "https://arxiv.org/pdf/2605.25381v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "temporal scheduling of credit allocation in RLVR",
+      "llm_evidence_cn": "RLVR中信用分配的时序调度",
+      "llm_evidence": "RLVR中信用分配的时序调度",
+      "canonical_evidence": "RLVR中信用分配的时序调度",
+      "llm_tldr_en": "Proposes temporal scheduling of learning signals in addition to token-level credit allocation for RLVR, enabling more resilient policy evolution in long-horizon tasks.",
+      "llm_tldr_cn": "针对RLVR中信用分配标准在训练过程中固定不变的问题，提出将学习信号的时序调度引入信用分配，认为“何时”调度与“何处”分配同样重要，通过动态调整令牌级优势权重和选择性优化，提升长时程策略的演化弹性。",
+      "llm_tldr": "针对RLVR中信用分配标准在训练过程中固定不变的问题，提出将学习信号的时序调度引入信用分配，认为“何时”调度与“何处”分配同样重要，通过动态调整令牌级优势权重和选择性优化，提升长时程策略的演化弹性。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2605.25740v1",
+      "source": "arxiv",
+      "title": "Latent Representation Alignment for Offline Goal-Conditioned Reinforcement Learning",
+      "abstract": "Offline goal-conditioned reinforcement learning (GCRL) provides a practical framework for obtaining goal-reaching policies from fixed datasets. However, learning a reliable goal-conditioned value function in long-horizon tasks remains challenging. In this paper, we identify erroneous generalization in goal-conditioned value functions as a fundamental bottleneck, and demonstrate that appropriate inductive bias in the value function is crucial for addressing the bottleneck. Building on these findings, we propose Latent-Aligned Value Learning (LAVL), an offline GCRL algorithm that integrates latent-representation-based value generalization with hierarchical planning in a unified framework. Extensive experiments on OGBench demonstrate that LAVL consistently outperforms existing offline GCRL methods, achieving the highest performance on 20 out of 22 datasets. Notably, LAVL exhibits strong performance in long-horizon tasks and trajectory stitching datasets, where prior methods suffer significant performance degradation. Our code is available at https://github.com/oh-lab/LAVL.git.",
+      "authors": [
+        "Hyungkyu Kang",
+        "Byeongchan Kim",
+        "Min-hwan Oh"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-05-25T11:54:04+00:00",
+      "link": "https://arxiv.org/pdf/2605.25740v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "addresses long-horizon goal-conditioned RL challenges",
+      "llm_evidence_cn": "解决长程目标条件强化学习挑战",
+      "llm_evidence": "解决长程目标条件强化学习挑战",
+      "canonical_evidence": "解决长程目标条件强化学习挑战",
+      "llm_tldr_en": "Identifies erroneous generalization in goal-conditioned value functions for long-horizon tasks and proposes LAVL, integrating latent representation alignment with hierarchical planning, achieving strong results on OGBench.",
+      "llm_tldr_cn": "该论文针对离线目标条件强化学习中长程任务的值函数错误泛化问题，提出LAVL算法，将潜在表征对齐用于值泛化，并与分层规划相结合。在OGBench上的实验表明，该方法有效解决了值泛化瓶颈，为长程任务提供了可靠的离线策略。其潜在表征对齐思路为长程奖励分配问题提供了一种有益的泛化方法。",
+      "llm_tldr": "该论文针对离线目标条件强化学习中长程任务的值函数错误泛化问题，提出LAVL算法，将潜在表征对齐用于值泛化，并与分层规划相结合。在OGBench上的实验表明，该方法有效解决了值泛化瓶颈，为长程任务提供了可靠的离线策略。其潜在表征对齐思路为长程奖励分配问题提供了一种有益的泛化方法。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2605.28127v1",
+      "source": "arxiv",
+      "title": "Adaptive Coarse-to-Fine Subgoal Refinement for Long-Horizon Offline Goal-Conditioned Reinforcement Learning",
+      "abstract": "Offline goal-conditioned reinforcement learning (GCRL) is challenging in long-horizon tasks, where distant state--goal pairs provide weak supervision and value estimates become vulnerable to accumulated bootstrapping errors. Hierarchical methods mitigate this difficulty by introducing intermediate subgoals, but fixed temporal abstractions or fixed hierarchy depths can be mismatched to state--goal pairs with different reachability horizons. We propose Coarse-to-Fine Hierarchical Goal Reinforcement Learning (CFHRL), a fully offline GCRL framework that adaptively refines distant goals before execution. Starting from the final goal, CFHRL recursively proposes intermediate targets, trained from replay-supported candidates, and stops refinement once the current target is estimated to be locally executable by a learned reachability cost. The key idea is that a subgoal need not be an exact midpoint or globally optimal waypoint; it only needs to provide reliable progress and reduce the remaining reaching difficulty, enabling subsequent refinement over shorter horizons. A stylized analysis further supports the robustness of approximate recursive contraction. Experiments on OGBench show substantial gains on several long-horizon tasks, with ablations validating the proposed refinement and stopping mechanisms",
+      "authors": [
+        "Kaiqiang Ke",
+        "Shenghong He",
+        "Chengdong Xu",
+        "Yuheng Luo",
+        "Xiangyuan Lan",
+        "Chao Yu"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-05-27T08:17:01+00:00",
+      "link": "https://arxiv.org/pdf/2605.28127v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "proposes adaptive subgoal refinement for long-horizon GCRL",
+      "llm_evidence_cn": "提出面向长程GCRL的自适应子目标细化方法",
+      "llm_evidence": "提出面向长程GCRL的自适应子目标细化方法",
+      "canonical_evidence": "提出面向长程GCRL的自适应子目标细化方法",
+      "llm_tldr_en": "For long-horizon offline GCRL, proposes CFHRL, which adaptively refines distant goals by recursively proposing intermediate subgoals, outperforming fixed-hierarchy methods on long-horizon tasks.",
+      "llm_tldr_cn": "针对长程离线目标条件强化学习中固定层次结构无法灵活适配不同目标距离的问题，提出CFHRL框架，通过递归提议中间子目标来自适应地细化远端目标，在规划执行前生成更合理的子目标序列。实验表明，该方法在长程任务上优于固定层次方法，提高了策略成功率。这种自适应细化机制为长时间跨度的奖励分配和分层规划提供了新思路。",
+      "llm_tldr": "针对长程离线目标条件强化学习中固定层次结构无法灵活适配不同目标距离的问题，提出CFHRL框架，通过递归提议中间子目标来自适应地细化远端目标，在规划执行前生成更合理的子目标序列。实验表明，该方法在长程任务上优于固定层次方法，提高了策略成功率。这种自适应细化机制为长时间跨度的奖励分配和分层规划提供了新思路。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
