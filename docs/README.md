@@ -6,31 +6,32 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-05-31
-- 运行时间：2026-05-31 20:24:28 UTC
+- 最新运行日期：2026-06-01
+- 运行时间：2026-06-01 22:16:30 UTC
 - 运行状态：成功
 - 本次总论文数：3
-- 精读区：1
-- 速读区：2
+- 精读区：3
+- 速读区：0
 
 ### 今日简报（AI）
-1) 聚焦强化学习里的时空规划，精读“何时行动”比“去哪里”更关键的RLVR时间调度，并速读两篇离线目标条件新作。
-2) 今天最值得带走的结论是：在RLVR中显式建模时间调度能显著提升策略质量，而离线目标条件任务里，隐空间对齐与自适应粗到细的子目标优化是破解长程任务的利器。
-3) 建议尝试在长序列决策任务中，给策略加上时间索引，或把子目标生成从静态选择转为由粗到细的动态进化，效果可能远超预期。
-- 详情：[/202605/31/README](/202605/31/README)
+今日精读两篇8分强文，聚焦具身智能价值估计与深度研究规划新思路。  
+重点方向：用视觉特征落地机器人价值学习，以及面向深度研究的规划器中心强化学习框架。  
+建议关注将结构感知奖励引入大模型自主研究管线的实践尝试。
+- 详情：[/202606/01/README](/202606/01/README)
 
 ### 精读区论文标签
-1. [Not only where, But when: Temporal Scheduling for RLVR](/202605/31/2605.25381v1-not-only-where-but-when-temporal-scheduling-for-rlvr)  
+1. [Feat2Go: Visual Feature-Grounded Value Estimation for Embodied Reinforcement Learning](/202606/01/2605.30795v1-feat2go-visual-feature-grounded-value-estimation-for-embodied-reinforcement-learning)  
    标签：评分：8.0/10、query:uav-drl
-   evidence：RLVR中信用分配的时序调度
+   evidence：面向长时域RL的细粒度价值估计解决奖励信号设计问题
+2. [Planner-Centric Reinforcement Learning for Deep Research with Structure-Aware Reward](/202606/01/2605.30824v1-planner-centric-reinforcement-learning-for-deep-research-with-structure-aware-reward)  
+   标签：评分：8.0/10、query:uav-drl
+   evidence：提出结构感知奖励用于强化学习中的长时程信用分配
+3. [Survival Reinforcement Learning: Toward Scalable Self-Supervised RL](/202606/01/2605.31273v1-survival-reinforcement-learning-toward-scalable-self-supervised-rl)  
+   标签：评分：8.0/10、query:uav-drl
+   evidence：生存值学习通过最大化目标驻留时间解决长时域奖励分配问题
 
 ### 速读区论文标签
-1. [Latent Representation Alignment for Offline Goal-Conditioned Reinforcement Learning](/202605/31/2605.25740v1-latent-representation-alignment-for-offline-goal-conditioned-reinforcement-learning)  
-   标签：评分：7.0/10、query:uav-drl
-   evidence：解决长程目标条件强化学习挑战
-2. [Adaptive Coarse-to-Fine Subgoal Refinement for Long-Horizon Offline Goal-Conditioned Reinforcement Learning](/202605/31/2605.28127v1-adaptive-coarse-to-fine-subgoal-refinement-for-long-horizon-offline-goal-conditioned-reinforcement-learning)  
-   标签：评分：7.0/10、query:uav-drl
-   evidence：提出面向长程GCRL的自适应子目标细化方法
+- 本次无速读推荐。
 
 
 <div class="dpr-home-promo-card">

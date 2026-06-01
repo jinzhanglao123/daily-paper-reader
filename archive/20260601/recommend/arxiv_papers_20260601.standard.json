@@ -1,0 +1,127 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-01T22:12:45.075763+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 3,
+    "deep_cap": 6,
+    "deep_selected": 3,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2605.30795v1",
+      "source": "arxiv",
+      "title": "Feat2Go: Visual Feature-Grounded Value Estimation for Embodied Reinforcement Learning",
+      "abstract": "Reinforcement learning is a promising approach for improving the capabilities of vision-language-action (VLA) models while avoiding the heavy data requirements of imitation learning. However, its effectiveness for VLA models is often constrained by sparse supervision and the difficulty of designing informative reward signals for long-horizon manipulation. In this work, we present Feat2Go, a fine-grained value estimation framework for embodied reinforcement learning. Specifically, Feat2Go first derives a continuous progress target from a pretrained visual world model by measuring patch-level similarity to subgoal states and partitioning episodes into semantic stages with trend-based clustering. We then train an embodied value model to predict this structural progress from the current observation and task instruction, and use the predicted value to reshape terminal rewards during policy optimization. The proposed framework is compatible with existing VLA policy reinforcement learning pipelines, including PPO and GRPO, and does not rely on manual reward engineering. Extensive experiments on ManiSkill3 and RoboTwin 2.0 demonstrate that Feat2Go consistently improves the performance of existing VLA models under both single-arm and bimanual manipulation settings. More specifically, on ManiSkill3, Feat2Go improves OpenVLAOFT from 17.5% to 82.9% average out-of-distribution success while retaining 96.9% in-distribution performance. On RoboTwin 2.0, Feat2Go achieves an average success rate of 88.8% in domain-randomized task settings, outperforming prior reinforcement learning methods.",
+      "authors": [
+        "Junyang Shu",
+        "Zhiwei Lin",
+        "Bingqing Wei",
+        "Yongtao Wang"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-05-29T03:36:33+00:00",
+      "link": "https://arxiv.org/pdf/2605.30795v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "fine-grained value estimation for long-horizon RL addresses reward signal design",
+      "llm_evidence_cn": "面向长时域RL的细粒度价值估计解决奖励信号设计问题",
+      "llm_evidence": "面向长时域RL的细粒度价值估计解决奖励信号设计问题",
+      "canonical_evidence": "面向长时域RL的细粒度价值估计解决奖励信号设计问题",
+      "llm_tldr_en": "Proposes Feat2Go, a value estimation framework that derives continuous progress targets from a pretrained visual world model to provide dense reward signals for long-horizon embodied RL, improving policy learning.",
+      "llm_tldr_cn": "具身强化学习在长序列操作中面临稀疏监督与奖励设计困难，Feat2Go利用预训练视觉世界模型通过patch级相似度与趋势聚类将任务划分为语义阶段，生成连续进度目标作为密集奖励信号，训练具身价值模型，在长时域任务上实现更高效的学习。",
+      "llm_tldr": "具身强化学习在长序列操作中面临稀疏监督与奖励设计困难，Feat2Go利用预训练视觉世界模型通过patch级相似度与趋势聚类将任务划分为语义阶段，生成连续进度目标作为密集奖励信号，训练具身价值模型，在长时域任务上实现更高效的学习。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.30824v1",
+      "source": "arxiv",
+      "title": "Planner-Centric Reinforcement Learning for Deep Research with Structure-Aware Reward",
+      "abstract": "Deep research tasks require LLMs to plan what to investigate, retrieve evidence, and synthesize long-form answers across multiple branches of inquiry. Existing training paradigms either rely on short-form verifiable QA as a proxy or optimize monolithic long trajectories, which makes planning and execution difficult to disentangle and yields weak credit assignment for the planning process. We propose DecomposeR, a planner-centric deep research framework that represents research plans as typed directed acyclic graphs (DAGs), allowing planning to be made explicit, structured, and rewardable. We train a Qwen3-8B model in two stages: planner reinforcement learning (RL) first learns graph structure and query decomposition to improve research planning, and answerer reinforcement learning (RL) then learns branch-level execution and final synthesis conditioned on the learned plan. By assigning rewards to explicit planner tokens and structured components rather than to a flat trajectory, DecomposeR enables finer-grained optimization of planning while reducing the ambiguity of end-to-end training. Experiments show that DecomposeR-8B improves over strong comparable open baselines by 5.1-8.0 points on popular long-form benchmarks due to improved planning and answering capabilities.",
+      "authors": [
+        "Mustafa Anis Hussain",
+        "Xinle Wu",
+        "Yao Lu"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-05-29T04:18:55+00:00",
+      "link": "https://arxiv.org/pdf/2605.30824v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "proposes structure-aware reward for long-horizon credit assignment in RL",
+      "llm_evidence_cn": "提出结构感知奖励用于强化学习中的长时程信用分配",
+      "llm_evidence": "提出结构感知奖励用于强化学习中的长时程信用分配",
+      "canonical_evidence": "提出结构感知奖励用于强化学习中的长时程信用分配",
+      "llm_tldr_en": "This paper introduces a planner-centric RL framework that uses structure-aware rewards on DAG-shaped plans to improve credit assignment for long-horizon deep research tasks, directly addressing the long-horizon reward assignment requirement.",
+      "llm_tldr_cn": "本文针对长时程推理任务中规划与执行难以解耦、信用分配薄弱的问题，提出以规划器为中心的强化学习框架 DecomposeR，将研究计划表示为有向无环图，并设计结构感知奖励来明确奖励规划过程。通过两阶段训练（规划器RL和答案RL），模型在长时程研究任务上显著超越基线，表明结构化奖励能有效改善长序列决策中的信用分配，为复杂任务规划提供了新范式，其方法可迁移至需长时程奖励分配的无人机巡检等场景。",
+      "llm_tldr": "本文针对长时程推理任务中规划与执行难以解耦、信用分配薄弱的问题，提出以规划器为中心的强化学习框架 DecomposeR，将研究计划表示为有向无环图，并设计结构感知奖励来明确奖励规划过程。通过两阶段训练（规划器RL和答案RL），模型在长时程研究任务上显著超越基线，表明结构化奖励能有效改善长序列决策中的信用分配，为复杂任务规划提供了新范式，其方法可迁移至需长时程奖励分配的无人机巡检等场景。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2605.31273v1",
+      "source": "arxiv",
+      "title": "Survival Reinforcement Learning: Toward Scalable Self-Supervised RL",
+      "abstract": "While self-supervised Contrastive Reinforcement Learning (CRL) has shown remarkable depth-scaling capabilities, successfully using networks over 64 layers, scaled CRL still struggles with long-horizon goal-conditioned planning due to the uniformity-tolerance dilemma inherent in contrastive losses. We introduce Survival Reinforcement Learning (SRL), an online classification-based alternative that extends the survival value learning framework by maximizing the agent's dwell time at target goals. SRL bypasses the structural constraints of CRL and mitigates the \"bang-bang\" control solutions inherent to survival frameworks, which often induce undesirable behavior in complex dynamical systems. Evaluated across diverse robotic benchmarks, scaled SRL matches state-of-the-art CRL on manipulation tasks and outperforms it by 2x to 8x on stable, long-horizon locomotion tasks. Our results provide strong additional evidence that classification-based methods may serve as a key primitive in the broader effort to scale reinforcement learning.",
+      "authors": [
+        "Franki Nguimatsia-Tiofack",
+        "Fabian Schramm",
+        "Théotime Le Hellard",
+        "Justin Carpentier"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-05-29T13:05:08+00:00",
+      "link": "https://arxiv.org/pdf/2605.31273v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "survival value learning maximizes goal dwell time to address long-horizon reward assignment",
+      "llm_evidence_cn": "生存值学习通过最大化目标驻留时间解决长时域奖励分配问题",
+      "llm_evidence": "生存值学习通过最大化目标驻留时间解决长时域奖励分配问题",
+      "canonical_evidence": "生存值学习通过最大化目标驻留时间解决长时域奖励分配问题",
+      "llm_tldr_en": "SRL proposes a survival value learning framework that uses maximization of agent dwell time at goals as reward, overcoming long-horizon planning issues in contrastive RL, and achieves competitive performance on robotic benchmarks.",
+      "llm_tldr_cn": "针对自监督对比强化学习在长时域规划中的均匀性-容忍性困境，提出生存强化学习SRL，通过最大化目标驻留时间设计奖励信号，避免对比损失的约束，在多种机器人基准上匹配甚至超越现有方法性能，为长时域RL提供了一种可扩展的解决方案。",
+      "llm_tldr": "针对自监督对比强化学习在长时域规划中的均匀性-容忍性困境，提出生存强化学习SRL，通过最大化目标驻留时间设计奖励信号，避免对比损失的约束，在多种机器人基准上匹配甚至超越现有方法性能，为长时域RL提供了一种可扩展的解决方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}

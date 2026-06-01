@@ -1,0 +1,54 @@
+{
+  "label": "2026-06-01",
+  "date": "2026-06-01",
+  "generated_at": "2026-06-01T22:16:40",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202606/01/2605.30795v1-feat2go-visual-feature-grounded-value-estimation-for-embodied-reinforcement-learning",
+      "section": "deep",
+      "title_en": "Feat2Go: Visual Feature-Grounded Value Estimation for Embodied Reinforcement Learning",
+      "authors": "Junyang Shu, Zhiwei Lin, Bingqing Wei, Yongtao Wang",
+      "date": "2026-05-29",
+      "pdf": "https://arxiv.org/pdf/2605.30795v1",
+      "score": "8.0",
+      "evidence": "面向长时域RL的细粒度价值估计解决奖励信号设计问题",
+      "tldr": "VLA模型在长程操作强化学习中因稀疏监督与奖励信号设计困难而效果受限。Feat2Go创新性地从预训练视觉世界模型推导连续进度目标，通过补丁级相似度比较子目标状态，并以趋势聚类将情节划分为语义阶段，进而训练价值模型预测结构性进度，利用预测值重塑终端奖励以优化策略。在Maniskill3上，Feat2Go将OpenVLAOFT分布外成功率从17.5%大幅提升至82.9%，同时保持96.9%的高分布内性能；RoboTwin2.0域随机任务平均成功率达88.8%，超越现有方法。该框架无需手工奖励工程，兼容PPO与GRPO，显著增强VLA模型在单臂和双臂操作中的表现。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Reinforcement learning is a promising approach for improving the capabilities of vision-language-action (VLA) models while avoiding the heavy data requirements of imitation learning. However, its effectiveness for VLA models is often constrained by sparse supervision and the difficulty of designing informative reward signals for long-horizon manipulation. In this work, we present Feat2Go, a fine-grained value estimation framework for embodied reinforcement learning. Specifically, Feat2Go first derives a continuous progress target from a pretrained visual world model by measuring patch-level similarity to subgoal states and partitioning episodes into semantic stages with trend-based clustering. We then train an embodied value model to predict this structural progress from the current observation and task instruction, and use the predicted value to reshape terminal rewards during policy optimization. The proposed framework is compatible with existing VLA policy reinforcement learning pipelines, including PPO and GRPO, and does not rely on manual reward engineering. Extensive experiments on ManiSkill3 and RoboTwin 2.0 demonstrate that Feat2Go consistently improves the performance of existing VLA models under both single-arm and bimanual manipulation settings. More specifically, on ManiSkill3, Feat2Go improves OpenVLAOFT from 17.5% to 82.9% average out-of-distribution success while retaining 96.9% in-distribution performance. On RoboTwin 2.0, Feat2Go achieves an average success rate of 88.8% in domain-randomized task settings, outperforming prior reinforcement learning methods.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/01/2605.30824v1-planner-centric-reinforcement-learning-for-deep-research-with-structure-aware-reward",
+      "section": "deep",
+      "title_en": "Planner-Centric Reinforcement Learning for Deep Research with Structure-Aware Reward",
+      "authors": "Mustafa Anis Hussain, Xinle Wu, Yao Lu",
+      "date": "2026-05-29",
+      "pdf": "https://arxiv.org/pdf/2605.30824v1",
+      "score": "8.0",
+      "evidence": "提出结构感知奖励用于强化学习中的长时程信用分配",
+      "tldr": "当前深度研究任务依赖短形式QA或整体长轨迹优化，导致规划与执行难以解耦、规划过程信用分配薄弱。DecomposeR框架将研究计划显式表示为类型化有向无环图，使规划结构化且可独立奖励，通过两阶段强化学习先训练规划器学习图结构与查询分解，再训练回答器执行分支级综合。在流行长文本基准上，DecomposeR-8B较强开源基线提升5.1-8.0分，证明结构感知奖励能有效提升规划与回答能力，为深度研究训练提供了规划为中心的优化范式。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Deep research tasks require LLMs to plan what to investigate, retrieve evidence, and synthesize long-form answers across multiple branches of inquiry. Existing training paradigms either rely on short-form verifiable QA as a proxy or optimize monolithic long trajectories, which makes planning and execution difficult to disentangle and yields weak credit assignment for the planning process. We propose DecomposeR, a planner-centric deep research framework that represents research plans as typed directed acyclic graphs (DAGs), allowing planning to be made explicit, structured, and rewardable. We train a Qwen3-8B model in two stages: planner reinforcement learning (RL) first learns graph structure and query decomposition to improve research planning, and answerer reinforcement learning (RL) then learns branch-level execution and final synthesis conditioned on the learned plan. By assigning rewards to explicit planner tokens and structured components rather than to a flat trajectory, DecomposeR enables finer-grained optimization of planning while reducing the ambiguity of end-to-end training. Experiments show that DecomposeR-8B improves over strong comparable open baselines by 5.1-8.0 points on popular long-form benchmarks due to improved planning and answering capabilities.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/01/2605.31273v1-survival-reinforcement-learning-toward-scalable-self-supervised-rl",
+      "section": "deep",
+      "title_en": "Survival Reinforcement Learning: Toward Scalable Self-Supervised RL",
+      "authors": "Franki Nguimatsia-Tiofack, Fabian Schramm, Théotime Le Hellard, Justin Carpentier",
+      "date": "2026-05-29",
+      "pdf": "https://arxiv.org/pdf/2605.31273v1",
+      "score": "8.0",
+      "evidence": "生存值学习通过最大化目标驻留时间解决长时域奖励分配问题",
+      "tldr": "现有的自监督对比强化学习（CRL）虽能成功训练超过64层的深度网络，但在长时间跨度的目标条件规划中，对比损失固有的均匀性与容错性权衡难题制约了其表现。本文提出生存强化学习（SRL），采用在线分类框架，通过最大化智能体在目标位置驻留时间来实现自监督学习，同时避免CRL的结构约束和生存框架下常见的“bang-bang”极端控制。实验涵盖多种机器人基准，SRL在操作任务上媲美顶尖CRL，在稳定的长时间运动任务中性能领先2至8倍。这一工作进一步证明分类基元是扩展强化学习的有效途径。",
+      "tags": "query:uav-drl",
+      "abstract_en": "While self-supervised Contrastive Reinforcement Learning (CRL) has shown remarkable depth-scaling capabilities, successfully using networks over 64 layers, scaled CRL still struggles with long-horizon goal-conditioned planning due to the uniformity-tolerance dilemma inherent in contrastive losses. We introduce Survival Reinforcement Learning (SRL), an online classification-based alternative that extends the survival value learning framework by maximizing the agent's dwell time at target goals. SRL bypasses the structural constraints of CRL and mitigates the \"bang-bang\" control solutions inherent to survival frameworks, which often induce undesirable behavior in complex dynamical systems. Evaluated across diverse robotic benchmarks, scaled SRL matches state-of-the-art CRL on manipulation tasks and outperforms it by 2x to 8x on stable, long-horizon locomotion tasks. Our results provide strong additional evidence that classification-based methods may serve as a key primitive in the broader effort to scale reinforcement learning.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
