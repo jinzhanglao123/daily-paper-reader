@@ -1,0 +1,564 @@
+Title: Crazyflow: An Accurate, GPU-Accelerated, Differentiable Drone Simulator in JAX
+
+URL Source: https://arxiv.org/pdf/2606.01478v1
+
+Published Time: Tue, 02 Jun 2026 02:19:38 GMT
+
+Number of Pages: 16
+
+Markdown Content:
+> Crazyflow 1
+
+# Crazyflow: An Accurate, GPU-Accelerated, Differentiable Drone Simulator in JAX 
+
+# MARTIN SCHUCK ∗,1, † , M ARCEL P. R ATH ∗, 1 , Y UFEI HUA 1, A BHISHEK GOUDAR 2, S IQI ZHOU 3, AND 
+
+# ANGELA P. S CHOELLIG 1
+
+> ∗Equal contribution.
+> 1Technical University of Munich
+> 2University of Toronto
+> 3Simon Fraser University
+> †Corresponding author. Email: martin.schuck[at]tum.de
+
+High-quality, large-scale synthetic data from simulations is becoming a cornerstone for pushing the capabilities of robot algorithms. While aerial robotics simulators have evolved to support specialized needs such as fidelity, differentiability, and swarms independently, a unified platform that can synthesize data across all these domains is missing. In this work, we propose C RAZYFLOW , a simulator designed to push the limits of aerial-robotics algorithm development, from model-based to data-driven methods, gradient-based to sampling-based approaches, and single-agent to multi-agent systems. Compared to existing state-of-the-art drone simulators, it achieves speeds more than an order of magnitude faster for a single drone and can simulate thousands of swarms of 4000 drones each. Real-world experiments show C RAZYFLOW supports both analytical-gradient-based policy learning, achieving sub-centimeter trajectory tracking accuracy without domain randomization, and sampling-based obstacle avoidance at speeds exceeding half a billion steps per second. Breaking the traditional train-then-deploy paradigm, we show that its unprecedented speed even enables in-flight reinforcement learning; we demonstrate this by throwing a physical drone into the air and training a recovery policy from scratch in 0.38 seconds, successfully stabilizing the drone. C RAZYFLOW supports multiple levels of simulation abstraction, is directly compatible with all open-source Crazyflie models, and enables rapid reconfiguration across custom drone platforms and applications by providing a light-weight system identification pipeline. By pushing accuracy, speed, and differentiability simultaneously, C RAZYFLOW serves as an open-source resource for synthetic data generation, with emerging capabilities for large-scale parallelization for online, in-execution learning and optimization, opening the door to novel algorithm development. 
+
+https://learnsyslab.github.io/crazyflow INTRODUCTION 
+
+Owing to their high agility, mechanical simplicity, and cost-effective design, drones have emerged as a canonical platform across a broad spectrum of robotics applications, ranging from safety-critical tasks such as search and rescue, infrastructure inspection, and construction monitoring [ 1, 2] to recreational and creative domains such as autonomous racing, aerial cin-ematography, and large-scale drone performances [ 3– 5]. This broad adoption has, in turn, catalyzed research efforts toward two frontiers. One focuses on reliably pushing individual drones toward their physical limits, while the other focuses on scaling up multi-agent systems for complex, collective tasks. Advancing capabilities along either frontier necessitates high-performance, computationally efficient tools that enable rapid algorithmic iter-ation to fully exploit the drones’ unique maneuverability within three-dimensional, and possibly unstructured, environments. Among the software tools required to support these ad-vances, simulators have become an indispensable cornerstone in the development of aerial robotics autonomy stacks. High-performance simulators enable rapid prototyping of theoretical frameworks, systematic tuning of algorithmic parameters, and stress-testing of methods against potential failure modes in a risk-free, low-cost environment. Recent breakthroughs in deep reinforcement learning (RL) have further underscored the impor-tance of simulation, demonstrating that massive parallelization is essential for solving non-trivial control problems that would be impractical to explore directly on hardware [ 6, 7]. Crucially, however, this computational throughput must be grounded in physical accuracy to ensure that behavior learned or optimized in simulation can transfer reliably to real-world platforms [ 7– 9]. Complementing this trend is the emergence of differentiable simulation, which enables algorithms to exploit exact analytic  
+
+> arXiv:2606.01478v1 [cs.RO] 31 May 2026 Crazyflow 2
+
+# just-in-time compilation analytical gradients ∇
+
+dynamics thrust dynamics attitude dynamics point-mass dynamics drag motor dynamics rigid body dynamics drag abstracted model first principles model low-level control motor setpoint  
+
+> ≥500Hz torque setpoint
+> ≥250Hz attitude setpoint
+> ≥50Hz position setpoint motor mixing position to attitude controller attitude to torque controller
+
+custom components numerical integration  
+
+> Ndrones M worlds data
+
+# accurate real-to-sim pipeline 
+
+an accurate, differentiable, GPU-accelerated drone simulator 
+
+# CRAZYFLOW 
+
+policy/ controller low-level control drone sensing 
+
+# real system direct sim-to-real 
+
+policy/ controller 
+
+Fig. 1. An overview of the C RAZYFLOW simulator. Built on JAX, C RAZYFLOW leverages just-in-time compilation via XLA to unify physics and controllers into a single differentiable computation graph, enabling massive parallelization and the training of deploy-able RL agents in as little as 0.38 s. The simulation has been built from the ground up for parallelization and swarms: data passed between steps is represented as Mworlds × Ndrones - sized tensors, visualized here as 3D cubes. Our modular pipeline supports two types of models, one from first principles and an abstracted model identified from flight data, with reliable sim-to-real transfer for the Crazyflie family of drones and customized platforms. Website and videos: https://learnsyslab.github.io/crazyflow 
+
+gradients for efficient, gradient-based policy optimization in both data-driven and model-based settings [ 10 ]. Ultimately, the utility of a modern simulator is increasingly dependent on three properties: execution speed, physical accuracy, and differentia-bility. These factors are critical for accelerating algorithm design cycles and generating inexpensive, high-quality synthetic data to build confidence before large-scale real-world deployment. Over the past decade, a diverse set of simulation tools has been developed for drone research, prioritizing high-fidelity modeling and validation of autonomy pipelines. Widely used simulators such as RotorS [ 11 ], and CrazyS [ 12 ], along with developments such as sim_cf [ 13 ], are built on modular frame-works and provide high-fidelity models suitable for controller development and system-level testing, with the possibility of software-in-the-loop or even hardware-in-the-loop evalua-tions. While these are valuable resources for validating con-trollers prior to deployment, their CPU-based architectures are not designed for high-throughput parallel simulation, making them less suitable for large-scale learning or extensive algo-rithmic parameter optimization. Additional frameworks such as Aerostack2 [ 14 ], CrazySwarm [ 15 , 16 ], and CrazyChoir [ 17 ]provide excellent modular features tailored for multi-agent de-ployment; however, they similarly lack native support for high-throughput batched simulation typically required by large-scale learning-oriented methods. To address the computational demands of large-scale learn-ing, recent work has pivoted toward massively parallel simula-tion, leveraging different acceleration strategies. For instance, Aerial Gym [ 18 ] builds on the GPU-native NVIDIA Isaac Gym engine to achieve high simulation throughput via tensorized physics [ 19 ], PRL4AirSim [ 20 ] leverages a distributed comput-ing architecture to scale AirSim [ 21 ] instances across networked clusters, and gym_pybullet_drones [ 22 ] employs process-level parallelism to run multiple PyBullet physics engines [ 23 ] con-currently on a single machine. Moreover, frameworks such as QuadSwarm [ 24 ] focus on scaling up multi-agent RL by leverag-ing optimized, ad-hoc dynamics modules, while Flightmare [ 25 ]and Agilicious [ 26 ] achieve high simulation throughput by fur-ther decoupling photorealistic rendering and sensor simulation from physics, combined with lightweight C++ dynamics imple-mentations. While these approaches offer substantial speedups and improved scalability, they typically preclude the use of analytical gradients required for advanced learning methods, e.g., [27, 28]. Emerging frameworks attempt to bridge this gap by leverag-ing automatic differentiation. DiffPhysDrone [ 29 ] implements dynamics using P YTORCH [30 ] to enable end-to-end learning. However, its backend simulation relies primarily on simplified Crazyflow 3
+
+point-mass models (i.e., double integrators) with customized acceleration-level control interfaces. This design, tailored to specific platforms, implicitly assumes that the downstream low-level controller can reliably track desired accelerations, thereby offloading the complexity of sim-to-real transfer rather than cap-turing it within the physics loop. DiffAero [ 31 ] further incorpo-rates multiple levels of model fidelity, ranging from point-mass dynamics to idealized rigid-body drone models. Aside from built-in support for automatic differentiation, P YTORCH is more flexible compared to specialized C++ implementations. This flexibility is one of the fundamental drivers behind the explo-sion in deep learning research; however, in high-performance tasks such as robotics simulations, the inefficiencies of such frameworks also quickly become evident. While frameworks like P YTORCH delegate computations to optimized backend kernels, they fundamentally operate on an eager execution model [ 32 ]. This means each operation is ex-ecuted line by line, necessitating frequent synchronization be-tween the hardware accelerators and the Python interpreter. To overcome these limitations, emerging frameworks such as JAX [ 33 ] have introduced a paradigm shift toward lazy execu-tion with just-in-time (JIT) compilation. Here, computations are first traced without execution and then fused into a single, fully-optimized function using the Accelerated Linear Algebra (XLA) compiler [ 34 ]. This architecture eliminates unnecessary synchronization steps from the resulting computation graph and optimizes gradient computations, yielding significant speedups compared to eager frameworks. The transition towards lazy, compiled computation graphs represents a significant trend in deep learning and optimization research [ 35 – 38 ]. In robotic simu-lations, new engines and frameworks such as MJX [ 39 ], NVIDIA Warp [ 40 ], and Newton [ 41 ] are adopting this paradigm, bridg-ing the long-standing gap between the modularity of high-level languages and the raw performance of native C++ implementa-tions. In this work, we introduce C RAZYFLOW , a high-fidelity, dif-ferentiable simulator built on JAX. Aligning with state-of-the-art general-purpose engines such as MJX, our framework leverages XLA to unify physics and controllers into a single differentiable computation graph. Specializing in drone flight allows us to avoid the costly solve step of general-purpose simulators, yield-ing substantial additional speedups while also offering high-fidelity drone physics that enable direct sim-to-real transfer even in the absence of domain randomization. As we highlight in our results, by bridging accuracy, speed, and differentiability in a unified framework, C RAZYFLOW provides a foundation for moving robot learning beyond the traditional train-then-deploy paradigm towards real-time, in-flight learning and optimization at scale. CRAZYFLOW ’s architecture (see Figure 1) is built to support massive parallelization for single drones and large-scale swarms at full fidelity. To enable accurate physics simulation down to the low-level motor dynamics while staying compatible with compilation and differentiation, we emulate a standard onboard controller stack in JAX. This stack is directly compatible with Crazyflies, a widely used open-source platform for drone re-search. Our simulator is not limited to the Crazyflie ecosystem; to support other platforms, we offer a streamlined system iden-tification pipeline that adapts models to new drones with only minutes of flight data. All physics models are also available in symbolic form via CasADi [ 42 ], a popular toolbox for model-based control. Furthermore, JAX’s tracing makes our simulation pipeline highly flexible, allowing researchers to compile custom components, disturbances, and additional aerodynamic effects directly into the computation graph without adding any execu-tion overhead. We show that combining a high-fidelity dynamics model with efficient computation enables the training of deploy-able RL agents at unprecedented speeds. In particular, with CRAZYFLOW , we are able to train high-performance tracking policies in 1.56 seconds in the absence of any domain random-ization, and solve throwing stabilization tasks in 0.38 seconds, allowing a policy to be trained in mid-air and deployed in time to catch the drone before it falls to the ground. C RAZYFLOW 
+
+scales to up to 4.2 million drones on a consumer-level GPU and over 900 million steps per second. Beyond deep RL, our simulator has been validated for various control- and learning-oriented applications, ranging from state-of-the-art optimal con-trol and sampling-based control methods to swarm coordination frameworks. These results highlight C RAZYFLOW ’s support for multiple physics backends, enabling data-driven models to be leveraged across diverse application domains and algorithmic dimensions. Our CRAZYFLOW simulator is fully open-source, with the main package accessible at Website and videos: https:// github.com/learnsyslab/crazyflow and installable via pip install crazyflow ; detailed documentation is available at https:// learnsyslab.github.io/crazyflow . To support the development of CRAZYFLOW and the broader open science ecosystem, we have also contributed to foundational tools for differentiable 3D spa-tial computations as part of S CI PY 1.17.0 [ 43 , 44 ] and integrated accurate dynamics models for the family of Crazyflie drones into the official firmware [ 45 ]. With the fully open-source, mod-ular framework and thorough sim-to-real validation, we believe CRAZYFLOW will serve as a valuable resource for accelerating research across multiple communities, including deep and multi-agent RL, model-based planning and control, differentiable pro-gramming, and beyond. 
+
+RESULTS 
+
+CRAZYFLOW is a versatile tool for aerial research that can be applied to a range of applications, from learning-oriented to control-oriented methods (Figure 2 A-B), from gradient-based to sampling-based algorithms (Figure 2 C), from standard open-source to customized platforms (Figure 2 D), and from single drones to swarms (Figure 2 E). In our experiments, we show that it seamlessly scales to millions of parallel environments and thousands of drones in a swarm, while maintaining a low sim-to-real gap across different platforms. C RAZYFLOW ’s speed, accuracy, and differentiability allow us to push algorithm design to a new level, training high-performance, deployable policies in less than one second without domain randomization. The results presented in this section, including both simulation and real-time experiments, are summarized in our accompanying video. 
+
+> Computation Performance
+
+The combination of JIT compilation and vectorization allows CRAZYFLOW to scale efficiently along two axes concurrently: we can simulate millions of drones across parallel worlds, swarms of thousands of drones, and even thousands of parallel worlds with thousands of drones, all using high-fidelity physics. On a consumer GPU, the simulator achieves a throughput of ap-proximately 700 million steps per second at one million parallel worlds. Compared to its predecessor, gym_pybullet_drones Crazyflow 4infeasible reference current position 
+
+# 500k sampled trajectories in C RAZYFLOW 
+
+# simulation real world 
+
+# direct sim-to-real 
+
+# real world simulation 
+
+# training in Crazyflow (380 ms) policy transmission (48 ms) stabilization policy vinit prediction 
+
+# ω init 
+
+# EDCBA
+
+Fig. 2. Unifying diverse paradigms with C RAZYFLOW . Across a wide range of learning- and control-based approaches, CRAZYFLOW allows for the fast development and easy deployment of new methods. We show this by training a stabilization policy based on the initial conditions in sub-seconds ( A), using it for academic courses on the graduate level ( B), running an MPPI con-troller natively ( C), simulating custom platforms ( D), and developing large-scale drone swarm applications ( E) within our own group. Crazyflow 520 25 210 215 220 
+
+> Number of Worlds
+> 10 2
+> 10 4
+> 10 6
+> 10 8
+> Steps Per Second
+
+Performance — CPU     
+
+> Crazyflow
+> DiffAero Aerial Gym GPD
+> 15 ×
+> 2025210 215 220
+> Number of Worlds
+> 10 2
+> 10 4
+> 10 6
+> 10 8
+> Steps Per Second
+
+Performance — GPU      
+
+> Crazyflow
+> DiffAero Aerial Gym
+> 38 ×
+> 202428212 216 220
+> Number of Worlds
+> 10 2
+> 10 3
+> 10 4
+> 10 5
+> 10 6
+> 10 7
+> Steps Per Second
+
+Gradient Throughput        
+
+> Crazyflow
+> DiffAero
+> 16 ×
+> 20
+> 24
+> 28
+> 212
+> 216
+> 220
+> Number of Worlds 2022242628210 212
+> Number of Drones
+> GPD DiffAero (PMM)
+> Crazyflow
+
+Swarm Performance 
+
+> 10 2
+> 10 3
+> 10 4
+> 10 5
+> 10 6
+> 10 7
+> 10 8
+> Steps / s
+
+A BDC
+
+Fig. 3. Performance and scaling evaluation of C RAZYFLOW . We achieve superior scaling on both the CPU ( A) and the GPU ( B)compared to Aerial Gym, DiffAero, and gym_pybullet_drones. As expected, CPU performance surpasses the GPU on a small number of parallel simulations, while GPU performance dominates after 2 10 worlds. C RAZYFLOW also expands the frontier of swarm simulations beyond the current state-of-the-art, enabling both larger swarms and more parallelization ( C). The heatmaps show performance across combinations of parallel worlds and swarm sizes. Capability limits of prior works are projected onto CRAZYFLOW ’s heatmap. As a differentiable simulation, C RAZYFLOW computes gradients through the full-fidelity dynamics and controllers for parallel worlds and swarms often more than an order of magnitude faster than state-of-the-art simulations ( D). Mea-suring throughput over ten simulation steps by differentiating a goal distance with respect to the control inputs, we consistently outperform DiffAero. All data points are averaged over 50 executions of 50 steps each. Missing data points exceed resource limits or cause crashes. Shaded intervals denote the 3 σ confidence interval. (GPD), C RAZYFLOW improves throughput by two orders of magnitude at the same parallelization levels, and supports five orders of magnitude more environments while simulating at higher fidelity (see Figure 3 A). Because JAX statically traces the computation graph, it can fuse and optimize the forward simulation. Compared to other GPU-accelerated, high-fidelity simulations, this achieves con-sistent speed-ups of an order of magnitude or more (see Fig-ure 3 B). C RAZYFLOW also natively supports full-fidelity vec-torized swarm simulations. It scales to thousands of drones in a swarm in thousands of parallel worlds without simplified physics. At the same time, it outperforms other GPU-accelerated simulations such as DiffAero, which only supports swarms with a simplified point-mass model (PMM), while allowing for a more than tenfold increase in the number of drones (see Figure 3 C). CRAZYFLOW ’s computation graph also enables efficient gra-dient computation during simulation. We compute nine million gradients per second for one million environments, each differen-tiating through 10 consecutive simulation steps (see Figure 3 D). It surpasses the throughput of the state-of-the-art differentiable drone simulator DiffAero [ 31 ] by more than 10 times across almost all parallelization levels. In fact, despite differentiat-ing through high-fidelity dynamics, the full onboard controller stack, and supporting swarms, we reach performance compa-rable to flightning [ 46 ], which uses a JIT-compiled, simplified single-drone model and omits controllers in the gradients. CRAZYFLOW inherits the parallel rendering of depth images from MJX’s raycast pipeline. On an identical test scene, we achieve 350k frames per second at a 64x64 ray resolution across 1,024 environments—a fivefold increase in throughput over state-of-the-art DiffAero, albeit at higher memory consumption. 
+
+Sim-to-Real 
+
+The primary physics model of C RAZYFLOW is derived from first principles. The model relies on a nonlinear motor model that maps individual rotor speed setpoints to the actual speeds. Those speeds are then converted to forces and torques acting on the rigid drone body via thrust curves. All parameters are deter-mined with extensive real-world identification experiments for all three standard Crazyflie (CF) configurations and the recently released brushless model. We achieve high-fidelity simulation by reimplementing the low-level onboard controllers and config-urable aerodynamic effects in JAX. We focus our evaluation dis-cussion below on the CF2.1 and CF2.1 Brushless (the two most used Crazyflie configurations), the CF2.1 with the thrust up-grade kit, and one custom drone. The CF2.1+ model is available in our repository. The details of the setup and the identification are described in the methods section. We validate the fidelity of the full simulation stack by assess-ing the sim-to-real performance of C RAZYFLOW . We deploy the widely used geometric controller [ 47 ] in simulation and in the real world to track a circle in the x-y plane and a Lissajous in Crazyflow 6 
+
+> Table 1.
+
+Sim-to-real performance of different simulators. CRAZYFLOW reduces the sim-to-real gap by at least 47.5% for the popu-lar Crazyflie (CF) 2.1 platform compared to widely used simulators, such as gym_pybullet_drones (GPD), and even outperforms software-in-the-loop simulators, such as CrazySim, running the latest firmware. For the thrust-upgraded Crazyflie (CFT) and the Crazyflie Brushless (CFB), similar gaps are achieved. The sim-to-real experiments are conducted in attitude control mode using first-principles models, and the gaps are computed as the root mean square position error between the simulation and the real drone. The cycle time of the reference is denoted T, the rate of the control frequency is 100 Hz, and crashed simulation runs are denoted ∞. The errors are given as the mean ± one standard deviation over 5 runs in mm. CF 2.1 CFT CFB Trajectory GPD CrazySim CRAZYFLOW CRAZYFLOW CRAZYFLOW 
+
+Circle ( T = 9.0 s) 49.1 ± 0.9 102.2 ± 1.7 19 .0 ± 2.6 21.1 ± 1.3 17.8 ± 1.6 Circle ( T = 3.5 s) 125.3 ± 2.9 ∞ 59 .6 ± 1.3 58.7 ± 2.3 84.3 ± 4.0 Lissajous ( T = 10.0 s) 20.4 ± 1.5 62.1 ± 1.3 10 .7 ± 2.7 12.3 ± 2.0 17.7 ± 0.4 Lissajous ( T = 5.5 s) 40.7 ± 1.0 97.7 ± 1.2 20 .1 ± 1.6 24.3 ± 3.8 33.1 ± 1.9 the x-z plane at multiple speeds. The sim-to-real gap is com-puted as the root-mean-squared distance between the observed drone positions in the simulated and real experiments. For a meaningful comparison, we have adjusted the mass and inertia in all compared simulators to match those of our real drone with its marker deck configuration. Using the first-principles model, C RAZYFLOW achieves a low, centimeter-level gap for the Crazyflie 2.1 quadrotor, see Table 1. The gaps achieved are not only up to 61.3% lower than with gym_pybullet_drones, the most popular Crazyflie simulation to date [ 48 ], but also up to 82.8% lower than with the CrazySim software-in-the-loop sim-ulator running the latest firmware and onboard controls. This shows that both our implementation of the low-level control stack and our physics are accurate. In the subsequent meth-ods section, we further demonstrate the accuracy of our first-principles model, with and without the low-level control stack, by using it to train deployable RL agents without any domain randomization. Since obtaining the parameters for the first-principles models is tedious, C RAZYFLOW also supports data-driven physics mod-els for a mid-level control interface commonly used in drone control, explained in full detail in the methods section. Those abstracted dynamics implicitly fit the low-level control loop and achieve a competitive sim-to-real gap compared to the first-principles model, see Table 1 and 2. In some cases, the sim-to-real gap of the abstracted model is even smaller than that of the first-principles model. Additionally, the abstracted model is not restricted to Crazyflie-family nanodrones and also scales to larger drones. We demonstrate this on a custom drone with a 250 mm wheelbase weighing 660 g, as shown in Table 2, which also reaches a 3 cm gap, and the slightly increased error is expected for the larger drone. Along with the C RAZYFLOW simulation, we provide a streamlined system identification pipeline for the data-driven model, which fits the model with under four minutes of flight data. This enables quick, low-friction integration of new drones into C RAZYFLOW for rapid adaptation. Although the custom drone is equipped with the popular PX4 flight controller [ 49 ], the pipeline is also applicable to any other controller and works best with well-tuned setups. 
+
+> Trajectory Tracking Benchmark
+
+We verify the efficacy of our simulator on standard trajectory-tracking benchmarks and show how accuracy, speed, and dif-ferentiability can be seamlessly leveraged to support algorithm designs for both learning- and control-oriented methods. This capability is demonstrated below by designing attitude-level trajectory-tracking controllers for the Lissajous task described above. These controllers employ state-of-the-art deep RL and control methods, leveraging first-principles and abstracted mod- 
+
+> Table 2.
+
+Sim-to-real comparison of different drones in C RAZYFLOW . Across platforms of different sizes ranging from under 40 g Crazyflies to a 660 g custom drone, C RAZYFLOW provides an excellent sim-to-real error in cm range using our abstracted model, which can be fit with a few minutes of flight data. The experiments are conducted the same way as in Table 1 and the errors are given as the mean ± one standard deviation over 5 runs in mm. Trajectory CF 2.1 CFT CFB Custom Circle ( T = 9.0 s) 22.0 ± 1.4 16.6 ± 1.7 17.8 ± 1.7 42.9 ± 4.2 Circle ( T = 3.5 s) 19.3 ± 4.6 27.0 ± 1.3 56.1 ± 2.9 284.7 ± 4.7 Lissajous ( T = 10.0 s) 9.2 ± 1.9 10.3 ± 1.7 11.3 ± 0.9 34.6 ± 3.3 Lissajous ( T = 5.5 s) 30.8 ± 1.8 21.6 ± 3.8 24.6 ± 1.3 92.1 ± 0.9 Crazyflow 73        
+
+> 10
+> 30
+> 100
+> Tracking error [mm]
+> 1.0
+> 1.5
+> 2.0
+> Position z [m]
+> 1.0
+> 1.5
+> 2.0
+> Position z [m]
+> 0
+> 10
+> 20
+> 30
+> 40
+> 50
+> 60
+> Tracking RMSE [mm]
+> 1.0
+> 1.5
+> 2.0
+> Position z [m]
+> −1.0−0.50.00.51.0
+> Position x [m]
+> 1.0
+> 1.5
+> 2.0
+> Position z [m]
+> −1.0−0.50.00.51.0
+> Position x [m]
+> 0
+> 10
+> 20
+> 30
+> 40
+> 50
+> 60
+> Tracking RMSE [mm]
+
+T = 10 s T = 5.5 s   
+
+> Geometric Controller (baseline) PPO Policy ( Crazyflow w. first-principles physics) MPC ( Crazyflow ’s abstracted symbolic model) BPTT Policy ( Crazyflow w. first-principles physics)
+
+Fig. 4. Real-world tracking performance of learning- and model-based control approaches using C RAZYFLOW . In the given task, an NMPC using C RAZYFLOW ’s abstracted model, a PPO policy, and a BPTT policy leveraging gradients, both trained in CRAZYFLOW without any domain randomization, all significantly outperform the baseline Geometric Controller in the presented Lissajous tracking task, indicated by the dashed black line. All controllers achieve cm-level accuracy in deployment on the Crazyflie 2.1 Brushless; results are reported as mean ± one standard deviation across five runs. els, respectively. The accuracy of C RAZYFLOW allows us to train real-world-deployable RL agents in seconds without any domain random-ization at the limit of the platform’s precision. Proximal Policy Optimization (PPO) [ 50 ], one of the most popular RL algorithms, achieves a tracking error of just 15.9 ± 0.2 mm on the slow trajec-tory in just 1.61 s of training time and 14.7 ± 0.7 mm on the fast trajectory with 17.58 s of training. Achieving an improvement of up to 73.8% over the geometric controller baseline with a default RL algorithm explicitly highlights the simulator’s accurate sim-to-real alignment. By directly utilizing the simulator’s analytical gradients via backpropagation through time (BPTT) [ 51 ], the training time drops to an unprecedented 1.56 s while further improving tracking performance to 8.7 ± 0.1 mm for the slow trajectory and 12.64 s with 11.8 ± 0.6 mm for the fast trajectory (Figure 4). To the best of our knowledge, these are the fastest training times reported to date for learning-based quadrotor control on these tasks. Moving beyond learning-based methods, C RAZYFLOW pro-vides symbolic dynamics models implemented in CasADi [ 42 ], which can be used directly by optimization-based control meth-ods. We demonstrate this usage with a Nonlinear Model Pre-dictive Controller (NMPC) built with acados [ 52 ]. Our ab-stracted models achieve tracking errors of 14.2 ± 0.4 mm and 19.0 ± 0.9 mm for the tasks, respectively, competitive with the learning-based controllers above. 
+
+Control in Cluttered Environments 
+
+Beyond basic tracking tasks, C RAZYFLOW facilitates the design of algorithms for challenging tasks such as flying through clut-tered environments. These represent interesting constrained op-timization problems because they admit multi-modal solutions. We demonstrate this on a high-performance Model Predictive Path Integral (MPPI) controller. While traditional model predic-tive control often relies on linearized or simplified dynamics for online tractability, C RAZYFLOW ’s performance allows us to di-rectly use the full non-linear dynamics for MPPI without model simplification. By sampling 500k parallel trajectories at 50 Hz with a 25-step horizon—exceeding half a billion simulation steps per second—the simulator enables real-time, derivative-free op-Crazyflow 8 
+
+> Fig. 5.
+
+Real-time sampling-based control. CRAZYFLOW directly supports real-time sampling-based control approaches, such as MPPI, with full model rollouts generating over half a billion steps per second. We show simulated trajectories for different obstacle scenarios in ( A), where each trajectory is colored according to its cost. During deployment, the distance to the closest obstacle ( B)remains above our limit, while the computation time ( C) allows for consistent control at 50 Hz. timization in cluttered environments. As a direct result, the controller is highly robust against local minima and solver con-vergence issues, and can additionally generate multi-modal tra-jectories. We show this capability by successfully deploying the resulting trajectories on physical hardware for reactive obstacle avoidance (Figure 5). 
+
+> High-Speed Training at Motor Level
+
+The accuracy and computational efficiency of C RAZYFLOW per-mit the end-to-end training of policies that directly output rotor speed commands, circumventing the conventional need for low-level onboard controllers. By fusing the entire RL loop and simulation into a single JIT-compiled kernel, we eliminate any Python overhead. An agent can learn stable position control from raw rotor commands in 12.16 s, representing a speedup of 14 times over specialized state-of-the-art C implementations [ 53 ]. When physically deployed on the same drone model, this policy achieves an improved root mean square position error of 16.6 cm on the same 5.5 s Lissajous task. Leveraging BPTT further compresses this training to sub-second timescales, unlocking novel “on-the-fly” training paradigms. We demonstrate this synergy of gradient-based optimization, speed, and accuracy on a stabilization task that strictly constrains training times. Upon throwing a physical drone into the air, we start training an agent in C RAZYFLOW 
+
+with BPTT using the predicted drone state in 500 ms. The policy converges and transfers the parameters to the drone in under half a second, effectively stabilizing the vehicle before it hits the ground. The training progress and recovery phase are shown in Figure 6. 
+
+> Applications
+
+CRAZYFLOW ’s performance and flexibility have already been instrumental in our projects spanning research, competitions, and education. The architecture scales seamlessly to multi-agent systems, supporting the simulation of swarms with up to thousands of drones. SwarmGPT [ 54 ] leverages this capability to generate complex aerial swarm performances from natural language de-scriptions, as seen in Figure 2 E. The simulator’s speed and low sim-to-real gap allow users to iterate quickly on choreography design, verify the generated trajectories, and confidently deploy them in the real world. Due to the minimal training time of RL agents in C RAZYFLOW ,it is well-suited for benchmarking algorithms, where perfor-mance can only be evaluated fairly after thorough hyperparame-ter tuning. We used this to conduct extensive experiments to an-swer fundamental questions about SO (3) action representations in RL [ 55 ]. C RAZYFLOW allowed us to ground our investigation in a real robotic problem, ensuring the rigor of the results by ex-ecuting over 1000 independent hyperparameter and evaluation runs within a highly affordable compute budget. Beyond research, inspired by our IROS 2022 Safe Robot Learn-ing Competition [ 56 , 57 ], C RAZYFLOW powers the Autonomous Drone Racing challenge [ 58 ]. Students at the Technical Univer-sity of Munich compete in this high-speed autonomous racing challenge, transitioning from simulation to real-world hardware within a single academic term (see Figure 2 B). Beyond racing, CRAZYFLOW is extensively leveraged in advanced control lec-tures [ 59 ] to demonstrate the trade-offs between using detailed first-principles models and simplified dynamics models within both control-theoretic and learning-oriented decision-making frameworks. By providing a unified platform for both optimal control and RL, C RAZYFLOW bridges the gap between theoretical algorithm design and practical robotic deployment. 
+
+DISCUSSION 
+
+In this paper, we present CRAZYFLOW , an accurate, GPU-accelerated, differentiable drone simulator in JAX. CRAZYFLOW ’s physics are based on detailed dynamics models of quadrotor systems, with a modular structure that supports four commonly used control interfaces, ranging from low-level motor commands to mid-level force-torque and attitude setpoints, to high-level position references. The simulator is highly flexible, allowing reconfigurations and the incorporation of additional aerodynamic effects, domain randomizations, or custom disturbances without adding overhead. By tracing, optimizing, and JIT-compiling the simulator’s computation graph in JAX, we achieve state-of-the-art performance at millions of parallel worlds and thousands of drones, and can analytically trace gradients through the full simulation pipeline. To better support control-oriented methods, CRAZYFLOW 
+
+includes equivalent model implementations in CasADi, an opti-mization toolbox tailored for model-based control approaches. We provide the physics parameters for the Crazyflie family of nanodrones and offer a streamlined identification pipeline to Crazyflow 90.0 0.1 0.2 0.3
+
+> Training Time [s]
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> Success Rate
+
+Success on Takeover State       
+
+> −0.50.00.51.01.52.02.5
+> Deploy Time [s]
+> 0.0
+> 0.5
+> 1.0
+> 1.5
+> 2.0
+> 2.5
+> Global z [m]
+
+Closed-Loop Stable Recovery     
+
+> Drone Frame Policy Training (380 ±11 ms) Policy Transfer (48 ±6 ms)
+
+A B
+
+Fig. 6. Extremely fast policy training at motor level. CRAZYFLOW ’s analytical gradients allow for extremely efficient policy train-ing, such that a stabilization policy can be learned within 180k samples corresponding to only 0.38 s of wall time. The training is initialized on the predicted takeover state, starting from the observed throw. ( A) shows the mean and variance of the policy’s suc-cess rate over updates in 12 runs, evaluated on the actual observed takeover state. Our success rate is limited by the room’s ceiling, which does not allow for higher throws. ( B) shows their deployment in the real world, with orientation indicated by small coordi-nate systems. distill abstracted models for any other quadrotor drones. Our experiments show how C RAZYFLOW ’s speed, accuracy, and differentiability come together in increasingly challeng-ing tasks. On a mid-level control interface, high-performing trajectory-tracking PPO and BPTT policies can be trained in under three seconds and sub-seconds, respectively. Due to ac-curate physics down to the motor level, policies can be trained directly without domain randomization, using either mid-level attitude or low-level rotor-speed commands. This is further demonstrated by training a motor-level trajectory-tracking pol-icy that achieves state-of-the-art accuracy while outperforming specialized C++ training setups in terms of training time. The synergy of gradient-based optimization, speed, and accuracy unlocks new “on-the-fly” learning paradigms, exemplified by training an agent to stabilize a drone thrown into the air before it hits the ground. Beyond supporting learning-based approaches, we show CRAZYFLOW is also directly compatible with control-oriented methods. In the tracking experiments, an NMPC controller with the CasADi models we provided achieved competitive perfor-mance compared to the learned policies. Apart from free-space tracking tasks, we further demonstrated that C RAZYFLOW en-ables sampling-based MPPI algorithms to efficiently solve more challenging, constrained navigation tasks in real time at 50 Hz, using 500k sampling environments in the full-fidelity simula-tion. The flexibility of our simulator in serving the community was further demonstrated through adoption in drone swarm re-search, hyperparameter optimization for fair RL benchmarking, autonomous drone racing competitions that push algorithms to their limits, and advanced robot decision-making education. The potential of our simulator is not limited to the aforementioned applications. For instance, one could exploit the features of CRAZYFLOW to extend automatic parameter tuning [ 60 ] to large-scale gradient-based methods, enable GPU-accelerated swarm behavior optimization for faster, real-time replanning [ 61 ], or explore competitive multi-drone racing with online learning of opponent strategies [62]. While C RAZYFLOW already supports a wide range of use cases, several promising directions could be of interest to the community. First, while we support batched depth sensors, photorealistic rendering for image sensors would be a valuable capability. Recent works such as Neural Radiance Fields [ 63 ]and 3D Gaussian splatting [ 64 ] have shown how real-world data can be combined with trained models to yield high-fidelity 3D scene reconstructions for fully differentiable rendering pipelines. This differentiable, realistic environment representation could be seamlessly integrated with our drone dynamics simulation for high-throughput rendering, while paving the way for ad-vanced vision-based flight research for unstructured, real-world environments. CRAZYFLOW is built on the idea of open-source projects. During development, we contributed to S CI PY, the Crazyflie firmware, the array API standard libraries, Gymnasium, and other widely used tools in the community. Our hope is that CRAZYFLOW can become a similarly useful tool for others to con-tribute to. For instance, the current collection of drone models could grow substantially beyond the current state. In addi-tion, we found the differentiable, parallelized reimplementation of drone controllers vital to our efforts. Including other open-source controller pipelines, such as PX4, BetaFlight, or ArduPilot, would make the simulation’s capabilities accessible to a wider range of researchers. With its modular design, C RAZYFLOW 
+
+provides clear avenues for community contributions and can serve as a hub for further collective scientific advances in aerial robotics research. 
+
+REFERENCES             
+
+> 1. M. Lyu, Y. Zhao, C. Huang, and H. Huang, “Unmanned aerial vehicles for search and rescue: A survey,” Remote. Sens. 15 , 3266:1–35 (2023). 2. S. Guan, Z. Zhu, and G. Wang, “A review on UAV-based remote sensing technologies for construction and civil applications,” Drones 6,117 (2022). 3. D. Hanover, A. Loquercio, L. Bauersfeld, et al. , “Autonomous drone racing: A survey,” IEEE Trans. on Robotics 40 , 3044–3067 (2024). 4. I. Mademlis, V. Mygdalis, N. Nikolaidis, et al. , “High-level multiple-uav cinematography tools for covering outdoor events,” IEEE Trans. on Broadcast. 65 , 627–635 (2019). 5. A. P. Schoellig, H. Siegel, F. Augugliaro, and R. D’Andrea, “So you think Crazyflow 10
+
+you can dance? Rhythmic flight performances with quadrocopters,” Control. Art: Inq. at Intersect. Subj. Object. pp. 73–105 (2014). 6. N. Rudin, D. Hoeller, P. Reist, and M. Hutter, “Learning to walk in minutes using massively parallel deep reinforcement learning,” in in Proc. of the Conference on Robot Learning (CoRL), (2022), pp. 91– 100. 7. E. Kaufmann, L. Bauersfeld, A. Loquercio, et al. , “Champion-level drone racing using deep reinforcement learning,” Nature 620 , 982–987 (2023). 8. J. Hwangbo, J. Lee, A. Dosovitskiy, et al. , “Learning agile and dynamic motor skills for legged robots,” Sci. Robotics 4, eaau5872:1–13 (2019). 9. M. J. Sorocky, S. Zhou, and A. P. Schoellig, “Experience selection using dynamics similarity for efficient multi-source transfer learning between robots,” in Proc. of the IEEE International Conference on Robotics and Automation (ICRA), (2020), pp. 2739–2745. 10. R. Newbury, J. Collins, K. He, et al. , “A review of differentiable simula-tors,” IEEE Access 12 , 97581–97604 (2024). 11. F. Furrer, M. Burri, M. Achtelik, and R. Siegwart, “RotorS—a modular Gazebo MAV simulator framework,” in Robot Operating System (ROS): The Complete Reference, vol. 1 (Springer, 2016), pp. 595–625. 12. G. Silano, E. Aucone, and L. Iannelli, “CrazyS: A software-in-the-loop platform for the crazyflie 2.0 nano-quadcopter,” in Proc. of the Mediter-ranean Conference on Control and Automation (MED), (2018), pp. 352–357. 13. F. Djeumou, G. Roussel, and J. Danielsson, “Gazebo simulation for Crazyflie CRTP,” https://github.com/wuwushrek/sim_cf (2018). Soft-ware repository, accessed December 2025. 14. M. Fernandez-Cortizas, M. Molina, P. Arias-Perez, et al. , “Aerostack2: A software framework for developing multi-robot aerial systems,” arXiv preprint arXiv:2303.18237 (2023). 15. J. A. Preiss, W. Honig, G. S. Sukhatme, and N. Ayanian, “Crazyswarm: A large nano-quadcopter swarm,” in Proc. of the IEEE International Conference on Robotics and Automation (ICRA), (2017), pp. 3299– 3304. 16. C. Llanes, Z. Kakish, K. Williams, and S. Coogan, “CrazySim: Asoftware-in-the-loop simulator for the Crazyflie nano quadrotor,” in 
+
+Proc. of the IEEE International Conference on Robotics and Automa-tion (ICRA), (2024), pp. 12248–12254. 17. L. Pichierri, A. Testa, and G. Notarstefano, “CrazyChoir: Flying swarms of Crazyflie quadrotors in ROS 2,” IEEE Robotics Autom. Lett. (2023). 18. M. Kulkarni, W. Rehberg, and K. Alexis, “Aerial Gym Simulator: A framework for highly parallelized simulation of aerial robots,” IEEE Robotics Autom. Lett. (RA-L) 10 , 4093–4100 (2025). 19. V. Makoviychuk, L. Wawrzyniak, Y. Guo, et al. , “Isaac Gym: High performance GPU-based physics simulation for robot learning,” in 
+
+Proc. of the Conference on Neural Information Processing Systems (NeurIPS), (2021). Datasets and Benchmarks Track. 20. J. Saunders, S. Saeedi, and W. Lil, “Parallel reinforcement learning simulation for visual quadrotor navigation,” in Proc. of the IEEE Inter-national Conference on Robotics and Automation (ICRA), (2023), pp. 1357–1363. 21. S. Shah, D. Dey, C. Lovett, and A. Kapoor, “AirSim: High-fidelity visual and physical simulation for autonomous vehicles,” in Field and Service Robotics, (Springer, 2017), pp. 621–635. 22. J. Panerati, H. Zheng, S. Zhou, et al. , “Learning to fly—a Gym environ-ment with PyBullet physics for reinforcement learning of multi-agent quadcopter control,” in Proc. of the IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS), (2021), pp. 7512–7519. 23. E. Coumans and Y. Bai, “Pybullet, a python module for physics sim-ulation for games, robotics and machine learning,” http://pybullet.org (2016). 24. Z. Huang, S. Batra, T. Chen, et al. , “Quadswarm: A modular multi-quadrotor simulator for deep reinforcement learning with direct thrust control,” arXiv preprint arXiv:2306.09537 (2023). 25. Y. Song, S. Naji, E. Kaufmann, et al. , “Flightmare: A flexible quadrotor simulator,” in Proc. of the Conference on Robot Learning (CoRL), 
+
+(2021), pp. 1147–1157. 26. P. Foehn, E. Kaufmann, A. Romero, et al. , “Agilicious: Open-source and open-hardware agile quadrotor for vision-based flight,” Sci. Robotics 7,1–14 (2022). 27. J. Xu, M. Macklin, V. Makoviychuk, et al. , “Accelerated policy learning with parallel differentiable simulation,” in Proc. of the International Conference on Learning Representations (ICLR), (2022). 28. M. M. Sun, A. Pinosky, and T. Murphey, “Flow matching ergodic cover-age,” in Proc. of the Robotics: Science and Systems (RSS) Conference, 
+
+(2025). 29. Y. Zhang, Y. Hu, Y. Song, et al. , “Learning vision-based agile flight via differentiable physics,” Nat. Mach. Intell. 7, 954–966 (2025). 30. A. Paszke, S. Gross, F. Massa, et al. , “PyTorch: an imperative style, high-performance deep learning library,” in Proc. of the International Conference on Neural Information Processing Systems (NeurIPS), 
+
+(2019). 31. X. Zhang, R. Wang, Y. Ren, et al. , “DiffAero: A GPU-accelerated differ-entiable simulation framework for efficient quadrotor policy learning,” arXiv preprint (2025). 32. A. Paszke, S. Gross, F. Massa, et al. , “Pytorch: An imperative style, high-performance deep learning library,” in Advances in Neural Informa-tion Processing Systems 32: Annual Conference on Neural Information Processing Systems 2019, NeurIPS 2019, December 8-14, 2019, Van-couver, BC, Canada, H. M. Wallach, H. Larochelle, A. Beygelzimer, 
+
+et al. , eds. (2019), pp. 8024–8035. 33. J. Bradbury, R. Frostig, P. Hawkins, et al. , “JAX: composable transfor-mations of Python+NumPy programs,” (2018). 34. A. Sabne, “Xla : Compiling machine learning for peak perfor-mance,” https://research.google/pubs/xla-compiling-machine-learning-for-peak-performance (2020). 35. A. Rutherford, B. Ellis, M. Gallici, et al. , “JaxMARL: Multi-agent RL environments and algorithms in JAX,” in The Thirty-eight Conference on Neural Information Processing Systems Datasets and Benchmarks Track, (2024). 36. F. Chalumeau, B. Lim, R. Boige, et al. , “Qdax: A library for quality-diversity and population-based algorithms with hardware acceleration,” J. Mach. Learn. Res. 25 , 1–16 (2024). 37. J. Kwon, M. M. Sun, and T. Murphey, “Volumetric ergodic control,” in 
+
+Proc. of the IEEE International Conference on Robotics and Automation (ICRA), (2026). 38. P. Kidger and C. Garcia, “Equinox: neural networks in JAX via callable PyTrees and filtered transformations,” in Differentiable Programming Workshop at Advances in Neural Information Processing Systems, 
+
+(2021). 39. G. D. M. Team, “Mujoco xla (mjx),” Official MuJoCo Documentation. 40. M. Macklin, “Warp: A High-performance Python Framework for GPU Simulation and Graphics,” (2022). NVIDIA GPU Technology Confer-ence (GTC). 41. The Newton Contributors, “Newton: GPU-accelerated physics simula-tion for robotics and simulation research,” (2025). 42. J. A. E. Andersson, J. Gillis, G. Horn, et al. , “Casadi - a software frame-work for nonlinear optimization and optimal control,” Math. Program. Comput. 11 , 1–36 (2019). 43. P. Virtanen, R. Gommers, T. E. Oliphant, et al. , “SciPy 1.0: Fundamen-tal Algorithms for Scientific Computing in Python,” Nat. Methods 17 ,261–272 (2020). 44. M. Schuck, A. von Rohr, and A. P. Schoellig, “scipy.spatial.transform: Differentiable Framework-Agnostic 3D Transformations in Python,” in 
+
+EurIPS, (2025), Workshop on Differentiable Systems and Scientific Machine Learning. 45. Bitcraze, “Crazyflie firmware,” https://github.com/bitcraze/ crazyflie-firmware (2025). Software repository, accessed December 2025. 46. J. Heeg, Y. Song, and D. Scaramuzza, “Learning quadrotor control from visual features using differentiable simulation,” in 2025 IEEE International Conference on Robotics and Automation (ICRA), (2025), pp. 4033–4039. 47. D. Mellinger and V. Kumar, “Minimum snap trajectory generation and control for quadrotors,” in 2011 IEEE International Conference on Robotics and Automation, (2011), pp. 2520–2525. Crazyflow 11 
+
+48. McGuire, Kimberly, “Best of robot simulators - a ranked list of awesome projects,” GitHub (2026). Accessed on 06.05.2026. 49. L. Meier and The PX4 Contributors, “PX4 Autopilot,” . 50. J. Schulman, F. Wolski, P. Dhariwal, et al. , “Proximal policy optimization algorithms,” CoRR abs/1707.06347 (2017). 51. P. Werbos, “Backpropagation through time: what it does and how to do it,” Proc. IEEE 78 , 1550–1560 (1990). 52. R. Verschueren, G. Frison, D. Kouzoupis, et al. , “acados – a modu-lar open-source framework for fast embedded optimal control,” Math. Program. Comput. (2021). 53. J. Eschmann, D. Albani, and G. Loianno, “Learning to fly in seconds,” IEEE Robotics Autom. Lett. 9, 6336–6343 (2024). 54. M. Schuck, D. O. Dahanaggamaarachchi, B. Sprenger, et al. , “Swar-mgpt: Combining large language models with safe motion planning for drone swarm choreography,” IEEE Robotics Autom. Lett. (2025). 55. M. Schuck, S. Samy, and A. P. Schoellig, “A primer on SO(3) action representations in deep reinforcement learning,” in The Fourteenth International Conference on Learning Representations, (2026). 56. S. Teetaert, W. Zhao, N. Xinyuan, et al. , “A remote sim2real aerial competition: Fostering reproducibility and solutions’ diversity in robotics challenges,” arXiv preprint arXiv:2308.16743 (2023). 57. S. Teetaert, W. Zhao, A. Loquercio, et al. , “Advancing reproducibility, benchmarks, and education with remote sim2real: Remote simulation to real robot hardware,” IEEE Robotics & Autom. Mag. 32 , 117–123 (2025). 58. Learning Systems and Robotics Lab, “lsy_drone_racing: Autonomous drone racing course @ LSY,” https://github.com/utiasDSL/lsy_drone_ racing (2025). 59. A. P. Schoellig and S. Zhou, “Control for Robotics: from optimal control to reinforcement learning,” (2025). 60. F. Berkenkamp, A. Krause, and A. P. Schoellig, “Bayesian optimiza-tion with safety constraints: safe and automatic parameter tuning in robotics,” Mach. learning 112 , 3713–3747 (2023). 61. M. Hamer, L. Widmer, and R. D’andrea, “Fast generation of collision-free trajectories for robot swarms using gpu acceleration,” IEEE Access 
+
+7, 6679–6690 (2019). 62. R. Spica, D. Falanga, E. Cristofalo, et al. , “A real-time game theoretic planner for autonomous two-player drone racing,” in Proceedings of Robotics: Science and Systems, (Pittsburgh, Pennsylvania, 2018). 63. B. Mildenhall, P. P. Srinivasan, M. Tancik, et al. , “Nerf: Representing scenes as neural radiance fields for view synthesis,” in ECCV, (2020). 64. B. Kerbl, G. Kopanas, T. Leimkühler, and G. Drettakis, “3d gaussian splatting for real-time radiance field rendering,” ACM Trans. on Graph. 
+
+42 (2023). 65. C. for Python Data API Standards contributors, “A common api for array and tensor python libraries,” Python array API standard. 66. S. Folk, J. Paulos, and V. Kumar, “RotorPy: A python-based multirotor simulator with aerodynamics for education and research,” (2023). 67. A. Gräfe, C. Scherer, W. Hönig, and S. Trimpe, “How to model your crazyflie brushless,” in Proc. of the IEEE International Conference on Robotics and Automation (ICRA), (2026). 68. S. Sun, A. Romero, P. Foehn, et al. , “A comparative study of nonlinear mpc and differential-flatness-based control for quadrotor agile flight,” IEEE Trans. on Robotics 38 , 3357–3373 (2022). 69. J. Eschmann, D. Albani, and G. Loianno, “Data-driven system iden-tification of quadrotors subject to motor delays,” in 2024 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS), 
+
+(2024), pp. 8095–8102. 70. Learning Systems and Robotics Lab, “drone-models: Physics-based and data-driven quadrotor dynamics models for estimation, control, and simulation.” https://github.com/utiasDSL/drone-models (2025). 71. S. Fujimoto, H. van Hoof, and D. Meger, “Addressing function ap-proximation error in actor-critic methods,” in Proceedings of the 35th International Conference on Machine Learning, vol. 80 of Proceed-ings of Machine Learning Research J. Dy and A. Krause, eds. (PMLR, 2018), pp. 1587–1596. 72. C. Pinneri, S. Sawant, S. Blaes, et al. , “Sample-efficient cross-entropy method for real-time planning,” in Proceedings of the 2020 Conference on Robot Learning, vol. 155 of Proceedings of Machine Learning Research J. Kober, F. Ramos, and C. Tomlin, eds. (PMLR, 2021), pp. 1049–1065. 73. G. Williams, A. Aldrich, and E. A. Theodorou, “Model predictive path integral control: From theory to parallel computation,” J. Guid. Control. Dyn. 40 , 344–357 (2017). Crazyflow 12 
+
+MATERIALS AND METHODS 
+
+Below, we give a detailed description of C RAZYFLOW ’s archi-tecture and explain our design choices. We also show how this relates to the capabilities we have demonstrated in our applica-tions. 
+
+> Architecture
+
+CRAZYFLOW is designed with three key capabilities in mind: JIT compilation for efficiency while still maintaining full customiz-ability, support for massively parallel, hardware-accelerated simulation, and differentiability for gradient-based methods. To support these goals, we build on top of JAX’s automatic differen-tiation and tracing capabilities. JAX follows a strictly functional programming paradigm, centered on stateless functions operat-ing on immutable input data without side effects. Following that paradigm, C RAZYFLOW is built around a monolithic simulation data PyTree that holds all buffers required by the simulation (e.g., drone and controller states and drone parameters). We then compose our simulation as a pipeline consisting of functions that take in, transform, and pass on the simulation data. Because the simulation data is compatible with JAX, we can fuse these transforms into a single graph that can leverage an XLA scan operation to efficiently simulate multiple successive steps. The XLA compiler optimizes this graph for efficient execu-tion on both CPU and GPU hardware. This flexibility allows researchers to achieve both low-latency execution for single agents and massive throughput for parallel populations. While general-purpose JAX engines such as MJX must resolve contact constraints using iterative methods, C RAZYFLOW numerically in-tegrates the drone’s equations of motion directly. Removing the solver loop improves execution speed and enhances numerical stability of gradients during backpropagation. This concept of a modular pipeline of functions is illustrated in Figure 1. We depict modules as cubes to visualize the three data dimensions on which they operate: parallel worlds, drones per world, and data axis. The modularity extends internally to components like the low-level controllers, allowing us to sup-port control inputs at different levels of abstraction. Similarly, modular dynamics allow us to seamlessly swap in identified models from our real-to-sim pipeline. The computation graph captures all active modules, fusing computations for JIT compi-lation while allowing differentiation across the entire stack. While C RAZYFLOW is implemented in JAX, we recognize that this may not be a one-fits-all choice for all researchers. Our core physics models and controller implementations are thus built on Python’s array API standard [ 65 ], which enables backend-agnostic code. In practice, this means our modules na-tively support not only JAX, but also P YTORCH , N UM PY, C UPY,and any other standard-compliant framework. As a result, re-searchers can use our core physics and controller models with, e.g., P YTORCH , and the underlying operations are dynamically dispatched to P YTORCH instead of JAX. This design aligns with a major current effort across scientific libraries such as S CI PY
+
+and SCIKIT -LEARN to support framework-agnostic code. These architectural choices directly enable the performance and sim-to-real capabilities demonstrated throughout our exper-iments. In the trajectory-tracking experiments, BPTT achieves the best performance after only seconds of training because it can leverage exact analytical gradients propagated through the complete dynamics and the onboard controller stack, enabling sub-centimeter precision without domain randomization. Our MPPI implementation uses strict functional separation of data and logic to trivially handle continuous environment resets, which, when combined with GPU acceleration and fused XLA scan operations, enables the controller to exceed half a billion simulation steps per second. Finally, the physical throw exper-iment is made possible by JIT-compiling entire training loops. This achieves the extreme end-to-end execution speeds neces-sary to predict the trajectory and train a stabilizing policy in just 0.38 seconds mid-air. 
+
+> Customizing the Simulation
+
+Breaking the simulation step into transforms is a powerful tool for customization. On initialization, we dynamically select only the required functions for the current configuration to build the simulation pipeline. By including only the necessary com-putational steps for a given task, we minimize the execution overhead of the resulting kernel. At the same time, this design allows researchers to customize the simulation by adding or removing their own transforms to the controllers, physics, and reset logic. CRAZYFLOW ’s pipelines provide these domain-specific cus-tomizations without the performance penalties typical of modu-lar software. Because JAX performs kernel fusion during compi-lation, user-defined modifications such as custom disturbances or randomizing environmental parameters are integrated di-rectly into the optimized simulation step. This also allows us to eliminate any overhead from the array API-compatible core physics and controller modules. We use this modularity in our experimental setups. Our tasks use different levels of cascaded control, including direct rotor velocity and attitude. C RAZYFLOW dynamically assembles its simulation step using the required components for each task. Furthermore, in the drone racing challenge, we exploit the com-piler’s kernel fusion to integrate custom dynamic disturbances and noise sources directly into the simulation step, maintain-ing zero-overhead execution despite the added environmental complexity. 
+
+> Visualization and Collision Checking
+
+While C RAZYFLOW prioritizes high-fidelity free-flight physics, many learning environments require geometric queries for colli-sion detection, sensing, and rendering. We achieve these capa-bilities by leveraging MJX, a JAX-compatible reimplementation of the MuJoCo physics engine. The simulation environment is defined using MuJoCo’s XML environment descriptions and loaded into MJX, which allocates the necessary data structures for geometric computations. We synchronize the state of the C RAZYFLOW agents with these MJX structures to selectively utilize MuJoCo’s visualiza-tion and collision-checking algorithms. This hybrid approach enables efficient ray casting and distance measurements within the JAX computation graph. Since both C RAZYFLOW and MJX are JIT-compatible, the entire sensing and physics pipeline is compiled into a single execution unit. This integration ensures that introducing sensors and collision detection does not break end-to-end differentiability or parallel scaling of the simulation. 
+
+> Mind The Gap: From Real To Sim and Back
+
+While the computational throughput provided by JAX is crit-ical for modern robotic learning, the utility of a simulator is ultimately limited by the sim-to-real gap , i.e., the discrepancy between the simulated and the real-world dynamics. If this gap Crazyflow 13 
+
+is too large, the policies learned in simulation fail to transfer reliably to physical platforms. To bridge this gap, C RAZYFLOW 
+
+provides a high-fidelity modeling backend based on real-world data. We offer multiple models, ranging from first-principles physics-based to data-driven models. Additionally, thanks to the flexible simulation pipeline, users can easily add their own physics backend that better suits their needs. 
+
+> First Principles Modeling
+
+The default modeling approach in C RAZYFLOW characterizes the system through analytical, first-principles dynamics. While many existing simulators simplify the platform by assuming idealized actuator responses, C RAZYFLOW incorporates high-fidelity details down to the motor level. As our results indicate, capturing these physical effects is essential for achieving supe-rior modeling accuracy. We represent the drone as a rigid body with six degrees of freedom, where the sum of forces fΣ and torques tΣ acting on the body results in ˙p = v, (1) 
+
+˙q = 12 q ⊗
+
+B ω
+
+0
+
+ , (2) 
+
+m ˙v = fΣ, (3) J B ˙ω = B tΣ − B ω × J B ω, (4) 
+
+where p is the position, v is the velocity, q is the orientation as a scalar-last quaternion, and B ω is the angular velocity in body frame with the parameters m and J as the mass and inertia matrix of the drone, respectively. The quaternion product is denoted by ⊗ and states in the body frame by B (·).The main force acting on the body, in addition to gravity, is the thrust generated by the four propellers mounted at the corners of the drone frame. The thrust produced by each pro-peller fi is a function of its speed Ωi, modeled by a second-order polynomial. Besides the axial forces, the spinning propellers induce torques. Similarly to the force, each motor produces an aerodynamic counter torque due to rotational drag against the surrounding air, which is also modeled as a second-order polynomial. Additionally, gyroscopic and reaction torques are defined as  
+
+> B
+
+ti = Jp
+
+ 
+
+> B
+
+˙ωy(Ω1 − Ω2 + Ω3 − Ω4) 
+
+> B
+
+˙ωx (Ω1 − Ω2 + Ω3 − Ω4)
+
+− ˙Ω1 + ˙Ω2 − ˙Ω3 + ˙Ω4
+
+ , (5) 
+
+where Jp is the combined inertia of one propeller with its motor. Note that this matrix is valid for the Crazyflie family in the 
+
+× configuration and can be easily adjusted by changing the mixing matrix, which defines the motor placement relative to the drone’s body frame. Another important force to consider is the drone’s aerody-namic drag. We model this effect as a linear term in the body frame B fa = CaB v, where Ca contains the drag coefficients in matrix form. Our empirical tests have shown that more complex drag models, as used in [ 66 ], don’t improve the accuracy of the model. The fidelity of the rigid body model is fundamentally tied to the rotor angular velocities, which are themselves governed by complex underlying dynamics. From an idealized physics perspective, these rotor dynamics may be characterized as 
+
+Jrot ˙Ω = Ωcmd − cvΩ − cdΩ2, following [ 67 ], but incorporating an additional quadratic drag term. However, this conventional approach faces two significant challenges in practice. First, stan-dard quadrotor motor controllers typically only apply positive torque during acceleration, causing the rotor dynamics to differ significantly during acceleration and deceleration. Second, the steady-state equilibrium of such a model is highly sensitive to the identified parameters, leading to substantial discrepancies between training trials and hindering generalizability across different physical instances of the same platform. To address these complexities, C RAZYFLOW adapts the physical model to ˙Ω =
+
+(
+
+ˆcv(Ωcmd − Ω) + ˆcd(Ω2cmd − Ω2) ∀ Ωcmd ≥ Ω,ˇcv(Ωcmd − Ω) + ˇcd(Ω2cmd − Ω2) ∀ Ωcmd < Ω, (6) 
+
+where ˆcv, ˇcv, ˆcd, and ˇcd are the velocity and drag parameters of the rotor dynamics, respectively. This model can capture dif-ferent dynamics for acceleration and deceleration, while also allowing for pure quadratic breaking behavior induced by the propeller’s drag. The state and input to the dynamical system result in x =
+
+h
+
+p⊤, q⊤, v⊤, B ω⊤, Ω⊤
+
+i⊤
+
+and u = Ωcmd , respec-tively. While the presented model operates at the lowest level of con-trol, which typically requires update rates of at least 500 Hz, this level of control authority is rarely necessary for most applica-tions. In the majority of cases, even in high-performance control, low-level controllers are employed to abstract the dynamics [ 68 ]. As shown in Figure 1, C RAZYFLOW provides four control inter-faces. Operating at increasing levels of abstractions, it includes collective thrust and body torques (torque interface), collective thrust and attitude (attitude interface), and position setpoints. We recommend control frequencies of 250 Hz and 50 Hz for the torque and attitude interfaces, respectively. The full control stack for the Mellinger control type [ 47 ] on the Crazyflie plat-form has been reimplemented using the array API standard to enable full differentiation and JIT compilation via JAX. Due to the aforementioned modularity, the controllers can also be easily swapped and adapted. The parameters for the first-principles model are obtained in a wide set of experiments. While some parameters, such as the mass m, are easy to obtain from direct measurements or well approximated from CAD data, as in the case of the propeller’s inertia Jp, other parameters are more tedious to identify. For fitting the thrust and torque curve (i.e., the mapping from rotor speed to thrust and torque), each drone is mounted on an ATI Nano43 load cell to collect static and dynamic thrust data across multiple motors and batteries. The inertia of the rigid body 
+
+J, arguably the most difficult parameter to obtain, is collected directly from flight data, as introduced in [ 69 ]. Similarly, the aerodynamic drag coefficients Ca are obtained from aggressive flight data. 
+
+> Abstracted Physics Modeling
+
+As established in the previous section, first-principles models require the implementation of low-level controllers and can in-volve extensive parameter identification, which may introduce unnecessary complexity for many research tasks. Furthermore, practitioners frequently use high-level interfaces for planning [54 ] or mid-level attitude interfaces for control-focused tasks [ 68 ]. We therefore additionally provide an abstracted dynamics model that hides the inner control loop within stable dynam-ics, interfacing at the attitude level. Based on the assumption Crazyflow 14 
+
+of a stable and well-tuned low-level control loop, the drone’s attitude, represented by Euler angles Ψ, is characterized as a second-order linear system. While Euler angles have downsides compared to quaternions, such as nonlinearities and gimbal lock, these effects are negligible near the upright orientation, making them a practical choice for many drone applications. Another abstraction is made on the rotor level. Instead of modeling rotor velocities, we abstract their effect to a single col-lective thrust state fΣ, which is subject to first-order delay. The input to the model consists of the desired attitude and thrust, which results in uabstracted =
+
+h
+
+Ψ⊤
+
+> cmd
+
+, fΣ,cmd 
+
+i⊤
+
+. Given the atti-tude and collective thrust, we assume the drone to be a point-mass subject to the same linear drag term as in the first-principles model. The state space model results in ˙p = v, (7) 
+
+m ˙v = fg + R e zcf fΣ + R B fa, (8) 
+
+˙fΣ = cτ ( fΣ,cmd − fΣ), (9) 
+
+¨Ψ = cΨ,1 Ψ + cΨ,2 ˙Ψ + cΨ,3 Ψcmd , (10) 
+
+where R is the rotation from body to world frame, cτ and cf
+
+are the thrust time and scaling coefficient, respectively, and 
+
+cΨ,1 , cΨ,1 , and cΨ,3 are the coefficients for the rotational dy-namics. The state of the abstracted model spans xabstracted =
+
+h
+
+p⊤, Ψ⊤, v⊤, ˙ Ψ⊤, fΣ
+
+i⊤
+
+. For further simplification, we can re-move the thrust dynamics and the drag term, albeit at the cost of reduced fidelity. Building on its simplified structure, the parameters for this model can be obtained from just a few minutes of flight data. Empirical tests show that a combination of Lissajous (5:6), melon, and modified Rhodonea trajectories at multiple speeds over a total of 206 s yields a dataset rich enough to robustly fit the model. For validation, different types, i.e., Lissajous (1:2), spiral, and Clélie trajectories, are tracked at different speeds, totaling 227 s. We also provide a geometric controller based on [ 47 ] to track those references, with three gain presets for small, medium, and large drones, which only requires the drone’s mass as an additional input. The controller runs at 100 Hz, while the drone’s pose is read from a motion capture system at 240 Hz. Note that the data collection is not limited to motion capture systems; it also sup-ports other forms of pose estimation, such as global navigation satellite systems and ultra-wideband localization. After collec-tion, the data is preprocessed by removing outliers and filtering with a state variable filter, which removes high-frequency mea-surement noise and generates exact derivatives up to second order. For more details on the exact implementation, we refer the reader to our accompanying repository [70]. The system identification process is decoupled into two inde-pendent stages: identifying the rotational and the translational dynamics. For the rotational dynamics, assuming closed-loop stability allows us to roll out the model over the entire trajectory for a given set of parameters. We then use this rollout to compute residuals between the observed and predicted orientations and minimize the fitting error using analytical gradients from JAX via Trust Region Reflective optimization [ 43 ]. Conversely, an open-loop rollout of the translational dynamics would rapidly diverge. To circumvent this issue, we restrict the rollout to the stable thrust state. Taking the norm of Eq. (8) eliminates the ro-tational dependencies, allowing the acceleration residuals to be computed directly from the known velocity, thrust, and gravity. As with the rotational dynamics, the analytical gradients of these residuals are subsequently used to optimize the translational parameters. 
+
+> Evaluation Algorithms
+
+All learning algorithms and their respective training loops are implemented in JAX and fully end-to-end compiled. The envi-ronment simulation and optimization processes are fused into a single computation graph, executed entirely on the target ac-celerator. To isolate execution performance, all reported times are measured after warming up the JIT compilation cache. All implementations and experiment configurations are contained within the supplementary experiments codebase. 
+
+> Nonlinear Model Predictive Control
+
+For trajectory following, a standard NMPC formulation is im-plemented utilizing acados [ 52 ]. The dynamics model used by the controller employs C RAZYFLOW ’s symbolic CasADi descrip-tions of the abstracted model, including thrust dynamics and drag terms. The optimization problem minimizes a standard least-squares cost function with weights Q on the position error and R on the input deviation from hover„ subject to initial-state and input constraints. The optimal control problem consisting of 
+
+N nodes over a time horizon of T is solved in a receding horizon manner with a control frequency of fctrl . A summary of the controller parameters is provided in Table 3.  
+
+> Table 3.
+
+NMPC parameters used for trajectory tracking. 
+
+Parameters Values 
+
+Q 80.0 
+
+R 1.0 
+
+N 25 
+
+T 2.5 s 
+
+fctrl 100 Hz 
+
+> Backpropagation Through Time
+
+The BPTT implementation computes analytical gradients di-rectly through the unrolled simulation dynamics, requiring no value network for bootstrapping. Because analytical gradients exhibit lower variance than sampling-based gradient estimators, convergence is achieved using a significantly reduced number of parallel environments. To optimize for maximum training speed under these conditions, execution is performed entirely on the CPU, which processes lower environment counts more ef-ficiently than the GPU. The environment rollouts and the BPTT optimization steps are fully fused into a single computation graph. For the trajectory tracking task, environment reset positions are distributed along the reference trajectory. The drone is ini-tialized at these starting points with hover thrust and the exact desired velocity for that point on the trajectory. We do not use any domain randomization, and the initial states are not random-ized beyond the designated start positions along the trajectory. Crazyflow 15 
+
+With the reward function 
+
+r = exp 
+
+
+
+−2|p − pgoal |
+
+
+
+− wθ |θ|−
+
+> 4
+
+# ∑
+
+> i=1
+
+wact, i
+
+ ai − ahover, i
+
+2
+
+−
+
+> 4
+
+# ∑
+
+> i=1
+
+w∆act, i
+
+
+
+ai − aprev, i
+
+2
+
+,
+
+(11) 
+
+where wangle , wact, i and w∆act, i are the weights of the angle re-ward, the action reward and the action smoothness reward, re-spectively, θ is the angle from the upright orientation, and ahover 
+
+are the roll, pitch, yaw, and thrust commands for hovering, we obtain an end-to-end training time of 1.56 s for the 10 s trajectory. The list of hyperparameters for the BPTT setup is provided in Table 4. 
+
+Table 4. BPTT parameters for tracking the 10s Lissajous. 
+
+Parameter Value Total timesteps 100,000 
+
+Nenvs 16 Steps per rollout 40 Actor learning rate 4.6 × 10 −2
+
+Discount γ 1.0 Init logstd −1.0 
+
+wθ 0.1 
+
+wact [0.12, 0.12, 0.0, 0.02 ]
+
+w∆act [1.4, 1.4, 0.0, 0.8 ]
+
+For the parameters of the 5.5 s trajectory, the throwing appli-cation reward function, and its hyperparameters, we refer the user to our supplementary experiment codebase. 
+
+Proximal Policy Optimization 
+
+The PPO implementation utilizes Generalized Advantage Esti-mation (GAE) alongside entropy regularization. We use symmet-ric actor-critic observations, i.e., both networks receive identical observation vectors. The entire training pipeline is end-to-end compiled into a single JAX computation graph and executed exclusively on the GPU. The continuous action space is normalized to the interval 
+
+[−1, 1 ], which maps linearly to the minimum and maximum allowable attitude angles and thrust commands. Following [ 55 ], we mitigate excessive initial training variance commonly asso-ciated with 3D rotational dynamics by setting the initial log standard deviation of the action distribution to −1. Environment reset positions are handled as in the BPTT train-ing, with no domain randomization or stochastic spatial pertur-bations applied to the initial states. A complete summary of the PPO hyperparameters is detailed in Table 5. 
+
+Twin-Delayed DDPG 
+
+The Twin-Delayed DDPG (TD3) [ 71 ] experiments use the Crazyflie 2.1 platform equipped with brushed motors, which aligns with the experimental setup established in [ 53 ]. We re-strict TD3 training to a position-reaching task using direct rotor 
+
+Table 5. PPO parameters for tracking the 10s Lissajous. 
+
+Parameter Value Total timesteps 2,000,000 
+
+Nenvs 2048 
+
+Nminibatches 16 
+
+Nepochs 10 Steps per rollout 16 Actor learning rate 8 × 10 −4
+
+Critic learning rate 5 × 10 −3
+
+Discount γ 0.92 GAE lambda λ 0.94 Init logstd −1.0 Entropy coef. 7 × 10 −3
+
+velocity commands and subsequently evaluate the resulting policies on trajectory-following tasks. The target goal position for the reaching task is fixed. At environment reset, we randomize the initial Cartesian position, linear velocity, and angular velocity. As in PPO, we do not apply domain randomization during training. The maximum thrust-to-weight ratio for this Crazyflie is significantly below 2.0. We thus normalize the agent’s continuous action space to [−1, 1 ]
+
+and convert it to thrust commands via a quadratic mapping, where −1 corresponds to minimum thrust, 0 to hover thrust, and 1 to maximum thrust. Our implementation uses an asymmetric actor-critic architec-ture, providing the critic network with privileged information about the current rotor velocities. We also include a history of previous actions in the observation vectors. A complete sum-mary of the TD3 hyperparameters is provided in Table 6. 
+
+Table 6. TD3 parameters for hovering. 
+
+Parameter Value Total timesteps 20,000,000 
+
+Nenvs 4096 
+
+Nepochs 8Memory size 4194304 Actor learning rate 1.34 × 10 −4
+
+Critic learning rate 1.8 × 10 −3
+
+Discount γ 0.984 Polyak factor τ 0.005 Exploration noise σ 0.3 
+
+Model Predictive Path Integral 
+
+The MPPI used in the obstacle avoidance showcase is imple-mented fully in JAX. Unlike in standard model predictive con-trol, this formulation utilizes the full C RAZYFLOW simulation as its internal forward-prediction model. The controller evalu-Crazyflow 16 
+
+ates 500k parallel environments at a rate of 50 Hz. While the optimization can converge with fewer parallel rollouts, this con-figuration explicitly demonstrates the simulator’s throughput and suitability for direct integration into real-time control loops. Specifically, we use a hybrid implementation of iCEM [ 72 ]and MPPI [ 73 ] with explicit modes, running five independent controllers in parallel and selecting the best control sequence at each step. Following iCEM, each controller truncates the top 1% of trajectories, uses temporally correlated noise, and warm-starts its sampling from the previous mean solution. To obtain the mean across the best samples, we use exponential weighting over all elites, as in MPPI. The full set of parameters can be found in our supplementary experiments codebase.

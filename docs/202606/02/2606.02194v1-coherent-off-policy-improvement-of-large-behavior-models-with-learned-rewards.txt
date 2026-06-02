@@ -1,0 +1,342 @@
+Title: Coherent Off-Policy Improvement of Large Behavior Models with Learned Rewards
+
+URL Source: https://arxiv.org/pdf/2606.02194v1
+
+Published Time: Tue, 02 Jun 2026 03:16:53 GMT
+
+Number of Pages: 13
+
+Markdown Content:
+# Coherent Off-Policy Improvement of Large Behavior Models with Learned Rewards 
+
+Christian Scherer 1,3, Joe Watson 2, Theo Gruner 1,4,Daniel Palenicek 1,4, Ingmar Posner 2, Jan Peters 1,4,5,61Technical University of Darmstadt, 2University of Oxford, 
+
+> 3
+
+Zuse School ELIZA, 4hessian.AI, 5German Research Center for AI (DFKI), 
+
+> 6
+
+Robotics Institute Germany (RIG), 
+
+joe@robot-learning.de 
+
+Abstract: Distilling expert demonstration data into large generative models using behavioral cloning is a scalable approach to learning capable policies for robotic control, particularly for dexterous manipulation. Reinforcement learning (RL) can be used as a means to finetune these policies further using additional expe-rience. An open question is whether RL is more sample-efficient than collecting more human demonstrations. Prior work has finetuned large pretrained policies in a scalable fashion by applying RL to a smaller residual policy that corrects the pretrained model. However, for the typical sparse reward tasks, RL algo-rithms can struggle to optimize the behavior in a sample-efficient manner. We explore inverse reinforcement learning, where a dense reward function is learned from expert demonstrations, potentially reducing the challenge of RL finetuning. We specifically consider coherent imitation learning, an IRL method that facili-tates improvement of the BC policy through using a specific reward formulation with theoretical guarantees. We show that our IRL method maintains or improves the performance of pi-0.5 on all six sparse manipulation tasks and achieves a 
+
+≥ 90% success rate on five out of six complex manipulation tasks, outperforming RL-based baselines using sparse rewards. By ensuring our initial pretrained fine-tuning policy is optimal for our initial reward and critic, our method circumvents the initial drop commonly seen in RL finetuning and enables faster improvement. 
+
+Keywords: imitation learning, large behavior models 
+
+## 1 Introduction 
+
+Distilling massive expert demonstration datasets into large behavior models (LBMs) using behav-ioral cloning (BC) has seen large success in robotic control, yielding highly capable policies for complex, long-horizon manipulation [1, 2] given enough high-quality demonstration data. Despite these advances, covariate shift due to accumulating errors remains a fundamental limitation of any BC policy. Solutions such as collecting supplementary recovery demonstrations are fundamentally limited because they rely on teleoperators to anticipate out-of-distribution states. Since online agents will inevitably face novel states, online adaptation becomes indispensable. Reinforcement learning (RL) [3] is a natural candidate to improve BC policies through online ex-perience. In particular, residual RL offers an attractive set of characteristics for online adaptation: freezing the base policy and learning a correction allows for parameter-efficient finetuning of even large models. Recent efforts to improve online adaptation have introduced fine-grained corrections for action chunks [4], structured exploration [5], and more efficient value learning [6]. Despite these advances, two major challenges remain for RL for foundation models: First, designing dense, task-specific rewards for diverse, open-world tasks is difficult and prone to misspecification [7]. Second, even in parameter-efficient paradigms like residual RL [8], where the base model is frozen, the framework remains vulnerable to initial performance degradation (see Figure 1). Crucially, this unlearning directly degrades the sample efficiency of any RL finetuning.     
+
+> arXiv:2606.02194v1 [cs.LG] 1 Jun 2026 π*
+> BC
+> RL from πINIT
+> RL from πBC
+> RL from πBC (ideal)
+> Environment Steps
+> Performance
+> R*
+> R0
+> RBC
+
+Figure 1: An illustration of RL finetun-ing of strong BC policies using residu-als. Despite a strong initial performance by a BC policy, using function approxi-mation in actor-critic methods means this performance is rapidly unlearned and re-learned, so in practice, the BC initializa-tion provides little benefit when running the RL method from scratch. We use co-herent soft imitation learning (CSIL) for (inverse) RL finetuning without unlearn-ing due to the learned coherent reward. To achieve online adaptation without degrading the foundation model (see Figure 1), we build on CSIL [9], an entropy-regularized IRL algorithm. In contrast to other (deep) IRL algorithms, CSIL is designed to fine-tune a pretrained behavior policy using IRL due to its specially designed reward structure, as IRL methods with black-box reward models tend to unlearn the BC behavior rather than improve it [9]. Our contributions are: 1. We propose using inverse RL, specifically CSIL, to finetune LBMs with a learned dense reward as an alternative to RL with challeng-ing sparse rewards. 2. We provide an improved implementation of CSIL based on recent advances in deep actor-critic methods using batch normaliza-tion, weight normalization, and categorical critics [10]. 3. We present an experimental benchmark using 
+
+pi-0.5 across six sparse, simulated manipu-lation tasks, showing benefits over RL-based finetuning baselines. 
+
+## 2 Related Work 
+
+While LBMs show strong performance, we seek to further improve them in an autonomous fash-ion using RL. The challenge here is that LBMs have incredibly large parameter spaces, which are tractable for supervised learning but are a challenge for reinforcement learning, where the gradient updates have higher variance. Ren et al. [11] refine a diffusion policy using on-policy RL by aug-menting environment rollouts with those generated by the diffusion model, which allows them to optimize a subset of denoising steps rather than the entire model. Chen et al. [12] propose a similar approach, but adapted for flow-matching policies. Ankile et al. [4] also use on-policy RL to improve a diffusion policy using a residual MLP policy focusing on sim-to-real transfer. On-policy methods are challenging to apply to real-world experience due to their poor sample efficiency. As a result, prior work has investigated off-policy RL. Wagenmaker et al. [13] propose Diffusion Steering via RL, which applies off-policy RL to the latent space of the diffusion model rather than the model it-self. For general LBMs, residual RL [14] is attractive to finetune an additional, smaller policy. Xiao et al. [8] propose ‘probe, learn, distill’ (PLD), which combines regularized offline RL critics for off-policy RL with additional probing and distillation steps. Ankile et al. [15] propose ResFit, which also uses off-policy RL to finetune diffusion policies in a residual fashion. While these results vali-date the potential of residual RL finetuning, the presented learning curves consistently report severe initial performance drops during early finetuning. This phenomenon is due to the learning dynamics of actor-critic methods, where gradient updates from the initial suboptimal critic ‘unlearn’ the BC behavior rather than finetune it (Figure 1). BC unlearning has also been reported in the inverse RL setting due to the jointly learned reward function [16, 9]. In concurrent work, Sun and Song [17] also apply off-policy RL to finetune residual policies, but use a heuristic and adaptive BC-based policy regularization using the learned Q-values. While their method, DICE-RL, does not exhibit unlearning due to the policy regularization, our proposed method appears more sample-efficient when comparing empirical results. Zhong et al. [18] improve LBMs using on-policy distillation from a provided expert policy. This approach strongly resembles CSIL, as the reward is a log-policy ratio, though the on-policy formulation is different. 2Definition 1. (Coherent reward, Watson et al. [9]). For a BC policy π, prior p(a | s) and temperature 
+
+α > 0, the scaled log-policy ratio 
+
+˜r(s, a) = α (log π(a | s) − log p(a | s)) , (1) 
+
+is the coherent reward function, where π is the pol-icy and p is a uniform prior. 
+
+Theorem 1. (Coherent reward, Watson et al. [9]) In the KL-regularized Bellman equation, the log-policy ratio (Definition 1) can be derived as 
+
+α log π(a | s)
+
+p(a | s) = r(s, a) + γE[V (s′)] − V (s),
+
+which shows it is a shaped reward (Theorem 2). 
+
+Theorem 2. (Reward shaping, Ng et al. [19]) For potential ψ, the shaped reward ˜r(s, a), where 
+
+˜r(s, a) = r(s, a) + γE[ψ(s′)] − ψ(s)
+
+has the same optimal policy as r(s, a).sa
+
+> −0.30.00.30.60.9
+
+Figure 2: Given demonstration data ( ), the coherent reward provides positive rewards for correct actions for observed states, neg-ative rewards for incorrect actions in seen states, and zero rewards for any action under unseen states. This reward encourages the agent to stay (and return) to the demonstra-tion distribution. In contrast to adversarial methods, no on-policy samples are needed to learn it. The contour plot is taken from Wat-son et al. [9]. 
+
+## 3 Coherent Inverse Reinforcement Learning 
+
+In this section, we summarize the coherent soft imitation learning algorithm and describe several adaptations that scale the algorithm to the harder tasks where LBMs benefit from finetuning. 
+
+3.1 Coherent Soft Imitation Learning 
+
+We consider a Markov decision process (MDP) ⟨S , A, P, r, γ, μ 0⟩, where S is the state space, A is the action space, P : S × A × S → R+ is the transition model, r : S × A → R is the reward function, 
+
+γ is the discount factor, and μ0 is the initial state distribution s0 ∼ μ0(·). When the reward is unknown, imitation can be performed using a dataset D of transitions (s, a, s′) as demonstrations. The policy could be inferred directly or by inferring a reward and policy jointly, referred to as behavioral cloning and inverse reinforcement learning, respectively. We consider the KL-regularized RL setting, where policy π is optimized to maximize the state-action value function Q subject to a soft KL constraint against a prior policy p(a | s) to promote explo-ration, max π Es,a∼ρq [Q(s, a)] − α DKL [π(a | s) || p(a | s)] . The optimal policy update blends the exponentiated advantage function ‘pseudo-likelihood’ with the prior, as a form of regularized Boltzmann policy [20] with temperature α > 0 and soft value function V (s),
+
+π(a | s) ∝ exp(( Q(s, a) − V (s)) /α ) p(a | s), V (s) = α log R exp( Q(s, a)/α ) p(a | s) da. (2) In the function approximation setting, the update is performed in a variational fashion by minimizing the reverse KL divergence between the parametric policy πθ and the critic-derived update at sampled states s, as done in the soft actor critic (SAC) algorithm [20], 
+
+θ∗ = arg min θ Es∼B [DKL [πθ (a | sn) || exp(( Q(s, a) − V (s)) /α ) p(a | s)]] ,
+
+= arg max θ Jπ (θ), Jπ (θ) = Ea∼πθ (·| s), s∼B [Q(s, a) − α (log πθ (· | s) − log p(· | s))] . (3) The above objective Jπ can be maximized using reparameterized gradients and minibatches from the replay buffer B [20]. In SAC, p(a | s) is a uniform distribution to provide maximum entropy regularization. In coherent soft imitation learning (CSIL) [9], inverse RL is achieved by rearranging the policy up-date in Equation 2 and substituting it in the KL-regularized Bellman equation. This result, Theorem 1, shows that the log-policy ratio is a shaped variant of the true reward and therefore shares the same optimal policy (Theorem 2, Ng et al. [19]). The benefit of this approach to IRL is that BC policies 3πVLA 
+
+# πCSIL 
+
+Head camera 
+
+Wrist camera 
+
+Proprioception 
+
+Avg. at,t+1,t+2 
+
+# st,t+1,t+2 
+
+# st+1,t+2,t+3 
+
+# rt,t+1,t+2 
+
+> t
+> t+1
+> t+2
+> Encoder
+
+# π(a|s)
+
+## p( a|s)
+
+## αlog       
+
+> 1. Pretrain πVLA and πCSIL on expert
+> demonstration data.
+> 2. Finetune πCSIL on an off-policy replay buffer
+> and expert demonstration data using the
+> coherent reward.
+
+Environment 
+
+> Action chunk
+> Coherent reward
+
+Figure 3: A system-level figure of CSIL-based finetuning of VLAs using ensemble actions. The CSIL policy reacts to every observation and adapts the action chunk of the VLA, which executes at the action chunk frequency. CSIL has a dedicated encoder and does not use the VLA representation. are naturally finetuned with additional experience, in contrast to methods where the reward and pol-icy are learned jointly, and BC behavior is quickly unlearned [9]. The log-policy ratio can also be interpreted as a dense reward that encourages the agent to follow (and return to) the demonstration distribution (Figure 2). CSIL requires a policy architecture that is stationary , such that its predictions revert to its prior 
+
+p(a | s) outside the training distribution, ensuring the coherent reward provides a neutral reward of zero in unseen states. Following Watson et al. [9], we use the HetStat (heteroscedastic stationary) architecture, which achieves stationarity via a periodic activation function in a wide final layer [21], approximating a stationary kernel via the Wiener-Khinchin theorem [22]. Moreover, while CSIL is an actor-critic method that builds on SAC, it regularizes the policy against the BC policy rather than providing maximum entropy regularization. This KL regularization has a temperature β which does not have to match α. The latter is typically set to make the coherent reward scale invariant [9]. 
+
+3.2 Improving the Coherent Soft Imitation Learning Actor-Critic Implementation 
+
+While Watson et al. demonstrate that CSIL achieves strong empirical results, the implementation struggles to solve more complex tasks in the pixel-based setting [9]. 
+
+Actor-critic. To improve on CSIL’s base performance, we integrated recent advances from the current state-of-the-art sample-efficient off-policy RL methods, which incorporate architectural reg-ularization to facilitate more graceful scaling. In particular, following the results from Palenicek et al. [10], we adapt the CSIL critic to a categorical critic and apply batch normalization (BN) [23] and weight normalization (WN) [24] instead of layer normalization [25] to the critic, while apply-ing layer normalization to the policy. Combining batch normalization and weight normalization improves the optimization landscape and helps maintain a steady ‘effective’ learning rate [24, 26]. We observed that the CSIL implementation by Watson et al., which is based on SAC, suffered from exploding parameter values during training, which impedes learning as the ‘effective’ learning rate drops. Incorporating BN and WN into CSIL allowed us to mitigate these numerical issues and improve optimization and scaling. Incorporating this regularization also enables us to increase the update-to-data (UTD) ratio, where the critic is updated several times per environment step to accel-erate learning. In accordance with the results from [27], we used policy delay and only update our policy once per environment step. 4Algorithm 1: CSIL-based finetuning of large behavior models. 
+
+Data: Demonstrations D, initial temperature α, refinement temperature β, chunk horizon H,base policy πLBM , parametric policy class πϕ(a | s), prior policy p(a | s), RL steps N
+
+Result: πϕN (a | s), matching or improving the initial base policy πLBM (a | s) when combined Finetune large foundation policy πLBM from expert demonstrations; Train initial ensemble policy from demonstrations, ϕ1 = arg max ϕ Es,a∼D [log πϕ(a | s)] ;Define fixed shaped coherent reward, ˜rϕ1 (s, a) = α(log πϕ1 (a | s) − log p(a | s)) ;Pretrain critic on demonstration data and coherent reward; 
+
+for n = 2 → N do if n%H = 0 then 
+
+abase ,n , . . . , abase ,n +H = π(sn)
+
+end 
+
+aens ,n = 12 (abase ,n + aπ,n ), aπ,n ∼ πϕn−1 (· | sn);Compute Qn and πϕn using soft off-policy RL, e.g. SAC or XQC, with temperature β.
+
+end KL estimation. Additionally, while Watson et al. [9] uses a Monte Carlo KL estimator for the BC regularization term in the actor objective, we identify that this KL can be computed exactly between the latent Gaussian actions due to the shared bijection between policies [28]. 
+
+Image encoder. To improve CSIL’s performance in image-based settings, we adapted CSIL’s orig-inal IMPALA-style encoder [29] by increasing its size, training an encoder per camera instead of one for all cameras, and utilizing spatial softmax pooling [30] at the end of the network to extract structural information efficiently. We refer to this improved implementation of CSIL as CSIL++ in the subsequent text. 
+
+## 4 Coherent Finetuning of Pretrained Policies 
+
+This section outlines how CSIL is adapted to improve pretrained action-chunking policies, in partic-ular large behaviour models (LBMs). A high-level description is provided in Figure 3 and Algorithm 1. An important design decision for LBM finetuning is the choice of optimized action. This action could be the environment action, a residual correction term to the LBM (Equation 4), or an ensem-bled action, averaging the base action and the predicted action (Equation 5): 
+
+ares = abase + aπ (residual) , (4) aens = 12 (abase + aπ ) (ensemble). (5) See Figure 4 for a visualization of both. Directly adapting the base policy to predict environment actions requires optimizing a model with billions of parameters via RL. Even with LoRA [31], this approach is computationally prohibitive due to a massive increase in forward passes of the LBM, as the model must be evaluated for every batch sample and environment step. To learn an additional, smaller corrective policy, we use a frozen version of the LBM to predict an action chunk every H
+
+steps (in our case H = 10 ), while the smaller model is trained to predict a full action every step. Time 
+
+> 0
+> Action
+
+Final action 
+
+Time 
+
+Residual approach 
+
+Time 
+
+Ensemble approach 
+
+Final action Base action Corrective action 
+
+Figure 4: Visualization of the different action modalities. The cyan, magenta, and blue lines rep-resent the actions generated by the base policy, the predictions of the trainable policy, and the fi-nal action executed in the environment, respectively. The final action for the residual approach is calculated using Equation 4, while the total action using the ensemble approach is calculated via Equation 5. The ensemble approach is required for CSIL refinement for the coherent reward to dif-ferentiate between expert and non-expert actions easily. 50 1 2 3 4 5Environment steps (1 × 10 5)
+
+> 0.0
+> 0.5
+> 1.0
+> Success Rate
+
+Can Image-based             
+
+> 012345
+> State-based
+> 012345Environment steps (1 ×10 5)
+
+Square Image-based       
+
+> 012345
+> State-based
+> CSIL++ CSIL
+
+Figure 5: Performance of CSIL and our improved version CSIL++ on the Can and Square task. The ‘image-based’ run takes images and the robot’s proprioceptive state as observations. The ‘state-based’ operates on full state information comprising proprioception and ground-truth information of the object. In both settings, CSIL++ is more sample-efficient and improves performance signifi-cantly in the image-based setting. Using a residual action, i.e., predicting a correction [14] on top of the base LBM policy, performed worse (see Figure 6). For CSIL, we found a residual BC policy produced a poorly performing coherent reward. We attribute this result to the residual policy modeling function approximation errors rather than the demonstration behavior, which makes it harder to differentiate expert and non-expert behavior. To mitigate this issue, we take an ensemble approach where the RL policy also learns the expert behavior and is averaged with the LBM action. Moreover, rather than using the LBM’s internal representation for RL, we found it better and faster to let the RL policy learn its own observation encoder, which is smaller than the LBM’s and therefore easier to finetune. The observation encoder is learned using BC and then kept frozen during RL. 
+
+## 5 Experimental Setup 
+
+We test our approach on tasks from Robomimic [32] and MimicGen [33], which vary in terms of horizons, precision requirements, and complexity. The MimicGen environments do not have ground-truth rewards, but our RL baselines use a constant negative reward of −1 as the task feedback is sparse and we wish to solve the task as quickly as possible. All our experiments utilize the successful termination for bootstrapping. We train all methods across three independent seeds for 500k steps and evaluate the policy every 50k steps for 50 episodes. To compare the maximum performance of the approaches, we store the parameters with the highest evaluation success rate and evaluate them across five trials of 50 episodes each at the end of training for each run. We use pi-0.5 [34] as our base model with an action chunk horizon of 10. 
+
+Tasks. Our task selection covers three categories: simple short-horizon manipulation tasks, dex-terous short-horizon tasks, and mid-range horizon tasks. For simple short-horizon tasks, we use 
+
+Coffee from MimicGen. For dexterous tasks, we use Square from Robomimic, as well as Nut Assembly and Threading from MimicGen. For mid-range horizon tasks, we use Hammer Cleanup 
+
+and Mug Cleanup . All tasks use a Franka robot with a parallel-jaw gripper and have an action space dimension of 7: 6 for the end-effector pose delta and 1 for the gripper command. For Square , we use the released expert demonstration dataset with 200 episodes, and for all MimicGen tasks, we use the MimicGen pipeline to construct a dataset of 200 episodes from a source dataset of 10 episodes. 
+
+Pretraining. We finetune pi-0.5 for 30k steps with a batch size of 128 for 13 hours on 8 A100 GPUs, combining all single-task datasets into one dataset. 
+
+Baselines and ablations. Our primary policy improvement algorithm is CSIL++, as described in Section 3.2. As prior work uses state-of-the-art, sample-efficient, off-policy RL, we use XQC augmented with the expert offline data (XQC+OD) as an RL baseline and also an ablation of the coherent reward, as we provide XQC with the same HetStat policy, BC pretraining, KL regulariza-tion, and initial replay buffer as CSIL++, so only the reward is changed. Since there is no public code available, we implement the RL component of PLD in our codebase as a baseline. To ensure 60 1 2 3 4 5
+
+0.0
+
+0.5
+
+1.0
+
+> Success Rate
+
+Square 
+
+0 1 2 3 4 5
+
+Coffee 
+
+0 1 2 3 4 5
+
+Mug Cleanup 
+
+0 1 2 3 4 5
+
+0.0
+
+0.5
+
+1.0
+
+> Success Rate
+
+Threading 
+
+0 1 2 3 4 5Environment steps (1 × 10 5)
+
+Nut Assembly 
+
+0 1 2 3 4 5
+
+Hammer Cleanup 
+
+CSIL++ Ens. CSIL++ Res. XQC+OD Ens. XQC+OD Res. PLD RL VLA BC Figure 6: Performance of LBM finetuning on six simulated environments across three seeds. Suc-cess rates are reported as median and quartiles on six sparse reward manipulation tasks and are computed over 50 evaluations every 25k steps. a fair comparison, we omit BC probing and VLA distillation to isolate the performance of the RL finetuning. Finally, to investigate the effect of the algorithm improvements introduced in Section 3.2, we compare the base version of CSIL with CSIL++ on state- and image-based settings of Can 
+
+and Square without an LBM. 
+
+Implementation Details and Hyperparameters. We summarize the specific architectural choices and hyperparameters used across our experiments in Table 2 in Appendix B. 
+
+## 6 Experimental Results 
+
+To evaluate CSIL++ finetuning of VLAs, our empirical evaluation is guided by three questions: 1. How does the performance of CSIL++ compare to CSIL? 2. Can CSIL++ improve the performance of LBMs better than RL with sparse-rewards? 3. How do residual and ensemble policies compare across methods? 
+
+Comparing CSIL and CSIL++. While CSIL can be used in the pixel-based setting, we found it struggled to recover state-based performance in harder tasks. Figure 5 compares CSIL and CSIL++ on Robomimic’s Can and Square tasks. We can see that while CSIL and CSIL++ closely match on the simpler Can task, there is a much larger gap on the Square task. CSIL++ is far more sample-efficient in the state-based setting, reflecting the findings of Palenicek et al. [10]. CSIL++ performs around 30% better on image-based Square . However, there is still a 10% performance gap com-pared to the state-based policy, suggesting there are still further implementation improvements to be made on the encoder design or RL implementation. 
+
+Finetuning large behavior models. We now look at CSIL++ as a means of improving pi-0.5 
+
+performance, using XQC and PLD as baselines. Table 1 shows the best performance, while Fig-                                          
+
+> Method Square Coffee Mug Cleanup Threading Nut Assembly Hammer Cleanup
+> VLA 0.84 [0.82, 0.86] 0.78 [0.76, 0.86] 0.68 [0.66, 0.72] 0.14 [0.12, 0.14] 0.22 [0.22, 0.26] 0.98 [0.98, 0.98] CSIL++ Ens. 0.94 [0.90, 0.97] (100k) 0.96 [0.94, 0.98] (200k) 0.90 [0.84, 0.92] (100k) 0.92 [0.88, 0.96] (450k) 0.22 [0.19, 0.27] (150k) 1.00 [1.00, 1.00] (50k)
+> CSIL++ Res. 0.90 [0.90, 0.92] (0k) 0.96 [0.92, 0.98] (0k) 0.72 [0.68, 0.79] (0k) 0.32 [0.13, 0.65] (0k) 0.40 [0.36, 0.42] (0k) 1.00 [0.95, 1.00] (0k)
+> XQC+OD Ens. 0.84 [0.80, 0.86] (0k) 0.96 [0.76, 0.97] (0k) 0.68 [0.61, 0.75] (0k) 0.04 [0.00, 0.10] (150k) 0.24 [0.20, 0.27] (0k) 1.00 [0.96, 1.00] (0k)
+> XQC+OD Res. 0.80 [0.69, 0.83] (0k) 0.88 [0.85, 0.90] (0k) 0.72 [0.65, 0.75] (0k) 0.60 [0.56, 0.61] (0k) 0.34 [0.26, 0.37] (0k) 1.00 [0.98, 1.00] (0k)
+> PLD RL (Res.) 0.84 [0.74, 0.87] (400k) 0.68 [0.66, 0.73] (250k) 0.46 [0.42, 0.53] (100k) 0.00 [0.00, 0.01] (50k) 0.00 [0.00, 0.00] (0k) 0.96 [0.93, 0.97] (300k)
+
+Table 1: LBM finetuning success rates reported as median and quartiles on six sparse-reward ma-nipulation tasks. Bold indicates highest median seen over training. Parentheses denote the learning step corresponding to the peak performance. Success rates are computed from 5 evaluations with 50 episodes each, and aggregate results across 3 seeds per environment and method are concatenated. 7Demonstrations VLA VLA+CSIL Figure 7: A visualization of 25 rollouts between the VLA and the refined policy on Threading ,highlighting successful (blue) and failure (red) episodes. The base VLA fails the task due to high variance in the insertion trajectory. Ensemble CSIL++ learns to align properly for precise insertion. ure 6 shows step-based learning curves. We see that CSIL++ provides the best improvement in five of the six tasks, where one task is mastered by all methods due to the strong VLA performance. Most notably, CSIL++ improves success rates on the Threading task to 92% from 14% VLA per-formance, where the second-best RL finetuning result is a performance drop to ∼25%. Following CSIL’s derivation in coherent improvement of the BC policy, ensemble CSIL++ is the only method that matches or improves on the base VLA’s performance and does not exhibit initial performance drops. For Nut Assembly , a challenging long-horizon task, while ensemble CSIL++ is not able to make progress on the task, it is the only method not to completely unlearn. Residual CSIL++ does not work reliably across tasks, which we attribute to residual actions modeling function approxima-tion noise rather than the structure of the task, which makes it very difficult for the policy-derived coherent reward to differentiate expert and non-expert actions. The XQC baseline shows that resid-ual policies are useful in the pure RL setting, where residual XQC frequently outperforms ensemble XQC. However, due to unlearning, the best performance of the XQC methods repeatedly occurs during the stochastic evaluation of the BC policy, before RL finetuning actually occurs. Random noise on top of the base LBM policy appears to frequently improve performance due to the dither-ing. The RL component of PLD exhibits immediate unlearning across all tasks, as shown in the original paper. While it performs well on Hammer Cleanup , it requires ∼300K environment steps to recover the VLA performance. 
+
+Visualizing refinement. In Figure 7, we visualize the effect of CSIL++ refinement on the VLA behavior, specifically focusing on the Threading task where CSIL++ had the largest impact. We see that pi-0.5 ’s main failure mode is high trajectory variance around insertion. CSIL++ refinement learns the alignment behavior pre-insertion that is required for consistent success. 
+
+## 7 Conclusion 
+
+We demonstrate that inverse reinforcement learning can be used to finetune large behavior mod-els, as CSIL provides a coherent, dense reward that mitigates the severe sample inefficiency and instability typically associated with refining LBMs using RL with sparse rewards. By replacing sparse environment signals with a dense reward derived from expert demonstrations, we are able to achieve policy improvement without expensive unlearning. We have also shown that CSIL can be scaled to harder vision-based tasks by incorporating innovations in deep actor-critic methods. Our experimental study pushes LBM finetuning beyond pick-and-place tasks and demonstrates that CSIL-based finetuning can provide dramatic improvements in learning precise insertion tasks such as the Threading task. Regarding future directions, our results show there is still further work needed to achieve greater optimization stability and sample-efficiency in LBM finetuning, in partic-ular for long-horizon tasks as seen in the Nut Assembly task. 
+
+Limitations. A fundamental limitation of CSIL as a policy optimizer is how it leverages BC. If there are only a few demonstrations such that the BC policy is weak, CSIL’s sample efficiency will also weaken, and learning will move closer to sparse RL-like finetuning. Moreover, CSIL optimizes an imitation objective rather than task success, so it is susceptible to suboptimal demonstrations, as it will reinforce any suboptimal behaviors, e.g., hesitation, potentially impacting task success. 8Acknowledgments 
+
+We wish to thank Florian Vogt for his assistance implementing XQC. Christian Scherer is supported by the Konrad Zuse School of Excellence in Learning and Intelligent Systems (ELIZA) through the DAAD programme Konrad Zuse Schools of Excellence in Artificial Intelligence, sponsored by the Federal Ministry of Education and Research. This research was funded by the research cluster “Third Wave of AI”, funded by the excellence program of the Hessian Ministry of Higher Ed-ucation, Science, Research and the Arts, hessian.AI and by the Deutsche Forschungsgemeinschaft (DFG, German Research Foundation) under Germany’s Excellence Strategy (EXC-3057/1 “Reason-able Artificial Intelligence”, Project No. 533677015). It was further supported by a UKRI/EPSRC Programme Grant [EP/V000748/1] and partially supported by the German Federal Ministry of Re-search, Technology and Space (BMFTR) under the Robotics Institute Germany (RIG). Ingmar Pos-ner holds concurrent appointments as a Professor of Applied AI at the University of Oxford and as an Amazon Scholar. This paper describes work performed at the University of Oxford and is not associated with Amazon. 
+
+## References 
+
+[1] D. Driess, F. Xia, M. S. Sajjadi, C. Lynch, A. Chowdhery, B. Ichter, A. Wahid, J. Tompson, Q. Vuong, T. Yu, et al. PaLM-E: An embodied multimodal language model. In International Conference on Machine Learning (ICML) , 2023. [2] J. Barreiros, A. Beaulieu, A. Bhat, R. Cory, E. Cousineau, H. Dai, C.-H. Fang, K. Hashimoto, M. Z. Irshad, M. Itkina, et al. A careful examination of large behavior models for multitask dexterous manipulation. arXiv preprint arXiv:2507.05331 , 2025. [3] R. S. Sutton and A. G. Barto. Reinforcement Learning: An Introduction . MIT press, 2018. [4] L. Ankile, A. Simeonov, I. Shenfeld, M. Torne, and P. Agrawal. From imitation to refinement-residual RL for precise assembly. In IEEE International Conference on Robotics and Automa-tion (ICRA) , 2025. [5] X. Yuan, T. Mu, S. Tao, Y. Fang, M. Zhang, and H. Su. Policy decorator: Model-agnostic online refinement for large policy model. In International Conference on Learning Representations (ICLR) , 2025. [6] G. Ma, L. Li, H. Wang, Z. Liu, P.-L. Bacon, and D. Tao. What makes value learning efficient in residual reinforcement learning? arXiv preprint arXiv:2602.10539 , 2026. [7] J. Eschmann. Reward function design in reinforcement learning. Reinforcement learning algorithms: Analysis and Applications , 2021. [8] W. Xiao, H. Lin, A. Peng, H. Xue, T. He, Y. Xie, F. Hu, J. Wu, Z. Luo, L. Fan, et al. Self-improving vision-language-action models with data generation via residual rl. In International Conference on Learning Representation (ICLR) , 2026. [9] J. Watson, S. H. Huang, and N. Heess. Coherent soft imitation learning. In Advances in Neural Information Processing Systems (NeurIPS) , 2023. [10] D. Palenicek, F. Vogt, J. Watson, I. Posner, and J. Peters. XQC: Well-conditioned optimization accelerates deep reinforcement learning. International Conference on Learning Representa-tions (ICLR) , 2026. [11] A. Ren, J. Lidard, L. Ankile, A. Simeonov, P. Agrawal, A. Majumdar, B. Burchfiel, H. Dai, and M. Simchowitz. Diffusion policy policy optimization. In International Conference on Learning Representations (ICLR) , 2025. 9[12] K. Chen, Z. Liu, T. Zhang, Z. Guo, S. Xu, H. Lin, H. Zang, X. Li, Q. Zhang, Z. Yu, G. Fan, T. Huang, Y. Wang, and C. Yu. πRL : Online RL fine-tuning for flow-based vision-language-action models, 2026. [13] A. Wagenmaker, Y. Zhang, M. Nakamoto, S. Park, W. Yagoub, A. Nagabandi, A. Gupta, and S. Levine. Steering your diffusion policy with latent space reinforcement learning. In Confer-ence on Robot Learning (CoRL) , 2025. [14] T. Silver, K. Allen, J. Tenenbaum, and L. Kaelbling. Residual policy learning. arXiv preprint arXiv:1812.06298 , 2018. [15] L. Ankile, Z. Jiang, R. Duan, G. Shi, P. Abbeel, and A. Nagabandi. Residual off-policy RL for finetuning behavior cloning policies. arXiv preprint arXiv:2509.19301 , 2025. [16] M. Orsini, A. Raichuk, L. Hussenot, D. Vincent, R. Dadashi, S. Girgin, M. Geist, O. Bachem, O. Pietquin, and M. Andrychowicz. What matters for adversarial imitation learning? In 
+
+Advances in Neural Information Processing Systems (NeurIPS) , 2021. [17] Z. Sun and S. Song. From prior to pro: Efficient skill mastery via distribution contractive rl finetuning. arXiv preprint arXiv:2603.10263 , 2026. [18] Z. Zhong, H. Yan, J. Li, J. He, T. Zhang, and H. Li. VLA-OPD: Bridging offline sft and online RL for vision-language-action models via on-policy distillation. arXiv preprint arXiv:2603.26666 , 2026. [19] A. Y. Ng, D. Harada, and S. J. Russell. Policy invariance under reward transformations: Theory and application to reward shaping. In International Conference on Machine Learning (ICML) ,1999. [20] T. Haarnoja, A. Zhou, P. Abbeel, and S. Levine. Soft actor-critic: Off-policy maximum entropy deep reinforcement learning with a stochastic actor. In International Conference on Machine Learning (ICML) , 2018. [21] L. Meronen, M. Trapp, and A. Solin. Periodic activation functions induce stationarity. In 
+
+Advances in Neural Information Processing Systems (NeurIPS) , 2021. [22] C. Rasmussen and C. Williams. Gaussian Processes for Machine Learning . MIT Press, 2006. [23] S. Ioffe and C. Szegedy. Batch normalization: Accelerating deep network training by reducing internal covariate shift. In International Conference on Machine Learning (ICML) , 2015. [24] C. Lyle, Z. Zheng, K. Khetarpal, J. Martens, H. van Hasselt, R. Pascanu, and W. Dabney. Normalization and effective learning rates in reinforcement learning. In Advances in Neural Information Processing Systems (NeurIPS) , 2024. [25] J. L. Ba, J. R. Kiros, and G. E. Hinton. Layer normalization. In NIPS 2016 Deep Learning Symposium , 2016. [26] D. Palenicek, F. Vogt, J. Watson, and J. Peters. Scaling off-policy reinforcement learning with batch and weight normalization. In Advances in Neural Information Processing Systems (NeurIPS) , 2025. [27] S. Fujimoto, H. Hoof, and D. Meger. Addressing function approximation error in actor-critic methods. In International Conference on Machine Learning (ICML) , 2018. [28] Y. Polyanskiy. Information theoretic methods in statistics and computer science: Lecture 1 — 
+
+f -divergences, 2020. 10 [29] L. Espeholt, H. Soyer, R. Munos, K. Simonyan, V. Mnih, T. Ward, Y. Doron, V. Firoiu, T. Harley, I. Dunning, S. Legg, and K. Kavukcuoglu. IMPALA: Scalable distributed deep-RL with importance weighted actor-learner architectures. In International Conference on Machine Learning (ICML) , 2018. [30] S. Levine, C. Finn, T. Darrell, and P. Abbeel. End-to-end training of deep visuomotor policies. 
+
+Journal of Machine Learning Research (JMLR) , 2016. [31] E. J. Hu, Y. Shen, P. Wallis, Z. Allen-Zhu, Y. Li, S. Wang, L. Wang, and W. Chen. LoRA: Low-rank adaptation of large language models. In International Conference on Learning Rep-resentations (ICLR) , 2022. [32] A. Mandlekar, D. Xu, J. Wong, S. Nasiriany, C. Wang, R. Kulkarni, L. Fei-Fei, S. Savarese, Y. Zhu, and R. Mart´ ın-Mart´ ın. What matters in learning from offline human demonstrations for robot manipulation. In Conference on Robot Learning (CoRL) , 2021. [33] A. Mandlekar, S. Nasiriany, B. Wen, I. Akinola, Y. Narang, L. Fan, Y. Zhu, and D. Fox. MimicGen: A data generation system for scalable robot learning using human demonstrations. In Conference on Robot Learning (CoRL) , 2023. [34] P. Intelligence, K. Black, N. Brown, J. Darpinian, K. Dhabalia, D. Driess, A. Esmail, M. Equi, C. Finn, N. Fusai, M. Y. Galliker, D. Ghosh, L. Groom, K. Hausman, B. Ichter, S. Jakubczak, T. Jones, L. Ke, D. LeBlanc, S. Levine, A. Li-Bell, M. Mothukuri, S. Nair, K. Pertsch, A. Z. Ren, L. X. Shi, L. Smith, J. T. Springenberg, K. Stachowicz, J. Tanner, Q. Vuong, H. Walke, A. Walling, H. Wang, L. Yu, and U. Zhilinsky. π0.5: a vision-language-action model with open-world generalization, 2025. 11 A Coherent Soft Imitation Learning 
+
+For MDPs with success-based absorbing states, like many manipulation tasks, IRL methods can struggle if their rewards are positive. Agents are incentivized to ‘stay alive’ and accrue reward, and therefore never complete the task and enter the absorbing state. To prevent this behavior in CSIL, the coherent reward can be bounded and its value subsequently shifted by its maximum reward, to ensure the coherent reward is always negative. To achieve this bounding of the maximum reward, the authors add a small bias term σ2min to the predictive variance that enables them to define an upper bound for the likelihood. As the tanh transformation is also bounded in practice to ensure numerical stability, the authors are then able to derive the following upper bound for the reward r(s, a), given action dimension da, a uniform prior across the action range [−1, 1] da and α = d−1
+
+> a
+
+r(s, a) ≤ − 0.5 · log πσ 2
+
+> min
+
+/2 + ˜ c, 
+
+where ˜c depends on the tanh clipping term [9]. 
+
+## B Experimental Details 
+
+B.1 Methods, Baselines and Ablations VLA. We train pi-0.5 [34] on a dataset of 1200 expert demonstration episodes in total, with 200 episodes each for 6 separate manipulation tasks in simulation. We follow the default pi-0.5 fine-tuning hyperparameters, changing only the batch size to 128. We train for 30k steps for 13 hours on 8 A100 GPUs. 
+
+CSIL. We follow the default hyperparameters and architectural choices described in [9], changing only the total number of environment steps to 510k. 
+
+CSIL++. We use the hyperparameters described in Table 2. In particular, we do not uniformly distribute the bins of the categorical critic. Instead, we calculate the Monte Carlo values for the demonstrations and then distribute the bins using quantiles. We normalize the reward and the entropy coefficient by the standard deviation of the Monte Carlo values. The residual is not conditioned on the base policy’s actions, while the critic uses the current state as well as the combined action of the base policy and residual policy as input. We replace the upper bound of the coherent reward function by the maximum reward computed over the demonstration data and additionally clip the reward to ensure all reward values are negative. 
+
+XQC + OD. We use the same network sizes, learning rates and pretraining hyperparameters as for CSIL++. We distribute the bins of the categorical critic uniformly. Since we pretrain the policy, we are able to initialize the replay buffer with on-policy actions without a loss of diversity in data. The residual is not conditioned on the base policy’s actions, while the critic uses the current state as well as the combined action of the base policy and residual policy as input. 
+
+PLD. We closely follow the hyperparameters from Xiao et al. [8]. Our adjustments adapt the scaling of the residual actions to the range [−0.1, 0.1] and use an initial entropy coefficient of 0.1. 12 B.2 Hyperparameters 
+
+Table 2: Core Hyperparameters for CSIL++ 
+
+Hyperparameter Value 
+
+Architecture & Optimization 
+
+Batch Size 128 Base Network Sizes Same as CSIL [9] Learning Rates Same as CSIL [9] ResNet Channels [16 , 32 , 64 , 128] 
+
+Visual Pooling Spatial Softmax Critic Normalization Batch Normalization Policy Normalization Layer Normalization Categorical Critic Bins 101 Categorical Critic Range [−8, 0] 
+
+Distribution of Bins By Quantile 
+
+Training Dynamics 
+
+Warmup Steps 10,000 Total Environment Steps 510,000 Update-To-Data (UTD) Ratio 4Entropy Coefficient 0.3/Std. of MC values Replay Buffer Size 250,000 
+
+Pretraining 
+
+Demonstrations per Env. 200 Policy Pretraining Steps (Image) 25,000 Policy Pretraining Steps (State) 50,000 Critic Pretraining Steps 20,000 Environment Horizon Standard (Task-dependent) 13

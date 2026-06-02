@@ -1,0 +1,54 @@
+{
+  "label": "2026-06-02",
+  "date": "2026-06-02",
+  "generated_at": "2026-06-02T22:17:56",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202606/02/2606.01478v1-crazyflow-an-accurate-gpu-accelerated-differentiable-drone-simulator-in-jax",
+      "section": "quick",
+      "title_en": "Crazyflow: An Accurate, GPU-Accelerated, Differentiable Drone Simulator in JAX",
+      "authors": "Martin Schuck, Marcel P. Rath, Yufei Hua, AbhisheK Goudar, SiQi Zhou, Angela P. Schoellig",
+      "date": "2026-05-31",
+      "pdf": "https://arxiv.org/pdf/2606.01478v1",
+      "score": "7.0",
+      "evidence": "提供GPU加速、可微分的无人机仿真器，可用于训练无人机任务的深度强化学习策略。",
+      "tldr": "机器人仿真模拟器需要在保真度、可微性与集群能力间权衡，现有平台无法兼顾。Crazyflow基于JAX构建，利用GPU加速实现单无人机速度提升一个数量级，并支持数千个四千架无人机集群仿真。其关键成果包括亚厘米级轨迹跟踪精度、每秒超5亿步的避障采样，以及仅0.38秒的在线飞行恢复策略训练。该平台打破传统训练部署范式，为大规模并行在线学习和合成数据生成提供开源资源，推动航空机器人算法进入新阶段。",
+      "tags": "query:uav-drl",
+      "abstract_en": "High-quality, large-scale synthetic data from simulations is becoming a cornerstone for pushing the capabilities of robot algorithms. While aerial robotics simulators have evolved to support specialized needs such as fidelity, differentiability, and swarms independently, a unified platform that can synthesize data across all these domains is missing. In this work, we propose Crazyflow, a simulator designed to push the limits of aerial-robotics algorithm development, from model-based to data-driven methods, gradient-based to sampling-based approaches, and single-agent to multi-agent systems. Compared to existing state-of-the-art drone simulators, it achieves speeds more than an order of magnitude faster for a single drone and can simulate thousands of swarms of 4000 drones each. Real-world experiments show Crazyflow supports both analytical-gradient-based policy learning, achieving sub-centimeter trajectory tracking accuracy without domain randomization, and sampling-based obstacle avoidance at speeds exceeding half a billion steps per second. Breaking the traditional train-then-deploy paradigm, we show that its unprecedented speed even enables in-flight reinforcement learning; we demonstrate this by throwing a physical drone into the air and training a recovery policy from scratch in 0.38 seconds, successfully stabilizing the drone. Crazyflow supports multiple levels of simulation abstraction, is directly compatible with all open-source Crazyflie models, and enables rapid reconfiguration across custom drone platforms and applications by providing a light-weight system identification pipeline. By pushing accuracy, speed, and differentiability simultaneously, Crazyflow serves as an open-source resource for synthetic data generation, with emerging capabilities for large-scale parallelization for online, in-execution learning and optimization, opening the door to novel algorithm development.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/02/2605.28561v1-soft-sverl-self-verified-reinforcement-learning-with-soft-rewards",
+      "section": "quick",
+      "title_en": "Soft-SVeRL: Self-Verified Reinforcement Learning with Soft Rewards",
+      "authors": "Saurabh Dash, Pierre Clavier, John Dang, Matthias Galle, Marzieh Fadaee, Ahmet Üstün, Beyza Ermis",
+      "date": "2026-05-27",
+      "pdf": "https://arxiv.org/pdf/2605.28561v1",
+      "score": "6.0",
+      "evidence": "Soft-RLVR通过清单式软奖励将稀疏信号密集化，解决长时域奖励分配问题。",
+      "tldr": "强化学习从可验证奖励（RLVR）依赖稀疏的完全正确信号，难以处理部分可验证任务。本文提出 Soft-RLVR，通过将提示分解为原子清单并逐项评分来产生软奖励，提供更密集的部分信用反馈。在指令遵循任务中，基于学习验证器的 Soft-RLVR 将 IFEval 提升 11.1 分。研究揭示了清单验证与整体验证的权衡，以及自验证中奖励膨胀的稳定化需求，为可验证 RLHF 提供新思路。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Reinforcement Learning from Verifiable Rewards (RLVR) has improved language models in domains such as mathematics and code, where correctness can be checked automatically. However, many important tasks are only partially verifiable: prompts contain multiple requirements, responses may satisfy some but not all of them, or no single reference answer might exist. We introduce Soft-RLVR, a framework for reinforcement learning from decomposed, learned verification signals. Soft-RLVR converts each prompt into a checklist of atomic requirements, scores candidate responses item by item with an LLM verifier, and trains on the resulting soft reward. Checklist-based rewards turn sparse pass/fail supervision into a denser partial-credit signal, but they also introduce a tradeoff: averaging item-level judgments can reduce verifier noise, while partial credit can reward incomplete responses. We formalize this tradeoff and identify conditions under which checklist-based verification gives a more reliable RL training signal than holistic verification. We further introduce Soft-SVeRL, a self-verifying variant of Soft-RLVR in which the policy also acts as the verifier. We show that self-verification is prone to reward inflation from overly permissive self-judgments, and that explicit stabilization is needed to prevent this collapse. In a controlled instruction-following setting with rule-based ground-truth evaluation, checklist-based Soft-RLVR improves IFEval by up to 11.1 points using only learned verifier rewards. Our experiments further show that verifier quality and checklist quality both affect downstream RL outcomes, and that explicit stabilization is essential for effective self-verification.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/02/2606.02194v1-coherent-off-policy-improvement-of-large-behavior-models-with-learned-rewards",
+      "section": "quick",
+      "title_en": "Coherent Off-Policy Improvement of Large Behavior Models with Learned Rewards",
+      "authors": "Christian Scherer, Joe Watson, Theo Gruner, Daniel Palenicek, Ingmar Posner, Jan Peters",
+      "date": "2026-06-01",
+      "pdf": "https://arxiv.org/pdf/2606.02194v1",
+      "score": "6.0",
+      "evidence": "提出用逆强化学习为稀疏奖励任务学习稠密奖励，解决长时域奖励分配。",
+      "tldr": "本文针对强化学习中稀疏奖励导致的样本效率低下问题，提出利用逆强化学习学习稠密奖励函数，从而提升策略优化效率。在灵巧操作任务上验证了学习奖励能有效指导策略，取得与专家演示相近的性能，为长时序无人机巡检任务中的奖励工程提供了新思路。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Distilling expert demonstration data into large generative models using behavioral cloning is a scalable approach to learning capable policies for robotic control, particularly for dexterous manipulation. Reinforcement learning (RL) can be used as a means to finetune these policies further using additional experience. An open question is whether RL is more sample-efficient than collecting more human demonstrations. Prior work has finetuned large pretrained policies in a scalable fashion by applying RL to a smaller residual policy that corrects the pretrained model. However, for the typical sparse reward tasks, RL algorithms can struggle to optimize the behavior in a sample-efficient manner. We explore inverse reinforcement learning, where a dense reward function is learned from expert demonstrations, potentially reducing the challenge of RL finetuning. We specifically consider coherent imitation learning, an IRL method that facilitates improvement of the BC policy through using a specific reward formulation with theoretical guarantees. We show that our IRL method maintains or improves the performance of pi-0.5 on all six sparse manipulation tasks and achieves a $\\geq 90\\%$ success rate on five out of six complex manipulation tasks, outperforming RL-based baselines using sparse rewards. By ensuring our initial pretrained finetuning policy is optimal for our initial reward and critic, our method circumvents the initial drop commonly seen in RL finetuning and enables faster improvement.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

@@ -6,32 +6,32 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-01
-- 运行时间：2026-06-01 22:16:30 UTC
+- 最新运行日期：2026-06-02
+- 运行时间：2026-06-02 22:17:44 UTC
 - 运行状态：成功
 - 本次总论文数：3
-- 精读区：3
-- 速读区：0
+- 精读区：0
+- 速读区：3
 
 ### 今日简报（AI）
-今日精读两篇8分强文，聚焦具身智能价值估计与深度研究规划新思路。  
-重点方向：用视觉特征落地机器人价值学习，以及面向深度研究的规划器中心强化学习框架。  
-建议关注将结构感知奖励引入大模型自主研究管线的实践尝试。
-- 详情：[/202606/01/README](/202606/01/README)
+今日速读三篇AI前沿论文：GPU加速无人机仿真器、软奖励自验证强化学习、学习型奖励策略优化。  
+最值得看：JAX驱动的“Crazyflow”实现精准可微无人机模拟；软验证框架用非二元奖励缓解RL训练不稳定。  
+想探索虚实结合或模型对齐？建议先从Crazyflow开源代码入手，感受GPU并行仿真潜力。
+- 详情：[/202606/02/README](/202606/02/README)
 
 ### 精读区论文标签
-1. [Feat2Go: Visual Feature-Grounded Value Estimation for Embodied Reinforcement Learning](/202606/01/2605.30795v1-feat2go-visual-feature-grounded-value-estimation-for-embodied-reinforcement-learning)  
-   标签：评分：8.0/10、query:uav-drl
-   evidence：面向长时域RL的细粒度价值估计解决奖励信号设计问题
-2. [Planner-Centric Reinforcement Learning for Deep Research with Structure-Aware Reward](/202606/01/2605.30824v1-planner-centric-reinforcement-learning-for-deep-research-with-structure-aware-reward)  
-   标签：评分：8.0/10、query:uav-drl
-   evidence：提出结构感知奖励用于强化学习中的长时程信用分配
-3. [Survival Reinforcement Learning: Toward Scalable Self-Supervised RL](/202606/01/2605.31273v1-survival-reinforcement-learning-toward-scalable-self-supervised-rl)  
-   标签：评分：8.0/10、query:uav-drl
-   evidence：生存值学习通过最大化目标驻留时间解决长时域奖励分配问题
+- 本次无精读推荐。
 
 ### 速读区论文标签
-- 本次无速读推荐。
+1. [Crazyflow: An Accurate, GPU-Accelerated, Differentiable Drone Simulator in JAX](/202606/02/2606.01478v1-crazyflow-an-accurate-gpu-accelerated-differentiable-drone-simulator-in-jax)  
+   标签：评分：7.0/10、query:uav-drl
+   evidence：提供GPU加速、可微分的无人机仿真器，可用于训练无人机任务的深度强化学习策略。
+2. [Soft-SVeRL: Self-Verified Reinforcement Learning with Soft Rewards](/202606/02/2605.28561v1-soft-sverl-self-verified-reinforcement-learning-with-soft-rewards)  
+   标签：评分：6.0/10、query:uav-drl
+   evidence：Soft-RLVR通过清单式软奖励将稀疏信号密集化，解决长时域奖励分配问题。
+3. [Coherent Off-Policy Improvement of Large Behavior Models with Learned Rewards](/202606/02/2606.02194v1-coherent-off-policy-improvement-of-large-behavior-models-with-learned-rewards)  
+   标签：评分：6.0/10、query:uav-drl
+   evidence：提出用逆强化学习为稀疏奖励任务学习稠密奖励，解决长时域奖励分配。
 
 
 <div class="dpr-home-promo-card">
