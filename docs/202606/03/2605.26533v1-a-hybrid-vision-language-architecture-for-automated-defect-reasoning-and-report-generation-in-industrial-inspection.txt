@@ -1,0 +1,331 @@
+Title: A Hybrid Vision-Language Architecture for Automated Defect Reasoning and Report Generation in Industrial Inspection
+
+URL Source: https://arxiv.org/pdf/2605.26533v1
+
+Published Time: Wed, 27 May 2026 00:54:57 GMT
+
+Number of Pages: 23
+
+Markdown Content:
+# A Hybrid Vision-Language Architecture for Automated Defect Reasoning and Report Generation in Industrial Inspection 
+
+## Malikussaid 1 and Imad Gohar 2* 
+
+1 School of Computing, Telkom University, Bandung, 40257, Indonesia. 
+
+2 Faculty of Engineering and Technology, School of Computing and Artificial Intelligence, Sunway University, Selangor, 47500, Malaysia. * Corresponding author(s). E-mail(s): imadg@sunway.edu.my; Contributing authors: malikussaid@student.telkomuniversity.ac.id; 
+
+Abstract 
+
+Automated industrial inspection requires both precise defect localization and structured maintenance report generation; in current practice these tasks are handled separately, with linguistic interpretation left to human experts. This paper describes a decoupled, edge-deployable pipeline for wind turbine blade inspection built from three components that each handle a distinct sub-task. The Eyes—a YOLO26-x-obb oriented bounding-box detector—localizes defects at dataset-native resolution. The Bridge—a deterministic, parameter-free encod-ing module—maps each detected bounding box to grid-referenced spatial tokens embedded in a structured prompt. The Brain—a 4-bit quantized Qwen-2.5-1.5B model adapted with Quantized Low-Rank Adaptation (QLoRA) on 947 synthet-ically generated maintenance reports—generates a structured JSON report from that prompt. Retrieval-Augmented Fine-Tuning (RAFT) further grounds each recommendation in indexed maintenance procedures. Five ablation experiments, scored by BLEU-4, ROUGE-L, Hallucination Rate (HR), and an LLM-as-a-Judge rubric, compare the pipeline against a monolithic vision-language model (VLM) baseline and against partial configurations in which one component is removed. The complete system achieves BLEU-4 = 0.41, HR = 4%, and Expert Score = 8.6/10, compared with 0.07, 65%, and 3.3/10 for the zero-shot VLM baseline. The QLoRA-adapted 1.5B model generates higher-quality reports than a 671B-parameter generalist API model given identical detection evidence, at 47 tokens per second on a single T4-class GPU. The results show that purpose-built decou-pled architecture with a small domain-specific training corpus outperforms a generalist end-to-end model on this structured generation task. 
+
+1 
+
+> arXiv:2605.26533v1 [cs.CV] 26 May 2026 Keywords: Multimodal Large Language Models, Defect Inspection, Visual Grounding, Digital Twin, Parameter-Efficient Fine-Tuning, QLoRA, YOLO, Retrieval-Augmented Generation, Wind Turbine
+
+# 1 Introduction 
+
+UAV-based imagery acquisition has become routine in wind turbine blade and railway infrastructure inspection under Industry 4.0 maintenance regimes [1]. Blade surface condition directly affects annual energy yield; leading-edge erosion and delamination each carry documented aerodynamic penalties that compound across a fleet, making inspection quality a concrete factor in low-carbon energy production [2]. Despite the automation of imagery acquisition, the interpretation step—identifying defect types, spatial extent, severity, and required maintenance action—remains manual and expert-dependent. Lightweight object detectors from the YOLO family localize defects reliably, achieving mAP@50 above 85% on domain benchmarks for turbine blade anomalies [3] and power-line insulator faults [4, 5]. What detectors do not produce is an engineering-language diagnosis. A maintenance coordinator needs to know not just that a bounding box falls at certain coordinates, but what failure mode that geometry implies, how urgently the affected component must be serviced, and which procedural protocol gov-erns the repair. Connecting detector output to those judgements currently requires a certified inspector. Large language models (LLMs) and multimodal vision-language models (VLMs) offer the text-generation capacity that could fill this gap. Deploying generalist VLMs in field inspection runs into three structural problems: 1. Domain hallucination. Generalist models lack grounding in maintenance stan-dards; they produce grammatically correct but procedurally incorrect recommen-dations [6, 7]. 2. Resolution loss. Most VLM vision encoders resize inputs to 224 ×224 or 336 ×336 pixels [8], a fixed constraint that suppresses fine-grained detail at which small-area surface defects are resolvable. 3. Training cost and data scarcity. Full parameter fine-tuning of a large VLM on the small annotated corpora available for industrial inspection causes overfitting and demands GPU resources incompatible with edge deployment; annotated defect datasets are scarce by their nature [9, 10]. We address these problems with a three-component pipeline applied to wind turbine blade inspection: 
+
+• The Eyes: a YOLO26-x-obb detector [11, 12] that localizes defects at dataset-native resolution through a configurable tiled inference mechanism designed for deployment on full-resolution UAV imagery. 2• The Bridge: a deterministic, parameter-free module that encodes each detected bounding box as a grid-referenced spatial token in a structured natural-language prompt. 
+
+• The Brain: a 4-bit quantized Qwen-2.5-1.5B language model fine-tuned with QLoRA on 947 domain-specific synthetic reports. The four contributions of this paper are: 1. The Bridge is designed, implemented, and ablated as a spatial-semantic encoding step. Injecting grid-mapped bounding-box coordinates into the prompt reduces Hallucination Rate by 29 percentage points relative to a text-only prompt baseline. 2. A 4-bit quantized 1.5B-parameter model fine-tuned on 947 synthetic reports gen-erates higher-scoring diagnostic text than a 671B-parameter zero-shot API model, while running at 47 tokens per second on a T4-class GPU. 3. The recall gap between YOLO26-x-obb and three monolithic VLMs is measured directly on the same 640 ×640 test images. Even at this resolution—below the 5280 ×2970 native DTU image size at which the tiling mechanism is intended to operate—VLM encoder rescaling to 336 ×336 pixels produces substantial small-defect recall shortfalls. 4. RAFT retrieval over a 42-procedure knowledge base reduces HR from 18% to 4% and raises Protocol Compliance Rate from 41% to 89% compared to the non-retrieval QLoRA configuration. 
+
+# 2 Literature Review 
+
+Automated visual inspection has evolved from hand-crafted feature pipelines toward unified multimodal reasoning systems. The sections below trace this trajectory and identify the gaps the present architecture targets. 
+
+## 2.1 Deterministic Visual Perception for Defect Localization 
+
+Automated optical inspection began with SIFT [13] and HOG features paired with SVMs; deep CNNs, and specifically the Faster R-CNN family [14] and the YOLO series, displaced those pipelines for near-real-time defect localization [15, 16]. YOLO26 [11, 12] adds a native oriented bounding-box head that fits rotated elongated defects without post-processing, which is directly relevant to blade surface anomalies at arbitrary orientations on curved geometry. UAV-deployed YOLO models have achieved mAP@50 above 85% for insulator faults on transmission lines [4, 5], multi-scale turbine blade surface defects [3, 17], and catenary fastener defects in railway infrastructure [18]. Liu et al. [19] embed prior knowledge of insulator geometry as spatial constraints within a vision-language feature space, improving detection precision at a lightweight parameter count. The 1.9M-parameter MobileViT-SLM of Tran et al. [20] shows that the edge-deployable CNN–Transformer hybrid detector class is not restricted to energy or surveillance applications—it transfers to selective-laser-melting quality control with sub-3-ms infer-ence on Jetson Nano hardware. Dwivedi et al. [21] report a 98.9%-accurate ViT 3classifier for wind turbine blade and solar panel defects from drone imagery, with a 5.4M-parameter model that fits edge-class hardware. Across all this work the detector output is a bounding box paired with a class label. No current detector maps pixel geometry to maintenance actions, failure-mode explanations, or procedure identifiers. That translation gap is what this paper addresses. 
+
+## 2.2 Multimodal Vision-Language Models: Capabilities and Limitations 
+
+CLIP established joint visual-text embedding that supports zero-shot image classi-fication [8]. Generative VLMs—LLaVA, BLIP-2, GPT-4V—extend this with causal language models that accept image–text prompts and produce free-form text. In industrial inspection, AnomalyGPT [6] reaches pixel-level anomaly localization and multi-turn diagnostic dialogue; FabGPT [22] targets wafer defect querying in IC fabrication with comparable capability. Three structural limitations constrain these models in field settings. First, the ViT encoders used by most VLMs resize inputs to 224 × 224 or 336 × 336 pixels [8]; on a 640 × 640 inspection image this is a 1.9 × linear spatial reduction before any feature extraction, sufficient to suppress small-area defects. Jiang et al. [23] document materially lower VLM performance on industrial anomaly benchmarks compared to natural image tasks. Second, generalist VLMs exhibit what we call the Plausibility-Validity Gap: they generate fluent reports containing incorrect maintenance codes, wrong urgency classifications, and non-existent procedure references [7, 24]. Third, zero-shot methods have no exposure to the narrow anomaly taxonomy of a given inspection context, making per-category recall unreliable [7]. 
+
+## 2.3 Hybrid and Decoupled Architectures 
+
+Several groups have separated the detection and reasoning stages. In escalator safety monitoring, Wang et al. [25] pair a YOLO detector with DeepSeek; structured detec-tion outputs constrain the LLM output space to event descriptions geometrically consistent with the detected objects. Zhao et al. [26] connect YOLO detection to an LLM through chain-of-thought prompt engineering for multi-view traffic scene understanding. Chen and Yin [27] build a closely analogous pipeline for construction site hazard reporting, producing structured reports from detected object states. Liu et al. [19] show that quantifiable physical priors embedded in the prompt improve localization without increasing model size. These results support the decoupled design: separating a specialized detector from a language model removes the requirement for large-scale multimodal fine-tuning and lets each component be updated independently. Published work does not, how-ever, provide (1) a controlled ablation isolating the spatial encoding step or (2) a demonstration of quantized fine-tuning adequate for edge deployment on such a pipeline. 42.4 Parameter-Efficient Fine-Tuning and Synthetic Data 
+
+Annotating mechanical failure data requires certified experts with access to operational equipment; failure events cannot be manufactured at scale [10, 28]. QLoRA [29] reduces trainable parameters by several orders of magnitude compared with full fine-tuning, enabling adaptation of billion-parameter models on 16 GB VRAM hardware. Gao et al. [30] show that LLM-generated synthetic images supplement underrepresented defect categories in YOLO training sets; we apply the same principle to the text domain, using a frontier teacher model to generate the report fine-tuning corpus. 
+
+## 2.5 Retrieval-Augmented Generation for Grounded Diagnostics 
+
+Retrieval-Augmented Generation (RAG) and its fine-tuning variant RAFT condition language model output on documents retrieved at inference time, which counters the Plausibility-Validity Gap by grounding recommendations in verified procedure text [31]. Cognitive-YOLO [31] uses retrieval of architectural components to guide LLM-driven detector design, with results that show the retrieval-augmented pattern transfers to narrow technical domains. 
+
+## 2.6 Digital Twin Integration 
+
+Digital twin (DT) platforms combine sensor time-series, physics-based failure models, and maintenance history to predict remaining useful life and schedule interven-tions [1, 32, 33]. Machine learning within the DT loop has shifted maintenance from reactive to predictive regimes [34, 35]. Domain adaptation bridges the simulation-to-reality gap that limits synthetic DT data [36, 37]; generative AI extends synthetic data production for DT training [38]. The JSON output generated by the pipeline described here—defect class, grid label, normalized OBB coordinates, severity code, procedure reference identifier, and urgency flag—maps directly to typed fields in stan-dard asset health record schemas, making the pipeline a candidate feed for existing DT condition monitoring systems [39]. 
+
+# 3 Proposed Methodology 
+
+The pipeline separates visual detection, spatial encoding, and language generation into three independently maintained components. The detection module and the lan-guage module are trained independently. The Bridge between them has no learnable parameters. 
+
+## 3.1 Dataset and Domain 
+
+The visual corpus is a subset of the DTU wind turbine blade image dataset [40], drone-acquired imagery of wind turbines originally at 5280 ×2970 pixels per frame. Gohar produced oriented bounding-box annotations for a 640 ×640-resampled version 5Fig. 1 System architecture of the proposed pipeline. Left: tiling pre-processing and YOLO26-x-obb detection ( The Eyes ). Centre: coordinate extraction, 3 × 3 grid mapping, and structured prompt assembly ( The Bridge ). Right: QLoRA-adapted Qwen-2.5-1.5B report generation ( The Brain ), with RAFT retrieval from ChromaDB shown as a dashed augmentation path. Arrows show data flow. 
+
+of these images using Label Studio [41, 42]. All training, validation, and evalua-tion in this paper use that annotated 640 ×640 corpus. Four defect categories are annotated: Coating Damage ( coating ), Dirt ( dirt ), Vortex Generator Missing Teeth (VG-missing-teeth ), and Markings ( markings ). The corpus totals 464 images, split 70/15/15% (325 training, 69 validation, 70 test) stratified by category. The 70-image test partition contains 71 coating , 84 dirt , 13 
+
+VG-missing-teeth , and 19 markings annotation instances—187 defect regions across 70 images. The dirt and coating classes are common; VG-missing-teeth is rare. The RAFT knowledge base is a set of 42 maintenance procedures covering the four active defect categories, drawn from publicly available wind turbine operation and maintenance guidelines and notional ISO 55001-aligned protocol descriptions. 
+
+## 3.2 System Pipeline Overview 
+
+At inference, an inspection image I ∈ RH×W ×3 enters The Eyes, which returns 
+
+N detections with oriented bounding-box coordinates and class labels. The Bridge encodes each detection as a structured natural-language descriptor and assembles a full prompt P . When RAFT is active, a per-class semantic query retrieves the top-1 matching procedure from a ChromaDB vector store and appends it to each detec-tion block in the prompt. The Brain processes P and generates a structured JSON maintenance report autoregressively. Figure 1 shows the full data flow. 
+
+## 3.3 The Eyes: Visual Detection 
+
+The perception module is YOLO26-x-obb [11, 12], selected for its native oriented bounding-box head and mAP/latency trade-off. The OBB head captures elongated defects at arbitrary angles on curved blade surfaces without requiring post-processing rotation corrections. 6Tiling for high-resolution deployment. The DTU dataset was annotated at 640 ×640 pixels, which equals the YOLO26-x-obb native input resolution. On this corpus the tiling stage produces one tile per image ( M = 1); the mechanism is designed for deployment on the original 5280 ×2970 DTU frames, where it remains active. At overlap ratio δ = 0 .20 and tile size Rdet = 640, the sliding-window partition 
+
+{Tj }Mj=1 = Tile( I, R det , δ ) (1) produces approximately 60 overlapping tiles per 5280 ×2970 image. Even at 640 ×640, the comparison with monolithic VLMs is informative: ViT-based encoders rescale inputs to 336 ×336 pixels—a 1.9 × linear reduction that measurably degrades small-defect recall (Section 4.1). On the original DTU frames, the corresponding area reduction would be (5280 × 2970) /(336 × 336) ≈ 139 ×, a far larger loss than the current experiments capture. Each tile Tj carries an offset oj = ( cj , r j ) for its top-left pixel in the original image coordinate system. The detector feyes runs on each tile independently: 
+
+Dlocal j = feyes (Tj ). (2) Local bounding-box coordinates are translated to global space: 
+
+Bglobal i = Blocal i ⊕ oj , (3) where ⊕ denotes element-wise coordinate addition. Non-Maximum Suppression over the aggregated detection set removes duplicates from overlapping tile margins, yielding the final set D = {d1, . . . , d N } in full-frame coordinates [3]. 
+
+Detection format. Each entry in D is a tuple 
+
+di = ⟨Bobb i , c i, s i⟩, (4) where Bobb i = {(xk, y k)}4 
+
+> k=1
+
+are the four corner coordinates of the OBB normalized to [0 , 1] 2, ci ∈ { coating , dirt , VG-missing-teeth , markings } is the class label, and 
+
+si ∈ [0 , 1] is the confidence score. 
+
+## 3.4 The Bridge: Spatial-Semantic Encoding 
+
+The Bridge is a deterministic, zero-parameter module. It translates detector output— bounding-box coordinates and class labels—into discrete tokens that a language model can process without any trained weights. 
+
+Centroid computation. The four OBB corners from result.obb.xyxyxyxy are normalized to [0 , 1] 2. The centroid is (xic, y ic) = 14
+
+> 4
+
+X
+
+> k=1
+
+xik, 14
+
+> 4
+
+X
+
+> k=1
+
+yik
+
+!
+
+. (5) 7Grid assignment. The image plane is partitioned into a 3 × 3 grid of named cells. The mapping φ : [0 , 1] 2 → L assigns each centroid a label from 
+
+L = {Top-Left (Leading Edge) , Top-Centre , Top-Right (Trailing Edge) , . . . , Bottom-Right }.
+
+(6) For column index u = ⌊3xc⌋ and row index v = ⌊3yc⌋:
+
+φ(xc, y c) = L[v · 3 + u], u, v ∈ { 0, 1, 2}. (7) 
+
+Prompt assembly. The full prompt is 
+
+P = [ Tsys ] ⊕
+
+> N
+
+M
+
+> i=1
+
+fbridge (di) ⊕ [Tquery ], (8) where ⊕ denotes sequence concatenation. A representative fbridge (di) reads: 
+
+> “Defect 1: VG-missing-teeth. Confidence: 91.3%. Location: Top-Right / Trailing Edge. OBB corners (normalized): [(0.71, 0.08), (0.79, 0.08), (0.79, 0.19), (0.71, 0.19)].”
+
+Because every positional claim in the generated report must be consistent with the OBB coordinates already in the context window, the Bridge prevents the language model from fabricating defect locations that contradict the detector output—a failure mode well-documented in zero-shot VLM inspection outputs [7, 26]. 
+
+RAFT augmentation. When active, each ci is submitted as a semantic query to a ChromaDB vector store [31] indexed over the 42-procedure knowledge base (embedding model: sentence-transformers/all-MiniLM-L6-v2 , top-1 retrieval). The matched procedure is appended to the detection block: 
+
+> “Retrieved Protocol: If VG-missing-teeth is confirmed, procedure VG-402A applies: replace the affected vortex generator strip within 14 days; inspect the adjacent 30 cm span for secondary delamination.”
+
+## 3.5 The Brain: Domain-Adapted Language Model 
+
+The generation module is Qwen-2.5-1.5B-Instruct . At 1.5B parameters it fits within the VRAM budget of a T4 GPU. Before domain adaptation the model produces grammatical text but has no knowledge of IEC 61400 blade inspection vocabulary, the target JSON schema, or procedure identifiers—gaps that make raw output unsafe for maintenance scheduling [28, 43]. 
+
+Synthetic training data. Ground-truth paired image–report data does not exist for this domain; expert annotation of each image with a maintenance report is pro-hibitively expensive. We use deepseek/deepseek-v3.2 accessed via OpenRouter as a teacher model: the Bridge output for each of the 947 training-partition images is submitted to the teacher, which produces a corresponding JSON report. A domain consultant reviewed a random 10% sample (95 reports): 78 passed (82%) and the remaining 17 were discarded and regenerated with revised prompts. This approach fol-lows Gao et al. [30] in using a frontier teacher to produce the training corpus, applied here to text rather than images. 8QLoRA fine-tuning. The model is loaded at 4-bit NormalFloat (NF4) quanti-zation via the unsloth library, consuming approximately 5.8 GB of VRAM. LoRA adapter matrices (rank r = 16, scale α = 32) are inserted at the query and value projection layers of all self-attention blocks: 
+
+h = W0x + αr BA x, (9) where W0 ∈ Rd×k is frozen, B ∈ Rd×r, and A ∈ Rr×k, with r = 16. Approximately 9.4 million parameters are trainable (0.6% of total). Training runs for 2 epochs at batch size 4, gradient accumulation 4, learning rate 3 × 10 −4 with cosine decay, and completes in approximately 2.3 hours on one T4 GPU. 
+
+# 4 Experimental Design and Results 
+
+## 4.1 Experiment 1: Resolution Degradation Validation 
+
+Motivation. The architecture rests on the claim that VLM vision-encoder downsam-pling causes recall shortfalls on small-area defects. This experiment measures that shortfall directly on the test split. 
+
+Protocol. All 70 images from the test split were evaluated by three VLM baselines and by YOLO26-x-obb. All images are 640 × 640 pixels. The three VLMs—LLaVA-1.5-7B loaded in 4-bit mode on a T4 GPU, GPT-4o-mini via API, and GPT-4V via API—internally rescale each 640 × 640 input to 336 × 336 pixels before feature extraction, a 1.9 × linear spatial reduction. Each VLM received the prompt: “You are an industrial inspector. Identify all defects visible in this wind turbine blade image. List each defect class and its approximate location.” Reported defect descriptions were matched to the four ground-truth class labels through a semantic equivalence dictionary that handles synonymous terminology. YOLO26-x-obb processed the same images at 640 × 640 without rescaling. 
+
+Metric. Per-class recall: the fraction of annotated defect instances correctly identified. 
+
+Results. Table 1 and Figure 2 give the results. YOLO26-x-obb achieves 3.9 × higher small-defect recall than GPT-4V (0.852 vs. 0.22). GPT-4V—the strongest commercial VLM tested—misses more than three-quarters of the small-area defect instances that the detector localizes. These exper-iments use 640 ×640 images; on the original 5280 ×2970 DTU frames, the VLM’s rescaling would represent an area compression of approximately 139 ×, a considerably larger spatial loss than what Table 1 captures. 
+
+## 4.2 Experiment 2: Bridge Spatial Grounding Ablation 
+
+Motivation. The Bridge injects bounding-box coordinates into the prompt. Without them, the language model infers defect positions from class names alone, which it does unreliably. 9Fig. 2 Per-class recall across four systems on the 70-image test set. VLM recall drops most sharply on the rare, small-area categories ( VG-missing-teeth and markings ); YOLO26-x-obb maintains high recall across all four classes. The inset shows a 640 × 640 test crop in which a markings instance is detected by YOLO26-x-obb but missed by all three VLMs. 
+
+Table 1 Recall on the 70-image test set: monolithic VLMs vs. YOLO26-x-obb 
+
+System Macro Recall (all 4 classes) Small-defect Recall a
+
+LLaVA-1.5-7B (4-bit, T4) 0.31 0.09 GPT-4o-mini (API) 0.44 0.17 GPT-4V (API) 0.51 0.22 
+
+YOLO26-x-obb (proposed) 0.875 0.852  
+
+> a
+
+Small-defect subset: VG-missing-teeth , markings , and coating 
+
+classes. The dirt class is excluded; it exhibits predominantly large-area contamination patterns with correspondingly higher VLM recall. 
+
+Protocol. From the 70-image test set, all images with at least one YOLO detection at si > 0.70 were selected, giving 50 images. For each, two prompts were constructed: (A) class labels and confidence scores only; (B) the full Bridge output including grid labels and normalized OBB corners. Both used identical system instructions and were submitted to deepseek/deepseek-v3.2 via OpenRouter, the backbone held fixed for this ablation. GPT-4o evaluated each generated report for Spatial Hallucination Rate 10 (SHR): the fraction of location-referencing sentences that contradict the annotated bounding boxes.        
+
+> Fig. 3 Bridge ablation. Left: report generated without Bridge coordinates, placing a trailing-edge defect incorrectly at the blade centre. Right: Bridge-augmented report citing the correct grid cell and OBB corners. Bottom: SHR comparison across the 50-image sample.
+
+Results.          
+
+> Table 2 Spatial Hallucination Rate with and without Bridge coordinate injection (deepseek-v3.2 backbone, n= 50 images)
+> Condition SHR ( ↓)∆Without Bridge (class + confidence only) 58% —With Bridge (class + confidence + grid + OBB) 14% −44 pp
+
+Adding bounding-box coordinates to the prompt drops SHR from 58% to 14%— a 44 percentage-point reduction with no model training. This is the largest zero-cost performance gain in the ablation study. 
+
+## 4.3 Experiment 3: QLoRA Fine-Tuning 
+
+Motivation. The Bridge fixes spatial grounding; QLoRA fixes domain vocabulary and report schema. This experiment isolates the fine-tuning contribution by holding visual grounding constant while varying model scale and adaptation. 
+
+Protocol. Four generative configurations were evaluated on the full 70-image test split: 1. DeepSeek-V3 (671B parameters, no Bridge). 11 2. DeepSeek-V3 (with Bridge, no fine-tuning). 3. Qwen-2.5-1.5B base (with Bridge, no QLoRA). 4. Qwen-2.5-1.5B QLoRA (with Bridge, no RAFT)—the proposed pipeline before retrieval augmentation. Each configuration generated one report per test image. Reports were scored against expert-written reference reports by BLEU-4 and ROUGE-L, and evaluated by the LLM-as-a-Judge pipeline (GPT-4o) on Factuality, Domain Alignment, and Action-ability (each 1–10, averaged as Expert Score). 
+
+Results.                      
+
+> Table 3 Generative quality: QLoRA fine-tuning ablation (70-image test split)
+> Configuration BLEU-4 (↑)ROUGE-L (↑)HR (↓)Expert Score /10 ( ↑)
+> DeepSeek-V3 (no Bridge) 0.09 0.21 61% 3.8 DeepSeek-V3 (with Bridge) 0.19 0.33 29% 5.9 Qwen-2.5-1.5B base (with Bridge) 0.14 0.27 38% 4.6
+> Qwen-2.5-1.5B QLoRA (with Bridge) 0.36 0.51 18% 7.4
+
+The QLoRA-adapted 1.5B model outperforms the 671B-parameter DeepSeek-V3 on every metric. The un-adapted Qwen base model ranks last: without QLoRA it produces grammatically correct text but has no knowledge of the target JSON schema or inspection vocabulary, and so falls below even the much larger generalist baseline. Fine-tuning on 947 domain-specific examples closes that gap. For batch inference, the local model processes at 47 tokens/second versus network-latency-bound API calls—a 6.3 × throughput advantage in batch-mode scenarios. 1
+
+## 4.4 Experiment 4: RAFT Integration 
+
+Motivation. QLoRA adapts vocabulary and report structure, but the model may still generate maintenance recommendations that are plausible-sounding yet non-compliant with the applicable procedure. RAFT retrieves verified protocol text at inference time and appends it to the prompt. 
+
+Protocol. The ChromaDB knowledge base was indexed over 42 procedure entries spanning the four defect categories (embedding: all-MiniLM-L6-v2 , top-1 retrieval). At inference, each detected class ci is submitted as a semantic query; the matched procedure is appended to its detection block. The resulting RAFT-augmented system was evaluated on the 70-image test split. Protocol Compliance Rate (PCR) was scored by a domain expert: the fraction of maintenance recommendations directly traceable to the retrieved procedure text. 
+
+Results.          
+
+> 1Throughput ratio describes batch-mode processing. Single-request comparisons depend on network conditions and server load.
+
+12 Fig. 4 QLoRA training dynamics. Solid line (left axis): training loss. Dashed line (right axis): validation BLEU-4. The shaded band shows GPU VRAM utilisation, which stabilises near 5.8 GB throughout training. Markers indicate training start, end of epoch 1, and the saved checkpoint.              
+
+> Table 4 RAFT ablation: impact of retrieval augmentation (70-image test split)
+> Configuration BLEU-4 (↑)HR (↓)PCR (↑)Expert Score /10 ( ↑)
+> QLoRA, no RAFT 0.36 18% 41% 7.4
+> QLoRA + RAFT (full system) 0.41 4% 89% 8.6
+
+RAFT drops HR from 18% to 4% and raises PCR from 41% to 89%. The BLEU-4 gain (+0.05) is modest because reference reports were written without retrieved procedures; the Expert Score gain (+1.2) reflects the operational improvement in recommendation quality that surface-level n-gram overlap does not capture. At 4% HR, a turbine such as the one represented by test image image 105.jpg (1 coating 
+
+and 7 dirt instances; 8 total defects) produces a report with fewer than one incorrect sentence on average—a reliability level closer to direct use in maintenance scheduling without mandatory expert review [43]. 
+
+## 4.5 Experiment 5: LLM-as-a-Judge Evaluation Pipeline 
+
+Motivation. Manual expert scoring does not scale to hundreds of generated reports. An automated but calibrated rubric is needed. 13 Protocol. Each generated report was submitted to GPT-4o via OpenRouter with the rubric: 
+
+“You are a certified wind turbine maintenance engineer. Grade the following maintenance report on three axes (1–10 each): (1) Factuality—every defect location and class in the report matches the YOLO detection array provided; (2) Domain Alignment—terminology, units, and severity language are appropriate for IEC 61400-compliant blade inspection; (3) Actionability—the maintenance steps are specific, sequenced, and executable by a field technician. Return JSON: {‘factuality’: N, ‘domain alignment’: N, ‘actionability’: N, ‘mean’: N, ‘rationale’: ‘...’ }.” 
+
+The YOLO detection array for the test image was included in the judge con-text for factuality grounding. A 20-image stratified subsample was re-scored with Claude 3.5 Sonnet to estimate inter-judge agreement. 
+
+Results. Pearson r = 0 .91 ( p < 0.001, 95% CI [0.85, 0.95]) between GPT-4o and Claude 3.5 Sonnet scores on the 20-image subsample, confirming acceptable inter-judge consistency. Mean GPT-4o latency per report: 3.2 seconds. Figure 5 shows the scatter plot.          
+
+> Fig. 5 Inter-judge consistency. GPT-4o vs. Claude 3.5 Sonnet Expert Scores on the 20-image strat-ified subsample. The y=xreference line and Pearson r= 0 .91 (95% CI [0.85, 0.95], p < 0.001) are annotated. Rug plots show marginal score distributions.
+
+14 4.6 Full Ablation Study 
+
+Table 5 consolidates all five experiments. Each row adds one architectural component to the previous. Figure 6 shows the progression.                                   
+
+> Table 5 Full ablation: architecture components vs. report generation quality
+> Configuration Visual grounding BLEU-4 (↑)HR (↓)Expert Score ( ↑)
+> Zero-shot VLM (GPT-4V) Full image, 336 2px 0.07 65% 3.3 Prompt CoT (DeepSeek-V3, no Bridge) Class + confidence only 0.09 61% 3.8 Eyes + LLM, no Bridge Class + confidence only 0.12 49% 4.7 Eyes + Bridge + DeepSeek-V3 Text + grid + OBB 0.19 29% 5.9 Eyes + Bridge + Qwen base Text + grid + OBB 0.14 38% 4.6 Eyes + Bridge + QLoRA Text + grid + OBB 0.36 18% 7.4
+> Eyes + Bridge + QLoRA + RAFT Text + grid + OBB + retrieval 0.41 4% 8.6
+> HR = Hallucination Rate. CoT = Chain of Thought. All generative configurations share the same YOLO26-x-obb detector front-end, except the zero-shot VLM row, which submits the raw image directly to GPT-4V without detection. Expert Score is the mean GPT-4o LLM-as-a-Judge score across Factuality, Domain Alignment, and Actionability (1–10 each).
+
+Three patterns stand out. First, moving from “Eyes + LLM, no Bridge” to “Eyes + Bridge + DeepSeek-V3” changes only the prompt—no model change—and yields a 20 pp HR reduction and a 1.2-point Expert Score gain. Second, the un-adapted Qwen base model falls below the much larger DeepSeek-V3 with Bridge; QLoRA reverses that ordering, showing that at the sizes tested, adaptation quality rather than parameter count determines performance. Third, RAFT gives the largest single-component Expert Score gain (+1.2) and HR reduction ( −14 pp) of any step in the table. 
+
+## 4.7 Detector Performance 
+
+Table 6 reports YOLO26-x-obb performance on the 70-image test split ( δ = 0 .20). 
+
+# 5 Discussion 
+
+## 5.1 The resolution comparison is conservative 
+
+The experiments in Table 1 use 640 × 640 images, below the native DTU frame size of 5280 ×2970 pixels. At 640 × 640, VLM encoders impose a 1.9 × linear downsampling to 336 ×336. Even this moderate compression produces a macro recall shortfall of 0.365 relative to YOLO26-x-obb (0.875 vs. 0.51 for GPT-4V) and a small-defect shortfall of 0.632 (0.852 vs. 0.22). A missed VG-missing-teeth defect left uninspected can progress to trailing-edge delamination within one service season, with compounding energy yield and repair cost consequences [33]. At native 5280 ×2970 resolution, the 15 Fig. 6 Full ablation progression (Table 5). Bars (left axis): BLEU-4. Line with markers (right axis): Expert Score. Bar fill opacity encodes Hallucination Rate (darker = lower HR). The vertical dashed line separates VLM baselines (left) from proposed configurations (right). 
+
+Table 6 YOLO26-x-obb detection performance on the DTU test split (δ = 0 .20) 
+
+Subset mAP@0.5 mAP@0.5:0.95 Precision Recall 
+
+All classes 0.907 0.676 0.787 0.875 VG-missing-teeth a 0.995 — 1.000 1.000 Markings a 0.995 — 1.000 1.000  
+
+> a
+
+Per-class metrics for the two rarest categories (13 and 19 test instances respectively), at the F1-maximising confidence threshold (0.523 for 
+
+VG-missing-teeth ; 0.584 for markings ). mAP@0.5:0.95 was not separately computed at the per-class level. 
+
+VLM area compression factor would be approximately 139 ×, a loss the current exper-iments do not capture. The gap documented in Table 1 is therefore a lower bound on the localization advantage of a dedicated detection front-end. 
+
+## 5.2 Spatial encoding is the highest-return zero-cost intervention 
+
+The Bridge reduces SHR by 44 pp (Experiment 2) and overall HR by 20 pp in the ablation table (“Eyes + LLM, no Bridge” at 49% vs. “Eyes + Bridge + DeepSeek-V3” at 29%), with no model training. The mechanism works because the language model cannot fabricate a position that contradicts coordinates already in its context 16 window. For practitioners building a detection-to-report pipeline, this result suggests a practical sequencing: get spatial grounding in place first, then fine-tune. Fine-tuning on a spatially grounded baseline is more sample-efficient than fine-tuning on a baseline that still confabulates positions. 
+
+## 5.3 Domain adaptation outweighs model scale on this task 
+
+The QLoRA-adapted 1.5B model outscores the 671B-parameter DeepSeek-V3 on all four metrics in Table 3. The un-adapted Qwen base model, same architecture, same size, ranks last: without fine-tuning it generates fluent text but has no knowledge of the JSON schema or inspection procedure vocabulary. QLoRA on 947 examples corrects both deficits in 2.3 hours on one T4 GPU. For deployment at sites with limited connectivity—offshore wind facilities, remote transmission corridors—the local model’s 47 tokens/second throughput matters independently of API latency [29]. 
+
+## 5.4 RAFT addresses the gap between plausible and compliant recommendations 
+
+At 4% HR and 89% PCR, the full pipeline produces reports in which fewer than one sentence per multi-defect inspection is procedurally incorrect, and nearly nine in ten recommendations are traceable to a specific retrieved procedure. The gap between QLoRA alone (18% HR, 41% PCR) and QLoRA + RAFT (4% HR, 89% PCR) is too large to attribute to the modest BLEU-4 gain (+0.05); it reflects the shift from para-metric to retrieved knowledge for the recommendation step. Audit traceability—each recommendation cites a retrievable procedure identifier—is a practical requirement of ISO 55001 asset management and ESG maintenance record-keeping [32]. A main-tenance coordinator cannot schedule a field team from a report they cannot verify; RAFT makes the source of each recommendation verifiable against a version-controlled knowledge base. 
+
+## 5.5 Digital twin integration pathway 
+
+The JSON output fields—defect class, grid label, normalized OBB coordinates, severity code, procedure reference identifier, and urgency flag—map to typed fields in standard asset health record schemas used by wind turbine digital twin plat-forms [33, 34]. The urgency flag can trigger automated scheduling; the procedure reference provides the ISO 55001 audit link; normalized OBB coordinates update the spatial defect map on the blade surface model of a 3D twin [37, 38]. In this fram-ing the pipeline functions as a structured data feed to existing condition monitoring infrastructure rather than a standalone system [39]. 
+
+## 5.6 Limitations and future work 
+
+The RAFT knowledge base covers 42 procedures across four defect categories; it is not a comprehensive OEM maintenance manual. Scaling to a full document cor-pus requires evaluation of retrieval precision to avoid appending tangentially related procedures. The synthetic training corpus was reviewed at 10% sample rate (82% 17 acceptance); no comparison against genuine expert-authored reports at scale exists. All five experiments used the 640 ×640 annotated corpus; no experiment demonstrates YOLO26-x-obb tiling on native 5280 ×2970 DTU frames, which is the primary intended operating mode for the tiling mechanism. Future work should close this gap with OBB-annotated native-resolution imagery, or by running Experiment 1’s VLM comparison directly on full-resolution frames. Planned extensions include pipeline adaptation for railway insulator inspection [4, 5, 18], multi-round diagnostic dialogue following the AnomalyGPT [6] interaction model, and federated knowledge base updates across distributed inspection fleets [38]. LLM-guided architecture search [44] may reduce the manual backbone configuration needed when the pipeline is ported to new inspection domains. 
+
+# 6 Conclusion 
+
+This paper presents and ablates a three-component pipeline for wind turbine blade defect inspection and maintenance report generation. Separating detection (YOLO26-x-obb), spatial encoding (The Bridge), domain-adapted generation (QLoRA Qwen-2.5-1.5B), and retrieval augmentation (RAFT) into independently maintainable components produces reports that are more accurate and protocol-compliant than those from any monolithic VLM tested. Five experiments quantify each component’s contribution. YOLO26-x-obb achieves 3.9 × higher small-defect recall than GPT-4V on the same 640 ×640 test images (0.852 vs. 0.22). The Bridge reduces SHR by 44 pp at zero training cost. QLoRA on 947 synthetic reports lifts the adapted 1.5B model above a 671B-parameter generalist on BLEU-4 (0.36 vs. 0.19), ROUGE-L (0.51 vs. 0.33), HR (18% vs. 29%), and Expert Score (7.4 vs. 5.9), while running at 47 tokens/second on a T4-class GPU. RAFT then reduces HR to 4% and raises PCR to 89%, bringing report quality to a level compatible with direct integration into ISO 55001-aligned asset management workflows. The consistent result across these experiments is that on a constrained structured-generation task with limited training data, a purpose-adapted small model with explicit spatial context and verified knowledge retrieval outperforms scaling a general-ist model. How broadly this pattern holds as defect taxonomy and inspection domains expand is an open question, but the ablation here provides a concrete quantitative baseline. 
+
+Acknowledgements. The authors thank Shihavuddin and Chen and Danmarks Tekniske Universitet for publishing the wind turbine blade inspection image set. 
+
+Declarations. 
+
+• Funding: This research received no specific grant from any funding agency in the public, commercial, or not-for-profit sectors. 
+
+• Conflict of interest: The authors declare no competing interests. 
+
+• Ethics approval and consent to participate: Not applicable. 
+
+• Consent for publication: Not applicable. 
+
+• Data availability: The DTU wind turbine blade image dataset is publicly available at https://data.mendeley.com/datasets/hd96prn3nc/2. The oriented bounding-box 18 annotations used in this study are available at https://github.com/imadgohar/ DTU-annotations. The synthetic training corpus and RAFT knowledge base will be shared on reasonable request. 
+
+• Code availability: The inference pipeline and training scripts are available on reasonable request to the corresponding author. 
+
+• Author contribution: Malikussaid: conceptualization, software, investigation, data curation, writing—original draft. Imad Gohar: conceptualization, methodology, annotation, supervision, writing—review and editing. 
+
+# References 
+
+[1] Zhong, D., Xia, Z., Zhu, Y., Duan, J.: Overview of predictive maintenance based on digital twin technology. Heliyon 9(4), 14534 (2023) https://doi.org/10.1016/j. heliyon.2023.e14534 [2] Hamdi, A., Noura, H.N.: Ai-driven damage detection in wind turbines: Drone imagery and lightweight deep learning approaches. Future Internet 17 (11), 528 (2025) https://doi.org/10.3390/fi17110528 [3] Si, Y., Ding, Y., Ge, F., Wu, X., Liu, J., Ding, D., Zhang, H.: A multi-scale defect detection network for wind turbines utilizing margin aware features. Mea-surement Science and Technology 36 (9), 095416 (2025) https://doi.org/10.1088/ 1361-6501/ae08db [4] Zheng, B., Angkawisittpan, N., Huang, L., Sonasang, S.: An improved yolov11n algorithm with conv2former and pw-iou for uav inspection of power line insula-tors. Engineering, Technology & Applied Science Research 15 (6), 30267–30276 (2025) https://doi.org/10.48084/etasr.14220 [5] Deng, Z., Li, X., Yang, R.: Rml-yolo: An insulator defect detection method for uav aerial images. Applied Sciences 15 (11), 6117 (2025) https://doi.org/10.3390/ app15116117 [6] Gu, Z., Zhu, B., Zhu, G., Chen, Y., Tang, M., Wang, J.: Anomalygpt: Detecting industrial anomalies using large vision-language models. Proceedings of the AAAI Conference on Artificial Intelligence 38 (3), 1932–1940 (2024) https://doi.org/10. 1609/aaai.v38i3.27963 [7] Cai, W., Huang, W., Cao, Y., Huang, C., Yuan, F., Zhang, B., Wen, J.: Towards vlm-based hybrid explainable prompt enhancement for zero-shot indus-trial anomaly detection. In: Proceedings of the Thirty-Fourth International Joint Conference on Artificial Intelligence, pp. 711–719. International Joint Conferences on Artificial Intelligence Organization, ??? (2025). https://doi.org/10.24963/ijcai. 2025/80 [8] Zhang, J., Huang, J., Jin, S., Lu, S.: Vision-language models for vision tasks: A survey. IEEE Transactions on Pattern Analysis and Machine Intelligence 46 (8), 19 5625–5644 (2024) https://doi.org/10.1109/TPAMI.2024.3369699 [9] Yang, M., Wang, Z.: Image synthesis under limited data: A survey and taxonomy. International Journal of Computer Vision 133 (6), 3689–3726 (2025) https://doi. org/10.1007/s11263-025-02357-y [10] Bai, Y., Zhang, J., Dong, Y., Cao, Y., Tian, G.: Dual-Path Frequency Discrim-inators for Few-Shot Anomaly Detection (2024). https://doi.org/10.2139/ssrn. 4862099 [11] Ultralytics: Ultralytics YOLO26. https://docs.ultralytics.com/models/yolo26/ (2026) [12] Sapkota, R., Cheppally, R.H., Sharda, A., Karkee, M.: YOLO26: Key archi-tectural enhancements and performance benchmarking for real-time object detection. arXiv preprint arXiv:2509.25164 (2025) [13] Lowe, D.G.: Distinctive image features from scale-invariant keypoints. Interna-tional Journal of Computer Vision 60 (2), 91–110 (2004) https://doi.org/10.1023/ B:VISI.0000029664.99615.94 [14] Ren, S., He, K., Girshick, R., Sun, J.: Faster r-cnn: Towards real-time object detection with region proposal networks. IEEE Transactions on Pattern Analy-sis and Machine Intelligence 39 (6), 1137–1149 (2017) https://doi.org/10.1109/ TPAMI.2016.2577031 [15] Ren, Z., Fang, F., Yan, N., Wu, Y.: State of the art in defect detection based on machine vision. International Journal of Precision Engineering and Manufacturing-Green Technology 9(2), 661–691 (2022) https://doi.org/10.1007/ s40684-021-00343-6 [16] Tulbure, A.-A., Tulbure, A.-A., Dulf, E.-H.: A review on modern defect detection models using dcnns – deep convolutional neural networks. Journal of Advanced Research 35 , 33–48 (2022) https://doi.org/10.1016/j.jare.2021.03.015 [17] Zhao, B., Li, X., Wang, G., Gao, H., Lv, C., Cao, S.: End-to-end wind turbine damage detection model based on multi-branch feature sensing and contextual information reuse in harsh environments. Renewable Energy 253 , 123489 (2025) https://doi.org/10.1016/j.renene.2025.123489 [18] Chen, J., Liu, Z., Wang, H., Nunez, A., Han, Z.: Automatic defect detection of fasteners on the catenary support device using deep convolutional neural network. IEEE Transactions on Instrumentation and Measurement 67 (2), 257–269 (2018) https://doi.org/10.1109/TIM.2017.2775345 [19] Liu, S., Zhang, W., Yuan, S., Bao, H., Mao, W., Xi, S.: A lightweight model for 20 insulator defect detection based on vision–language modeling and prior knowl-edge in power systems. Processes 13 (11), 3714 (2025) https://doi.org/10.3390/ pr13113714 [20] Tran, N.-Q., Nguyen, H.-C., Mach, B.-N., Nguyen, N.N., Nguyen, T.Q.: Mobilevit-slm: real-time edge-deployable cnn–transformer hybrid for fine-grained scan line defect classification in additive manufacturing. Journal of Intelligent Manufactur-ing (2025) https://doi.org/10.1007/s10845-025-02767-2 [21] Dwivedi, D., Babu, K.V.S.M., Yemula, P.K., Chakraborty, P., Pal, M.: Identifica-tion of surface defects on solar pv panels and wind turbine blades using attention based deep learning model. Engineering Applications of Artificial Intelligence 
+
+131 , 107836 (2024) https://doi.org/10.1016/j.engappai.2023.107836 [22] Jiang, Y., Lu, X., Jin, Q., Sun, Q., Wu, H., Zhuo, C.: Fabgpt: An efficient large multimodal model for complex wafer defect knowledge queries. In: Proceedings of the 43rd IEEE/ACM International Conference on Computer-Aided Design, pp. 1–8. ACM, ??? (2024). https://doi.org/10.1145/3676536.3676750 [23] Jiang, Y., Yan, X., Ji, G.-P., Fu, K., Sun, M., Xiong, H., Fan, D.-P., Khan, F.S.: Effectiveness assessment of recent large vision-language models. Visual Intelligence 2(1), 17 (2024) https://doi.org/10.1007/s44267-024-00050-1 [24] Bukhary, N., Ahmad, M., Rashad, K., Rai, S., Shapsough, S., Kaddoura, Y., Dghaym, D., Zualkernan, I.: Few-shot evaluation of vision language models for detecting visual defects in autonomous vehicle software requirement specifica-tions. IEEE Access 13 , 117914–117942 (2025) https://doi.org/10.1109/ACCESS. 2025.3586554 [25] Wang, Q., Wang, D., Lu, J., Xiao, G., Liang, D., Lu, G., Shao, H.: Sal-yolo-deepseek: a lightweight real-time detection and llm-driven decision framework for intelligent escalator safety monitoring. Scientific Reports 15 (1), 40600 (2025) https://doi.org/10.1038/s41598-025-24260-9 [26] Zhao, Y., Ma, T., Wang, Z., Zhang, Z., Li, C., Liu, S., Cui, Z., Lv, M., Yu, H., Peng, Z.: A multiview-integrated framework for traffic scene understanding based on yolo and llm. Journal of Advanced Transportation 2026 (1) (2026) https: //doi.org/10.1155/atr/2814128 [27] Chen, Q., Yin, X.: Tailored vision-language framework for automated hazard identification and report generation in construction sites. Advanced Engineering Informatics 66 , 103478 (2025) https://doi.org/10.1016/j.aei.2025.103478 [28] Wang, Z., Fan, Z., Tan, S., Zhong, Y., Yuan, Y., Li, H., Jiang, H., Zhang, W., Shao, F., Wang, H., Xiao, J.: Mau-gpt: Enhancing multi-type industrial anomaly understanding via anomaly-aware and generalist experts adaptation. Proceedings of the AAAI Conference on Artificial Intelligence 40 (31), 26787–26795 (2026) 21 https://doi.org/10.1609/aaai.v40i31.39889 [29] Zheng, Y., Chen, Y., Qian, B., Shi, X., Shu, Y., Chen, J.: A review on edge large language models: Design, execution, and applications. ACM Computing Surveys 
+
+57 (8), 1–35 (2025) https://doi.org/10.1145/3719664 [30] Gao, L., Ran, T., Zou, H., Wu, H.: Cotton leaf disease detection using llm-synthetic data and demm-yolo model. Agriculture 15 (15), 1712 (2025) https: //doi.org/10.3390/agriculture15151712 [31] Zhao, J.: Cognitive-yolo: Llm-driven architecture synthesis from first principles of data for object detection (2025) https://doi.org/10.48550/arXiv.2512.12281 [32] Nagrani, S., Narwane, V.S.: An exploration of factors influencing the adop-tion of digital twin technology in predictive maintenance. Journal of Quality in Maintenance Engineering 32 (1), 269–290 (2026) https://doi.org/10.1108/ JQME-05-2025-0055 [33] Leon-Medina, J.X., Tibaduiza, D.A., Par´ es, N., Pozo, F.: Digital twin technology in wind turbine components: A review. Intelligent Systems with Applications 26 ,200535 (2025) https://doi.org/10.1016/j.iswa.2025.200535 [34] Chen, C., Fu, H., Zheng, Y., Tao, F., Liu, Y.: The advance of digital twin for predictive maintenance: The role and function of machine learning. Journal of Manufacturing Systems 71 , 581–594 (2023) https://doi.org/10.1016/j.jmsy.2023. 10.010 [35] Abd Wahab, N.H., Hasikin, K., Lai, K.W., Xia, K., Bei, L., Huang, K., Wu, X.: Systematic review of predictive maintenance and digital twin technologies challenges, opportunities, and best practices. PeerJ Computer Science 10 , 1943 (2024) https://doi.org/10.7717/peerj-cs.1943 [36] Chen, Z., Fu, H., Zeng, Z.: A domain adaptation neural network for digital twin-supported fault diagnosis. In: 2025 International Conference on Control, Automation and Diagnosis (ICCAD), pp. 1–6. IEEE, ??? (2025). https://doi.org/ 10.1109/ICCAD64771.2025.11099349 [37] Hnaien, I.B., Gascard, E., Simeu-Abazi, Z., Dhouibi, H., Duong, Q.B.: Unsu-pervised anomaly detection in robotic systems via high-fidelity digital twins and deep autoencoders. International Journal of Intelligent Robotics and Applications (2025) https://doi.org/10.1007/s41315-025-00509-4 [38] Mikolajewska, E., Mikolajewski, D., Mikolajczyk, T., Paczkowski, T.: Genera-tive ai in ai-based digital twins for fault diagnosis for predictive maintenance in industry 4.0/5.0. Applied Sciences 15 (6), 3166 (2025) https://doi.org/10.3390/ app15063166 22 [39] Gomaa, A.: Digital twins for improving proactive maintenance management. Engineering Science 9(3), 60–70 (2024) https://doi.org/10.11648/j.es.20240903. 12 [40] Shihavuddin, A., Chen, X.: DTU – Drone inspection images of wind tur-bine. Mendeley Data. Version 2. Mendeley Data. https://doi.org/10.17632/ hd96prn3nc.2 (2018) [41] Gohar, I.: DTU-annotations: Annotations for the DTU Wind Turbine Images Dataset. GitHub (2023) [42] Tkachenko, M., Malyuk, M., Holmanyuk, A., Liubimov, N.: Label Studio: Data labeling software. Open source software available from https://github.com/ HumanSignal/label-studio (2020–2025) [43] Wang, T., Zhang, B., Jiang, D., Li, D.: A multimodal large language model framework for intelligent perception and decision-making in smart manufacturing. Sensors 25 (10), 3072 (2025) https://doi.org/10.3390/s25103072 [44] Yu, Y., Zutty, J.: Llm-guided evolution: An autonomous model optimization for object detection. In: Proceedings of the Genetic and Evolutionary Computation Conference Companion, pp. 2363–2370. ACM, ??? (2025). https://doi.org/10. 1145/3712255.3734340 23

@@ -1,0 +1,56 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-03T22:22:55.628178+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2605.26533v1",
+      "source": "arxiv",
+      "title": "A Hybrid Vision-Language Architecture for Automated Defect Reasoning and Report Generation in Industrial Inspection",
+      "abstract": "Automated industrial inspection requires both precise defect localization and structured maintenance report generation; in current practice these tasks are handled separately, with linguistic interpretation left to human experts. This paper describes a decoupled, edge-deployable pipeline for wind turbine blade inspection built from three components that each handle a distinct sub-task. The Eyes a YOLO26-x-obb oriented bounding-box detector localizes defects at dataset-native resolution. The Bridge a deterministic, parameter-free encoding module maps each detected bounding box to grid-referenced spatial tokens embedded in a structured prompt. The Brain a 4-bit quantized Qwen-2.5-1.5B model adapted with Quantized Low-Rank Adaptation (QLoRA) on 947 synthetically generated maintenance reports generates a structured JSON report from that prompt. Retrieval-Augmented Fine-Tuning (RAFT) further grounds each recommendation in indexed maintenance procedures. Five ablation experiments, scored by BLEU-4, ROUGE-L, Hallucination Rate (HR), and an LLM-as-a-Judge rubric, compare the pipeline against a monolithic vision-language model (VLM) baseline and against partial configurations in which one component is removed. The complete system achieves BLEU-4 0.41, HR=4%, and Expert Score = 8.6/10 compared with 0.07, 65%, and 3.3/10 for the zero-shot VLM baseline. The QLoRA-adapted 1.5B model generates higher-quality reports than a 671B-parameter generalist API model given identical detection evidence, at 47 tokens per second on a single T4-class GPU. The results show that purpose-built decoupled architecture with a small domain-specific training corpus outperforms a generalist end-to-end model on this structured generation task.",
+      "authors": [
+        "Malikussaid",
+        "Imad Gohar"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.CL",
+        "cs.LG"
+      ],
+      "published": "2026-05-26T04:27:38+00:00",
+      "link": "https://arxiv.org/pdf/2605.26533v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "hybrid vision-language pipeline for automated defect reasoning and report generation in industrial inspection",
+      "llm_evidence_cn": "用于工业检测的自动缺陷推理与报告生成的混合视觉-语言流水线",
+      "llm_evidence": "用于工业检测的自动缺陷推理与报告生成的混合视觉-语言流水线",
+      "canonical_evidence": "用于工业检测的自动缺陷推理与报告生成的混合视觉-语言流水线",
+      "llm_tldr_en": "Presents a decoupled, edge-deployable pipeline for wind turbine blade inspection: a YOLO-based detector, a spatial token encoding bridge, and a quantized LLM for defect reasoning and report generation.",
+      "llm_tldr_cn": "针对工业检测中缺陷定位与结构化报告分离的问题，提出解耦流水线：采用YOLO定向边界框检测器定位缺陷，用确定性编码将边界框映射为空间标记，再通过量化大模型进行缺陷推理和报告生成，实现边缘可部署的自动检测与报告，在风电叶片数据上验证了有效性。",
+      "llm_tldr": "针对工业检测中缺陷定位与结构化报告分离的问题，提出解耦流水线：采用YOLO定向边界框检测器定位缺陷，用确定性编码将边界框映射为空间标记，再通过量化大模型进行缺陷推理和报告生成，实现边缘可部署的自动检测与报告，在风电叶片数据上验证了有效性。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "transmission line defect detection from UAV imagery",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

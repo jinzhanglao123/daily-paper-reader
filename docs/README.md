@@ -6,32 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-02
-- 运行时间：2026-06-02 22:17:44 UTC
+- 最新运行日期：2026-06-03
+- 运行时间：2026-06-03 22:25:01 UTC
 - 运行状态：成功
-- 本次总论文数：3
+- 本次总论文数：1
 - 精读区：0
-- 速读区：3
+- 速读区：1
 
 ### 今日简报（AI）
-今日速读三篇AI前沿论文：GPU加速无人机仿真器、软奖励自验证强化学习、学习型奖励策略优化。  
-最值得看：JAX驱动的“Crazyflow”实现精准可微无人机模拟；软验证框架用非二元奖励缓解RL训练不稳定。  
-想探索虚实结合或模型对齐？建议先从Crazyflow开源代码入手，感受GPU并行仿真潜力。
-- 详情：[/202606/02/README](/202606/02/README)
+今日速读一篇工业质检新架构，探索视觉与语言模型融合如何自动推理缺陷并生成报告。  
+亮点在于将多模态大模型落地真实产线缺陷描述，有望减少人工撰写偏差。  
+如果你关注工业AI应用，不妨从该思路出发，对比现行质检报告流程改造。
+- 详情：[/202606/03/README](/202606/03/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Crazyflow: An Accurate, GPU-Accelerated, Differentiable Drone Simulator in JAX](/202606/02/2606.01478v1-crazyflow-an-accurate-gpu-accelerated-differentiable-drone-simulator-in-jax)  
-   标签：评分：7.0/10、query:uav-drl
-   evidence：提供GPU加速、可微分的无人机仿真器，可用于训练无人机任务的深度强化学习策略。
-2. [Soft-SVeRL: Self-Verified Reinforcement Learning with Soft Rewards](/202606/02/2605.28561v1-soft-sverl-self-verified-reinforcement-learning-with-soft-rewards)  
+1. [A Hybrid Vision-Language Architecture for Automated Defect Reasoning and Report Generation in Industrial Inspection](/202606/03/2605.26533v1-a-hybrid-vision-language-architecture-for-automated-defect-reasoning-and-report-generation-in-industrial-inspection)  
    标签：评分：6.0/10、query:uav-drl
-   evidence：Soft-RLVR通过清单式软奖励将稀疏信号密集化，解决长时域奖励分配问题。
-3. [Coherent Off-Policy Improvement of Large Behavior Models with Learned Rewards](/202606/02/2606.02194v1-coherent-off-policy-improvement-of-large-behavior-models-with-learned-rewards)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：提出用逆强化学习为稀疏奖励任务学习稠密奖励，解决长时域奖励分配。
+   evidence：用于工业检测的自动缺陷推理与报告生成的混合视觉-语言流水线
 
 
 <div class="dpr-home-promo-card">
