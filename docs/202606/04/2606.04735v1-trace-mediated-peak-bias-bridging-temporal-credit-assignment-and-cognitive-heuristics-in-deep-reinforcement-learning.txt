@@ -1,0 +1,103 @@
+Title: Trace-Mediated Peak Bias: Bridging Temporal Credit Assignment and Cognitive Heuristics in Deep Reinforcement Learning
+
+URL Source: https://arxiv.org/pdf/2606.04735v1
+
+Published Time: Thu, 04 Jun 2026 00:57:27 GMT
+
+Number of Pages: 3
+
+Markdown Content:
+# Trace-Mediated Peak Bias: Bridging Temporal Credit Assignment and Cognitive Heuristics in Deep Reinforcement Learning 
+
+Viktor Veselý 1 Aleksandar Todorov 1 Erwan Escudie 1 Matthia Sabatelli 1 
+
+> 1
+
+Department of AI, University of Groningen, The Netherlands 
+
+Abstract 
+
+Temporal credit assignment is central to both biological and artificial intelligence, yet its interaction with non-linear function approximation is poorly understood. We identify a systematic failure mode in deep reinforcement learning (RL) termed Trace-Mediated Peak Bias (TMPB). At inter-mediate eligibility trace depths, agents irrationally prefer trajectories with high-magnitude reward “peaks” over al-ternatives with higher cumulative returns. This provides a mechanistic account of the Peak-End Rule: a human memory bias where experiences are judged by their most intense moments rather than integrated utility. We show that TMPB emerges because traces amplify distal Tem-poral Difference errors into “gradient shocks” that fixed-step-size Stochastic Gradient Descent cannot normalize, leading to global overestimation. Conversely, adaptive optimizers mitigate this pathology via second-moment nor-malization. Our results suggest that human-like saliency distortions may emerge naturally from the mathematical constraints of credit assignment in distributed systems, and that adaptive optimization is a theoretical necessity for rational value estimation. 
+
+# Introduction 
+
+Reinforcement learning (RL) finds its historical and the-oretical roots in cognitive psychology (Sutton & Barto, 2020), descending from Thorndike’s Law of Effect to the formalizations of classical conditioning. Central to this lineage is the work of Ivan Pavlov; in his classic experiments, dogs learned to associate a neutral stim-ulus with a distal reward, a process that inherently re-quires a biological "trace" to bridge the temporal gap between the bell and the food. In modern RL, this tem-poral credit assignment, determining which past states are responsible for current rewards, is often solved via eligibility traces (Sutton, 1984). In this framework, an agent seeks to estimate the value function V 𝜋 (s) for a certain state s, representing the expected discounted return Gt =∑︀ ∞ 
+
+> k=0
+
+𝛾 k rt+k+1 for a policy 𝜋 , where 𝛾 ∈ [0, 1) 
+
+is the discount factor and rt is the scalar reward obtained at time-step t. The TD( 𝜆 ) algorithm facilitates this by maintaining an eligibility trace zt ∈ Rd , which decays at a rate governed by 𝜆 ∈ [0, 1] . For a function approximator with parameters 𝜃 t , the update is: Δ𝜃 t = 𝛼𝛿 t zt where 𝛼 is the learning rate and 𝛿 t = rt+1 + 𝛾 Vt (st+1 ) − Vt (st ) is the temporal difference (TD) error. The trace itself is updated as zt = 𝛾𝜆 zt−1 + ∇𝜃 Vt (st ), where ∇𝜃 Vt (st ) is the gradi-ent of the value estimate with respect to the parameters. Here, 𝜆 acts as a computational bridge: when 𝜆 = 0 , the update is purely local (TD(0)); when 𝜆 = 1 , it mirrors a full Monte Carlo return. While well-defined in tabular settings, traces interact with the shared parameters of non-linear deep neural networks in ways that introduce significant instabilities. We propose that these instabilities manifest as a specific cognitive bias. In psychology, the Peak-End Rule describes a heuristic where retrospective evalua-tions are dominated by the most intense moment (the peak) and the conclusion of an experience, rather than its integrated utility (Kahneman, 2000). We identify a direct computational parallel in Deep RL, which we term 
+
+Trace-Mediated Peak Bias (TMPB), suggesting that cer-tain cognitive "irrationalities" may be emergent properties of the mathematical constraints of credit assignment in distributed neural systems. 
+
+# Trace Mediated Peak Bias (TMPB) 
+
+To characterize the interaction between eligibility traces and shared neural representations, we conduct a series of policy evaluation experiments. We hypothesize that in non-linear regimes, trace-based credit assignment is susceptible to saliency-driven distortions that mirror human memory heuristics. Specifically, we investigate whether large, distal rewards can "overtake" the value estimates of more frequent but lower-magnitude rewards.               
+
+> S0
+> SA,1 SA,2 . . . SA,10
+> SB,1 SB,2 . . . SB,10
+> 𝜏 steady
+> 𝜏 peak
+> r= 2 r= 2
+> r= 0 r= 10 r= 6
+
+Figure 1: The MDP used for policy evaluation. Extended abstract presented at the 9th Conference on Cognitive Computational Neuroscience , New York, NY, USA, 2026. Copyright 2026 by the author(s). Licensed under CC BY 4.0. 
+
+> arXiv:2606.04735v1 [cs.LG] 3 Jun 2026
+
+Experimental Setup We design a stylized episodic Markov Decision Process (MDP) termed the Two-Door Environment (Fig. 1). The environment consists of two distinct paths, 𝜏 steady and 𝜏 peak , each of length T = 10 ,originating from a common choice point S0. The re-ward structures contrast uniform density with localized saliency: 𝜏 steady provides a constant reward rt = 2
+
+for all t ∈ [1, 10] , while 𝜏 peak yields a sparse profile with a high-magnitude "peak" r3 = 10 , a "concluding" reward r10 = 6, and zero reward elsewhere. Given 
+
+𝛾 = 0.95 , the rational values are V ⋆(S0|𝜏 steady ) ≈ 16.05 
+
+and V ⋆(S0|𝜏 peak ) ≈ 12.81 . We evaluate value estimates 
+
+V𝜃 (s0) using a neural network with one hidden layer of 16 ReLU units. Training is conducted over 1,000 episodes using a uniform behavior policy 𝜋 b and SGD (𝜂 = 0.01 ). We utilize the forward-view equivalent of the gradient-based eligibility trace, defining the loss as: 
+
+ℒ(𝜃 ) = ∑︀ T −1 
+
+> t=0
+
+𝜆 t (V𝜃 (st ) − [rt + 𝛾 V𝜃 (st+1 )]) 2.
+
+Results As shown in the first plot of Fig. 2, the in-teraction between eligibility traces and neural function approximation induces a systematic overestimation of 
+
+V (S0|𝜏 peak ). The sub-optimal preference for the Peak trajectory is most acute at intermediate trace depths (0.15 < 𝜆 < 0.50 ), where the value estimation for the inferior path erroneously “leapfrogs” that of the Steady path. We formally define this phenomenon as Trace-Mediated Peak Bias (TMPB): a computational artifact in-spired by the Peak-End Rule widely observed in cognitive psychology (Dutta et al., 1972; Miron-Shatz, 2009). Just as humans tend to favor experiences with high-intensity peak rewards over those with greater aggregate utility, reinforcement learning agents equipped with eligibility traces and non-linear function approximation exhibit a strikingly similar “irrational” preference. 
+
+Mechanistic Account TMPB arises mechanistically because high-magnitude rewards generate gradient shocks ( Δ𝜃 t = 𝛼𝛿 t zt ) that disproportionately reconfigure shared weights. In fixed-step-size SGD, the parameter shift is directly proportional to reward saliency; thus, a sin-gle peak update can exceed the integrated sum of steady updates. This suggests a tension between integrative and saliency-driven credit assignment: while an ideal observer integrates reward density, saliency shocks can effectively hijack the neural manifold. Adaptive optimizers (e.g., RMSprop (Tieleman, 2012)) mitigate this (see right plot of Fig. 2) by scaling updates by the inverse of the second moment of gradients, dampening shocks as high-variance outliers. This implies that biological Peak-End effects may reflect a reliance on gradient-based updates             
+
+> 00.2 0.4 0.6 0.8
+> 0
+> 20
+> 40
+> 𝜆
+> V0
+> SGD
+> 00.2 0.4 0.6 0.8
+> 0
+> 20
+> 40
+> 𝜆
+> RMSprop
+> Steady Peak Irrationality Zone ( VB>VA)
+
+Figure 2: Policy evaluation results for SGD (left) and RMSprop (right). The Irrationality Zone (green) vanishes under adaptive optimization. that lack the variance-normalization seen in adaptive artificial systems. 
+
+# Discussion & Conclusion 
+
+We have provided a mechanistic account of how cognitive-like biases can emerge from the fundamen-tal mathematics of temporal credit assignment. Our main contributions are threefold: (1) we identify and formalize Trace-Mediated Peak Bias (TMPB) as a sys-tematic failure mode in deep RL; (2) we demonstrate that this bias provides a computational parallel to the psychological Peak-End Rule; and (3) we show that adaptive optimization is a necessary structural require-ment for rational value estimation in non-linear systems. The historical development of reinforcement learning is deeply intertwined with cognitive psychology. Our findings suggest that this relationship remains a powerful two-way street. While psychology originally inspired the RL framework, the mathematical pathologies of modern deep RL now provide a rigorous language for explaining human "irrationalities." The Peak-End Rule has long been viewed as an isolated psychological heuristic; how-ever, we demonstrate that it is an emergent property of any system utilizing distributed representations and trace-like credit assignment without variance-based nor-malization. This interaction offers a significant lesson for both artificial and biological intelligence. For AI, it highlights that "human-like" neural architectures naturally inherit human-like vulnerabilities, making the choice of optimizer a theoretical concern rather than a mere hyperparameter. For cognitive science, it suggests that human saliency distortions may reflect a biological re-liance on simple gradient-based updates that lack the sophisticated normalization found in adaptive methods. 
+
+> 2
+
+# References 
+
+Dutta, S., Kanungo, R. N., & Freibergs, V. (1972). Re-tention of affective material: Effects of intensity of affect on retrieval. Journal of Personality and Social Psychology , 23 (1), 64–80. https://doi.org/10.1037/ h0032790. Kahneman, D. (2000). Evaluation by moments: Past and future. Choices, values, and frames , 693–708. Miron-Shatz, T. (2009). Evaluating multiepisode events: Boundary conditions for the peak-end rule. Emotion ,
+
+9(2), 206–213. https://doi.org/10.1037/a0015295. Sutton, R. S., & Barto, A. (2020). Reinforcement learning: An introduction (Second edition). The MIT Press. Sutton, R. S. (1984). Temporal credit assignment in reinforcement learning [phd]. University of Mas-sachusetts Amherst [AAI8410337]. Tieleman, T. (2012). Lecture 6.5-rmsprop: Divide the gradient by a running average of its recent magnitude. 
+
+COURSERA: Neural networks for machine learning ,
+
+4(2), 26.

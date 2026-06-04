@@ -6,26 +6,35 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-03
-- 运行时间：2026-06-03 22:25:01 UTC
+- 最新运行日期：2026-06-04
+- 运行时间：2026-06-04 21:03:28 UTC
 - 运行状态：成功
-- 本次总论文数：1
-- 精读区：0
-- 速读区：1
+- 本次总论文数：5
+- 精读区：3
+- 速读区：2
 
 ### 今日简报（AI）
-今日速读一篇工业质检新架构，探索视觉与语言模型融合如何自动推理缺陷并生成报告。  
-亮点在于将多模态大模型落地真实产线缺陷描述，有望减少人工撰写偏差。  
-如果你关注工业AI应用，不妨从该思路出发，对比现行质检报告流程改造。
-- 详情：[/202606/03/README](/202606/03/README)
+从人类多样化反馈中学习对齐的强化学习新范式崛起，今日聚焦两篇高分精读与两篇速读。重点关注利用分布匹配与成对偏好优化长期决策，其中 DAgger 结合丰富反馈可提升样本效率。若想深入，建议从偏好驱动的 RL 入手，对比分布校正与记忆一致性在不同场景下的适用性。
+- 详情：[/202606/04/README](/202606/04/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [Reinforcement Learning from Rich Feedback with Distributional DAgger](/202606/04/2606.05152v1-reinforcement-learning-from-rich-feedback-with-distributional-dagger)  
+   标签：评分：9.0/10、query:uav-drl
+   evidence：提出分布DAgger用于RL中的丰富信用分配，直接解决长时域奖励分配问题
+2. [Reinforcement Learning with Pairwise Preferences in Long-Term Decision Problems](/202606/04/2606.00367v1-reinforcement-learning-with-pairwise-preferences-in-long-term-decision-problems)  
+   标签：评分：8.0/10、query:uav-drl
+   evidence：提出马尔可夫决策竞赛模型，解决长期偏好反馈强化学习
+3. [Trace-Mediated Peak Bias: Bridging Temporal Credit Assignment and Cognitive Heuristics in Deep Reinforcement Learning](/202606/04/2606.04735v1-trace-mediated-peak-bias-bridging-temporal-credit-assignment-and-cognitive-heuristics-in-deep-reinforcement-learning)  
+   标签：评分：8.0/10、query:uav-drl
+   evidence：发现深度强化学习中时间信用分配的系统性失效模式
 
 ### 速读区论文标签
-1. [A Hybrid Vision-Language Architecture for Automated Defect Reasoning and Report Generation in Industrial Inspection](/202606/03/2605.26533v1-a-hybrid-vision-language-architecture-for-automated-defect-reasoning-and-report-generation-in-industrial-inspection)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：用于工业检测的自动缺陷推理与报告生成的混合视觉-语言流水线
+1. [Dual Advantage Fields](/202606/04/2606.04188v1-dual-advantage-fields)  
+   标签：评分：7.0/10、query:uav-drl
+   evidence：提出双优势场方法，将对偶价值模型转化为局部优势信号，用于长时域目标条件强化学习。
+2. [Episodic Memory Temporal Consistency for Cooperative Multi-Agent Reinforcement Learning](/202606/04/2606.04492v1-episodic-memory-temporal-consistency-for-cooperative-multi-agent-reinforcement-learning)  
+   标签：评分：7.0/10、query:uav-drl
+   evidence：提出带有时序一致性的情景记忆，用于多智能体强化学习中的长时域奖励分配。
 
 
 <div class="dpr-home-promo-card">

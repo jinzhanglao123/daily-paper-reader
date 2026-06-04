@@ -1,0 +1,216 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-04T20:56:06.225239+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 3,
+    "deep_cap": 6,
+    "deep_selected": 3,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2606.05152v1",
+      "source": "arxiv",
+      "title": "Reinforcement Learning from Rich Feedback with Distributional DAgger",
+      "abstract": "Reasoning models have advanced rapidly, but the dominant reinforcement learning from verifiable rewards (RLVR) recipe remains surprisingly narrow: sample many responses and reward each with a single bit indicating whether the final answer is correct. Yet many settings provide rich feedback, including execution traces, tool outputs, expert corrections, and model self-evaluations. We study how to use such feedback through a distributional variant of the classic imitation learning algorithm DAgger, where the learner has local access to an expert distribution on states visited by the current policy. This yields a simple forward cross-entropy objective that admits a blackbox expert and whose sequence-level gradient {conduct rich credit assignment by propagating} future expert-student disagreement back to earlier decisions. We show that prior RL with self-distillation objectives based on reverse KL or Jensen-Shannon fail to guarantee monotonic policy improvement: even when the expert has higher reward, their updates may increase probability on worse actions. In contrast, we show that forward cross-entropy admits monotonic policy improvement and enjoys guarantees on regret. We further show that our objective optimizes a lower bound on teacher-weighted likelihood of success, leading to improved Pass@N. Empirically, our approach, DistIL, improves over RLVR and RL with self-distillation baselines across a variety of domains: scientific reasoning, coding, and solving hard mathematical problems.",
+      "authors": [
+        "Rishabh Agrawal",
+        "Jacob Fein-Ashley",
+        "Paria Rashidinejad"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.CL"
+      ],
+      "published": "2026-06-03T17:54:04+00:00",
+      "link": "https://arxiv.org/pdf/2606.05152v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Proposes distributional DAgger for rich credit assignment in RL, directly addressing long-horizon reward assignment",
+      "llm_evidence_cn": "提出分布DAgger用于RL中的丰富信用分配，直接解决长时域奖励分配问题",
+      "llm_evidence": "提出分布DAgger用于RL中的丰富信用分配，直接解决长时域奖励分配问题",
+      "canonical_evidence": "提出分布DAgger用于RL中的丰富信用分配，直接解决长时域奖励分配问题",
+      "llm_tldr_en": "Extends RL from verifiable rewards to rich feedback (expert corrections, traces) via a distributional imitation algorithm that enables fine-grained credit assignment, improving over single-bit reward RLVR.",
+      "llm_tldr_cn": "当前强化学习多依赖单一正确性反馈，忽视丰富的过程信号。本文提出分布DAgger，利用专家分布和序列梯度实现细粒度信用分配，在推理任务上优于仅用结果奖励的RLVR方法。该方法为长时域任务中的奖励分配提供了更有效的学习框架。",
+      "llm_tldr": "当前强化学习多依赖单一正确性反馈，忽视丰富的过程信号。本文提出分布DAgger，利用专家分布和序列梯度实现细粒度信用分配，在推理任务上优于仅用结果奖励的RLVR方法。该方法为长时域任务中的奖励分配提供了更有效的学习框架。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.00367v1",
+      "source": "arxiv",
+      "title": "Reinforcement Learning with Pairwise Preferences in Long-Term Decision Problems",
+      "abstract": "Reinforcement learning problems typically define the goal as maximizing the expected value of a scalar reward function. But, pairwise preferences are often easier to specify than scalar rewards, and they express certain goals that scalar rewards cannot. Methods for reinforcement learning with pairwise preferences have thus received growing interest. Unfortunately, these methods are inefficient in problems with long time horizons, and they lack guarantees on the performance of Markov policies relative to history-dependent policies, which bridge the theory and practice of reinforcement learning. We therefore propose the \\textit{Markov decision contest} as a new problem model for reinforcement learning with pairwise preferences. We prove that stationary Markov policies are optimal among all history-dependent policies, that solving a Markov decision contest exactly is in P, and that a simple iterative algorithm converges to an optimal policy at a sublinear rate. Lastly, in a set of high-dimensional decision problems with long time horizons, we show that our approximate algorithm is significantly more learning-efficient than prior work.",
+      "authors": [
+        "Jonathan Colaço Carr",
+        "Prakash Panangaden",
+        "Doina Precup",
+        "Benjamin Van Roy"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-05-29T21:16:25+00:00",
+      "link": "https://arxiv.org/pdf/2606.00367v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Proposes Markov decision contest model for long-horizon RL with pairwise preferences",
+      "llm_evidence_cn": "提出马尔可夫决策竞赛模型，解决长期偏好反馈强化学习",
+      "llm_evidence": "提出马尔可夫决策竞赛模型，解决长期偏好反馈强化学习",
+      "canonical_evidence": "提出马尔可夫决策竞赛模型，解决长期偏好反馈强化学习",
+      "llm_tldr_en": "Introduces the Markov decision contest as a new model for RL with pairwise preferences, proving stationary Markov policies are optimal and providing an efficient online algorithm that outperforms existing methods in long-horizon tasks.",
+      "llm_tldr_cn": "强化学习中成对偏好常比标量奖励更易表达，但现有方法在长期决策问题中效率低下且缺乏性能保证。本文提出马尔可夫决策竞赛模型，将偏好反馈建模为两两轨迹的比较。理论证明静态马尔可夫策略在此框架下最优，并设计了高效在线算法，在长期任务中显著优于基线，为基于偏好的长周期强化学习提供了严格解决方案。",
+      "llm_tldr": "强化学习中成对偏好常比标量奖励更易表达，但现有方法在长期决策问题中效率低下且缺乏性能保证。本文提出马尔可夫决策竞赛模型，将偏好反馈建模为两两轨迹的比较。理论证明静态马尔可夫策略在此框架下最优，并设计了高效在线算法，在长期任务中显著优于基线，为基于偏好的长周期强化学习提供了严格解决方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.04735v1",
+      "source": "arxiv",
+      "title": "Trace-Mediated Peak Bias: Bridging Temporal Credit Assignment and Cognitive Heuristics in Deep Reinforcement Learning",
+      "abstract": "Temporal credit assignment is central to both biological and artificial intelligence, yet its interaction with non-linear function approximation is poorly understood. We identify a systematic failure mode in deep reinforcement learning (RL) termed Trace-Mediated Peak Bias (TMPB). At intermediate eligibility trace depths, agents irrationally prefer trajectories with high-magnitude reward ``peaks'' over alternatives with higher cumulative returns. This provides a mechanistic account of the Peak-End Rule: a human memory bias where experiences are judged by their most intense moments rather than integrated utility. We show that TMPB emerges because traces amplify distal Temporal Difference errors into ``gradient shocks'' that fixed-step-size Stochastic Gradient Descent cannot normalize, leading to global overestimation. Conversely, adaptive optimizers mitigate this pathology via second-moment normalization. Our results suggest that human-like saliency distortions may emerge naturally from the mathematical constraints of credit assignment in distributed systems, and that adaptive optimization is a theoretical necessity for rational value estimation.",
+      "authors": [
+        "Viktor Veselý",
+        "Aleksandar Todorov",
+        "Erwan Escudie",
+        "Matthia Sabatelli"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-06-03T11:19:29+00:00",
+      "link": "https://arxiv.org/pdf/2606.04735v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Identifies failure mode in temporal credit assignment for deep RL",
+      "llm_evidence_cn": "发现深度强化学习中时间信用分配的系统性失效模式",
+      "llm_evidence": "发现深度强化学习中时间信用分配的系统性失效模式",
+      "canonical_evidence": "发现深度强化学习中时间信用分配的系统性失效模式",
+      "llm_tldr_en": "Reveals Trace-Mediated Peak Bias (TMPB) in deep RL, where agents irrationally prefer high-magnitude reward peaks over higher cumulative returns due to eligibility traces amplifying distal TD errors, providing a mechanistic account of the Peak-End Rule.",
+      "llm_tldr_cn": "时间信用分配对深度强化学习至关重要，但其与非线形函数近似的相互作用尚不明确。本文识别出轨迹中介的峰值偏差（TMPB）这一系统性失效模式：在中等资格迹深度下，智能体非理性地偏好高瞬时奖励峰而非更高累积回报，这为峰终定律提供了机理解释。分析表明，迹线放大了远端的时序差分误差，导致梯度偏差，为改进信用分配算法指明了方向。",
+      "llm_tldr": "时间信用分配对深度强化学习至关重要，但其与非线形函数近似的相互作用尚不明确。本文识别出轨迹中介的峰值偏差（TMPB）这一系统性失效模式：在中等资格迹深度下，智能体非理性地偏好高瞬时奖励峰而非更高累积回报，这为峰终定律提供了机理解释。分析表明，迹线放大了远端的时序差分误差，导致梯度偏差，为改进信用分配算法指明了方向。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.04188v1",
+      "source": "arxiv",
+      "title": "Dual Advantage Fields",
+      "abstract": "Offline goal-conditioned reinforcement learning requires both long-horizon reachability estimates and local action comparisons. Dual goal representations provide value fields that capture global goal reachability, but they do not directly specify which action should be preferred at a given state. We propose Dual Advantage Fields, a policy-extraction method that turns a bilinear dual value model into a local advantage signal. Under bilinear dual parameterization, the goal embedding is the gradient of the value field with respect to the state representation. DAF learns an action-effect model that predicts the discounted feature displacement induced by an action and scores actions by the alignment between this displacement and the goal direction. In the realizable case, this score equals the goal-conditioned Bellman advantage, yielding a standard local policy-improvement guarantee. On OGBench locomotion, manipulation, and puzzle tasks, DAF improves aggregate RLiable metrics and performs strongly in settings where locally correct actions differ from direct movement toward the final goal.",
+      "authors": [
+        "Alexey Zemtsov",
+        "Maxim Bobrin",
+        "Alexander Nikulin",
+        "Dmitry V. Dylov",
+        "Fakhri Karray",
+        "Vladislav Kurenkov",
+        "Martin Takáč",
+        "Arip Asadulaev"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.RO"
+      ],
+      "published": "2026-06-02T20:15:14+00:00",
+      "link": "https://arxiv.org/pdf/2606.04188v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Presents dual advantage fields that turn dual value models into local advantage signals for long-horizon goal-conditioned RL.",
+      "llm_evidence_cn": "提出双优势场方法，将对偶价值模型转化为局部优势信号，用于长时域目标条件强化学习。",
+      "llm_evidence": "提出双优势场方法，将对偶价值模型转化为局部优势信号，用于长时域目标条件强化学习。",
+      "canonical_evidence": "提出双优势场方法，将对偶价值模型转化为局部优势信号，用于长时域目标条件强化学习。",
+      "llm_tldr_en": "This paper introduces Dual Advantage Fields, a policy extraction method that computes local advantage from bilinear dual value models by aligning action-induced feature displacement with the goal direction, improving action selection in offline long-horizon goal-conditioned RL.",
+      "llm_tldr_cn": "离线目标条件强化学习需要长时域可及性估计和局部动作比较。现有对偶目标表示提供全局价值场，但未直接给出状态下的动作偏好。本文提出双优势场方法，基于双线性对偶参数化，将目标嵌入视为状态表示梯度的方向，学习动作效应模型预测折扣特征位移，并通过位移与目标方向的对齐度评分动作，从而提取策略。在理论可实现情况下，该评分等于目标条件优势函数，有效解决了长时域规划中的动作选择问题。",
+      "llm_tldr": "离线目标条件强化学习需要长时域可及性估计和局部动作比较。现有对偶目标表示提供全局价值场，但未直接给出状态下的动作偏好。本文提出双优势场方法，基于双线性对偶参数化，将目标嵌入视为状态表示梯度的方向，学习动作效应模型预测折扣特征位移，并通过位移与目标方向的对齐度评分动作，从而提取策略。在理论可实现情况下，该评分等于目标条件优势函数，有效解决了长时域规划中的动作选择问题。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.04492v1",
+      "source": "arxiv",
+      "title": "Episodic Memory Temporal Consistency for Cooperative Multi-Agent Reinforcement Learning",
+      "abstract": "Cooperative Multi-Agent Reinforcement Learning (MARL) frequently suffers from severe reward sparsity and exploration bottlenecks. While episodic memory mechanisms mitigate these issues by reusing high-return trajectories, they often trap agents in local optima due to unconstrained incentive distribution and semantic representation collapse. To address this, we propose Episodic Memory Temporal Consistency (EMTC), a framework that robustly constructs and selectively leverages historical experiences. EMTC introduces two synergistic components: (1) a Temporally Consistent Semantic Embedder that integrates contrastive learning with time-conditioned state reconstruction, preventing representation collapse and enabling precise memory retrieval; and (2) a Temporal Consistency Gating Mechanism that dynamically modulates episodic incentives based on temporal consistency error. This adaptive gate filters misleading signals from pseudo-successful trajectories, effectively mitigating Q-value overestimation. We provide theoretical guarantees, establishing a strict error bound that directly links the observable temporal consistency error to the underlying trajectory optimality and representation quality. Extensive evaluations on the SMAC and GRF benchmarks demonstrate that EMTC consistently outperforms state-of-the-art baselines. Notably, compared to the strongest episodic baseline, EMTC achieves absolute win-rate improvements of up to 24% in super-hard SMAC scenarios and an average improvement of 28% across GRF tasks.",
+      "authors": [
+        "Zicheng Zhao",
+        "Yu Lan",
+        "Chengzhengxu Li",
+        "Zhaohan Zhang",
+        "Xiaoming Liu"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.GT"
+      ],
+      "published": "2026-06-03T06:15:39+00:00",
+      "link": "https://arxiv.org/pdf/2606.04492v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Proposes episodic memory with temporal consistency for long-horizon reward assignment in cooperative MARL.",
+      "llm_evidence_cn": "提出带有时序一致性的情景记忆，用于多智能体强化学习中的长时域奖励分配。",
+      "llm_evidence": "提出带有时序一致性的情景记忆，用于多智能体强化学习中的长时域奖励分配。",
+      "canonical_evidence": "提出带有时序一致性的情景记忆，用于多智能体强化学习中的长时域奖励分配。",
+      "llm_tldr_en": "This paper proposes EMTC, a framework that uses temporally consistent semantic embeddings and selective memory retrieval to improve reward assignment in cooperative MARL, alleviating reward sparsity and exploration issues.",
+      "llm_tldr_cn": "多智能体强化学习面临严重的奖励稀疏与探索瓶颈，传统情景记忆虽能复用高回报轨迹，但易因激励分配不当和语义表征退化陷入局部最优。为此，本文提出情景记忆时序一致性框架EMTC，通过引入对比学习与时间条件重建的语义嵌入器，保证记忆检索精确性，同时设计选择性记忆利用策略，实现对长期回报的合理分配。实验表明，该方法在协作任务中显著提升了探索效率与最终性能，为稀疏奖励环境下的多智能体学习提供了稳健的记忆增强方案。",
+      "llm_tldr": "多智能体强化学习面临严重的奖励稀疏与探索瓶颈，传统情景记忆虽能复用高回报轨迹，但易因激励分配不当和语义表征退化陷入局部最优。为此，本文提出情景记忆时序一致性框架EMTC，通过引入对比学习与时间条件重建的语义嵌入器，保证记忆检索精确性，同时设计选择性记忆利用策略，实现对长期回报的合理分配。实验表明，该方法在协作任务中显著提升了探索效率与最终性能，为稀疏奖励环境下的多智能体学习提供了稳健的记忆增强方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
