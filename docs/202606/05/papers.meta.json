@@ -1,0 +1,69 @@
+{
+  "label": "2026-06-05",
+  "date": "2026-06-05",
+  "generated_at": "2026-06-05T20:53:53",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202606/05/2606.03963v1-self-refining-agentic-reinforcement-learning-for-vision-conditioned-uav-navigation",
+      "section": "deep",
+      "title_en": "Self-Refining Agentic Reinforcement Learning for Vision-Conditioned UAV Navigation",
+      "authors": "Roohan Ahmed Khan, Yasheerah Yaqoot, Muhammad Ahsan Mustafa, Dzmitry Tsetserukou",
+      "date": "2026-06-02",
+      "pdf": "https://arxiv.org/pdf/2606.03963v1",
+      "score": "9.0",
+      "evidence": "用于视觉条件无人机导航的深度强化学习及自动化奖励设计",
+      "tldr": "针对深度强化学习在无人机导航中依赖人工设计奖励函数且需反复调整的问题，本文提出AgenticRL框架，利用多模态生成式预训练Transformer代理解释任务信息和视觉场景观测，生成任务特定奖励函数，并采用近端策略优化进行策略训练与自我精炼，从而提升无人机在真实环境中的导航成功率与部署自主性。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Deep reinforcement learning has shown strong potential for enabling autonomous robots to learn complex navigational tasks. However, its practical use still depends heavily on human designed reward functions and repeated manual fine tuning, which is time consuming and does not guarantee high success in the desired task. This paper presents AgenticRL, agent guided reinforcement learning framework that increases autonomy in reward design, policy refinement, and real world deployment for unmanned aerial vehicles (UAV) navigation tasks. AgenticRL uses a multimodal generative pre-trained tansformer (GPT) agent to interpret task information and visual scene observations, generate task specific reward functions, train policies using Proximal Policy Optimization (PPO) algorithm, and then act as a critic by evaluating the trained policy through diagnosis packets to generate feedback. Based on this feedback, the agent identifies failure modes and refines the reward function in a closed loop self improvement process. To further leverage the multimodal GPT agent during inference, AgenticRL uses real world images and natural language task information to automatically identify the active scenario and select the appropriate trained policy for execution. The framework is evaluated on multiple navigational tasks, including gate traversal, obstacle avoidance, wall barrier crossing with landing, trajectory following, and motion behavior learning. Experimental results show that the closed loop refinement process improves policy behavior compared with initial rewards by 71%. We also demonstrate sim-to-real transfer of the proposed framework, achieving a real world success rate of 91% and a sim-to-real accuracy of 94%.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/05/2606.03963v2-agenticrl-self-refining-agentic-reinforcement-learning-for-vision-conditioned-uav-navigation",
+      "section": "deep",
+      "title_en": "AgenticRL: Self-Refining Agentic Reinforcement Learning for Vision-Conditioned UAV Navigation",
+      "authors": "Roohan Ahmed Khan, Yasheerah Yaqoot, Muhammad Ahsan Mustafa, Dzmitry Tsetserukou",
+      "date": "2026-06-02",
+      "pdf": "https://arxiv.org/pdf/2606.03963v2",
+      "score": "9.0",
+      "evidence": "用于视觉条件无人机导航的深度强化学习及自动化奖励设计",
+      "tldr": "强化学习在无人机导航中依赖人工设计奖励函数与反复调优，耗时且成功率不稳定。AgenticRL框架引入多模态GPT代理，自动生成、评估并迭代优化奖励函数，结合PPO训练形成闭环自改进。实验表明策略行为提升71%，真实世界成功率91%，sim-to-real准确率94%。该框架大幅提升自主性与迁移能力，简化了从仿真到部署的流程。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Deep reinforcement learning has shown strong potential for enabling autonomous robots to learn complex navigational tasks. However, its practical use still depends heavily on human designed reward functions and repeated manual fine tuning, which is time consuming and does not guarantee high success in the desired task. This paper presents AgenticRL, agent guided reinforcement learning framework that increases autonomy in reward design, policy refinement, and real world deployment for unmanned aerial vehicles (UAV) navigation tasks. AgenticRL uses a multimodal generative pre-trained tansformer (GPT) agent to interpret task information and visual scene observations, generate task specific reward functions, train policies using Proximal Policy Optimization (PPO) algorithm, and then act as a critic by evaluating the trained policy through diagnosis packets to generate feedback. Based on this feedback, the agent identifies failure modes and refines the reward function in a closed loop self improvement process. To further leverage the multimodal GPT agent during inference, AgenticRL uses real world images and natural language task information to automatically identify the active scenario and select the appropriate trained policy for execution. The framework is evaluated on multiple navigational tasks, including gate traversal, obstacle avoidance, wall barrier crossing with landing, trajectory following, and motion behavior learning. Experimental results show that the closed loop refinement process improves policy behavior compared with initial rewards by 71%. We also demonstrate sim-to-real transfer of the proposed framework, achieving a real world success rate of 91% and a sim-to-real accuracy of 94%.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/05/2606.06475v1-rredcot-segment-level-reward-redistribution-for-reasoning-models",
+      "section": "deep",
+      "title_en": "RREDCoT: Segment-Level Reward Redistribution for Reasoning Models",
+      "authors": "Mykyta Ielanskyi, Kajetan Schweighofer, Lukas Aichberger, Sepp Hochreiter",
+      "date": "2026-06-04",
+      "pdf": "https://arxiv.org/pdf/2606.06475v1",
+      "score": "8.0",
+      "evidence": "分段级奖励重分配用于长时程信用分配",
+      "tldr": "推理语言模型通过GRPO等强化学习方法优化思维链，但延迟奖励导致高方差问题。RREDCoT利用模型自身近似最优奖励再分配，无需额外生成，通过对思维链分段和状态值估计实现高效信用分配。实验表明该方法相比蒙特卡洛采样及多种归因方法更具优势，为长上下文高粒度训练提供了实用方案。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Recent advancements in reasoning language models have been driven by Reinforcement Learning (RL) fine-tuning. Most often, these rely on the Group Relative Policy Optimization (GRPO) algorithm or modifications thereof to steer the models to produce Chain-of-Thought (CoT) traces. The final answer can only be verified, and the reward assigned, after the CoT trace is complete, making it a delayed reward problem. GRPO and its modifications correspond to Monte Carlo methods in standard RL, which are known to suffer from high variance. A possible solution to this problem is the redistribution of rewards through credit assignment, where segments of the CoT trace that are important for arriving at the desirable solution are emphasized by assigning a higher reward. While Monte Carlo sampling can be used to provide an unbiased estimate of intermediate state values, its computational overhead makes it unsuitable for train-time credit assignment in long contexts at high granularity. We introduce RREDCoT (Reward REDistribution for Chain of Thoughts), which utilizes the model itself to approximate the optimal reward redistribution without additional generation. We investigate the advantages of our method compared to MC sampling and several attribution methods. We further analyze several aspects relevant to the construction of the redistribution such as segmentation of CoT traces and state value estimation.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/05/2606.03017v1-contrairl-factorized-contrastive-abstractions-for-transferable-irl",
+      "section": "quick",
+      "title_en": "ConTraIRL: Factorized Contrastive Abstractions for Transferable IRL",
+      "authors": "Yikang Gui, Bikramjit Banerjee, Prashant Doshi",
+      "date": "2026-06-02",
+      "pdf": "https://arxiv.org/pdf/2606.03017v1",
+      "score": "6.0",
+      "evidence": "提出一种分解动态与目标的IRL奖励迁移方法",
+      "tldr": "逆强化学习的奖励迁移在环境动态与任务目标未见组合时不可靠。ConTraIRL框架通过因子化对比抽象，学习动态与目标的解耦潜在表示，实现可组合奖励迁移。该方法采用双编码器架构与双对比目标，将观测映射到独立的动态和目标空间。在连续控制基准上，ConTraIRL支持少样本迁移至未见的动态-目标配对，有效提升样本效率和奖励恢复，超越了迁移IRL基线。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Reward transfer in Inverse Reinforcement Learning (IRL) is unreliable when policies must generalize to unseen combinations of environment dynamics and task goals. We propose Factorized Contrastive Abstractions for Transferable IRL (ConTraIRL), a framework that enables compositional reward transfer by learning decoupled latent representations of these two factors. ConTraIRL uses a dual-encoder architecture that maps observations into separate dynamics and goal latent spaces, trained with a dual contrastive objective. Temporal alignment encourages the dynamics encoder to learn goal-invariant structure, while the goal encoder captures dynamics-invariant features. This factorization supports reward inference under recombined dynamics-goal settings. Experiments on continuous control benchmarks demonstrate effective few-shot transfer to unseen dynamics-goal pairings, improving sample efficiency and reward recovery over transfer IRL baselines.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

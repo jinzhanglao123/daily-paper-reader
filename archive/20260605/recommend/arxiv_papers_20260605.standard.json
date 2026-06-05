@@ -1,0 +1,170 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-05T20:45:53.861582+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 3,
+    "deep_cap": 6,
+    "deep_selected": 3,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2606.03963v1",
+      "source": "arxiv",
+      "title": "Self-Refining Agentic Reinforcement Learning for Vision-Conditioned UAV Navigation",
+      "abstract": "Deep reinforcement learning has shown strong potential for enabling autonomous robots to learn complex navigational tasks. However, its practical use still depends heavily on human designed reward functions and repeated manual fine tuning, which is time consuming and does not guarantee high success in the desired task. This paper presents AgenticRL, agent guided reinforcement learning framework that increases autonomy in reward design, policy refinement, and real world deployment for unmanned aerial vehicles (UAV) navigation tasks. AgenticRL uses a multimodal generative pre-trained tansformer (GPT) agent to interpret task information and visual scene observations, generate task specific reward functions, train policies using Proximal Policy Optimization (PPO) algorithm, and then act as a critic by evaluating the trained policy through diagnosis packets to generate feedback. Based on this feedback, the agent identifies failure modes and refines the reward function in a closed loop self improvement process. To further leverage the multimodal GPT agent during inference, AgenticRL uses real world images and natural language task information to automatically identify the active scenario and select the appropriate trained policy for execution. The framework is evaluated on multiple navigational tasks, including gate traversal, obstacle avoidance, wall barrier crossing with landing, trajectory following, and motion behavior learning. Experimental results show that the closed loop refinement process improves policy behavior compared with initial rewards by 71%. We also demonstrate sim-to-real transfer of the proposed framework, achieving a real world success rate of 91% and a sim-to-real accuracy of 94%.",
+      "authors": [
+        "Roohan Ahmed Khan",
+        "Yasheerah Yaqoot",
+        "Muhammad Ahsan Mustafa",
+        "Dzmitry Tsetserukou"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "published": "2026-06-02T17:50:15+00:00",
+      "link": "https://arxiv.org/pdf/2606.03963v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Deep reinforcement learning for vision-conditioned UAV navigation with automated reward design",
+      "llm_evidence_cn": "用于视觉条件无人机导航的深度强化学习及自动化奖励设计",
+      "llm_evidence": "用于视觉条件无人机导航的深度强化学习及自动化奖励设计",
+      "canonical_evidence": "用于视觉条件无人机导航的深度强化学习及自动化奖励设计",
+      "llm_tldr_en": "Proposes AgenticRL, an agent-guided RL framework that uses a multimodal GPT to generate task-specific reward functions and refine policies for vision-conditioned UAV navigation, reducing manual effort and improving task success.",
+      "llm_tldr_cn": "针对深度强化学习在无人机导航中依赖人工设计奖励函数且需反复调整的问题，本文提出AgenticRL框架，利用多模态生成式预训练Transformer代理解释任务信息和视觉场景观测，生成任务特定奖励函数，并采用近端策略优化进行策略训练与自我精炼，从而提升无人机在真实环境中的导航成功率与部署自主性。",
+      "llm_tldr": "针对深度强化学习在无人机导航中依赖人工设计奖励函数且需反复调整的问题，本文提出AgenticRL框架，利用多模态生成式预训练Transformer代理解释任务信息和视觉场景观测，生成任务特定奖励函数，并采用近端策略优化进行策略训练与自我精炼，从而提升无人机在真实环境中的导航成功率与部署自主性。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "deep reinforcement learning for UAV inspection tasks",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.03963v2",
+      "source": "arxiv",
+      "title": "AgenticRL: Self-Refining Agentic Reinforcement Learning for Vision-Conditioned UAV Navigation",
+      "abstract": "Deep reinforcement learning has shown strong potential for enabling autonomous robots to learn complex navigational tasks. However, its practical use still depends heavily on human designed reward functions and repeated manual fine tuning, which is time consuming and does not guarantee high success in the desired task. This paper presents AgenticRL, agent guided reinforcement learning framework that increases autonomy in reward design, policy refinement, and real world deployment for unmanned aerial vehicles (UAV) navigation tasks. AgenticRL uses a multimodal generative pre-trained tansformer (GPT) agent to interpret task information and visual scene observations, generate task specific reward functions, train policies using Proximal Policy Optimization (PPO) algorithm, and then act as a critic by evaluating the trained policy through diagnosis packets to generate feedback. Based on this feedback, the agent identifies failure modes and refines the reward function in a closed loop self improvement process. To further leverage the multimodal GPT agent during inference, AgenticRL uses real world images and natural language task information to automatically identify the active scenario and select the appropriate trained policy for execution. The framework is evaluated on multiple navigational tasks, including gate traversal, obstacle avoidance, wall barrier crossing with landing, trajectory following, and motion behavior learning. Experimental results show that the closed loop refinement process improves policy behavior compared with initial rewards by 71%. We also demonstrate sim-to-real transfer of the proposed framework, achieving a real world success rate of 91% and a sim-to-real accuracy of 94%.",
+      "authors": [
+        "Roohan Ahmed Khan",
+        "Yasheerah Yaqoot",
+        "Muhammad Ahsan Mustafa",
+        "Dzmitry Tsetserukou"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "published": "2026-06-02T17:50:15+00:00",
+      "link": "https://arxiv.org/pdf/2606.03963v2",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Deep reinforcement learning for vision-conditioned UAV navigation with automated reward design",
+      "llm_evidence_cn": "用于视觉条件无人机导航的深度强化学习及自动化奖励设计",
+      "llm_evidence": "用于视觉条件无人机导航的深度强化学习及自动化奖励设计",
+      "canonical_evidence": "用于视觉条件无人机导航的深度强化学习及自动化奖励设计",
+      "llm_tldr_en": "Proposes AgenticRL, an agent-guided RL framework that uses a multimodal GPT to generate task-specific reward functions and refine policies for vision-conditioned UAV navigation, reducing manual effort and improving task success.",
+      "llm_tldr_cn": "针对深度强化学习在无人机导航中依赖人工设计奖励函数且需反复调整的问题，本文提出AgenticRL框架，利用多模态生成式预训练Transformer代理解释任务信息和视觉场景观测，生成任务特定奖励函数，并采用近端策略优化进行策略训练与自我精炼，从而提升无人机在真实环境中的导航成功率与部署自主性。",
+      "llm_tldr": "针对深度强化学习在无人机导航中依赖人工设计奖励函数且需反复调整的问题，本文提出AgenticRL框架，利用多模态生成式预训练Transformer代理解释任务信息和视觉场景观测，生成任务特定奖励函数，并采用近端策略优化进行策略训练与自我精炼，从而提升无人机在真实环境中的导航成功率与部署自主性。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "deep reinforcement learning for UAV inspection tasks",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.06475v1",
+      "source": "arxiv",
+      "title": "RREDCoT: Segment-Level Reward Redistribution for Reasoning Models",
+      "abstract": "Recent advancements in reasoning language models have been driven by Reinforcement Learning (RL) fine-tuning. Most often, these rely on the Group Relative Policy Optimization (GRPO) algorithm or modifications thereof to steer the models to produce Chain-of-Thought (CoT) traces. The final answer can only be verified, and the reward assigned, after the CoT trace is complete, making it a delayed reward problem. GRPO and its modifications correspond to Monte Carlo methods in standard RL, which are known to suffer from high variance. A possible solution to this problem is the redistribution of rewards through credit assignment, where segments of the CoT trace that are important for arriving at the desirable solution are emphasized by assigning a higher reward. While Monte Carlo sampling can be used to provide an unbiased estimate of intermediate state values, its computational overhead makes it unsuitable for train-time credit assignment in long contexts at high granularity. We introduce RREDCoT (Reward REDistribution for Chain of Thoughts), which utilizes the model itself to approximate the optimal reward redistribution without additional generation. We investigate the advantages of our method compared to MC sampling and several attribution methods. We further analyze several aspects relevant to the construction of the redistribution such as segmentation of CoT traces and state value estimation.",
+      "authors": [
+        "Mykyta Ielanskyi",
+        "Kajetan Schweighofer",
+        "Lukas Aichberger",
+        "Sepp Hochreiter"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-06-04T17:56:31+00:00",
+      "link": "https://arxiv.org/pdf/2606.06475v1",
+      "tags": [
+        "keyword:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Segment-level reward redistribution for long-horizon credit assignment",
+      "llm_evidence_cn": "分段级奖励重分配用于长时程信用分配",
+      "llm_evidence": "分段级奖励重分配用于长时程信用分配",
+      "canonical_evidence": "分段级奖励重分配用于长时程信用分配",
+      "llm_tldr_en": "Proposes segment-level reward redistribution to address delayed reward in RL for reasoning models, improving credit assignment by emphasizing important CoT segments. Experiments show reduced variance and improved performance.",
+      "llm_tldr_cn": "针对推理模型RL微调中因最终答案验证带来的延迟奖励问题，提出分段级奖励重分配方法，通过识别长时程思维链中关键片段并赋予更高奖励来改进信用分配，在多个推理基准上实验表明该方法能有效降低训练方差并提升模型性能，为长时程信用分配提供了一种简单而有效的解决方案。",
+      "llm_tldr": "针对推理模型RL微调中因最终答案验证带来的延迟奖励问题，提出分段级奖励重分配方法，通过识别长时程思维链中关键片段并赋予更高奖励来改进信用分配，在多个推理基准上实验表明该方法能有效降低训练方差并提升模型性能，为长时程信用分配提供了一种简单而有效的解决方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.03017v1",
+      "source": "arxiv",
+      "title": "ConTraIRL: Factorized Contrastive Abstractions for Transferable IRL",
+      "abstract": "Reward transfer in Inverse Reinforcement Learning (IRL) is unreliable when policies must generalize to unseen combinations of environment dynamics and task goals. We propose Factorized Contrastive Abstractions for Transferable IRL (ConTraIRL), a framework that enables compositional reward transfer by learning decoupled latent representations of these two factors. ConTraIRL uses a dual-encoder architecture that maps observations into separate dynamics and goal latent spaces, trained with a dual contrastive objective. Temporal alignment encourages the dynamics encoder to learn goal-invariant structure, while the goal encoder captures dynamics-invariant features. This factorization supports reward inference under recombined dynamics-goal settings. Experiments on continuous control benchmarks demonstrate effective few-shot transfer to unseen dynamics-goal pairings, improving sample efficiency and reward recovery over transfer IRL baselines.",
+      "authors": [
+        "Yikang Gui",
+        "Bikramjit Banerjee",
+        "Prashant Doshi"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.RO"
+      ],
+      "published": "2026-06-02T01:47:19+00:00",
+      "link": "https://arxiv.org/pdf/2606.03017v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Proposes a method for transferable reward inference in IRL by factorizing dynamics and goals",
+      "llm_evidence_cn": "提出一种分解动态与目标的IRL奖励迁移方法",
+      "llm_evidence": "提出一种分解动态与目标的IRL奖励迁移方法",
+      "canonical_evidence": "提出一种分解动态与目标的IRL奖励迁移方法",
+      "llm_tldr_en": "ConTraIRL enables compositional reward transfer in IRL by learning decoupled latent representations of environment dynamics and task goals, allowing reward inference under new dynamics-goal combinations.",
+      "llm_tldr_cn": "ConTraIRL解决逆强化学习中奖励迁移的可靠性问题，针对动态与目标组合泛化挑战，提出分解对比抽象框架，学习动态与目标的分离隐表示，实现组合式奖励迁移，在未见动态-目标设置下仍能推断奖励，提升了IRL的迁移能力。",
+      "llm_tldr": "ConTraIRL解决逆强化学习中奖励迁移的可靠性问题，针对动态与目标组合泛化挑战，提出分解对比抽象框架，学习动态与目标的分离隐表示，实现组合式奖励迁移，在未见动态-目标设置下仍能推断奖励，提升了IRL的迁移能力。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
