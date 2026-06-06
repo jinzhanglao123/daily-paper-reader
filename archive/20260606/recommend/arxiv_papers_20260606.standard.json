@@ -1,0 +1,97 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-06T21:11:42.573266+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2606.03252v1",
+      "source": "arxiv",
+      "title": "AirDreamer: Generalist Drone Navigation with World Models",
+      "abstract": "Navigating a drone in unseen and cluttered environments requires reliable generalization to unseen scene layouts and understanding of environmental structure relative to the robot's capabilities. Previous methods, which assume the same environment configuration, often rely heavily on human-designed perception pipelines and predefined rules to guide the robot toward the target. This process is environment-dependent and generalizes poorly across environments. Inspired by animal navigation behavior, we design a navigation framework that navigates with a reinforcement-learning-based policy on top of a world-model-based environment understanding to overcome these issues. In addition, a sparse reward function without hand-crafted shaping terms is designed to avoid local minima traps and encourage yaw control behaviors. In simulation and on real drones, our method exhibits emergent capabilities for navigating complex, unseen environments and escaping local optima where other methods fail. In challenging maps, it achieves a 5.3% higher navigation success rate than best baseline. Furthermore, the proposed framework achieves effective sim-to-real transfer without any tuning during deployment. The code will be publicly available.",
+      "authors": [
+        "Zian Liu",
+        "Andong Yang",
+        "Chunkai Yang",
+        "Ruidong An",
+        "Chao Gao",
+        "Guyue Zhou"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "published": "2026-06-02T07:15:13+00:00",
+      "link": "https://arxiv.org/pdf/2606.03252v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Proposes deep RL policy with world model for drone navigation using sparse rewards",
+      "llm_evidence_cn": "提出基于世界模型的深度强化学习无人机导航策略，使用稀疏奖励",
+      "llm_evidence": "提出基于世界模型的深度强化学习无人机导航策略，使用稀疏奖励",
+      "canonical_evidence": "提出基于世界模型的深度强化学习无人机导航策略，使用稀疏奖励",
+      "llm_tldr_en": "AirDreamer presents a generalist drone navigation framework combining world model-based environment understanding and a reinforcement learning policy with sparse rewards, achieving robust generalization to unseen cluttered environments compared to hand-crafted approaches.",
+      "llm_tldr_cn": "为了解决无人机在未知、杂乱环境中导航时依赖手工规则、泛化能力差的问题，本文提出AirDreamer框架。受动物导航启发，该框架采用世界模型从高维观测中学习环境的空间结构表征，并基于该表征训练深度强化学习导航策略。奖励设计采用稀疏形式，避免繁琐的手工塑形，鼓励智能体直接完成长距离导航任务而不会陷入局部最优。实验在多个未见过的复杂场景中测试，结果表明AirDreamer成功导航，成功率显著高于传统方法，展现了更强的环境适应能力。这说明该框架能有效提升导航泛化性，为无人机自主巡检等实际应用提供了可靠的技术路径。",
+      "llm_tldr": "为了解决无人机在未知、杂乱环境中导航时依赖手工规则、泛化能力差的问题，本文提出AirDreamer框架。受动物导航启发，该框架采用世界模型从高维观测中学习环境的空间结构表征，并基于该表征训练深度强化学习导航策略。奖励设计采用稀疏形式，避免繁琐的手工塑形，鼓励智能体直接完成长距离导航任务而不会陷入局部最优。实验在多个未见过的复杂场景中测试，结果表明AirDreamer成功导航，成功率显著高于传统方法，展现了更强的环境适应能力。这说明该框架能有效提升导航泛化性，为无人机自主巡检等实际应用提供了可靠的技术路径。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "deep reinforcement learning for UAV inspection tasks",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.02313v1",
+      "source": "arxiv",
+      "title": "Towards Precise Intent-Aligned VLA Aerial Navigation via Expert-Guided GRPO",
+      "abstract": "Vision-Language-Action (VLA) models offer a promising end-to-end paradigm for unmanned aerial vehicles (UAVs) to accomplish complex tasks specified by fine-grained instructions. However, standard supervised fine-tuning (SFT) suffers from data scarcity, limited generalization, and weak supervision for nuanced and complicated human intents. Reinforcement fine-tuning offers a natural way to mitigate these challenges and align policy behaviors with human intents through designable feedback, but applying it to aerial navigation remains challenging due to inefficient exploration in expansive continuous spaces. To address these challenges, we introduce an efficient reinforcement learning (RL) framework for VLA-based aerial navigation. At its core, we propose EG-GRPO (Expert-Guided Group Relative Policy Optimization) to augment online rollouts with few-shot expert data. Additionally, we design a heterogeneous pipeline enabling parallel simulation and inference, which reduces rollout time by 43.5%. Across multiple tasks specified by complex human intents, EG-GRPO improves the success rate to 2.13x that of the SFT baseline, while improving intent alignment performance by 60.9%. These results demonstrate that our framework can move aerial navigation toward precise intent-aligned flight.",
+      "authors": [
+        "Tianyang Chen",
+        "Wenjun Li",
+        "Xin zhou",
+        "Yuze Wu",
+        "Fei Gao"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-06-01T14:31:35+00:00",
+      "link": "https://arxiv.org/pdf/2606.02313v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "DRL for UAV aerial navigation with VLA model fine-tuning",
+      "llm_evidence_cn": "深度强化学习用于无人机航空导航的VLA模型微调",
+      "llm_evidence": "深度强化学习用于无人机航空导航的VLA模型微调",
+      "canonical_evidence": "深度强化学习用于无人机航空导航的VLA模型微调",
+      "llm_tldr_en": "This paper proposes an efficient RL framework for fine-tuning vision-language-action models in UAV aerial navigation, using expert-guided GRPO to align policies with human intents in expansive continuous spaces.",
+      "llm_tldr_cn": "视觉-语言-动作（VLA）模型为无人机完成复杂指令提供了端到端范式，但监督微调存在数据稀缺和泛化不足问题。本文提出一种基于专家引导GRPO的高效强化学习框架，利用精心设计的反馈对齐策略行为与人类意图，克服了连续动作空间下的探索低效。实验表明，该方法在多种航空导航任务中实现了精确的意图对齐和稳健部署，为无人机复杂任务提供了新的学习途径。",
+      "llm_tldr": "视觉-语言-动作（VLA）模型为无人机完成复杂指令提供了端到端范式，但监督微调存在数据稀缺和泛化不足问题。本文提出一种基于专家引导GRPO的高效强化学习框架，利用精心设计的反馈对齐策略行为与人类意图，克服了连续动作空间下的探索低效。实验表明，该方法在多种航空导航任务中实现了精确的意图对齐和稳健部署，为无人机复杂任务提供了新的学习途径。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "deep reinforcement learning for UAV inspection tasks",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

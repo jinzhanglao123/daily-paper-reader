@@ -1,0 +1,39 @@
+{
+  "label": "2026-06-06",
+  "date": "2026-06-06",
+  "generated_at": "2026-06-06T21:13:47",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202606/06/2606.03252v1-airdreamer-generalist-drone-navigation-with-world-models",
+      "section": "quick",
+      "title_en": "AirDreamer: Generalist Drone Navigation with World Models",
+      "authors": "Zian Liu, Andong Yang, Chunkai Yang, Ruidong An, Chao Gao, Guyue Zhou",
+      "date": "2026-06-02",
+      "pdf": "https://arxiv.org/pdf/2606.03252v1",
+      "score": "7.0",
+      "evidence": "提出基于世界模型的深度强化学习无人机导航策略，使用稀疏奖励",
+      "tldr": "在未知杂乱环境中，无人机导航面临泛化到新场景布局和理解环境结构等挑战，传统方法依赖人工设计感知规则，跨环境适应性差。受动物导航行为启发，AirDreamer框架利用世界模型对环境进行理解，并在此基础上训练强化学习策略，采用无手工塑造项的稀疏奖励函数，有效避免局部陷阱并促进偏航控制。该框架在模拟和真实无人机上均表现涌现能力，在困难地图中导航成功率比最佳基线高5.3%，且实现无需部署调参的仿真到真实迁移。AirDreamer展示了世界模型与强化学习结合在通用无人机导航中的潜力，为解决复杂环境自主飞行提供了新思路。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Navigating a drone in unseen and cluttered environments requires reliable generalization to unseen scene layouts and understanding of environmental structure relative to the robot's capabilities. Previous methods, which assume the same environment configuration, often rely heavily on human-designed perception pipelines and predefined rules to guide the robot toward the target. This process is environment-dependent and generalizes poorly across environments. Inspired by animal navigation behavior, we design a navigation framework that navigates with a reinforcement-learning-based policy on top of a world-model-based environment understanding to overcome these issues. In addition, a sparse reward function without hand-crafted shaping terms is designed to avoid local minima traps and encourage yaw control behaviors. In simulation and on real drones, our method exhibits emergent capabilities for navigating complex, unseen environments and escaping local optima where other methods fail. In challenging maps, it achieves a 5.3% higher navigation success rate than best baseline. Furthermore, the proposed framework achieves effective sim-to-real transfer without any tuning during deployment. The code will be publicly available.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/06/2606.02313v1-towards-precise-intent-aligned-vla-aerial-navigation-via-expert-guided-grpo",
+      "section": "quick",
+      "title_en": "Towards Precise Intent-Aligned VLA Aerial Navigation via Expert-Guided GRPO",
+      "authors": "Tianyang Chen, Wenjun Li, Xin zhou, Yuze Wu, Fei Gao",
+      "date": "2026-06-01",
+      "pdf": "https://arxiv.org/pdf/2606.02313v1",
+      "score": "6.0",
+      "evidence": "深度强化学习用于无人机航空导航的VLA模型微调",
+      "tldr": "视觉语言动作(VLA)模型为无人机执行复杂意图指令提供了端到端范式，但标准监督微调(SFT)因数据稀缺、弱监督而难以对齐精细意图。强化微调通过可设计反馈可对齐行为，然而在广阔连续导航空间中探索低效。本文提出专家引导的群体相对策略优化(EG-GRPO)，利用少量专家数据增强在线试错，并结合异构并行流水线缩减43.5%的试错时间。在多种复杂意图任务上，EG-GRPO将成功率提升至SFT基线的2.13倍，意图对齐性能提高60.9%，推动空中导航实现精确意图对齐飞行。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Vision-Language-Action (VLA) models offer a promising end-to-end paradigm for unmanned aerial vehicles (UAVs) to accomplish complex tasks specified by fine-grained instructions. However, standard supervised fine-tuning (SFT) suffers from data scarcity, limited generalization, and weak supervision for nuanced and complicated human intents. Reinforcement fine-tuning offers a natural way to mitigate these challenges and align policy behaviors with human intents through designable feedback, but applying it to aerial navigation remains challenging due to inefficient exploration in expansive continuous spaces. To address these challenges, we introduce an efficient reinforcement learning (RL) framework for VLA-based aerial navigation. At its core, we propose EG-GRPO (Expert-Guided Group Relative Policy Optimization) to augment online rollouts with few-shot expert data. Additionally, we design a heterogeneous pipeline enabling parallel simulation and inference, which reduces rollout time by 43.5%. Across multiple tasks specified by complex human intents, EG-GRPO improves the success rate to 2.13x that of the SFT baseline, while improving intent alignment performance by 60.9%. These results demonstrate that our framework can move aerial navigation toward precise intent-aligned flight.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
