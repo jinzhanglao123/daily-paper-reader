@@ -1,0 +1,96 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-07T20:26:22.875224+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2606.03949v1",
+      "source": "arxiv",
+      "title": "Preference-Calibrated Human-in-the-Loop Reinforcement Learning for Robotic Manipulation",
+      "abstract": "Human-in-the-loop reinforcement learning (HIL-RL) improves sample efficiency in real-robot manipulation through online human intervention. However, successful trajectories may include suboptimal actions that deviate from the desired task-execution path and force human intervention. Existing HIL-RL methods typically apply the consistent credit assignment principle to all transitions, uniformly propagating discounted terminal rewards through suboptimal segments, ignoring the actual contribution of each transition to task success. This overestimates Q-values for critic learning and indirectly misguides actor updates toward suboptimal behavior patterns. To this end, we propose PACT, a Preference-calibrated Actor-Critic Training framework that leverages the implicit preference signals induced by intervention to perform credit reassignment on identified suboptimal segments while directly guiding policy training for unbiased critic-actor learning. Specifically, we first design a progress model that learns from human demonstration and identifies suboptimal segments for credit correction. Then, from the human action and resampled policy action at the intervention state, we build preference pairs to define a counterfactual advantage that penalizes Bellman targets of the identified suboptimal segment, enabling directional credit calibration. Moreover, we directly align the policy with human corrective actions in the bounded mean space, providing an additional signal beyond critic-guided updates. Across five real-robot manipulation tasks, PACT improves the average success rate by 24.5% and achieves 1.3 times faster convergence, thereby improving both RL sample efficiency and performance. Code is available at https://anonymous.4open.science/r/HILRL-A1X-BC05.",
+      "authors": [
+        "Zeyi Liu",
+        "Guangyao Liu",
+        "Yinuo Qu",
+        "Yuquan Xue",
+        "Bofang Jia",
+        "Chunhua Yang",
+        "Weihua Gui",
+        "Keke Huang",
+        "Ziwei Wang"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-06-02T17:38:25+00:00",
+      "link": "https://arxiv.org/pdf/2606.03949v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Addresses credit assignment for long-horizon tasks in RL",
+      "llm_evidence_cn": "解决强化学习中长时程任务的信用分配问题",
+      "llm_evidence": "解决强化学习中长时程任务的信用分配问题",
+      "canonical_evidence": "解决强化学习中长时程任务的信用分配问题",
+      "llm_tldr_en": "Introduces PACT, a preference-calibrated actor-critic framework for human-in-the-loop RL that improves credit assignment by calibrating rewards based on human preferences, avoiding overestimation from suboptimal actions.",
+      "llm_tldr_cn": "针对人机协同强化学习中成功轨迹包含次优动作导致信用分配不准确的问题，提出偏好校准的演员-评论家训练框架PACT，通过人类偏好校准奖励，避免Q值高估，从而引导策略远离次优行为。在真实机器人操作实验中，该方法能学习更符合任务要求的策略，对长时程奖励分配具有显著改进。",
+      "llm_tldr": "针对人机协同强化学习中成功轨迹包含次优动作导致信用分配不准确的问题，提出偏好校准的演员-评论家训练框架PACT，通过人类偏好校准奖励，避免Q值高估，从而引导策略远离次优行为。在真实机器人操作实验中，该方法能学习更符合任务要求的策略，对长时程奖励分配具有显著改进。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.04036v1",
+      "source": "arxiv",
+      "title": "Self-Distilled Policy Gradient",
+      "abstract": "On-policy self-distillation, where a language model conditions on privileged context to supervise its own generations, is a promising source of dense supervision for sparse-reward reinforcement learning. Actually, it can be instantiated as an auxiliary full-vocabulary student-to-teacher reverse Kullback-Leibler divergence loss. We therefore propose SDPG, a self-distilled policy-gradient framework that combines group-relative verifier advantages with normalized standard deviation, exact full-vocabulary on-policy self-distillation, as well as reference-policy KL regularization. Empirically, SDPG improves stability and performance over RLVR and self-distillation baselines. The code is available at https://github.com/lauyikfung/SDPG.",
+      "authors": [
+        "Yifeng Liu",
+        "Shiyuan Zhang",
+        "Yifan Zhang",
+        "Quanquan Gu"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-06-02T02:31:13+00:00",
+      "link": "https://arxiv.org/pdf/2606.04036v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Self-distillation provides dense supervision for sparse-reward RL, addressing long-horizon reward assignment",
+      "llm_evidence_cn": "自蒸馏为稀疏奖励强化学习提供密集监督，解决长程奖励分配问题",
+      "llm_evidence": "自蒸馏为稀疏奖励强化学习提供密集监督，解决长程奖励分配问题",
+      "canonical_evidence": "自蒸馏为稀疏奖励强化学习提供密集监督，解决长程奖励分配问题",
+      "llm_tldr_en": "SDPG combines group-relative advantages, on-policy self-distillation, and KL regularization to improve stability and performance in sparse-reward RL settings, offering a method for long-horizon reward assignment.",
+      "llm_tldr_cn": "针对稀疏奖励强化学习中长程奖励分配难题，本文提出自蒸馏策略梯度（SDPG）框架。该方法融合组相对优势、在线策略自蒸馏和KL正则化，从带噪声的回馈中提取有效学习信号。实验显示SDPG比现有基线更稳定且性能更高，能够为长程任务提供更可靠的奖励学习机制。",
+      "llm_tldr": "针对稀疏奖励强化学习中长程奖励分配难题，本文提出自蒸馏策略梯度（SDPG）框架。该方法融合组相对优势、在线策略自蒸馏和KL正则化，从带噪声的回馈中提取有效学习信号。实验显示SDPG比现有基线更稳定且性能更高，能够为长程任务提供更可靠的奖励学习机制。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}
