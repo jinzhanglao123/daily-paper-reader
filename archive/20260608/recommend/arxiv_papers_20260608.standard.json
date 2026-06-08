@@ -1,0 +1,173 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-08T21:46:43.285138+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 4,
+    "deep_cap": 6,
+    "deep_selected": 4,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2606.06536v1",
+      "source": "arxiv",
+      "title": "Attention-Guided Autoencoder Fusion for Insulator Defect Detection Using UAV Transmission-Line Imaging",
+      "abstract": "Automated defect detection in high-voltage transmission-line insulators remains challenging due to severe class imbalance, large scale variation, and the small spatial extent of defect instances in Unmanned Aerial Vehicle (UAV) imagery. To address these challenges, this paper proposes AE-YOLO, an Attention-Guided AutoEncoder-Enhanced YOLO framework for robust insulator defect detection. The architecture integrates lightweight bottleneck autoencoders within a Feature Pyramid Network-Path Aggregation Network (FPN-PAN) neck. This preserves anomaly-sensitive information during multi-scale feature fusion. Convolutional Block Attention Modules (CBAM) are used throughout the backbone, enhancing feature discrimination and suppressing background interference. The framework also introduces a variance-maximizing autoencoder regularization strategy, which encourages diverse, defect-discriminative latent representations. The network trains using a unified objective that combines focal loss, Complete IoU (CIoU) loss, and autoencoder regularization to address foreground-background imbalance and improve localization accuracy. During inference, Weighted Boxes Fusion (WBF) combines predictions from YOLOv8, YOLOv10, and YOLO11. An autoencoder-guided confidence boosting mechanism improves sensitivity to rare defect categories. Experiments on the Insulator-Defect Detection dataset show that AE-YOLO with an EfficientNetV2 backbone achieves 95.10 percent mAP at 0.5, 96.40 percent precision, and 93.80 percent recall. This performance surpasses the strongest YOLO-family baseline by 5.0 points in mAP at 0.5 and 6.7 points in recall. These results confirm the effectiveness and adaptability of the framework. The model is a practical and scalable solution for UAV-based transmission-line inspection and defect monitoring.",
+      "authors": [
+        "Malak Allam",
+        "Khaled Shaban",
+        "Ali Hamdi"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "published": "2026-06-03T21:56:13+00:00",
+      "link": "https://arxiv.org/pdf/2606.06536v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "Defect detection on transmission-line insulators from UAV images using attention-guided autoencoder fusion",
+      "llm_evidence_cn": "基于无人机图像的输电线路绝缘子缺陷检测，采用注意力引导自编码器融合",
+      "llm_evidence": "基于无人机图像的输电线路绝缘子缺陷检测，采用注意力引导自编码器融合",
+      "canonical_evidence": "基于无人机图像的输电线路绝缘子缺陷检测，采用注意力引导自编码器融合",
+      "llm_tldr_en": "AE-YOLO integrates lightweight bottleneck autoencoders and CBAM attention into YOLO for robust insulator defect detection in UAV transmission-line imagery, achieving high precision under class imbalance and scale variation.",
+      "llm_tldr_cn": "为解决无人机输电线路图像中绝缘子缺陷检测存在的严重类别不平衡、尺度变化和缺陷目标小等难题，本文提出AE-YOLO框架，通过将轻量瓶颈自编码器集成到特征金字塔网络中保留异常敏感信息，并嵌入卷积块注意力模块增强判别能力。在真实航拍数据集上，AE-YOLO取得了优于现有检测器的精度和实时性能，为输电线路自动化巡检提供了坚实的技术方案。",
+      "llm_tldr": "为解决无人机输电线路图像中绝缘子缺陷检测存在的严重类别不平衡、尺度变化和缺陷目标小等难题，本文提出AE-YOLO框架，通过将轻量瓶颈自编码器集成到特征金字塔网络中保留异常敏感信息，并嵌入卷积块注意力模块增强判别能力。在真实航拍数据集上，AE-YOLO取得了优于现有检测器的精度和实时性能，为输电线路自动化巡检提供了坚实的技术方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "transmission line defect detection from UAV imagery",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.05152v2",
+      "source": "arxiv",
+      "title": "Reinforcement Learning from Rich Feedback with Distributional DAgger",
+      "abstract": "Reasoning models have advanced rapidly, but the dominant reinforcement learning from verifiable rewards (RLVR) recipe remains surprisingly narrow: sample many responses and reward each with a single bit indicating whether the final answer is correct. Yet many settings provide rich feedback, including execution traces, tool outputs, expert corrections, and model self-evaluations. We study how to use such feedback through a distributional variant of the classic imitation learning algorithm DAgger, where the learner has local access to an expert distribution on states visited by the current policy. This yields a simple forward cross-entropy objective that admits a blackbox expert and whose sequence-level gradient {conduct rich credit assignment by propagating} future expert-student disagreement back to earlier decisions. We show that prior RL with self-distillation objectives based on reverse KL or Jensen-Shannon fail to guarantee monotonic policy improvement: even when the expert has higher reward, their updates may increase probability on worse actions. In contrast, we show that forward cross-entropy admits monotonic policy improvement and enjoys guarantees on regret. We further show that our objective optimizes a lower bound on teacher-weighted likelihood of success, leading to improved Pass@N. Empirically, our approach, DistIL, improves over RLVR and RL with self-distillation baselines across a variety of domains: scientific reasoning, coding, and solving hard mathematical problems.",
+      "authors": [
+        "Rishabh Agrawal",
+        "Jacob Fein-Ashley",
+        "Paria Rashidinejad"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.CL"
+      ],
+      "published": "2026-06-03T17:54:04+00:00",
+      "link": "https://arxiv.org/pdf/2606.05152v2",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "uses distributional DAgger for credit assignment from rich feedback in RL",
+      "llm_evidence_cn": "使用分布式DAgger在RL中利用丰富反馈进行信用分配",
+      "llm_evidence": "使用分布式DAgger在RL中利用丰富反馈进行信用分配",
+      "canonical_evidence": "使用分布式DAgger在RL中利用丰富反馈进行信用分配",
+      "llm_tldr_en": "Proposes distributional DAgger for RL from rich feedback, enabling credit assignment from sequential signals like execution traces and tool outputs, surpassing sparse reward methods.",
+      "llm_tldr_cn": "针对强化学习中丰富反馈（如执行轨迹、专家修正）未被充分利用的问题，提出分布式DAgger方法，通过序列级梯度传播进行信用分配，在数学推理等任务上优于传统稀疏奖励方法。",
+      "llm_tldr": "针对强化学习中丰富反馈（如执行轨迹、专家修正）未被充分利用的问题，提出分布式DAgger方法，通过序列级梯度传播进行信用分配，在数学推理等任务上优于传统稀疏奖励方法。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.07027v1",
+      "source": "arxiv",
+      "title": "StainFlow: Entity-Stain Tracking and Evidence Linking for Process Rewards in GUI Agents",
+      "abstract": "Reinforcement Learning (RL) has become a promising approach for improving GUI Agents in long-horizon, stochastic digital environments, but trajectory-level success feedback is too sparse to provide reliable credit assignment for intermediate exploration steps. To mitigate this issue, recent studies introduce Process Reward Models (PRMs), which provide finer-grained training feedback through global milestone verification or local step-level evaluation. However, these methods still suffer from two level-specific limitations: global milestone decomposition is subjective and singular, making it difficult to accommodate the multiple valid execution paths in real GUI tasks, while fixed local judging windows may miss long-range key evidence or dilute the decision signal with irrelevant frames. Inspired by stain-tracing mechanisms in network flow analysis, we propose StainFlow, an entity-stain-flow process reward model for GUI Agents. To reduce the subjectivity of global partitioning, we introduce the Global Entity Stain Tracking module, which extracts visually verifiable task entities and tracks how their stain concentrations and states evolve along the trajectory, allowing task phases to be objectively separated by changes in the entity evidence flow. To improve the accuracy of local verification, we introduce the Local Stain Evidence Linking module. Centered on the triggering entities of each candidate key node, it retrieves relevant steps based on their stain concentrations and state changes, and dynamically constructs high-density evidence windows for verifying true key nodes. Extensive experiments on AndroidWorld and OGRBench show that StainFlow relatively improves online RL success by 3.2% and trajectory completion judgment accuracy by 1.8%.",
+      "authors": [
+        "Haojie Hao",
+        "Longkun Hao",
+        "Yihang Lou",
+        "Yan Bai",
+        "Zhenyang Li",
+        "Zhichao Yang",
+        "Dongshuo Huang",
+        "Hongyu Lin",
+        "Lanqing Hong",
+        "Jiakai Wang",
+        "Xianglong Liu"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-06-05T08:17:28+00:00",
+      "link": "https://arxiv.org/pdf/2606.07027v1",
+      "tags": [
+        "keyword:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Process rewards for long-horizon credit assignment in GUI agent RL",
+      "llm_evidence_cn": "面向GUI智能体的长时域信用分配过程奖励方法",
+      "llm_evidence": "面向GUI智能体的长时域信用分配过程奖励方法",
+      "canonical_evidence": "面向GUI智能体的长时域信用分配过程奖励方法",
+      "llm_tldr_en": "Proposes StainFlow, a process-reward framework using entity-stain tracking and evidence linking to provide fine-grained credit assignment in long-horizon GUI agent RL, improving exploration efficiency.",
+      "llm_tldr_cn": "针对长时域GUI智能体强化学习中轨迹级稀疏反馈问题，提出基于实体污点追踪与证据链接的过程奖励模型StainFlow，自动识别关键状态并生成可靠奖励信号，提升探索效率和任务成功率。",
+      "llm_tldr": "针对长时域GUI智能体强化学习中轨迹级稀疏反馈问题，提出基于实体污点追踪与证据链接的过程奖励模型StainFlow，自动识别关键状态并生成可靠奖励信号，提升探索效率和任务成功率。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.07367v1",
+      "source": "arxiv",
+      "title": "Self-evolving LLM agents with in-distribution Optimization",
+      "abstract": "Large Language Models (LLMs) have recently emerged as powerful controllers for interactive agents in complex environments, yet training them to perform reliable long-horizon decision making remains a fundamental challenge. A key difficulty lies in credit assignment: agents often receive delayed rewards only at the end of episodes. In this paper, we propose Q-Evolve, a self-evolving framework for LLM agents that unifies automatic process-reward labeling and policy learning within a principled in-distribution reinforcement learning paradigm. In each evolving iteration, our method learns an in-distribution critic from a hybrid off-policy dataset that combines expert demonstrations with agent-generated trajectories, stabilizing Bellman backups in sparse-reward settings via a weighted Implicit Q-Learning objective. The learned value function is then used to derive step-wise process rewards through advantage estimation, enabling dense and reliable supervision without environment backtracking or human annotation. Leveraging these signals, we perform behavior-proximal policy optimization that evolves the agent over the data used for process reward labeling, allowing iterative self-improvement without exacerbating distribution shift. We evaluate our method on AlfWorld, WebShop, and ScienceWorld, showing Q-Evolve outperforms strong baselines in sample efficiency, robustness, and overall task performance. Our results demonstrate that stable agent self-evolution is achievable through the co-evolution of process-level supervision and policy, both grounded within a shared in-distribution learning loop.",
+      "authors": [
+        "Yudi Zhang",
+        "Meng Fang",
+        "Zhenfang Chen",
+        "Mykola Pechenizkiy"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-06-05T15:09:52+00:00",
+      "link": "https://arxiv.org/pdf/2606.07367v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "addresses long-horizon credit assignment in RL",
+      "llm_evidence_cn": "解决强化学习中的长时程信用分配问题",
+      "llm_evidence": "解决强化学习中的长时程信用分配问题",
+      "canonical_evidence": "解决强化学习中的长时程信用分配问题",
+      "llm_tldr_en": "Proposes Q-Evolve, a self-evolving framework for LLM agents that unifies automatic process-reward labeling and policy learning to tackle long-horizon decision making with delayed rewards.",
+      "llm_tldr_cn": "针对大语言模型智能体在长时程决策中面临的延迟奖励和信用分配难题，提出Q-Evolve自演化框架，通过分布内强化学习自动进行过程奖励标注与策略学习，在稀疏奖励环境中稳定贝尔曼备份，提升长时程任务性能。实验表明该方法能有效解决信用分配问题，为构建可靠的长时程智能体提供了新思路。",
+      "llm_tldr": "针对大语言模型智能体在长时程决策中面临的延迟奖励和信用分配难题，提出Q-Evolve自演化框架，通过分布内强化学习自动进行过程奖励标注与策略学习，在稀疏奖励环境中稳定贝尔曼备份，提升长时程任务性能。实验表明该方法能有效解决信用分配问题，为构建可靠的长时程智能体提供了新思路。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}

@@ -6,26 +6,32 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-07
-- 运行时间：2026-06-07 20:29:14 UTC
+- 最新运行日期：2026-06-08
+- 运行时间：2026-06-08 21:50:45 UTC
 - 运行状态：成功
-- 本次总论文数：2
-- 精读区：2
+- 本次总论文数：4
+- 精读区：4
 - 速读区：0
 
 ### 今日简报（AI）
-今天精读了机器人操作与策略梯度优化两篇高分论文，聚焦于如何让强化学习更安全、更高效。  
-最值得关注的是用偏好校准的人机协同框架，让机器人真正理解人的复杂指令；同时自蒸馏策略梯度显著提升了训练的稳定性。  
-建议沿着“人类反馈+蒸馏”思路，在你自己的仿真环境中测试这类方法，感受对齐与加速的实际收益。
-- 详情：[/202606/07/README](/202606/07/README)
+今日精读两篇研究，聚焦电力巡检的视觉缺陷检测与利用丰富反馈的强化学习。  
+值得关注的方向：无人机影像中绝缘子缺陷检测的注意力引导自编码器融合技术，以及用分布DAgger从富反馈中学习更具鲁棒性的策略。  
+建议从业者关注多模态感知与鲁棒模仿学习的交叉应用，尤其可尝试将富反馈思想引入工业视觉检测的标注优化。
+- 详情：[/202606/08/README](/202606/08/README)
 
 ### 精读区论文标签
-1. [Preference-Calibrated Human-in-the-Loop Reinforcement Learning for Robotic Manipulation](/202606/07/2606.03949v1-preference-calibrated-human-in-the-loop-reinforcement-learning-for-robotic-manipulation)  
+1. [Attention-Guided Autoencoder Fusion for Insulator Defect Detection Using UAV Transmission-Line Imaging](/202606/08/2606.06536v1-attention-guided-autoencoder-fusion-for-insulator-defect-detection-using-uav-transmission-line-imaging)  
+   标签：评分：10.0/10、query:uav-drl
+   evidence：基于无人机图像的输电线路绝缘子缺陷检测，采用注意力引导自编码器融合
+2. [Reinforcement Learning from Rich Feedback with Distributional DAgger](/202606/08/2606.05152v2-reinforcement-learning-from-rich-feedback-with-distributional-dagger)  
    标签：评分：9.0/10、query:uav-drl
-   evidence：解决强化学习中长时程任务的信用分配问题
-2. [Self-Distilled Policy Gradient](/202606/07/2606.04036v1-self-distilled-policy-gradient)  
+   evidence：使用分布式DAgger在RL中利用丰富反馈进行信用分配
+3. [StainFlow: Entity-Stain Tracking and Evidence Linking for Process Rewards in GUI Agents](/202606/08/2606.07027v1-stainflow-entity-stain-tracking-and-evidence-linking-for-process-rewards-in-gui-agents)  
    标签：评分：8.0/10、query:uav-drl
-   evidence：自蒸馏为稀疏奖励强化学习提供密集监督，解决长程奖励分配问题
+   evidence：面向GUI智能体的长时域信用分配过程奖励方法
+4. [Self-evolving LLM agents with in-distribution Optimization](/202606/08/2606.07367v1-self-evolving-llm-agents-with-in-distribution-optimization)  
+   标签：评分：8.0/10、query:uav-drl
+   evidence：解决强化学习中的长时程信用分配问题
 
 ### 速读区论文标签
 - 本次无速读推荐。
