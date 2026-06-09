@@ -1,0 +1,138 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-09T21:36:25.682674+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2606.01478v2",
+      "source": "arxiv",
+      "title": "Crazyflow: An Accurate, GPU-Accelerated, Differentiable Drone Simulator in JAX",
+      "abstract": "High-quality, large-scale synthetic data from simulations is becoming a cornerstone for pushing the capabilities of robot algorithms. While aerial robotics simulators have evolved to support specialized needs such as fidelity, differentiability, and swarms independently, a unified platform that can synthesize data across all these domains is missing. In this work, we propose Crazyflow, a simulator designed to push the limits of aerial-robotics algorithm development, from model-based to data-driven methods, gradient-based to sampling-based approaches, and single-agent to multi-agent systems. Compared to existing state-of-the-art drone simulators, it achieves speeds more than an order of magnitude faster for a single drone and can simulate thousands of swarms of 4000 drones each. Real-world experiments show Crazyflow supports both analytical-gradient-based policy learning, achieving sub-centimeter trajectory tracking accuracy without domain randomization, and sampling-based obstacle avoidance at speeds exceeding half a billion steps per second. Breaking the traditional train-then-deploy paradigm, we show that its unprecedented speed even enables in-flight reinforcement learning; we demonstrate this by throwing a physical drone into the air and training a recovery policy from scratch in 0.38 seconds, successfully stabilizing the drone. Crazyflow supports multiple levels of simulation abstraction, is directly compatible with all open-source Crazyflie models, and enables rapid reconfiguration across custom drone platforms and applications by providing a light-weight system identification pipeline. By pushing accuracy, speed, and differentiability simultaneously, Crazyflow serves as an open-source resource for synthetic data generation, with emerging capabilities for large-scale parallelization for online, in-execution learning and optimization, opening the door to novel algorithm development.",
+      "authors": [
+        "Martin Schuck",
+        "Marcel P. Rath",
+        "Yufei Hua",
+        "Abhishek Goudar",
+        "SiQi Zhou",
+        "Angela P. Schoellig"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI",
+        "cs.MA",
+        "eess.SY"
+      ],
+      "published": "2026-05-31T22:38:46+00:00",
+      "link": "https://arxiv.org/pdf/2606.01478v2",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Differentiable drone simulator for DRL-based UAV inspection",
+      "llm_evidence_cn": "用于基于DRL的UAV检测的可微分无人机模拟器",
+      "llm_evidence": "用于基于DRL的UAV检测的可微分无人机模拟器",
+      "canonical_evidence": "用于基于DRL的UAV检测的可微分无人机模拟器",
+      "llm_tldr_en": "Crazyflow is a high-speed, differentiable drone simulator that enables large-scale training and data generation for deep reinforcement learning in aerial robotics, critical for UAV inspection tasks.",
+      "llm_tldr_cn": "现有的无人机模拟器往往在保真度、可微分性和大规模并行能力之间难以兼顾，限制了基于深度强化学习的无人机算法开发。Crazyflow利用JAX在GPU上实现了高精度、可微分的无人机仿真，单机模拟速度比现有方案快一个数量级，并能支持数千架无人机的并行仿真。该模拟器为无人机巡检等任务提供了统一的开发平台，能够生成高质量合成数据用于模型训练，并支持基于梯度的优化方法，极大地推动了航空机器人算法从模型驱动到数据驱动的发展。",
+      "llm_tldr": "现有的无人机模拟器往往在保真度、可微分性和大规模并行能力之间难以兼顾，限制了基于深度强化学习的无人机算法开发。Crazyflow利用JAX在GPU上实现了高精度、可微分的无人机仿真，单机模拟速度比现有方案快一个数量级，并能支持数千架无人机的并行仿真。该模拟器为无人机巡检等任务提供了统一的开发平台，能够生成高质量合成数据用于模型训练，并支持基于梯度的优化方法，极大地推动了航空机器人算法从模型驱动到数据驱动的发展。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "deep reinforcement learning for UAV inspection tasks",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.04051v1",
+      "source": "arxiv",
+      "title": "RUBAS: Rubric-Based Reinforcement Learning for Agent Safety",
+      "abstract": "The evolution of LLMs into tool-enabled agents creates a new class of safety challenges associated with real-world execution rather than simple text generation. Existing alignment methods often rely on coarse refusal signals or static supervision, making it difficult to balance safety with useful tool execution across diverse agentic risks. We introduce RUBAS, a rubric-based reinforcement learning framework for agent safety. RUBAS decomposes agent behavior into four dimensions: tool-use safety, argument safety, response safety, and helpfulness. These structured rubrics provide fine-grained and interpretable rewards over complete agent trajectories, enabling reinforcement learning to optimize safe tool use while preserving task completion. Extensive experiments across multiple agent safety benchmarks and models show that RUBAS improves safety over standard alignment baselines, reduces tool-grounded hallucinations, and maintains competitive utility. Our results suggest that multi-dimensional rubric rewards provide an effective training signal for aligning LLM agents in safety-critical tool-use settings.",
+      "authors": [
+        "Xian Qi Loye",
+        "Qinglin Su",
+        "Zhexin Zhang",
+        "Shiyao Cui",
+        "Qi Zhu",
+        "Fei Mi",
+        "Hongning Wang",
+        "Minlie Huang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.CR"
+      ],
+      "published": "2026-06-02T09:02:14+00:00",
+      "link": "https://arxiv.org/pdf/2606.04051v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Directly addresses long-horizon reward assignment via rubric-based fine-grained rewards over trajectories",
+      "llm_evidence_cn": "通过基于量规的细粒度轨迹奖励直接实现长时域奖励分配",
+      "llm_evidence": "通过基于量规的细粒度轨迹奖励直接实现长时域奖励分配",
+      "canonical_evidence": "通过基于量规的细粒度轨迹奖励直接实现长时域奖励分配",
+      "llm_tldr_en": "Introduces RUBAS, a rubric-based RL framework that assigns fine-grained safety rewards over entire trajectories, enabling safe tool use in agents while preserving helpfulness.",
+      "llm_tldr_cn": "本文提出基于量规的强化学习框架RUBAS，将智能体行为分解为工具安全、参数安全、响应安全和有用性四个维度，通过细粒度和可解释的奖励对完整轨迹进行优化。实验表明该方法在多种安全风险场景下能有效平衡安全性与任务完成，为长时域奖励分配和智能体安全对齐提供了结构化且可解释的方案。",
+      "llm_tldr": "本文提出基于量规的强化学习框架RUBAS，将智能体行为分解为工具安全、参数安全、响应安全和有用性四个维度，通过细粒度和可解释的奖励对完整轨迹进行优化。实验表明该方法在多种安全风险场景下能有效平衡安全性与任务完成，为长时域奖励分配和智能体安全对齐提供了结构化且可解释的方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.08039v1",
+      "source": "arxiv",
+      "title": "MuJoCo-Drones-Gym: A GPU-Accelerated Multi-Drone Simulator for Control and Reinforcement Learning",
+      "abstract": "Robotic simulators are a cornerstone of modern research in aerial robotics, serving both as a vehicle for the development of new control algorithms and as the data source for training reinforcement learning (RL) policies. Yet, existing quadcopter learning environments often face a trade-off between physical fidelity, multi-agent support, and the throughput required by modern deep RL pipelines. In this paper, we present MuJoCo-Drones-Gym, an open-source Gymnasium-compatible multi-drone environment built on top of the MuJoCo physics engine. MuJoCo-Drones-Gym supports an arbitrary number of Bitcraze Crazyflie 2.x nano-quadcopters and exposes a modular API for selecting (i)~the physics model (rigid-body MuJoCo, explicit Python dynamics, or any subset of ground effect, blade drag, and inter-drone downwash), (ii)~the action interface (per-motor RPMs, collective normalized thrust, velocity setpoints, or PID waypoint commands), and (iii)~the observation space (kinematic state vectors, RGB / depth / segmentation cameras, or neighbourhood adjacency information). A PettingZoo ParallelEnv wrapper enables drop-in multi-agent reinforcement learning, while a suite of seven task environments, hover, velocity tracking, multi-drone hover, waypoint navigation, formation flight, gate racing, and a generic multi-agent template, demonstrates the breadth of the interface. We describe the environment design, the underlying physics and quadcopter dynamics, and illustrate its use through control and learning examples that mirror those of the closely related gym-pybullet-drones project, while taking advantage of MuJoCo's improved contact handling, rendering, and parallelizability.",
+      "authors": [
+        "Manan Tayal"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-06-06T07:59:45+00:00",
+      "link": "https://arxiv.org/pdf/2606.08039v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Provides a GPU-accelerated multi-drone simulator for DRL training, directly supporting UAV task development including inspection",
+      "llm_evidence_cn": "提供GPU加速的多无人机模拟器用于DRL训练，直接支持包括巡检在内的无人机任务开发",
+      "llm_evidence": "提供GPU加速的多无人机模拟器用于DRL训练，直接支持包括巡检在内的无人机任务开发",
+      "canonical_evidence": "提供GPU加速的多无人机模拟器用于DRL训练，直接支持包括巡检在内的无人机任务开发",
+      "llm_tldr_en": "Presents MuJoCo-Drones-Gym, a high-throughput multi-drone simulator with flexible physics and gym interface, enabling efficient RL training for quadcopter swarms.",
+      "llm_tldr_cn": "针对现有四旋翼模拟器在物理保真度、多智能体支持和训练吞吐量间的矛盾，开发了基于MuJoCo的GPU加速多无人机模拟器MuJoCo-Drones-Gym。该环境支持灵活选择物理模型（刚体MuJoCo或显式Python动力学），提供Gymnasium标准接口，可高效训练任意数量Crazyflie无人机的强化学习策略。实验证实其在高保真多机场景下能达到比现有环境更高的训练速度，为无人机智能算法开发提供关键基础设施。",
+      "llm_tldr": "针对现有四旋翼模拟器在物理保真度、多智能体支持和训练吞吐量间的矛盾，开发了基于MuJoCo的GPU加速多无人机模拟器MuJoCo-Drones-Gym。该环境支持灵活选择物理模型（刚体MuJoCo或显式Python动力学），提供Gymnasium标准接口，可高效训练任意数量Crazyflie无人机的强化学习策略。实验证实其在高保真多机场景下能达到比现有环境更高的训练速度，为无人机智能算法开发提供关键基础设施。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "deep reinforcement learning for UAV inspection tasks",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

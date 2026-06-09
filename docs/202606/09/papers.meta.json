@@ -1,0 +1,54 @@
+{
+  "label": "2026-06-09",
+  "date": "2026-06-09",
+  "generated_at": "2026-06-09T21:41:01",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202606/09/2606.01478v2-crazyflow-an-accurate-gpu-accelerated-differentiable-drone-simulator-in-jax",
+      "section": "deep",
+      "title_en": "Crazyflow: An Accurate, GPU-Accelerated, Differentiable Drone Simulator in JAX",
+      "authors": "Martin Schuck, Marcel P. Rath, Yufei Hua, Abhishek Goudar, SiQi Zhou, Angela P. Schoellig",
+      "date": "2026-05-31",
+      "pdf": "https://arxiv.org/pdf/2606.01478v2",
+      "score": "8.0",
+      "evidence": "用于基于DRL的UAV检测的可微分无人机模拟器",
+      "tldr": "现有无人机模拟器无法同时满足高保真、可微分性和大规模集群的需求，限制了从模型到数据驱动方法的综合发展。Crazyflow是基于JAX的GPU加速、可微分的统一模拟器，支持多层级抽象和轻量系统辨识，速度超越最新模拟器一个数量级以上，并能高效模拟数千架4000台集群。它支持基于解析梯度的策略学习，实现亚厘米轨迹跟踪而无域随机化，采样式避障速度超每秒5亿步，更实现飞行中0.38秒从零训练强化学习稳定抛掷无人机。该平台打破传统训练部署界限，开放了大规模并行在线执行学习与优化的新范式。",
+      "tags": "query:uav-drl",
+      "abstract_en": "High-quality, large-scale synthetic data from simulations is becoming a cornerstone for pushing the capabilities of robot algorithms. While aerial robotics simulators have evolved to support specialized needs such as fidelity, differentiability, and swarms independently, a unified platform that can synthesize data across all these domains is missing. In this work, we propose Crazyflow, a simulator designed to push the limits of aerial-robotics algorithm development, from model-based to data-driven methods, gradient-based to sampling-based approaches, and single-agent to multi-agent systems. Compared to existing state-of-the-art drone simulators, it achieves speeds more than an order of magnitude faster for a single drone and can simulate thousands of swarms of 4000 drones each. Real-world experiments show Crazyflow supports both analytical-gradient-based policy learning, achieving sub-centimeter trajectory tracking accuracy without domain randomization, and sampling-based obstacle avoidance at speeds exceeding half a billion steps per second. Breaking the traditional train-then-deploy paradigm, we show that its unprecedented speed even enables in-flight reinforcement learning; we demonstrate this by throwing a physical drone into the air and training a recovery policy from scratch in 0.38 seconds, successfully stabilizing the drone. Crazyflow supports multiple levels of simulation abstraction, is directly compatible with all open-source Crazyflie models, and enables rapid reconfiguration across custom drone platforms and applications by providing a light-weight system identification pipeline. By pushing accuracy, speed, and differentiability simultaneously, Crazyflow serves as an open-source resource for synthetic data generation, with emerging capabilities for large-scale parallelization for online, in-execution learning and optimization, opening the door to novel algorithm development.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/09/2606.04051v1-rubas-rubric-based-reinforcement-learning-for-agent-safety",
+      "section": "deep",
+      "title_en": "RUBAS: Rubric-Based Reinforcement Learning for Agent Safety",
+      "authors": "Xian Qi Loye, Qinglin Su, Zhexin Zhang, Shiyao Cui, Qi Zhu, Fei Mi, Hongning Wang, Minlie Huang",
+      "date": "2026-06-02",
+      "pdf": "https://arxiv.org/pdf/2606.04051v1",
+      "score": "8.0",
+      "evidence": "通过基于量规的细粒度轨迹奖励直接实现长时域奖励分配",
+      "tldr": "本文提出基于量规的强化学习框架RUBAS，将智能体行为分解为工具安全、参数安全、响应安全和有用性四个维度，通过细粒度和可解释的奖励对完整轨迹进行优化。实验表明该方法在多种安全风险场景下能有效平衡安全性与任务完成，为长时域奖励分配和智能体安全对齐提供了结构化且可解释的方案。",
+      "tags": "query:uav-drl",
+      "abstract_en": "The evolution of LLMs into tool-enabled agents creates a new class of safety challenges associated with real-world execution rather than simple text generation. Existing alignment methods often rely on coarse refusal signals or static supervision, making it difficult to balance safety with useful tool execution across diverse agentic risks. We introduce RUBAS, a rubric-based reinforcement learning framework for agent safety. RUBAS decomposes agent behavior into four dimensions: tool-use safety, argument safety, response safety, and helpfulness. These structured rubrics provide fine-grained and interpretable rewards over complete agent trajectories, enabling reinforcement learning to optimize safe tool use while preserving task completion. Extensive experiments across multiple agent safety benchmarks and models show that RUBAS improves safety over standard alignment baselines, reduces tool-grounded hallucinations, and maintains competitive utility. Our results suggest that multi-dimensional rubric rewards provide an effective training signal for aligning LLM agents in safety-critical tool-use settings.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/09/2606.08039v1-mujoco-drones-gym-a-gpu-accelerated-multi-drone-simulator-for-control-and-reinforcement-learning",
+      "section": "quick",
+      "title_en": "MuJoCo-Drones-Gym: A GPU-Accelerated Multi-Drone Simulator for Control and Reinforcement Learning",
+      "authors": "Manan Tayal",
+      "date": "2026-06-06",
+      "pdf": "https://arxiv.org/pdf/2606.08039v1",
+      "score": "7.0",
+      "evidence": "提供GPU加速的多无人机模拟器用于DRL训练，直接支持包括巡检在内的无人机任务开发",
+      "tldr": "现有无人机仿真环境难以同时满足物理保真度、多智能体支持与高训练吞吐量需求。MuJoCo-Drones-Gym基于MuJoCo物理引擎构建，提供模块化多旋翼仿真平台，支持任意数量Crazyflie 2.x无人机，并允许灵活选择刚体、气动效应等物理模型，以及多种动作与观测接口。该环境兼容Gymnasium与PettingZoo，内置悬停、编队、穿越等七类任务，利用GPU并行加速提升强化学习训练效率。它为空中机器人控制与学习研究提供了高保真、高吞吐、易扩展的仿真工具。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Robotic simulators are a cornerstone of modern research in aerial robotics, serving both as a vehicle for the development of new control algorithms and as the data source for training reinforcement learning (RL) policies. Yet, existing quadcopter learning environments often face a trade-off between physical fidelity, multi-agent support, and the throughput required by modern deep RL pipelines. In this paper, we present MuJoCo-Drones-Gym, an open-source Gymnasium-compatible multi-drone environment built on top of the MuJoCo physics engine. MuJoCo-Drones-Gym supports an arbitrary number of Bitcraze Crazyflie 2.x nano-quadcopters and exposes a modular API for selecting (i)~the physics model (rigid-body MuJoCo, explicit Python dynamics, or any subset of ground effect, blade drag, and inter-drone downwash), (ii)~the action interface (per-motor RPMs, collective normalized thrust, velocity setpoints, or PID waypoint commands), and (iii)~the observation space (kinematic state vectors, RGB / depth / segmentation cameras, or neighbourhood adjacency information). A PettingZoo ParallelEnv wrapper enables drop-in multi-agent reinforcement learning, while a suite of seven task environments, hover, velocity tracking, multi-drone hover, waypoint navigation, formation flight, gate racing, and a generic multi-agent template, demonstrates the breadth of the interface. We describe the environment design, the underlying physics and quadcopter dynamics, and illustrate its use through control and learning examples that mirror those of the closely related gym-pybullet-drones project, while taking advantage of MuJoCo's improved contact handling, rendering, and parallelizability.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

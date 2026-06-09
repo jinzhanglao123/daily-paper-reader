@@ -6,35 +6,31 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-08
-- 运行时间：2026-06-08 21:50:45 UTC
+- 最新运行日期：2026-06-09
+- 运行时间：2026-06-09 21:40:50 UTC
 - 运行状态：成功
-- 本次总论文数：4
-- 精读区：4
-- 速读区：0
+- 本次总论文数：3
+- 精读区：2
+- 速读区：1
 
 ### 今日简报（AI）
-今日精读两篇研究，聚焦电力巡检的视觉缺陷检测与利用丰富反馈的强化学习。  
-值得关注的方向：无人机影像中绝缘子缺陷检测的注意力引导自编码器融合技术，以及用分布DAgger从富反馈中学习更具鲁棒性的策略。  
-建议从业者关注多模态感知与鲁棒模仿学习的交叉应用，尤其可尝试将富反馈思想引入工业视觉检测的标注优化。
-- 详情：[/202606/08/README](/202606/08/README)
+精读两篇高分论文，聚焦JAX可微无人机仿真器与基于评分细则的安全强化学习。  
+最值得关注：Crazyflow实现精确、GPU加速的可微模拟，RUBAs用规则化评分引导安全行为。  
+建议读者留意可微仿真正在打通从仿真到真实部署的通道，可思考如何将其引入自己的研究任务。
+- 详情：[/202606/09/README](/202606/09/README)
 
 ### 精读区论文标签
-1. [Attention-Guided Autoencoder Fusion for Insulator Defect Detection Using UAV Transmission-Line Imaging](/202606/08/2606.06536v1-attention-guided-autoencoder-fusion-for-insulator-defect-detection-using-uav-transmission-line-imaging)  
-   标签：评分：10.0/10、query:uav-drl
-   evidence：基于无人机图像的输电线路绝缘子缺陷检测，采用注意力引导自编码器融合
-2. [Reinforcement Learning from Rich Feedback with Distributional DAgger](/202606/08/2606.05152v2-reinforcement-learning-from-rich-feedback-with-distributional-dagger)  
-   标签：评分：9.0/10、query:uav-drl
-   evidence：使用分布式DAgger在RL中利用丰富反馈进行信用分配
-3. [StainFlow: Entity-Stain Tracking and Evidence Linking for Process Rewards in GUI Agents](/202606/08/2606.07027v1-stainflow-entity-stain-tracking-and-evidence-linking-for-process-rewards-in-gui-agents)  
+1. [Crazyflow: An Accurate, GPU-Accelerated, Differentiable Drone Simulator in JAX](/202606/09/2606.01478v2-crazyflow-an-accurate-gpu-accelerated-differentiable-drone-simulator-in-jax)  
    标签：评分：8.0/10、query:uav-drl
-   evidence：面向GUI智能体的长时域信用分配过程奖励方法
-4. [Self-evolving LLM agents with in-distribution Optimization](/202606/08/2606.07367v1-self-evolving-llm-agents-with-in-distribution-optimization)  
+   evidence：用于基于DRL的UAV检测的可微分无人机模拟器
+2. [RUBAS: Rubric-Based Reinforcement Learning for Agent Safety](/202606/09/2606.04051v1-rubas-rubric-based-reinforcement-learning-for-agent-safety)  
    标签：评分：8.0/10、query:uav-drl
-   evidence：解决强化学习中的长时程信用分配问题
+   evidence：通过基于量规的细粒度轨迹奖励直接实现长时域奖励分配
 
 ### 速读区论文标签
-- 本次无速读推荐。
+1. [MuJoCo-Drones-Gym: A GPU-Accelerated Multi-Drone Simulator for Control and Reinforcement Learning](/202606/09/2606.08039v1-mujoco-drones-gym-a-gpu-accelerated-multi-drone-simulator-for-control-and-reinforcement-learning)  
+   标签：评分：7.0/10、query:uav-drl
+   evidence：提供GPU加速的多无人机模拟器用于DRL训练，直接支持包括巡检在内的无人机任务开发
 
 
 <div class="dpr-home-promo-card">
