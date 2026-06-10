@@ -1,0 +1,729 @@
+Title: Back on Track: Aligning Rewards and States for Reasoning in Diffusion Large Language Models
+
+URL Source: https://arxiv.org/pdf/2606.08501v1
+
+Published Time: Tue, 09 Jun 2026 01:23:17 GMT
+
+Number of Pages: 15
+
+Markdown Content:
+# Back on Track: Aligning Rewards and States for Reasoning in Diffusion Large Language Models 
+
+Yawen Shao 1, Jie Xiao 1,2, Kai Zhu 1,2,†, Yu Liu 2, Hongchen Luo 3,Xueyang Fu 1, Yang Cao 1, Wei Zhai 1,†, Zheng-Jun Zha 11 University of Science and Technology of China  
+
+> 2
+
+Tongyi Lab 3 Northeastern University 
+
+> shaoyawen@mail.ustc.edu.cn
+
+Abstract 
+
+Reinforcement learning (RL) holds immense promise for enhancing the reasoning capa-bilities of diffusion large language models (dLLMs). However, progress is fundamentally constrained by a dual misalignment between authentic generation trajectory and the gradi-ent update process: (i) Process-reward mis-alignment. Sparse, terminal rewards are indis-criminately assigned to all intermediate steps of the generation process, failing to provide discriminative credit assignment. (ii) State-trajectory misalignment. Policy updates are of-ten diverted toward artificial, out-of-trajectory states, squandering gradients on less informa-tive samples. To address these limitations, we introduce Process Aligned Policy Optimization (PAPO), a novel framework that holistically aligns the RL update with the dLLM’s gen-erative trajectory via Step-Aware Process Re-wards (SPR) that transform sparse terminal re-wards into dense, step-wise credit, and Entropy-Guided Historical Re-enactment (EHR) that re-plays authentic trajectories at high-uncertainty steps. Extensive experiments on four bench-marks demonstrate that PAPO significantly out-performs baselines, achieving gains of up to 
+
+4.5% on GSM8K, 4.8% on MATH500, 42.2% 
+
+on Countdown and 16.1% on Sudoku. 
+
+1 Introduction 
+
+Diffusion Large Language Models (dLLMs) (Ye et al., 2025; Gong et al., 2024; Nie et al., 2025; Sahoo et al., 2024; Cheng et al., 2025) have re-cently emerged as a significant paradigm shift from traditional auto-regressive (AR) generation, offer-ing substantial inference speedups through their parallel generation process while achieving com-petitive performance. In contrast to the sequential token-by-token prediction of AR models, the core mechanism of dLLMs involves an iterative denois-ing and remasking loop that enables the parallel 
+
+> †Corresponding Author.
+
+prediction and generation of multiple tokens at each step. However, while reinforcement learning (RL) has become a key technology for optimizing AR models (Shao et al., 2024), adapting these powerful interactive learning paradigms to the unique non-autoregressive architecture of dLLMs remains a critical and underexplored domain. Recent efforts (Xie et al., 2025; Tang et al., 2025; Zhao et al., 2025b; Yang et al., 2025; Wang et al., 2025c; Gong et al., 2025; Zhan, 2025; Wang et al., 2025d,a) have begun to adapt RL for dLLMs by in-tegrating policy gradient methods (Schulman et al., 2017; Rafailov et al., 2023; Shao et al., 2024) into the non-autoregressive framework. Despite their remarkable progress, they are fundamentally con-strained by a dual misalignment between the au-thentic generation trajectory and the gradient up-date process, as illustrated in Figure 1. First, exist-ing methods exhibit a severe process-reward mis-alignment, where the sparse reward from the final outcome R0 is indiscriminately assigned to deci-sions at any arbitrary intermediate step from T to 
+
+t0, failing to provide step-specific credit assign-ment (Figure 1 (b)). Second, they suffer from a lack of contextual state authenticity, policy updates are performed on “artificial states” constructed by randomly masking the final completion (Figure 1 (b)), which lack faithfulness to the true interme-diate contexts of the denoising process (Figure 1 (a)). Moreover, their random step selection strategy leads to inefficient training by squandering updates on already settled decisions, at the expense of refin-ing the critical steps where the model truly strug-gles. This fundamental disconnect of the reward signal and policy update state from the authentic generative trajectory yields an inefficient and un-stable optimization process, severely impeding the acquisition of structured reasoning abilities. To address these fundamental misalignments, we introduce Process Aligned Policy Optimization (PAPO), a novel RL framework that holistically 1
+
+> arXiv:2606.08501v1 [cs.CL] 7 Jun 2026
+
+diffu -GRPO Rollout 
+
+> denoise
+
+𝑠𝑡𝑒𝑝 𝑇 
+
+𝑠𝑡𝑒𝑝 𝑡 !
+
+𝑠𝑡𝑒𝑝 𝑡 "
+
+𝑠𝑡𝑒𝑝 𝑡 #
+
+> denoise
+> denoise
+
+PAPO 
+
+UniGRPO   
+
+> Iter 1
+> Iter n
+
+⋯       
+
+> Partially -masked Prompt +Fully -masked Completion
+> Prompt +Partially -masked Completion
+
+⋯  
+
+> Iter 1
+> Iter n
+
+⋯ ⋯   
+
+> Prompt Completion
+> Sparse Reward
+
+𝑅 #
+
+𝑅 #
+
+𝑅 #
+
+𝑅 #
+
+𝑅 #   
+
+> Unrealistic Context Misaligned Reward
+> Iter 1
+> Iter n
+
+⋯
+
+𝑅 !
+
+𝑅 "
+
+⋯           
+
+> History Context Process Reward
+> Input Token Completion Token
+> Mask Token Remask Token
+> Token Entropy
+> Guided
+
+🎲       
+
+> Prompt +History -masked Completion
+> Step
+> Selected
+> 🟥 🟥 🟧 🟨 🟩 🟦 🟦
+> 𝑡 0
+> (a) (b)
+> (c)
+> Record History
+
+Figure 1: Comparison of RL Frameworks for dLLMs. (a) Iterative denoising during the authentic rollout. (b) Existing methods perform policy updates by constructing artificial states from the final completion, introducing dual misalignment: the artificial context is unfaithful to the authentic generative process, and the sparse terminal reward (R0) is indiscriminately assigned to all steps. (c) Our PAPO aligns the RL update with the authentic process by re-enacting historical states guided by entropy and assigning dense, step-aware process rewards ( Rm, R n). 
+
+aligns the gradient update process with the authen-tic generative process of dLLMs. As shown in Fig-ure 1 (c), PAPO achieves this through two synergis-tic innovations. First, to tackle the process-reward misalignment, we introduce Step-Aware Process 
+
+Rewards (SPR). SPR provides a step-specific and dense credit assignment by calculating an imme-diate reward for each intermediate step based on a single denoising step prediction. This immedi-ate reward is then integrated with the final out-come reward, forming a composite learning signal that provides accurate, step-specific credit. Second, to resolve the challenge of unfaithful and ineffi-cient state selection, we propose Entropy-Guided 
+
+Historical Re-enactment (EHR). Departing from prior methods that rely on artificial states, EHR leverages authentic historical trajectories captured during the natural rollout process. To maximize learning efficiency, it re-enacts these trajectories for policy updates by employing an entropy-guided sampling strategy, which directs gradients toward moments of high model uncertainty, ensuring that learning is concentrated on the most critical stages of the generative process. Extensive experiments on math reasoning (GSM8K, MATH500) and planning tasks (Count-down, Sudoku) demonstrate that PAPO signifi-cantly outperforms the existing dLLM. Specifically, PAPO yields consistent improvements, with perfor-mance gains of up to 4.5% on GSM8K and 4.8% on MATH500. The advantages of our process aligned approach are even more pronounced on complex planning tasks, where PAPO achieves a staggering absolute improvement of up to 42 .2% on Count-down and 16 .1% on Sudoku. These results validate that by holistically aligning the RL updates with the model’s generative process, PAPO provides a more effective and stable path to unlocking the advanced reasoning and planning capabilities of dLLMs. The contributions of this paper are as follows: • We identify two misalignments that form a core barrier to effective RL in dLLMs: process-reward misalignment and state-trajectory misalignment, both of which lead to inefficient and unstable policy updates. • We propose Process Aligned Policy Optimiza-tion (PAPO), a novel RL framework featuring Step-Aware Process Rewards (SPR) for pro-cess credit assignment and Entropy-Guided Historical Re-enactment (EHR) for history context state selection. • We demonstrate PAPO’s superiority through extensive experiments, achieving state-of-the-art results with significant average gains of up to 4.7% in math reasoning and 29 .2% in planning tasks over strong baselines. 
+
+2 Related Work 
+
+Diffusion Large Language Models. Inspired by their success in continuous domains like im-2age/video generation (Ho et al., 2020; Song et al., 2020; Wan et al., 2025; Shao et al., 2025), diffusion models have recently been adapted for discrete text generation. While early efforts focused on continu-ous space (Han et al., 2022; Li et al., 2022) or the probability simplex (Avdeyev et al., 2023; Stark et al., 2024), the paradigm shifted with masked dif-fusion models (Shi et al., 2024; Sahoo et al., 2024; Nie et al., 2024), which rival GPT-2 level autore-gressive models in perplexity (Lou et al., 2024). This branched into two strategies: training massive models from scratch, exemplified by LLaDA (Nie et al., 2025) that achieves performance competi-tive with LLaMA3-8B (Dubey et al., 2024), and converting pre-trained autoregressive models into diffusion generators, e.g. DiffuLLaMA (Gong et al., 2024) and Dream (Ye et al., 2025). Con-currently, recent works have expanded their capa-bilities to include chain-of-thought reasoning (Ye et al., 2024b,a), explored novel architectures like Block-Diffusion (Arriola et al., 2025; Cheng et al., 2025) for structured generation, and extended the paradigm to multimodal models (Yang et al., 2025; Xin et al., 2025; Dai et al., 2025; Deng et al., 2025) like MMaDA. 
+
+Reinforcement Learning for dLLMs. Ap-plying RL to enhance reasoning in dLLMs (Nie et al., 2025; Ye et al., 2025) has attracted grow-ing attention (Wang et al., 2025a; Zhan, 2025; Zhu et al., 2025b; Zhao et al., 2025a; Ma et al., 2025; Zhao et al., 2025c). Early efforts such as DRAKES (Wang et al., 2025b) backpropagate re-wards along the denoising trajectory but incur high computational cost and gradient instability. The dominant paradigm has thus shifted to direct pol-icy optimization via GRPO (Shao et al., 2024), e.g., diffu-GRPO (Zhao et al., 2025b) and Uni-GRPO (Yang et al., 2025). However, these meth-ods suffer from two fundamental misalignments be-tween RL updates and authentic trajectories. First, process-reward misalignment: most methods as-sign sparse outcome rewards without process su-pervision. TraceRL (Wang et al., 2025d) uses a value model with significant overhead. SAPO (Xie et al., 2025) requires costly Monte Carlo rollouts to estimate process rewards, limiting its efficiency. Second, inefficient state selection: existing frame-works treat all trajectory steps equally. Although recent work (Zhang et al., 2025; Chen et al., 2025; Deng et al., 2026) leverages entropy in RL, they apply it to advantage estimation rather than state selection for policy updates. We address both gaps via step-aware process rewards (SPR) for dense credit assignment and entropy-guided historical re-enactment (EHR) to focus learning on the most informative states. 
+
+3 Preliminaries 
+
+Masked Diffusion Large Language Models. The paradigm of dLLMs (Nie et al., 2025; Ye et al., 2025) generates text through iterative denoising. The forward process corrupts a clean token se-quence x0 by stochastically replacing tokens with mask tokens over time t ∈ [0 , 1) . The probability of each token remaining uncorrupted at timestep t
+
+is determined by a noise schedule αt. The model 
+
+πθ learns to predict all masked tokens from xt by minimizing the NELBO. For masked dLLMs like LLaDA (Nie et al., 2025), which employ a noise schedule αt = 1 − t, this objective is reduced to a loss over masked tokens only:         
+
+> L(θ) = −Et,x 0,x t
+> 1
+> t
+> |xt|
+> X
+> k=1
+> 1[xkt=mask ] log πθ(xk
+> 0|xt)
+> ,
+> (1)
+
+where |xt| is the sequence length of x, and xk 
+
+> 0
+
+is the k-th token of x0.
+
+Group Relative Policy Optimization. GRPO is a critic-free policy optimization method (Shao et al., 2024) that derives advantages from group-based statistics. For a prompt q, it samples a group of G responses {o1, . . . , o G} and calculates an un-normalized group-relative advantage for each re-sponse oi based on its reward R(oi):
+
+Ai = R(oi) − 1
+
+G
+
+> G
+
+X
+
+> j=1
+
+R(oj ), (2) where R(·) is the reward function. Adapting GRPO to dLLMs requires tractable sequence-level log-likelihoods log πθ(o|q), which autoregressive models obtain via the chain rule 
+
+log πθ(o|q) = P|o| 
+
+> k=1
+
+log πθ(ok|q, o <k ) but dLLMs cannot due to their non-causal, multi-step denois-ing process. Prevailing works (Zhao et al., 2025b; Yang et al., 2025) address this with a mean-field approximation, formulated as: 
+
+log πθ(o|q) ≈
+
+> |o|
+
+X
+
+> k=1
+
+log πθ(ok|q), (3) where each per-token marginal πθ(ok|q) can be computed via a single-pass estimate, replacing the need for explicit multi-step trajectory unrolling. 3Algorithm 1 PAPO Training Process 
+
+Require: Reference model πref , prompts D, completions G,number of inner updates μ, diffusion steps T
+
+1: Initialize policy πθ ← πref 
+
+2: while not converged do 
+
+3: Set πold ← πθ and sample q ∼ D 
+
+4: ▷ // Rollout and Trajectory Recording 
+
+5: Sample {oi}Gi=1 ∼ πold (·| q), and cache {τi}Gi=1 
+
+6: ▷ // Step-Aware Process Rewards Computation 
+
+7: for each rollout oi and trajectory τi do 
+
+8: Compute final sparse reward Rfi = R(oi)
+
+9: Compute step process reward {Rpi,t }Tt=1 by one-10: step decoding from each context xi,t ∈ τi
+
+11: Compute Ri,t = Rfi + Rpi,t and Ai,t 
+
+12: end for 
+
+13: ▷ // Entropy-Guided Historical Re-enactment Update 
+
+14: for gradient update iterations n = 1 , . . . , μ do 
+
+15: Compute entropies {Hi,t } for τi with πold 
+
+16: Sample tn ∼ p(t|i) ∝ Hαi,t for τi
+
+17: Reconstruct historical context xi,t n from τi
+
+18: Estimate log-probabilities under πθ , π old , π ref 
+
+19: Compute PAPO objective Lpapo and update πθ
+
+20: end for 
+
+21: end while 
+
+22: return πθ
+
+4 Process Aligned Policy Optimization 
+
+Current RL frameworks for dLLMs suffer from two fundamental misalignments: sparse, outcome-based rewards that fail to credit the reasoning pro-cess, and inefficient, unfaithful state selection for policy updates. To address these shortcomings, we introduce Process Aligned Policy Optimization (PAPO), which aligns learning with the dLLM’s generative trajectory through Step-Aware Process Rewards (SPR) (Section 4.1) and Entropy-Guided Historical Re-enactment (EHR) (Section 4.2). The complete algorithm is detailed in Algorithm 1. 
+
+4.1 Step-Aware Process Rewards 
+
+A core limitation of existing RL methods for dLLMs is the process-reward mismatch: a single, sparse reward is assigned based on the final out-come, providing no supervision on the quality of the intermediate reasoning path and making it insuf-ficient for guiding the complex, multi-step genera-tion process of dLLMs. To resolve it, we introduce Step-Aware Process Rewards (SPR) to generate dense, fine-grained rewards evaluating each inter-mediate step in the denoising trajectory. Given a prompt q, the dLLM iteratively refines from a fully masked state xT . At each step t, the model predicts all masked tokens from xt to pro-duce a one-step denoised prediction, then remasks remaining tokens to form the next state xt−1, con-tinuing until the final completion oi. In conven-Generation Process (Rollout)   
+
+> 𝑇
+> 𝑡 !
+> Prompt Completion
+> Trajectory Recording
+> 𝑡 "
+> 𝑡 #
+> denoise
+> remask
+
+⋯⋯                  
+
+> remask
+> denoise
+> denoise
+> 𝑥 $
+> 𝑥 !
+> 𝑥 "
+> "𝑥 #(𝑇 )
+> "𝑥 #(𝑚 )
+> "𝑥 #(𝑛 )
+> 𝑥 #
+> 𝑅 $
+> %
+> 𝑅 "
+> %
+> 𝑅 !
+> %
+> 𝑅 &
+> 𝜏 =(𝑥 $,𝑥 !,𝑥 ",⋯,𝑥 #)
+> 🟥
+> 🟦
+> 🟧
+> 🟩
+> Input Token Completion Token
+> Mask Token
+> Remask Token
+> 🟥 🟧 🟩 🟦 Step -Level Entropy
+> 𝑠𝑡𝑒𝑝 𝜏
+> Reward Compute
+
+Figure 2: Detailed Rollout Process of PAPO: Trajec-tory Recording and Process Reward Computation. 
+
+This figure illustrates how PAPO captures the complete generative trajectory τ = ( xT , . . . , x t, . . . , x 0) while concurrently computing Step-Aware Process Rewards (SPR) Rpt based on the one-step denoised prediction 
+
+ˆx0(t) from each intermediate state xt.
+
+tional RL, policy then guides updates for every in-termediate step using a sparse reward Rfi = R(oi).Our SPR instead records the full generative tra-jectory τi = ( xT , . . . , x t, . . . , x 0) for each rollout 
+
+i, as illustrated in Figure 2. At each step t, we form the one-step denoised prediction ˆx0(t), which is the complete solution estimate from context xt
+
+before remasking, and evaluate the step-specific process reward Rpi,t with the reward function: 
+
+Rpi,t = R(ˆ x0(t)) , ˆx0(t) ∼ πold (·| q, x t), (4) where ˆx0(t) is a one-step denoised prediction from 
+
+xt using the old policy πold .To ground this immediate feedback with the long-term objective, dense signal is combined with the final outcome reward to form a comprehensive, step-specific total reward: 
+
+Ri,t = Rfi + Rpi,t , (5) From this composite reward, a more accurate, step-aware advantage Ai,t is computed using Eq. 2 and cached alongside τi for subsequent policy updates. 
+
+4.2 Entropy-Guided Historical Re-enactment 
+
+The second misalignment is inefficient and unfaith-ful state selection for policy updates. As shown in Figure 1 (b), prevalent methods such as diffu-GRPO (Zhao et al., 2025b) and UniGRPO (Yang et al., 2025) construct artificial contexts that do not reflect the model’s authentic generation process. 4The diffu-GRPO performs its updates by condition-ing on a synthetic state composed of a randomly masked prompt q′ and a fully masked completion 
+
+πθ(ok|q′ ⊕ mask · · · ⊕ mask ), which is a zero-information context the model never encounters post-initialization. While UniGRPO forms its con-text by applying a random mask ratio pi ∈ [0 , 1] 
+
+directly to the final completion oi. This creates an unrealistic context that is unlikely to correspond to actual state from the generative trajectory. In both cases, a fundamental discrepancy arises between the synthetic contexts used for learning and the au-thentic states the policy actually encounters during inference, resulting in suboptimal gradient updates. To resolve this state-selection discrepancy, we introduce Entropy-Guided Historical Re-enactment (EHR) to select authentic and efficient states for policy updates. EHR uses the cached trajectories 
+
+τi = ( xT , . . . , x t, . . . , x 0) and their step-aware ad-vantages {Ai,t } to perform policy updates directly on authentic intermediate states xi,t , eliminating the train-inference distribution mismatch. As naive uniform sampling becomes inefficient by repeatedly revisiting well-learned, low-entropy steps, EHR instead prioritizes high-entropy states where policy uncertainty is greatest, maximizing the utility of each gradient update. Specifically, EHR computes the step-level entropy Hi,t for each timestep t as the average token-level entropy over masked positions k ∈ M i,t :
+
+Hi,t = 1
+
+|M i,t |
+
+X
+
+> k∈M i,t
+
+− X
+
+> v∈V
+
+pk(v) log pk(v)
+
+!
+
+,
+
+(6) where Mi,t is the set of masked tokens in state xi,t ,and pk(v) = πold (v|q, x i,t , k ) denotes the proba-bility assigned by the old policy πold to a specific token v from the vocabulary V for the masked po-sition k. We construct a timestep sampling distri-bution where the probability of selecting step tn is proportional to its entropy: 
+
+p(tn|i) ∝ (Hi,t n )α, (7) where α controls sharpness of the distribution: 
+
+α = 0 yields uniform sampling, and larger α in-creasingly favors high-uncertainty steps. At each update iteration, we sample tn ∼ p(t|i)
+
+and reconstruct authentic context xi,t n from τi. In-tegrating SPR-derived advantages with EHR state selection, the complete PAPO objective is:             
+
+> LPAPO (θ) = Eq∼D ,{τi}∼ πold (·| q)
+> tn∼p(·| i)
+> "1
+> G
+> GX
+> i=1
+> 1
+> |M i,t n|
+> X
+> k∈M i,tn
+> min
+> 
+> rki,t n(θ)Ai,t n,
+> clip (rki,t n(θ),1−ϵ, 1 + ϵ)Ai,t n
+> 
+> −βD KL (πθ|| πref )
+> #
+> .
+
+(8) where Ai,t n is the cached step-aware advantage and 
+
+rki,t n (θ) = πθ (oki |q,x i,tn )   
+
+> πold (oki|q,x i,tn )
+
+is the importance ratio. ϵ
+
+and β control clipping and KL regularization. 
+
+5 Experiments 
+
+5.1 Experimental Setup Tasks. We evaluate our method on four reasoning tasks: (1) GSM8K (Cobbe et al., 2021), a grade school math dataset requiring multi-step logical in-ference; (2) MATH500 (Lightman et al., 2023), a curated set of 500 competition level high-school math problems; (3) Countdown, a combinatorial arithmetic game requiring target expression gener-ation; (4) 4x4 Sudoku, a planning task demanding constraint satisfaction and systematic elimination. 
+
+Compared Baselines. We compare PAPO with several RL methods for dLLMs. Our primary base-lines include d1 (Zhao et al., 2025b), the first work to apply RL to dLLMs and diffu-GRPO applied directly to the base model. For a comprehensive comparison, we additionally evaluate against re-cent SOTA RL methods: UniGRPO (Yang et al., 2025), WINO (Hong et al., 2025), TSE (Wang et al., 2025c), SAPO (Xie et al., 2025) as well as models further fine-tuned on the reasoning dataset s1k (Muennighoff et al., 2025). 
+
+Training Details. All experiments are based on the LLaDA-8B-Instruct model (Nie et al., 2025), using official splits for GSM8K and MATH, and the same synthetic datasets as d1 (Zhao et al., 2025b) for Countdown and Sudoku. Unlike d1, PAPO applies RL directly to the base model without su-pervised fine-tuning (SFT). During RL training, the sequence length for online trajectory genera-tion is fixed at 256 tokens, while evaluation spans 128, 256, and 512 tokens to assess generalization. All experiments are conducted on 8 NVIDIA A100 GPUs. Please refer to Appendix A for more details. 
+
+5.2 Main Results Overall Performance. As detailed in Table 1, PAPO demonstrates superior performance across four challenging reasoning benchmarks. Without any SFT, PAPO achieves an average absolute im-provement of 16.9% over LLaDA-8B-Instruct, es-5GSM8K MATH500 Countdown Sudoku Model / Seq Len 128 256 512 128 256 512 128 256 512 128 256 512                                                                                                                                     
+
+> LLaDA-8B-Instruct (Nie et al., 2025) 68.7 76.7 78.2 26.0 32.4 36.2 20.7 19.5 16.0 11.7 6.7 5.5 diffu-GRPO (Zhao et al., 2025b) 72.6 79.8 81.9 33.2 37.2 39.2 33.2 31.3 37.1 18.4 12.9 11.0 TSE-Vote (Wang et al., 2025c) 70.1 78.7 78.9 28.4 35.6 36.2 25.0 23.4 16.4 ×××
+> WINO (Hong et al., 2025) -75.8 --34.2 --33.2 --15.2 -UniGRPO †(Yang et al., 2025) 73.2 79.8 79.4 33.0 37.0 39.8 51.6 53.9 43.8 23.9 19.2 14.1 SAPO (Xie et al., 2025) 72.9 82.2 82.4 32.0 40.0 38.4 51.6 52.0 56.3 22.4 20.3 16.1 SFT 66.5 78.8 81.1 26.2 32.6 34.8 20.3 14.5 23.8 16.5 8.5 4.6 SFT + diffu-GRPO (Zhao et al., 2025b) 73.2 81.1 82.1 33.8 38.6 40.2 34.8 32.0 42.2 22.1 16.7 9.5 SFT + TSE-Reward (Wang et al., 2025c) 72.1 80.0 83.0 31.2 35.4 41.4 41.5 42.6 54.7 ×××
+> Ours 73.8 82.4 80.8 33.4 35.6 40.0 52.0 65.6 65.2 27.2 25.0 20.2 +5.1 +5.7 +2.6 +7.4 +3.2 +3.8 +31.3 +46.1 +49.2 +15.5 +18.3 +14.7
+
+Table 1: Performance Comparison on Four Benchmarks. Bold numbers indicate the top performance in each category. Underlined numbers denote the best performance among methods without additional Supervised Fine-Tuning (SFT). Green values show the absolute improvement of our method over the LLaDA-8B-Instruct baseline. “–” denotes unreported results, “×” denotes unsupported tasks, and † indicates our own re-implementation. Without additional SFT, our PAPO demonstrates superior performance. 
+
+Figure 3: Reward Curves during RL Training. Comparison of our method (PAPO) and diffu-GRPO across four benchmarks. PAPO consistently achieves higher reward trajectories, demonstrating superior sample efficiency.                                                                
+
+> GSM8K MATH500 Countdown Sudoku Model / Seq Len 128 256 512 128 256 512 128 256 512 128 256 512
+> LLaDA-8B-Instruct 68.7 76.7 78.2 26.0 32.4 36.2 20.7 19.5 16.0 11.7 6.7 5.5 + HR 73.8 80.1 80.2 32.2 36.8 36.4 51.9 56.6 55.5 25.3 22.6 18.7 + HR + SPR 74.0 81.3 79.8 32.2 37.6 38.0 51.6 60.6 58.2 25.8 23.6 18.9 + EHR + SPR 73.8 82.4 80.8 33.4 35.6 40.0 52.0 65.6 65.2 27.2 25.0 20.2
+
+Table 2: Ablation Study on the contributions of Step-Aware Process Rewards (SPR) and Entropy-Guided Historical Re-enactment (EHR), where HR denotes Historical Re-enactment without entropy guidance. 
+
+tablishing state-of-the-art results among direct RL methods on the majority of tasks. The gains are especially pronounced on planning tasks, reach-ing up to 42.2% on Countdown and 16.1% on Su-doku, where structured, multi-step credit assign-ment proves most critical. 
+
+Training Dynamics. As shown in Figure 3, PAPO exhibits markedly superior training dynam-ics compared to the diffu-GRPO baseline, achiev-ing a consistently higher reward trajectory with a steeper ascent and lower volatility. This rapid and stable improvement reflects the superior sam-ple efficiency of PAPO, indicating that our method more effectively leverages the learning signal to accelerate policy optimization. 
+
+5.3 Ablation Study 
+
+We conduct a thorough ablation study to exam-ine the contribution of each component, as shown in Table 2. First, removing SPR and reverting to sparse, terminal-only rewards leads to a substantial performance drop, underscoring the necessity of dense, process-aware feedback for effective credit assignment. Second, replacing EHR with a sim-pler Historical Re-enactment (HR) that samples states uniformly also yields a noticeable perfor-mance decline, demonstrating that training on au-thentic states alone is insufficient: prioritizing high-entropy states where the policy is most uncertain is critical for maximizing learning efficiency. The full PAPO model achieves the best overall performance, confirming that the strength of our approach lies in 6Figure 4: Training Dynamics of Step-Aware Process Rewards. The consistent upward trend of the process reward across all benchmarks confirms that the policy is learning to generate higher-quality intermediate reasoning steps. (a) (b) (c) 
+
+Figure 5: Analysis of Entropy-Guided Historical Re-enactment. (a) Average token-level entropy exhibits a clear downward trend as the number of sampling steps increases. (b) The impact of the entropy-weighting hyperparameter 
+
+α on the reward trajectory. (c) Completion length dynamics of PAPO and diffu-GRPO on the GSM8K benchmark. 
+
+directing granular, process-aware rewards toward the most informative historical states. 
+
+6 Analysis 
+
+6.1 Effect of Step-Aware Process Rewards Process reward drives structured reasoning. To validate the effectiveness of SPR, we track the av-erage process reward during training (Figure 4). The consistent upward trend confirms that the pol-icy progressively learns to produce higher-quality intermediate reasoning steps, rather than merely arriving at correct final answers by chance. This dense, step-level supervision directly addresses the “unstructured refinement” problem by incentivizing coherent, step-by-step reasoning paths. 
+
+Fidelity-Efficiency trade-off favors one-step SPR. A natural question is whether one-step de-noised predictions faithfully reflect generation qual-ity. We take GSM8K as a representative case to ex-amine the fidelity-efficiency trade-off. As shown in Table 3 and Figure 6 (a), increasing the lookahead from 1-step to 16-step yields only marginal accu-racy gains (+1.6%) while incurring substantial over-head (+44% GPU hours), confirming that 1-step SPR achieves the optimal fidelity-efficiency trade-off. We further examine the role of early-stage pro-cess rewards. As shown in Figure 6 (b), clipping rewards for steps t < 32 leads to noticeable per-formance degradation, confirming that early-stage process rewards are critical for stable convergence.            
+
+> 1-step 4-step 8-step 16-step
+> Seq Len=128 73.8 74.2 ⋄0.4% 74.7 ⋄0.9% 75.4 ⋄1.6% GPU Hours 177 187 ⋄5.6% 200 ⋄13.0% 255 ⋄44%
+
+Table 3: Multi-step SPR Comparison on GSM8K. 
+
+Increasing the lookahead steps yields diminishing accu-racy gains at prohibitive computational cost. ⋄ denotes the relative improvement over 1-step.  
+
+> (a) Multi-step comparison (b) Early reward clipping
+
+Figure 6: SPR Fidelity-Efficiency Analysis. (a) Multi-step SPR training dynamics on GSM8K. (b) Clipping early-stage rewards ( t < 32 ) degrades performance, confirming the importance of early supervision. 
+
+6.2 Effect of Entropy-Guided Historical Re-enactment Entropy-guided selection improves learning ef-ficiency. The generative process exhibits a non-uniform entropy distribution across the denoising trajectory (Figure 5 (a)), with entropy decreasing as denoising progresses. Uniform timestep selection is thus inefficient, over-sampling low-entropy states where the policy is confident while under-sampling high-entropy states with the greatest learning po-7tential. EHR addresses this by probabilistically prioritizing updates on high-entropy states. 
+
+Impact of hyperparameter α in EHR. We fur-ther validate this design through an analysis of α
+
+(Figure 5 (b)). Without entropy guidance ( α = 0 ), training yields the lowest reward and later-stage in-stability, as uniform sampling keeps updating well-learned states. With entropy weighting ( α > 0), re-ward and convergence stability both improve, con-firming that prioritizing high-entropy states benefits learning efficiency and training stability. 
+
+Token Efficiency. The efficiency gain also man-ifests in the generated outputs. As observed on the GSM8K benchmark (Figure 5 (c)), PAPO con-verges to shorter completions than diffu-GRPO while achieving higher task performance, indicat-ing improved token efficiency. 
+
+6.3 Cross-Domain Generalization Generalization across Backbones. We apply PAPO to the LLaDA-1.5 (Zhu et al., 2025a) model to assess cross-backbone transfer (Table 4). PAPO consistently outperforms diffu-GRPO on all bench-marks, with pronounced gains on planning tasks, demonstrating that the process-aligned optimiza-tion transfers effectively across model scales. 
+
+Generalization across Task Domains. We fur-ther evaluate PAPO on code generation (Table 5), a domain involving more complex, execution-based reward functions. We train a model on the KodCode-Light-RL-10K dataset (Xu et al., 2025). PAPO achieves consistently competitive or superior results on both HumanEval and MBPP benchmarks, confirming that our framework is not restricted to mathematical and planning tasks. 
+
+6.4 Efficiency 
+
+A practical concern is whether step-aware process rewards computation introduces prohibitive over-head. We analyze training efficiency along two dimensions. Firstly, Figure 7 (a) shows how the number of policy optimization updates per rollout batch μ affects sample efficiency and stability. Rais-ing μ from 2 to 24 accelerates reward convergence under the same wall time, but μ = 24 becomes unstable late in training and the reward declines. With μ = 12 , convergence remains stable, reaches a higher final reward with faster wall-clock conver-gence. Secondly, relative to diffu-GRPO, PAPO incurs additional per-step overhead from process reward computation. However, even in the most ex-pensive setting of code generation with execution-                            
+
+> GSM8K MATH500 Countdown Sudoku Model / Seq Len 128 256 512 128 256 512 128 256 512 128 256 512
+> LLaDA-1.5 69.8 79.4 81.1 29.0 32.4 35.4 21.5 21.1 20.7 12.4 8.7 7.3 diffu-GRPO 73.0 78.9 83.1 29.8 36.2 40.2 38.7 29.7 39.1 23.5 18.3 13.1
+> Ours 75.9 81.7 81.8 31.2 36.6 39.4 40.6 68.8 66.0 44.8 26.8 24.2
+
+Table 4: Generalization to LLaDA-1.5. PAPO consis-tently outperforms diffu-GRPO across all benchmarks, with the largest gains on planning tasks.                          
+
+> HumanEval MBPP Model / Seq Len 128 256 512 128 256 512
+> LLaDA + SFT 21.3 32.3 32.9 40.1 39.7 41.2 diffu-GRPO 31.1 32.9 37.8 40.5 44.7 42.8
+> Ours 31.7 34.8 40.2 42.1 43.2 47.1
+
+Table 5: Generalization to Code Task. PAPO achieves competitive or superior performance on HumanEval and MBPP with execution-based rewards. 
+
+(a) Impact of μ (b) Efficiency on code tasks 
+
+Figure 7: Training Efficiency Analysis. (a) Impact of policy update steps μ on reward convergence. (b) Reward convergence comparison on code generation tasks under the same GPU budgets. 
+
+based rewards (Figure 7 (b)), PAPO still reaches a higher reward in less wall time despite the extra cost per step. This result indicates that the process-aligned learning signal more than compensates for the per-step overhead and improves overall training efficiency. A broader efficiency analysis across all tasks is provided in Appendix B. 
+
+7 Conclusion 
+
+In this paper, we identify two fundamental mis-alignments when applying reinforcement learn-ing to diffusion large language models (dLLMs): process-reward misalignment due to the reliance on sparse, terminal rewards, and inefficient state selection caused by training on unfaithful contexts with uniform step sampling. To address these limi-tations, we propose Process Aligned Policy Opti-mization (PAPO), a novel framework that holisti-cally aligns the RL update process with the model’s authentic generative trajectory. At its core, PAPO features two synergistic modules: Step-Aware Pro-cess Rewards (SPR) for dense, step-specific credit 8assignment, and Entropy-Guided Historical Re-enactment (EHR) for efficient, authentic state se-lection. Extensive experiments on four reasoning benchmarks demonstrate that PAPO significantly outperforms strong baselines. We believe our pro-cess aligned approach offers a more stable and ef-ficient path to enhancing the complex reasoning capabilities of dLLMs. 
+
+Limitations 
+
+While PAPO achieves strong performance on text-based reasoning, two extensions remain open. Pro-cess reward relies on a one-step denoised predic-tion ˆx0(t) under multi-step mask diffusion rollout. As few-step distillation (e.g. T3D (Zhang et al., 2026)), and training-free fast decoders (e.g. Fast-dLLM (Wu et al., 2025)) reduce the number of rollout steps, it will be valuable to define process rewards at the block level or with limited multi-step lookahead, so as to improve reward fidelity without prohibitive overhead. Moreover, the current ex-periments are conducted exclusively on text-based reasoning benchmarks. Further studies are needed to evaluate the effectiveness of process-aligned RL on multimodal dLLMs (Yang et al., 2025; Li et al., 2026; Xin et al., 2025), where modality-specific process rewards and domain structures may differ substantially from the text setting. 
+
+References 
+
+Marianne Arriola, Aaron Gokaslan, Justin T Chiu, Zhi-han Yang, Zhixuan Qi, Jiaqi Han, Subham Sekhar Sahoo, and Volodymyr Kuleshov. 2025. Block diffusion: Interpolating between autoregressive and diffusion language models. arXiv preprint arXiv:2503.09573 .Pavel Avdeyev, Chenlai Shi, Yuhao Tan, Kseniia Dud-nyk, and Jian Zhou. 2023. Dirichlet diffusion score model for biological sequence generation. In Inter-national Conference on Machine Learning , pages 1276–1301. PMLR. Minghan Chen, Guikun Chen, Wenguan Wang, and Yi Yang. 2025. Seed-grpo: Semantic entropy en-hanced grpo for uncertainty-aware policy optimiza-tion. arXiv preprint arXiv:2505.12346 .Shuang Cheng, Yihan Bian, Dawei Liu, Linfeng Zhang, Qian Yao, Zhongbo Tian, Wenhai Wang, Qipeng Guo, Kai Chen, Biqing Qi, and Bowen Zhou. 2025. Sdar: A synergistic diffusion-autoregression paradigm for scalable sequence generation. Preprint ,arXiv:2510.06303. Karl Cobbe, Vineet Kosaraju, Mohammad Bavarian, Mark Chen, Heewoo Jun, Lukasz Kaiser, Matthias Plappert, Jerry Tworek, Jacob Hilton, Reiichiro Nakano, and 1 others. 2021. Training verifiers to solve math word problems. arXiv preprint arXiv:2110.14168 .Ziyun Dai, Xiaoqiang Li, Shaohua Zhang, Yuanchen Wu, and Jide Li. 2025. See different, think better: Visual variations mitigating hallucinations in lvlms. In Proceedings of the 33rd ACM International Con-ference on Multimedia , MM ’25, page 3310–3319. ACM. Huilin Deng, Hongchen Luo, Yue Zhu, Long Li, Zhuoyue Chen, Xinghao Zhao, Ming Li, Jihai Zhang, Mengchang Wang, Yang Cao, and Yu Kang. 2026. Iib-lpo: Latent policy optimization via iterative infor-mation bottleneck. Preprint , arXiv:2601.05870. Huilin Deng, Ding Zou, Rui Ma, Hongchen Luo, Yang Cao, and Yu Kang. 2025. Boosting the general-ization and reasoning of vision language models with curriculum reinforcement learning. Preprint ,arXiv:2503.07065. Abhimanyu Dubey, Abhinav Jauhri, Abhinav Pandey, Abhishek Kadian, Ahmad Al-Dahle, Aiesha Letman, Akhil Mathur, Alan Schelten, Amy Yang, Angela Fan, and 1 others. 2024. The llama 3 herd of models. 
+
+arXiv e-prints , pages arXiv–2407. Shansan Gong, Shivam Agarwal, Yizhe Zhang, Jiacheng Ye, Lin Zheng, Mukai Li, Chenxin An, Peilin Zhao, Wei Bi, Jiawei Han, and 1 others. 2024. Scaling dif-fusion language models via adaptation from autore-gressive models. arXiv preprint arXiv:2410.17891 .Shansan Gong, Ruixiang Zhang, Huangjie Zheng, Ji-atao Gu, Navdeep Jaitly, Lingpeng Kong, and Yizhe Zhang. 2025. Diffucoder: Understanding and im-proving masked diffusion models for code generation. 
+
+arXiv preprint arXiv:2506.20639 .Xiaochuang Han, Sachin Kumar, and Yulia Tsvetkov. 2022. Ssd-lm: Semi-autoregressive simplex-based diffusion language model for text generation and modular control. arXiv preprint arXiv:2210.17432 .Jonathan Ho, Ajay Jain, and Pieter Abbeel. 2020. De-noising diffusion probabilistic models. Advances in neural information processing systems , 33:6840– 6851. Feng Hong, Geng Yu, Yushi Ye, Haicheng Huang, Huangjie Zheng, Ya Zhang, Yanfeng Wang, and Jiangchao Yao. 2025. Wide-in, narrow-out: Revok-able decoding for efficient and effective dllms. arXiv preprint arXiv:2507.18578 .Lijiang Li, Zuwei Long, Yunhang Shen, Heting Gao, Haoyu Cao, Xing Sun, Caifeng Shan, Ran He, and Chaoyou Fu. 2026. Omni-diffusion: Unified mul-timodal understanding and generation with masked discrete diffusion. Preprint , arXiv:2603.06577. 
+
+9Xiang Li, John Thickstun, Ishaan Gulrajani, Percy S Liang, and Tatsunori B Hashimoto. 2022. Diffusion-lm improves controllable text generation. Advances in neural information processing systems , 35:4328– 4343. Hunter Lightman, Vineet Kosaraju, Yuri Burda, Harri-son Edwards, Bowen Baker, Teddy Lee, Jan Leike, John Schulman, Ilya Sutskever, and Karl Cobbe. 2023. Let’s verify step by step. In The Twelfth Inter-national Conference on Learning Representations .Aaron Lou, Chenlin Meng, and Stefano Ermon. 2024. Discrete diffusion modeling by estimating the ratios of the data distribution. Preprint , arXiv:2310.16834. Tianren Ma, Mu Zhang, Yibing Wang, and Qixiang Ye. 2025. Consolidating reinforcement learning for multimodal discrete diffusion models. Preprint ,arXiv:2510.02880. Niklas Muennighoff, Zitong Yang, Weijia Shi, Xi-ang Lisa Li, Li Fei-Fei, Hannaneh Hajishirzi, Luke Zettlemoyer, Percy Liang, Emmanuel Candès, and Tatsunori Hashimoto. 2025. s1: Simple test-time scaling. arXiv preprint arXiv:2501.19393 .Shen Nie, Fengqi Zhu, Chao Du, Tianyu Pang, Qian Liu, Guangtao Zeng, Min Lin, and Chongxuan Li. 2024. Scaling up masked diffusion models on text. 
+
+arXiv preprint arXiv:2410.18514 .Shen Nie, Fengqi Zhu, Zebin You, Xiaolu Zhang, Jingyang Ou, Jun Hu, Jun Zhou, Yankai Lin, Ji-Rong Wen, and Chongxuan Li. 2025. Large language dif-fusion models. arXiv preprint arXiv:2502.09992 .Rafael Rafailov, Archit Sharma, Eric Mitchell, Christo-pher D Manning, Stefano Ermon, and Chelsea Finn. 2023. Direct preference optimization: Your language model is secretly a reward model. Advances in neural information processing systems , 36:53728–53741. Subham Sahoo, Marianne Arriola, Yair Schiff, Aaron Gokaslan, Edgar Marroquin, Justin Chiu, Alexan-der Rush, and Volodymyr Kuleshov. 2024. Simple and effective masked diffusion language models. Ad-vances in Neural Information Processing Systems ,37:130136–130184. John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov. 2017. Proxi-mal policy optimization algorithms. arXiv preprint arXiv:1707.06347 .Yawen Shao, Jie Xiao, Kai Zhu, Yu Liu, Wei Zhai, Yang Cao, and Zheng-Jun Zha. 2025. Anchoring values in temporal and group dimensions for flow matching model alignment. Preprint , arXiv:2512.12387. Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Xiao Bi, Haowei Zhang, Mingchuan Zhang, YK Li, Yang Wu, and 1 others. 2024. Deepseekmath: Pushing the limits of mathematical reasoning in open language models. arXiv preprint arXiv:2402.03300 .Jiaxin Shi, Kehang Han, Zhe Wang, Arnaud Doucet, and Michalis Titsias. 2024. Simplified and general-ized masked diffusion for discrete data. Advances in neural information processing systems , 37:103131– 103167. Yang Song, Jascha Sohl-Dickstein, Diederik P Kingma, Abhishek Kumar, Stefano Ermon, and Ben Poole. 2020. Score-based generative modeling through stochastic differential equations. arXiv preprint arXiv:2011.13456 .Hannes Stark, Bowen Jing, Chenyu Wang, Gabriele Corso, Bonnie Berger, Regina Barzilay, and Tommi Jaakkola. 2024. Dirichlet flow matching with ap-plications to dna sequence design. arXiv preprint arXiv:2402.05841 .Xiaohang Tang, Rares Dolga, Sangwoong Yoon, and Ilija Bogunovic. 2025. wd1: Weighted policy opti-mization for reasoning in diffusion language models. 
+
+arXiv preprint arXiv:2507.08838 .Team Wan, Ang Wang, Baole Ai, Bin Wen, Chaojie Mao, Chen-Wei Xie, Di Chen, Feiwu Yu, Haiming Zhao, Jianxiao Yang, and 1 others. 2025. Wan: Open and advanced large-scale video generative models. 
+
+arXiv preprint arXiv:2503.20314 .Chenglong Wang, Yang Gan, Hang Zhou, Chi Hu, Yongyu Mu, Kai Song, Murun Yang, Bei Li, Chun-liang Zhang, Tongran Liu, and 1 others. 2025a. Mro: Enhancing reasoning in diffusion language mod-els via multi-reward optimization. arXiv preprint arXiv:2510.21473 .Chenyu Wang, Masatoshi Uehara, Yichun He, Amy Wang, Tommaso Biancalani, Avantika Lal, Tommi Jaakkola, Sergey Levine, Hanchen Wang, and Aviv Regev. 2025b. Fine-tuning discrete diffusion models via reward optimization with applications to dna and protein design. Preprint , arXiv:2410.13643. Wen Wang, Bozhen Fang, Chenchen Jing, Yongliang Shen, Yangyi Shen, Qiuyu Wang, Hao Ouyang, Hao Chen, and Chunhua Shen. 2025c. Time is a feature: Exploiting temporal dynamics in diffusion language models. arXiv preprint arXiv:2508.09138 .Yinjie Wang, Ling Yang, Bowen Li, Ye Tian, Ke Shen, and Mengdi Wang. 2025d. Revolutionizing reinforce-ment learning framework for diffusion large language models. arXiv preprint arXiv:2509.06949 .Chengyue Wu, Hao Zhang, Shuchen Xue, Zhijian Liu, Shizhe Diao, Ligeng Zhu, Ping Luo, Song Han, and Enze Xie. 2025. Fast-dllm: Training-free accelera-tion of diffusion llm by enabling kv cache and parallel decoding. Preprint , arXiv:2505.22618. Shaoan Xie, Lingjing Kong, Xiangchen Song, Xinshuai Dong, Guangyi Chen, Eric P Xing, and Kun Zhang. 2025. Step-aware policy optimization for reasoning in diffusion large language models. arXiv preprint arXiv:2510.01544 .
+
+10 Yi Xin, Qi Qin, Siqi Luo, Kaiwen Zhu, Juncheng Yan, Yan Tai, Jiayi Lei, Yuewen Cao, Keqi Wang, Yibin Wang, Jinbin Bai, Qian Yu, Dengyang Jiang, Yuan-dong Pu, Haoxing Chen, Le Zhuo, Junjun He, Gen Luo, Tianbin Li, and 13 others. 2025. Lumina-dimoo: An omni diffusion large language model for multi-modal generation and understanding. Preprint ,arXiv:2510.06308. Zhangchen Xu, Yang Liu, Yueqin Yin, Mingyuan Zhou, and Radha Poovendran. 2025. Kodcode: A diverse, challenging, and verifiable synthetic dataset for cod-ing. Preprint , arXiv:2503.02951. Ling Yang, Ye Tian, Bowen Li, Xinchen Zhang, Ke Shen, Yunhai Tong, and Mengdi Wang. 2025. Mmada: Multimodal large diffusion language mod-els. arXiv preprint arXiv:2505.15809 .Jiacheng Ye, Jiahui Gao, Shansan Gong, Lin Zheng, Xin Jiang, Zhenguo Li, and Lingpeng Kong. 2024a. Beyond autoregression: Discrete diffusion for com-plex reasoning and planning. arXiv preprint arXiv:2410.14157 .Jiacheng Ye, Shansan Gong, Liheng Chen, Lin Zheng, Jiahui Gao, Han Shi, Chuan Wu, Xin Jiang, Zhen-guo Li, Wei Bi, and 1 others. 2024b. Diffusion of thought: Chain-of-thought reasoning in diffusion lan-guage models. Advances in Neural Information Pro-cessing Systems , 37:105345–105374. Jiacheng Ye, Zhihui Xie, Lin Zheng, Jiahui Gao, Zirui Wu, Xin Jiang, Zhenguo Li, and Lingpeng Kong. 2025. Dream 7b: Diffusion large language models. 
+
+arXiv preprint arXiv:2508.15487 .Anthony Zhan. 2025. Principled and tractable rl for reasoning with diffusion language models. arXiv preprint arXiv:2510.04019 .Qingyang Zhang, Haitao Wu, Changqing Zhang, Peilin Zhao, and Yatao Bian. 2025. Right ques-tion is already half the answer: Fully unsuper-vised llm reasoning incentivization. arXiv preprint arXiv:2504.05812 .Tunyu Zhang, Xinxi Zhang, Ligong Han, Haizhou Shi, Xiaoxiao He, Zhuowei Li, Hao Wang, Kai Xu, Akash Srivastava, Chengzhi Mao, Hao Wang, Vladimir Pavlovic, and Dimitris N. Metaxas. 2026. Few-step diffusion language models via trajectory self-distillation. Preprint , arXiv:2602.12262. Hanyang Zhao, Dawen Liang, Wenpin Tang, David Yao, and Nathan Kallus. 2025a. Diffpo: Training diffu-sion llms to reason fast and furious via reinforcement learning. Preprint , arXiv:2510.02212. Siyan Zhao, Devaansh Gupta, Qinqing Zheng, and Aditya Grover. 2025b. d1: Scaling reasoning in diffusion large language models via reinforcement learning. arXiv preprint arXiv:2504.12216 .Siyan Zhao, Mengchen Liu, Jing Huang, Miao Liu, Chenyu Wang, Bo Liu, Yuandong Tian, Guan Pang, Sean Bell, Aditya Grover, and Feiyu Chen. 2025c. Inpainting-guided policy optimization for diffusion large language models. Preprint , arXiv:2509.10396. Fengqi Zhu, Rongzhen Wang, Shen Nie, Xiaolu Zhang, Chunwei Wu, Jun Hu, Jun Zhou, Jianfei Chen, Yankai Lin, Ji-Rong Wen, and Chongxuan Li. 2025a. Llada 1.5: Variance-reduced preference optimiza-tion for large language diffusion models. Preprint ,arXiv:2505.19223. Yuchen Zhu, Wei Guo, Jaemoo Choi, Petr Molodyk, Bo Yuan, Molei Tao, and Yongxin Chen. 2025b. Enhancing reasoning for diffusion llms via distri-bution matching policy optimization. Preprint ,arXiv:2510.08233. 
+
+11 A Implementation Details 
+
+A.1 Reward Functions 
+
+Following d1 (Zhao et al., 2025b), we utilize a task-specific, composite reward function to provide granular feedback during the reinforcement learn-ing phase, which ensures the model is rewarded not only for reaching the correct final answer but also for generating structurally sound and coherent reasoning steps. The rewards are detailed below. 
+
+GSM8K . For the GSM8K dataset, we apply a composite reward function composed of five dis-tinct components. (1) XML Structure Reward: This component validates the fundamental tag-based structure. A reward of +0.125 is granted for each correctly placed opening and closing tags. Ad-ditionally, a minor penalty is applied for any ex-traneous content appearing after the final tag to ensure the output terminates cleanly. (2) Soft For-mat Reward: A reward of +0.5 is awarded if the entire response matches the general pattern: <rea-soning>...</reasoning><answer>...</answer>. (3) Strict Format Reward: A reward of +0.5 is given for adherence to the exact prescribed format with correct line breaks. (4) Integer Answer Reward: A reward of +0.5 is provided if the answer is a valid integer. (5) Correctness Reward: A reward of +2.0 is granted if the extracted answer exactly matches the ground-truth. 
+
+MATH500 . Similar to GSM8K, the reward for this more advanced math dataset is a composite of structural and accuracy-based rewards: (1) Format-ting Reward: A tiered reward is assigned based on the presence and correct usage of <answer> tags and the \boxed . A reward of 1.00 for <answer> with \boxed inside; +0.75 for <answer> without 
+
+\boxed ; +0.50 for \boxed only. +0.25 for neither. (2) Correctness Reward: A reward of 2.0 is granted if the correct answer is in \boxed {} .
+
+Countdown . For this arithmetic planning task, the reward function evaluates the validity and cor-rectness of the generated mathematical expression: (1) A full reward of 1.0 is given if the expression correctly uses all specified numbers to reach the target value. (2) A partial reward of 0.1 is given if the expression uses the correct numbers but fails to compute the target value, encouraging the use of correct operands. (3) A reward of 0 is given in all other cases. 
+
+Sudoku . In the 4x4 Sudoku puzzles, the reward directly measures the model’s constraint-solving capability. The reward is calculated as the propor-tion of correctly filled digits within the cells that were initially empty in the puzzle prompt. This metric focuses evaluation on the model’s problem-solving ability rather than its capacity to replicate the provided clues. 
+
+A.2 Training Configurations 
+
+All experiments are conducted on 8 NVIDIA A100-80G GPUs, with the same hyperparameters as d1 (Zhao et al., 2025b): sequences of 256 tokens, batch size of 6 per GPU, policy optimization up-dates value μ = 12 and gradient accumulation over 2 steps. We employ Low-Rank Adaptation (LoRA) with a rank of 128 and a scaling factor of 64. We optimize the model using the AdamW optimizer, with parameters β1 = 0 .9, β2 = 0 .99 , weight de-cay of 0.1, learning rate of 3 × 10 −6, and gradient clipping at 0.2. We employ entropy-weighting hy-perparameter α = 1 . We train 8000 steps (number of gradient updates) for GSM8K, MATH500 and Countdown. For Sudoku, we train on synthetic generated datasets for 6000 steps. 
+
+A.3 Sampling and Evaluation 
+
+Our sampling process follows the semi-autoregressive approach introduced in LLaDA (Nie et al., 2025). The sequence is first partitioned into multiple blocks that are generated in a left-to-right fashion. During the generation of each individual block, the low-confidence remasking strategy is then employed. Following the practice in d1 (Zhao et al., 2025b) and TSE (Wang et al., 2025c), we evaluate the model every 100 steps, starting from step 600 and report the best results. 
+
+B Additional Experiments Analysis 
+
+B.1 Training and Computational Costs 
+
+To evaluate its practical efficiency, we compare the training time of PAPO against the diffu-GRPO baseline. On the surface, PAPO introduces a slight computational overhead by calculating a process reward for each of the policy update steps μ, guided by our entropy-based state selection. Crucially, this overhead is strictly bounded, as process rewards are calculated only for the specific μ historical states re-enacted via our entropy-guided selection, not for all timesteps in the trajectory. However, this minor addition is compensated by the elimination of a costly step inherent in diffu-GRPO: the cre-ation of artificial training inputs through prompt masking or completion masking for each update. 12 Figure 8: Training Efficiency and Reward Convergence over Wall Time. Comparison of reward trajectories for PAPO and the diffu-GRPO baseline across four benchmarks. The results illustrate PAPO’s superior training efficiency, as it consistently converges to a higher reward in significantly less wall time.            
+
+> Figure 9: Dynamics of Completion Length and Token Efficiency. Evolution of average completion length during training across four benchmarks. PAPO converges to more concise outputs, demonstrating superior token efficiency while achieving higher rewards. (a) (b) (c)
+> Figure 10: Impact of Policy Optimization Updates Values μon Performance and Stability. PAPO demonstrates superior performance compared to diffu-GRPO across various values of μ. This advantage is particularly evident at μ= 24 , where our approach maintains robust stability and showcases excellent scalability, in contrast to the baseline which becomes notably unstable.
+
+Instead, PAPO efficiently re-enacts authentic, pre-cached historical states, resulting in a lower wall time per training step. As shown in Figure 8, this per-step efficiency translates directly into superior training dynamics. PAPO not only converges to a higher reward but also achieves this in significantly less time, a marked advantage in both speed and final performance that is consistently demonstrated across all reasoning and planning benchmarks. 
+
+B.2 Completion Lengths Dynamics Analysis 
+
+We further analyze the token efficiency of our framework by tracking the average completion length during training, as shown in Figure 9. PAPO demonstrates a clear advantage on the GSM8K, Math and Countdown benchmarks, converging to significantly shorter output sequences while simul-taneously achieving superior rewards. A similar trend towards more concise solutions is observed for Sudoku, where the policy learns to progres-sively shorten its completion length during training. This consistent reduction in completion length in-dicates that PAPO learns not only a more effective but also a more token-efficient reasoning policy than the baseline. 
+
+B.3 Impact of Policy Optimization Update Values μ
+
+We investigate the impact of policy optimization update values μ on both sample efficiency and sta-bility, with results shown in Figure 10. Beyond con-sistently outperforming diffu-GRPO, PAPO demon-strates excellent scalability by effectively leverag-ing a larger μ to perform more policy updates from each data batch, which translates into a steeper learning curve and faster wall time convergence. The superior scalability and robustness of PAPO become most apparent under aggressive update 13 schedules. At μ = 24 , PAPO maintains a stable, high-reward trajectory while diffu-GRPO begins to exhibit training instability, evidenced by reward volatility. This confirms that the rich, stable learn-ing signals from PAPO’s synergistic modules en-able more robust and efficient policy optimization. 
+
+C More Discussion of PAPO and Future Work 
+
+While PAPO demonstrates significant improve-ments in reasoning for diffusion language models, we identify several promising avenues for future work based on current design. 
+
+C.1 Generalization to Diverse Architectures and Modalities 
+
+Our current work validates the effectiveness of PAPO on text-based reasoning tasks based on a full-attention dLLM architecture (Nie et al., 2025). However, the core principle of process alignment is not inherently limited to this specific setup. With the rise of alternative architectures like block-diffusion models (e.g. SDAR (Cheng et al., 2025)) and the expansion of dLLMs into multimodal do-mains (e.g. MMaDA (Yang et al., 2025), Lumina-DiMOO (Xin et al., 2025)), a key future direction is to adapt and evaluate PAPO on these emerging plat-forms. Extending our process aligned RL frame-work to enhance reasoning in these new contexts represents a significant next step. 
+
+C.2 Computation and Memory Efficiency Analysis 
+
+At first glance, PAPO might appear to introduce significant overhead due to the computation of pro-cess rewards and the storage of historical rollout states. However, our implementation is highly effi-cient and designed to minimize this cost. We do not compute process rewards or store states for all T
+
+denoising steps. Instead, we first leverage entropy-guided sampling to select the μ most informative steps for policy updates. Only then do we cache the corresponding historical states xt and compute their process rewards through ˆx0(t). Crucially, as illustrated in Figure 2 in the main paper, the state 
+
+ˆx0(t) required for calculating the process reward is a transient product of the standard rollout pro-cess, generated between the denoise and remask operations. This means we do not need any extra generation steps to obtain these states, making the additional cost minimal. As shown in Figure 8, our method not only avoids significant overhead but leads to faster overall convergence, ultimately achieving superior performance. 
+
+C.3 Fidelity vs. Efficiency in Process Rewards 
+
+The efficacy of our SPR mechanism relies on the one-step denoised prediction ˆx0(t) as an efficient proxy for intermediate reasoning quality. This de-sign prioritizes computational efficiency over com-plex and costly alternatives like training auxiliary reward model or value model. The effectiveness of this lightweight approach is empirically validated by our ablation studies (Table 2 in the main paper) and the clear upward trend of process rewards dur-ing training (Figure 4 in the main paper), which confirms that SPR provides timely and effective step-wise feedback. Nonetheless, the success of this approach is contingent on the ability of the one-step reward to faithfully reflect the quality of the current action. While our experiments (Table 3 in the main paper) confirm that one-step predic-tion offers the best fidelity-efficiency trade-off un-der standard multi-step rollouts, emerging few-step generation paradigms such as T3D (Zhang et al., 2026) and Fast-dLLM (Wu et al., 2025) substan-tially reduce the number of rollout steps and the as-sociated computational cost, fundamentally chang-ing the trajectory structure. Adapting SPR to these compressed trajectories, for instance by defining process rewards at the block level or calibrating reward granularity to the reduced trajectory length, remains a promising direction for future work. 
+
+D Qualitative Examples 
+
+Figure 11 and Figure 12 provide qualitative exam-ples from the math reasoning (GSM8K) and plan-ning (Countdown) benchmarks respectively, which highlight the superior reasoning capabilities of our PAPO framework. In the GSM8K example (Fig-ure 11), PAPO correctly interprets the problem’s se-quential logic by accurately accounting for all con-ditions, whereas baseline models like diffu-GRPO falter by overlooking critical initial constraints, re-sulting in flawed reasoning paths. Similarly, on the Countdown benchmark (Figure 12), PAPO gen-erates a more structured, step-by-step reasoning path that is not only logically sound but also more token-efficient than the outputs from LLaDA and diffu-GRPO. This ability to maintain a coherent and concise reasoning trace is directly attributable 14 Answer: 
+
+Reasoning: 
+
+Effective Tokens : 113 
+
+Answer: 
+
+Reasoning: 
+
+Effective Tokens : 116 
+
+Answer: 
+
+Reasoning: 
+
+Effective Tokens : 116 
+
+## PAPO diffu -GRPO LLaDA 
+
+Question : $18 is shared among 3 boys. The eldest added $5 to his share and added another $10 the following day. 
+
+He later needed some money and spent $8 from his total so far. After saving some more, he was able to triple the 
+
+amount he had left after spending the $8. How much does he have now? 
+
+The eldest boy initially received $18 / 3 = 
+
+$6. He added $5, so he had $6 + $5 = $11. 
+
+Then, he added another $10, bringing his 
+
+total to $11 + $10 = $21. After spending $8, 
+
+he had $21 - $8 = $13 left. He then tripled 
+
+amount, so now $13 * 3 = $39. Therefore, 
+
+he has $39 now. 
+
+</reasoning> 
+
+<answer> 
+
+\boxed{39} 
+
+</answer><| eot_id |><| endoftext |> 
+
+The eldest boy initially had $18. He added 
+
+$5 to his share, so he now had $18 + $5 = 
+
+$23. The next day, he added another $10, 
+
+making his total $23 + $10 = $33. He then 
+
+spent $8, so he had $33 - $8 = $25 left. 
+
+After saving some more, he tripled this 
+
+amount, so he now has $25 * 3 = $75. 
+
+</reasoning> 
+
+<answer> 
+
+\boxed{75} 
+
+</answer><| eot_id |><| endoftext |> 
+
+The eldest boy initially received $18. He 
+
+added $5 to his share, so he had $18 + $5 = 
+
+$23. The next day, he added another $10, 
+
+making it $23 + $10 = $33. He then spent 
+
+$8, so he had $33 - $8 = $25 left. After 
+
+saving some more, he tripled amount, so 
+
+he now has $25 * 3 = $75. 
+
+</reasoning> 
+
+<answer> 
+
+\boxed{75} 
+
+</answer><| eot_id |><| endoftext |> Figure 11: Comparison of Generated Responses on the GSM8K Benchmark. Answer: 
+
+Reasoning: 
+
+Effective Tokens : 115 
+
+Answer: 
+
+Reasoning: 
+
+Effective Tokens : 116 
+
+Answer: 
+
+Reasoning: 
+
+Effective Tokens : 105 
+
+## PAPO diffu -GRPO LLaDA 
+
+Question : Using only the provided numbers [48, 54, 19] , create an arithmetic expression that evaluates to exactly 
+
+the provided target number 25. 
+
+To create an expression that evaluates to 25 
+
+using the numbers 48, 54, and 19, we need 
+
+to consider the operations operations +, -, *, 
+
+and / Let‘s break it down step -by -step :
+
+1. Start with 54. 
+
+2. Subtract 48 from 54 to get 6. 
+
+3. Add 19 to 6 to get 25 .
+
+</ reasoning >
+
+<answer >
+
+\boxed{54 - 48 + 19 }
+
+</ answer><| eot_id |><| endoftext |> 
+
+To find an arithmetic expression that 
+
+evaluates to 25 using the numbers 48, 54, 
+
+and 19, we need to consider the operations 
+
+and, -, *, and / We can start by trying to use 
+
+the numbers in a way that allows us to 
+
+reach the target. One possible is to use the 
+
+numbers 48 and 54 in a subtraction 
+
+operation, and then use 19 in a subtraction 
+
+operation to reach the target 25 .
+
+</ reasoning >
+
+<answer >
+
+\boxed{54 - 48 - 19} 
+
+</ answer><| eot_id |><| endoftext |> 
+
+To find an arithmetic expression that 
+
+evaluates to 25 using the numbers 48, 54, 
+
+and 19, we need to consider the operations 
+
+and, -, *, and / We can start by trying to 
+
+use the numbers in a way that allows us to 
+
+reach the target . One option is to to use the 
+
+numbers 48 and 54 to and then subtract 19 
+
+from the result. This will give us 25 .
+
+</ reasoning >
+
+<answer >
+
+\boxed {(48 + 54) - 19 }
+
+</ answer><| eot_id |><| endoftext |> 
+
+Figure 12: Comparison of Generated Responses on the Countdown Benchmark. 
+
+to our Step-Aware Process Rewards (SPR), which ensure that each intermediate step’s contribution is properly valued and reinforced. Furthermore, our Entropy-Guided Historical Re-enactment (EHR) equips the policy with authentic and informative reasoning states, facilitating its learning of efficient and accurate problem-solving strategies. 15

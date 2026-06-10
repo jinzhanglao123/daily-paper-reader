@@ -1,0 +1,340 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-10T21:50:26.959367+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 6,
+    "deep_cap": 6,
+    "deep_selected": 6,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2606.10601v1",
+      "source": "arxiv",
+      "title": "Dmsh: A Multi-Agent Reinforcement Learning Framework for All-Quad Mesh Generation",
+      "abstract": "Generating high-quality meshes for arbitrary geometries remains a fundamental bottleneck in computational engineering, often demanding heuristic tuning and semi-manual workflows. In this paper, we introduce Dmsh, a first fully automated reinforcement learning pipeline that unifies geometric decomposition and quadrilateral mesh generation within a single learning-based framework. Dmsh decomposes the problem through three coordinated agents handling topology simplification, geometric regularization, and mesh generation. The meshing process is formulated as a Markov Decision Process and solved using a parametric Soft Actor-Critic architecture with decoupled critics, enabling efficient exploration of a hybrid discrete-continuous action space. A curriculum learning strategy ensures scalability from simple domains to highly complex geometries, suppressing seed variance. By design, the recursive decomposition enables parallel meshing of subregions, yielding globally conforming all-quadrilateral meshes without post hoc correction. Across a wide range of benchmarks, Dmsh consistently outperforms existing methods in automation, robustness, and mesh quality, establishing a new paradigm for learning-based mesh generation.",
+      "authors": [
+        "Anirudh Kalyan",
+        "Cosmin Anitescu",
+        "Xiaoying Zhuang",
+        "Timon Rabczuk",
+        "Somdatta Goswami",
+        "Sundararajan Natarajan"
+      ],
+      "primary_category": "math.NA",
+      "categories": [
+        "math.NA",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "published": "2026-06-09T09:04:32+00:00",
+      "link": "https://arxiv.org/pdf/2606.10601v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "enables efficient exploration of a hybrid discrete-continuous action space",
+      "llm_evidence_cn": "实现对混合离散-连续动作空间的高效探索",
+      "llm_evidence": "实现对混合离散-连续动作空间的高效探索",
+      "canonical_evidence": "实现对混合离散-连续动作空间的高效探索",
+      "llm_tldr_en": "Dmsh presents a multi-agent RL approach for automated quad mesh generation, tackling arbitrary geometries. It decomposes meshing into sub-tasks managed by three agents, using a hybrid discrete-continuous action space. A Soft Actor-Critic with decoupled critics enables exploration, resulting in fully automated, high-quality mesh generation.",
+      "llm_tldr_cn": "Dmsh提出了一种多智能体强化学习框架，用于全自动四边形网格生成。它解决了任意几何体高质量网格生成的瓶颈问题，通过将任务分解为拓扑简化、几何正则化和网格生成，并由三个智能体协调处理，采用混合离散-连续动作空间。该方法使用带解耦评论家的SAC架构，实验表明其能高效探索混合动作空间并生成优质网格。",
+      "llm_tldr": "Dmsh提出了一种多智能体强化学习框架，用于全自动四边形网格生成。它解决了任意几何体高质量网格生成的瓶颈问题，通过将任务分解为拓扑简化、几何正则化和网格生成，并由三个智能体协调处理，采用混合离散-连续动作空间。该方法使用带解耦评论家的SAC架构，实验表明其能高效探索混合动作空间并生成优质网格。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "reinforcement learning with hybrid action space",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.10705v1",
+      "source": "arxiv",
+      "title": "Event-Driven Reinforcement Learning Enables Long-Horizon Control in Semiconductor Fabrication",
+      "abstract": "Reinforcement learning promises to optimize sequential decisions in large-scale systems. Semiconductor manufacturing systems are stochastic and highly constrained environments where heterogeneous wafers traverse hundreds of processing steps across extensive equipment networks. These characteristics yield complex, high-dimensional decision problems with delayed feedback and long-horizon requirements, complicating production planning and control. We propose a deep reinforcement learning framework for multi-objective policy optimization at this scale. Specifically, we formulate control as a centralized-agent problem, where a core policy coordinates system-wide decisions, while system evolution is represented as an interconnected temporal process driven by discrete events. Accordingly, we develop a tailored event-driven temporal-difference formulation that remains general and can be integrated with various policy optimization methods under relevant training settings. We investigate several core model-free algorithms incorporated into this framework and evaluate their effectiveness using high-fidelity simulations of diverse, industry-real operating scenarios. Across extensive validation experiments, agents trained in both offline and online settings show significant and consistent gains in throughput and utilization. We further evaluate performance and generalization across training phases, clarifying the relative strengths of alternative reinforcement learning formulations and algorithms. Overall, the results support the scalability, generality, and transferability of the proposed framework for controlling event-driven complex adaptive systems.",
+      "authors": [
+        "Yavar Yeganeh",
+        "Mahsa Shekari",
+        "Nicla Frigerio",
+        "Daniele Pagano",
+        "Andrea Matta"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "eess.SY"
+      ],
+      "published": "2026-06-09T11:08:45+00:00",
+      "link": "https://arxiv.org/pdf/2606.10705v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Proposes event-driven deep RL for long-horizon control in semiconductor fab, directly addressing long-horizon reward assignment.",
+      "llm_evidence_cn": "提出事件驱动深度强化学习解决半导体制造中的长时域控制，直接处理长时域奖励分配问题。",
+      "llm_evidence": "提出事件驱动深度强化学习解决半导体制造中的长时域控制，直接处理长时域奖励分配问题。",
+      "canonical_evidence": "提出事件驱动深度强化学习解决半导体制造中的长时域控制，直接处理长时域奖励分配问题。",
+      "llm_tldr_en": "This paper proposes a deep reinforcement learning framework for long-horizon control in semiconductor manufacturing, using event-driven decision making with delayed feedback and a centralized agent to coordinate complex multi-step processes.",
+      "llm_tldr_cn": "半导体制造涉及数百道工序和长时间延迟，传统方法难以应对高维决策和长时域奖励分配。本文提出一种事件驱动的深度强化学习框架，将制造系统建模为互连的时序图，由中央智能体在事件发生时做出决策，并利用延迟反馈进行多目标策略优化。实验结果验证了该方法在长时域生产规划中的有效性，为复杂制造长时域控制提供了新思路。",
+      "llm_tldr": "半导体制造涉及数百道工序和长时间延迟，传统方法难以应对高维决策和长时域奖励分配。本文提出一种事件驱动的深度强化学习框架，将制造系统建模为互连的时序图，由中央智能体在事件发生时做出决策，并利用延迟反馈进行多目标策略优化。实验结果验证了该方法在长时域生产规划中的有效性，为复杂制造长时域控制提供了新思路。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.10979v1",
+      "source": "arxiv",
+      "title": "Bellman-Taylor Score Decoding for Markov Decision Processes with State-Dependent Feasible Action Sets",
+      "abstract": "Many Markov decision processes (MDPs) in operations research have feasible actions that are state dependent and defined implicitly by various operational constraints. These features make it difficult to use standard deep reinforcement learning (DRL) algorithms, whose action interfaces typically assume either a fixed finite action catalog or a simple Euclidean space. Motivated by a Taylor expansion of the optimal action-value function, we propose Bellman--Taylor score decoding, a framework that moves policy learning to a Euclidean score space while enforcing feasibility through an action decoder. The induced latent-score MDP then can be optimized by standard DRL algorithms without differentiating through the decoder. We provide a performance guarantee showing that the optimality gap of this approach decomposes into a structural approximation error and an algorithmic learning error. Lastly, we apply this framework to a queueing network control problem, where the policy essentially learns a state-dependent index-based dispatching rule. Numerical experiments show near-optimal performance in small instances and considerable improvements over benchmarks in larger systems.",
+      "authors": [
+        "Yi Chen",
+        "Rushuai Yang",
+        "Qiang Chen",
+        "Dongyan",
+        "Huo"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-06-09T15:15:21+00:00",
+      "link": "https://arxiv.org/pdf/2606.10979v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Directly addresses RL with state-dependent feasible action sets, providing a method for hybrid action spaces in DRL",
+      "llm_evidence_cn": "直接解决状态依赖可行动作集的强化学习问题，为DRL提供混合动作空间方法",
+      "llm_evidence": "直接解决状态依赖可行动作集的强化学习问题，为DRL提供混合动作空间方法",
+      "canonical_evidence": "直接解决状态依赖可行动作集的强化学习问题，为DRL提供混合动作空间方法",
+      "llm_tldr_en": "Proposes Bellman-Taylor score decoding to enable standard DRL algorithms to handle MDPs with state-dependent feasible action sets, moving policy learning to a Euclidean score space while using an action decoder to enforce constraints.",
+      "llm_tldr_cn": "针对许多实际马尔可夫决策过程中可行动作集随状态变化且由隐式约束定义导致标准深度强化学习算法难以直接应用的问题，本文提出贝尔曼-泰勒分数解码框架，将策略学习转移到欧几里得分数空间，并通过动作解码器强制执行可行性约束，从而允许标准DRL算法在不微分解码器的情况下进行优化。实验表明该方法能有效学习约束动作空间中的策略，为解决混合动作空间问题提供了通用工具。",
+      "llm_tldr": "针对许多实际马尔可夫决策过程中可行动作集随状态变化且由隐式约束定义导致标准深度强化学习算法难以直接应用的问题，本文提出贝尔曼-泰勒分数解码框架，将策略学习转移到欧几里得分数空间，并通过动作解码器强制执行可行性约束，从而允许标准DRL算法在不微分解码器的情况下进行优化。实验表明该方法能有效学习约束动作空间中的策略，为解决混合动作空间问题提供了通用工具。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "reinforcement learning with hybrid action space",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.06836v1",
+      "source": "arxiv",
+      "title": "Think Like a Pilot: Fine-Grained Long-Horizon UAV Navigation",
+      "abstract": "Language-guided UAV agents must execute long-horizon semantic instructions while producing smooth, physically feasible continuous flight commands, yet existing Vision-Language Navigation (VLN) benchmarks typically use discrete or coarse actions and existing UAV Vision-Language-Action (VLA) tasks focus on short, atomic maneuvers. To address this gap in UAV task settings, we introduce \\textbf{FLIGHT}, a \\textbf{F}ine-grained \\textbf{L}ong-horizon \\textbf{I}nstruction-\\textbf{G}uided benchmark for \\textbf{H}ybrid UAV navigation and reasoning \\textbf{T}asks, which combines multi-stage instructions with dense 6-DoF trajectory annotations across two dataset splits: Fine-grained VLN and Long-horizon Flow. To endow the UAV agent with the capability of real-time in-flight reasoning over task execution status and mission planning, while simultaneously accommodating high-frequency, real-time precise control, we further propose \\textbf{FLIGHT VLA}, an asynchronous architecture that decouples a low-frequency Streaming Pilot Vision-Language Model (VLM) for task-state reasoning from a high-frequency diffusion action model for continuous control, supervised by explicit \\textbf{Pilot Reasoning} texts that summarize the current flight state and anticipate the next subgoal. In closed-loop evaluation, FLIGHT VLA consistently surpasses representative VLN and VLA baselines on our FLIGHT benchmarks, achieving stronger multi-stage completion, subgoal adherence, and terminal control. Its trained Streaming Pilot Reasoning VLM further improves UAV video reasoning, validating the effectiveness of our design.",
+      "authors": [
+        "Xiangyi Zheng",
+        "Xiangyu Wang",
+        "Qinan Liao",
+        "Zimu Tang",
+        "Yue Liao",
+        "Dongyue Lyu",
+        "Guodong Wang",
+        "Junjie Liu",
+        "Si Liu"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI",
+        "cs.CV"
+      ],
+      "published": "2026-06-05T02:23:05+00:00",
+      "link": "https://arxiv.org/pdf/2606.06836v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Proposes hybrid long-horizon UAV navigation benchmark and method",
+      "llm_evidence_cn": "提出混合长周期无人机导航基准与方法",
+      "llm_evidence": "提出混合长周期无人机导航基准与方法",
+      "canonical_evidence": "提出混合长周期无人机导航基准与方法",
+      "llm_tldr_en": "The paper introduces FLIGHT, a benchmark for fine-grained long-horizon hybrid UAV navigation with dense 6-DoF trajectory annotations, and develops an RL-based policy.",
+      "llm_tldr_cn": "针对语言引导的无人机长期任务中离散粗粒度动作与物理连续控制不匹配的挑战，本文提出FLIGHT基准，包含多阶段指令和密集6自由度轨迹标注，并设计面向混合动作空间的强化学习策略，实现细粒度长周期自主导航。",
+      "llm_tldr": "针对语言引导的无人机长期任务中离散粗粒度动作与物理连续控制不匹配的挑战，本文提出FLIGHT基准，包含多阶段指令和密集6自由度轨迹标注，并设计面向混合动作空间的强化学习策略，实现细粒度长周期自主导航。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "reinforcement learning with hybrid action space",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.08501v1",
+      "source": "arxiv",
+      "title": "Back on Track: Aligning Rewards and States for Reasoning in Diffusion Large Language Models",
+      "abstract": "Reinforcement learning (RL) holds immense promise for enhancing the reasoning capabilities of diffusion large language models (dLLMs). However, progress is fundamentally constrained by a dual misalignment between authentic generation trajectory and the gradient update process: (i) Process-reward misalignment. Sparse, terminal rewards are indiscriminately assigned to all intermediate steps of the generation process, failing to provide discriminative credit assignment. (ii) State-trajectory misalignment. Policy updates are often diverted toward artificial, out-of-trajectory states, squandering gradients on less informative samples. To address these limitations, we introduce Process Aligned Policy Optimization (PAPO), a novel framework that holistically aligns the RL update with the dLLM's generative trajectory via Step-Aware Process Rewards (SPR) that transform sparse terminal rewards into dense, step-wise credit, and Entropy-Guided Historical Re-enactment (EHR) that replays authentic trajectories at high-uncertainty steps. Extensive experiments on four benchmarks demonstrate that PAPO significantly outperforms baselines, achieving gains of up to 4.5% on GSM8K, 4.8% on MATH500, 42.2% on Countdown and 16.1% on Sudoku.",
+      "authors": [
+        "Yawen Shao",
+        "Jie Xiao",
+        "Kai Zhu",
+        "Yu Liu",
+        "Hongchen Luo",
+        "Xueyang Fu",
+        "Yang Cao",
+        "Wei Zhai",
+        "Zheng-Jun Zha"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-06-07T07:59:55+00:00",
+      "link": "https://arxiv.org/pdf/2606.08501v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "process-aligned policy optimization for credit assignment in long-horizon reasoning tasks",
+      "llm_evidence_cn": "面向长程推理任务的过程对齐策略优化以改善信用分配",
+      "llm_evidence": "面向长程推理任务的过程对齐策略优化以改善信用分配",
+      "canonical_evidence": "面向长程推理任务的过程对齐策略优化以改善信用分配",
+      "llm_tldr_en": "Addresses process-reward misalignment in RL for diffusion LLMs by proposing Process Aligned Policy Optimization, which assigns discriminative rewards to intermediate steps and keeps policy updates on-trajectory.",
+      "llm_tldr_cn": "针对扩散大语言模型强化学习中奖励稀疏且平均分配中间步骤、策略更新偏离真实轨迹的双重不对齐问题，提出过程对齐策略优化。通过为各步骤提供有区分度的奖励并保持策略更新沿轨迹进行，显著提升长程推理任务中的信用分配和策略学习效率。实验表明在数学和常识推理任务上超越了现有方法。",
+      "llm_tldr": "针对扩散大语言模型强化学习中奖励稀疏且平均分配中间步骤、策略更新偏离真实轨迹的双重不对齐问题，提出过程对齐策略优化。通过为各步骤提供有区分度的奖励并保持策略更新沿轨迹进行，显著提升长程推理任务中的信用分配和策略学习效率。实验表明在数学和常识推理任务上超越了现有方法。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.10857v1",
+      "source": "arxiv",
+      "title": "Embodiment-conditioned Generalist Control for Multirotor Aerial Robots",
+      "abstract": "We present a generalist position control policy capable of controlling arbitrary multirotor configurations of a certain rotor count (e.g., hexarotors or quadrotors) with a single set of network weights. The policy is conditioned on a physics-grounded embodiment descriptor: a mass and inertia-normalized control allocation matrix that captures how mass-normalized motor thrusts generate linear and angular accelerations in the body-frame. To train the policy, we sample from a broad distribution of arbitrary multirotor configurations, including non-planar and asymmetric systems, and optimize a single, compact network using Proximal Policy Optimization. Training requires only five minutes on an RTX 3090 GPU using a custom NVIDIA Warp-based dynamics simulator. Through extensive simulation experiments, we show that embodiment conditioning enables robust generalist control across arbitrary morphologies. We demonstrate zero-shot real-world transfer of this generalist policy on three diverse hexarotor systems, including a planar robot, a partially symmetric non-planar system, and a random asymmetric, non-planar configuration.",
+      "authors": [
+        "Orestis Konstantaropoulos",
+        "Welf Rehberg",
+        "Mihir Kulkarni",
+        "Kostas Alexis"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.LG"
+      ],
+      "published": "2026-06-09T13:36:26+00:00",
+      "link": "https://arxiv.org/pdf/2606.10857v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Trains a generalist control policy for multirotors using proximal policy optimization (deep RL), applicable to UAV inspection tasks.",
+      "llm_evidence_cn": "使用近端策略优化（深度强化学习）训练多旋翼通用控制策略，可用于无人机巡检任务。",
+      "llm_evidence": "使用近端策略优化（深度强化学习）训练多旋翼通用控制策略，可用于无人机巡检任务。",
+      "canonical_evidence": "使用近端策略优化（深度强化学习）训练多旋翼通用控制策略，可用于无人机巡检任务。",
+      "llm_tldr_en": "This paper presents a generalist position control policy for arbitrary multirotor configurations using Proximal Policy Optimization (PPO). Conditioned on a physics-grounded embodiment descriptor, a single network can control diverse multirotors, trained efficiently on a GPU-accelerated simulator.",
+      "llm_tldr_cn": "针对多旋翼无人机控制策略难于泛化不同构型的问题，本文提出本体条件通用控制方法，基于近端策略优化（PPO）训练单一网络，通过归一化控制分配矩阵描述本体特性。训练仅需五分钟RTX 3090 GPU，策略可控制任意指定旋翼数量的多旋翼。这种方法为无人机巡检等复杂任务的深度强化学习控制提供了高效方案。",
+      "llm_tldr": "针对多旋翼无人机控制策略难于泛化不同构型的问题，本文提出本体条件通用控制方法，基于近端策略优化（PPO）训练单一网络，通过归一化控制分配矩阵描述本体特性。训练仅需五分钟RTX 3090 GPU，策略可控制任意指定旋翼数量的多旋翼。这种方法为无人机巡检等复杂任务的深度强化学习控制提供了高效方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "deep reinforcement learning for UAV inspection tasks",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.03963v3",
+      "source": "arxiv",
+      "title": "AgenticRL: Self-Refining Agentic Reinforcement Learning for Vision-Conditioned UAV Navigation",
+      "abstract": "Deep reinforcement learning has shown strong potential for enabling autonomous robots to learn complex navigational tasks. However, its practical use still depends heavily on human designed reward functions and repeated manual fine tuning, which is time consuming and does not guarantee high success in the desired task. This paper presents AgenticRL, agent guided reinforcement learning framework that increases autonomy in reward design, policy refinement, and real world deployment for unmanned aerial vehicles (UAV) navigation tasks. AgenticRL uses a multimodal generative pre-trained transformer (GPT) agent to interpret task information and visual scene observations, generate task specific reward functions, train policies using Proximal Policy Optimization (PPO) algorithm, and then act as a critic by evaluating the trained policy through diagnosis packets to generate feedback. Based on this feedback, the agent identifies failure modes and refines the reward function in a closed loop self improvement process. To further leverage the multimodal GPT agent during inference, AgenticRL uses real world images and natural language task information to automatically identify the active scenario and select the appropriate trained policy for execution. The framework is evaluated on multiple navigational tasks, including gate traversal, obstacle avoidance, wall barrier crossing with landing, trajectory following, and motion behavior learning. Experimental results show that the closed loop refinement process improves policy behavior compared with initial rewards by 71%. We also demonstrate sim-to-real transfer of the proposed framework, achieving a real world success rate of 91% and a sim-to-real accuracy of 94%.",
+      "authors": [
+        "Roohan Ahmed Khan",
+        "Yasheerah Yaqoot",
+        "Amir Atef Habel",
+        "Muhammad Ahsan Mustafa",
+        "Dzmitry Tsetserukou"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "published": "2026-06-02T17:50:15+00:00",
+      "link": "https://arxiv.org/pdf/2606.03963v3",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Automated reward design for UAV RL navigation, enabling long-horizon reward assignment potential",
+      "llm_evidence_cn": "为无人机强化学习导航自动化奖励设计，可支持长周期奖励分配",
+      "llm_evidence": "为无人机强化学习导航自动化奖励设计，可支持长周期奖励分配",
+      "canonical_evidence": "为无人机强化学习导航自动化奖励设计，可支持长周期奖励分配",
+      "llm_tldr_en": "AgenticRL uses a GPT agent to automatically design rewards and refine policies for UAV navigation, reducing manual tuning.",
+      "llm_tldr_cn": "针对深度强化学习在机器人导航中奖励设计依赖人工、调试繁琐的问题，本文提出AgenticRL框架，利用多模态GPT智能体解释任务和视觉场景，自动生成任务奖励函数并训练策略，简化无人机导航中的奖励工程。",
+      "llm_tldr": "针对深度强化学习在机器人导航中奖励设计依赖人工、调试繁琐的问题，本文提出AgenticRL框架，利用多模态GPT智能体解释任务和视觉场景，自动生成任务奖励函数并训练策略，简化无人机导航中的奖励工程。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.06673v1",
+      "source": "arxiv",
+      "title": "Uncertainty-Aware LLM-Guided Policy Shaping for Sparse-Reward Reinforcement Learning",
+      "abstract": "Sparse rewards and heterogeneous task sequences remain persistent challenges in Reinforcement Learning (RL), often resulting in slow convergence, weak generalization, and inefficient exploration. We propose Uncertainty-Aware LLM-Guided Policy Shaping (ULPS), a novel framework that integrates a calibrated Large Language Model (LLM) into the RL training loop to provide structured, uncertainty-modulated behavioral guidance. ULPS employs an A*-based oracle to synthesize optimal symbolic trajectories, which are used to fine-tune a BERT-based language model. During training, this model supplies action suggestions whose influence is conditioned on epistemic uncertainty estimated via Monte Carlo (MC) dropout. An entropy-based blending mechanism adaptively balances LLM guidance and the learned policy (via Proximal Policy Optimization, PPO), allowing the agent to prioritize reliable priors while preserving adaptability. We evaluate ULPS on the MiniGridUnlockPickup benchmark and observe consistent improvements in success rate, reward efficiency, and sample complexity over unguided, uncalibrated, and standard RL baselines. ULPS achieves more than 9% improvement in execution accuracy after fine-tuning, requires fewer environment interactions, and yields higher reward AUC. Our results demonstrate that integrating symbolic A* trajectories, pretrained language priors, and uncertainty-aware control offers a principled and effective approach to multi-task reinforcement learning in sparse-reward domains, with potential extensibility to partially observable and multi-agent settings.",
+      "authors": [
+        "Ujjwal Bhatta",
+        "Utsabi Dangol",
+        "Sumaly Bajracharya",
+        "Rodrigue Rizk",
+        "KC Santosh"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-06-04T19:46:45+00:00",
+      "link": "https://arxiv.org/pdf/2606.06673v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "addresses sparse-reward/long-horizon RL challenges via LLM-guided policy shaping, relevant to long-horizon reward assignment",
+      "llm_evidence_cn": "通过LLM引导策略塑造解决稀疏奖励/长时域RL挑战，与长时域奖励分配相关",
+      "llm_evidence": "通过LLM引导策略塑造解决稀疏奖励/长时域RL挑战，与长时域奖励分配相关",
+      "canonical_evidence": "通过LLM引导策略塑造解决稀疏奖励/长时域RL挑战，与长时域奖励分配相关",
+      "llm_tldr_en": "Integrates a calibrated LLM into RL training to provide uncertainty-modulated behavioral guidance for sparse-reward tasks, using A*-based oracle trajectories to fine-tune a BERT model.",
+      "llm_tldr_cn": "针对稀疏奖励和异构任务序列下强化学习收敛慢、泛化弱的问题，提出ULPS框架，通过微调的BERT模型提供动作建议，并根据蒙特卡洛丢弃估计的认知不确定性调节建议的影响。A* oracle合成最优符号轨迹用于微调语言模型，熵基混合机制动态融合建议与策略。实验证明ULPS能显著加速稀疏奖励任务的学习，提高探索效率，为长时域任务的奖励分配提供了一种新的引导方式。",
+      "llm_tldr": "针对稀疏奖励和异构任务序列下强化学习收敛慢、泛化弱的问题，提出ULPS框架，通过微调的BERT模型提供动作建议，并根据蒙特卡洛丢弃估计的认知不确定性调节建议的影响。A* oracle合成最优符号轨迹用于微调语言模型，熵基混合机制动态融合建议与策略。实验证明ULPS能显著加速稀疏奖励任务的学习，提高探索效率，为长时域任务的奖励分配提供了一种新的引导方式。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

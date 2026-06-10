@@ -1,0 +1,640 @@
+Title: Embodiment-conditioned Generalist Control for Multirotor Aerial Robots
+
+URL Source: https://arxiv.org/pdf/2606.10857v1
+
+Published Time: Wed, 10 Jun 2026 01:26:51 GMT
+
+Number of Pages: 18
+
+Markdown Content:
+# Embodiment-conditioned Generalist Control for Multirotor Aerial Robots 
+
+Orestis Konstantaropoulos Welf Rehberg Mihir Kulkarni Kostas Alexis 
+
+Department of Engineering Cybernetics Norwegian University of Science and Technology (NTNU), Trondheim, Norway 
+
+orestiskonsta@gmail.com , welf.rehberg@ntnu.no ,
+
+mihir.kulkarni@ntnu.no , konstantinos.alexis@ntnu.no 
+
+Abstract: We present a generalist position control policy capable of controlling arbitrary multirotor configurations of a certain rotor count (e.g., hexarotors or quadrotors) with a single set of network weights. The policy is conditioned on a physics-grounded embodiment descriptor: a mass and inertia-normalized control allocation matrix that captures how mass-normalized motor thrusts generate linear and angular accelerations in the body-frame. To train the policy, we sample from a broad distribution of arbitrary multirotor configurations, including non-planar and asymmetric systems, and optimize a single, compact network using Proximal Pol-icy Optimization. Training requires only five minutes on an RTX 3090 GPU using a custom NVIDIA Warp-based dynamics simulator. Through extensive simula-tion experiments, we show that embodiment conditioning enables robust gener-alist control across arbitrary morphologies. We demonstrate zero-shot real-world transfer of this generalist policy on three diverse hexarotor systems, including a planar robot, a partially symmetric non-planar system, and a random asymmetric, non-planar configuration. 
+
+Keywords: Reinforcement Learning, Foundation Models, Aerial Systems RL Training   
+
+> . . . Simulate System Family
+> . . .
+> Learned Morphology Embedding
+> GRU
+> : Embodiment Information : State Information : Actions
+
+0-shot Transfer : Descriptor Path : State Path 
+
+Figure 1: We train a generalist policy in simulation using a broad distribution of multirotor systems (e.g., of the hexarotor class). The policy is conditioned on both the state and an explicit model-based embodiment descriptor and directly outputs motor commands. We demonstrate real-world zero-shot transfer on substantially different configurations, including asymmetric, and non-planar designs. 
+
+## 1 Introduction 
+
+Multirotors are widely used due to their agility and simple design. Recent advances in onboard autonomy have enabled their deployment across a variety of environments [1, 2, 3], including for drone racing with performance levels surpassing expert human pilots [4]. Due to their simplicity, planar multirotor configurations are dominating the field. However, research has highlighted the potential benefits offered by unconventional non-planar configurations [5, 6, 7, 8, 9, 10]. Even 
+
+> arXiv:2606.10857v1 [cs.RO] 9 Jun 2026
+
+within planar designs, changes to components such as motors or propellers can significantly affect control performance and often require retuning the control cascade. These challenges are amplified in non-planar and asymmetric systems, since commonly used controllers (e.g., [11]) often rely on assumptions such as vertical thrust and partial design symmetry. Learning-based control can, in principle, reduce the manual effort required to tune a controller for a given system. However, currently this still requires training a bespoke policy tailored to the specific robot configuration at hand. Lately, a niche set of works has started investigating generalist policies across broader families of systems. In legged locomotion, recent work has explored policies conditioned on embodiment or system parameters to enable control across dif-ferent morphologies [12]. For aerial robots, however, learning a single controller that general-izes across substantially different multirotor configurations remains largely unexplored. Heading in that direction, RAPTOR [13] recently presented a general control, which is, however, lim-ited to planar quadrotors in a symmetric “X” configuration. To overcome these limitations, we propose an embodiment-conditioned control generalist for arbitrary multirotor systems. The pol-icy is conditioned on a compact, physics-informed descriptor of the platform morphology and is trained over a broad distribution of either quadrotor or hexarotor configurations, including planar, non-planar, symmetric, and fully asymmetric designs with vastly different scale, mass, and iner-tia. This enables a single generalist policy to adapt its control behavior to the robot’s actuation structure and dynamics. An overview of our method is shown in Figure 1. Our analysis demon-strates that such explicit embodiment conditioning enables robust control across diverse multiro-tor morphologies. We train a single generalist controller in simulation in under five minutes on a single RTX 3090 GPU and demonstrate generalization across broad families of multirotors and zero-shot transfer to representative planar, non-planar, and asymmetric real-world embodiments. The source code for the simulator, training pipeline, and policy implementation is available at 
+
+https://github.com/ntnu-arl/generalist_multirotor_control.git .
+
+## 2 Related Work 
+
+The idea of conditioning robot control policies on embodiment information has lately received at-tention. Recent work in this direction conditions policies on robot morphology using graphs [14], hypernetworks [15], or transformers [14, 12, 16], mainly in articulated locomotion settings. These methods assume a kinematic structure composed of discrete, articulated modules, which is not a natural representation for multirotor systems where control relies on the force-torque coupling of a single rigid body. Looking at flying robots, the prevailing approach to learning for flight control involves the training of bespoke policies [17, 18]. Toward learning multirotor flight control appli-cable to a relatively wide range of systems, a demonstrated approach is domain randomization over dynamic parameters and training a single policy across varying system dynamics [19, 20]. While effective for variations in mass or thrust coefficients and system scale, these methods assume a fixed motor layout, thus not allowing for arbitrary configurations. An alternative is adaptive control via system identification [21], where a separate module infers system parameters from history and the policy conditions on these estimates. This enables adaptation to varying dynamics but remains fo-cused on fixed multirotor geometries. A step toward more significant generalization, RAPTOR [13] instead trains separate teacher policies for varying sampled planar quadrotors in a symmetric X configuration with purely vertical thrust and distills them into a single student. Yet RAPTOR re-mains limited to such symmetric, planar quadrotors. In contrast, we focus on training a single morphology-conditioned policy across diverse planar and non-planar, symmetric and asymmetric multirotor morphologies. To that end, we propose the use of an explicit model-based encoding of an embodiment via a normalized allocation matrix and parameters defining the actuator dynamics. We present results both for hexarotors (owing to their rich configuration space) and quadrotors (with details in Appendix C). 23 Problem Formulation 
+
+This work addresses the problem of controlling a wide distribution of multirotor systems from the same morphology class (e.g., hexarotors or quadrotors) using a single generalist policy. Our goal is to find a single policy able to generalize with the same parameters across vastly diverse planar and non-planar, symmetric and asymmetric multirotors, and demonstrate real-world zero-shot transfer. Let Θ denote a family of multirotor systems with nm motors, where each system is parameter-ized by a morphology vector θ ∈ Θ. Importantly, beyond conventional planar systems, non-planar and asymmetric designs are considered. The morphology vector θ contains all physical parameters required to uniquely define the platform-specific dynamics used in simulation. We formulate the control problem as a Partially Observable Markov Decision Process (POMDP) defined by the tu-ple (S, A, p T , s0, r, γ, O). The state space S contains states st ∈ S comprising the system position 
+
+pt ∈ R3 in the world frame W, the orientation quaternion qt ∈ R4 with ∥qt∥ = 1 , the linear velocity 
+
+vt ∈ R3 expressed in W, the angular velocity ωt ∈ R3 expressed in the body frame B, and the pro-peller speeds Ωt ∈ Rnm . In addition, the morphology parameters θ and the previous action at−1 are included in the state representation, yielding the augmented state st = [ pt, qt, vt, ωt, Ωt, at−1, θ]T .
+
+The previous action is included as it is required for reward computation. Although θ remains con-stant throughout an episode, we include it in the state representation to preserve the Markov property and enable conditioning of the policy on the platform morphology. The action space is denoted by 
+
+A, where the action at = Ω∗ corresponds to the desired propeller speeds. The system dynamics are described by the transition probabilities pT (st+1 | st, at). During training, morphologies are sampled from a distribution pΘ over the system family. Furthermore, s0 denotes the initial state distribution, r(st, at) defines the reward function and γ ∈ [0 , 1) is the discount factor. The ob-servation space O contains the subset of state variables observable by the policy. Specifically, the observations ot ∈ O contain all state components except the past action and the motor speeds Ω,since real platforms often do not provide motor speed feedback, thereby rendering the process par-tially observable. A summary of the notation used in this work is provided in Table A.1. Given the morphology distribution pΘ, our objective is to learn a single control policy that generalizes across the entire family of systems: 
+
+π⋆ ∈ arg max  
+
+> π
+
+Eθ∼pΘ [J(π, θ)] , where J(π, θ) = E
+
+" TX
+
+> t=0
+
+γtr(st, at)
+
+#
+
+. (1) with at ∼ π(ot) and st+1 ∼ pT (· | st, at),
+
+## 4 Methodology 
+
+This section presents the proposed approach for generalist multirotor flight control. For the sake of derivation and presentation, the class of hexarotors is considered. 
+
+4.1 State Transition Dynamics 
+
+The state transition probabilities pT of the POMDP of an arbitrary multirotor system are governed by rigid-body Newton-Euler equations and a motor model as shown in Equation (2). Note that the embodiment parameters θ are constant during an episode. A first-order motor model is considered. 
+
+˙p = v
+
+˙v = 1
+
+m R(q)fB + g
+
+˙Ω = diag (κ)−1(Ω∗ − Ω)˙q = 12 q ⊗
+
+ 0
+
+ωB
+
+
+
+˙ωB = J−1(τB − ω × Jω ) (2) 
+
+˙θ = 0 .
+
+Here m is the system mass, J its inertia, and κ the actuator time constants. The commanded rotor velocities are denoted by Ω∗. The rotation matrix R(q) ∈ SO(3) maps body-frame vectors to the inertial frame, B → W , while g ≈ [0 , 0, −9.81] m s −2 denotes acceleration due to gravity. The 3Figure 2: Left: description of the system family considered in this work and limits for motor posi-tions. Right: feasible regions are shown as light blue shaded areas. Table 1: Parameter ranges for morphol-ogy randomization.                         
+
+> Parameter Value
+> Mass m[0.02, 2.0] kg
+> Arm length lmin 0.1 m
+> Arm length lmax 0.3 m
+> Tilt angle ϕ60 ◦
+> Tilt direction ζ, δ 60 ◦,90 ◦
+> Thrust coefficient ct[10 −5,5×10 −5]Motor time constant κ[0 .01 ,0.06] s
+> Torque-to-thrust ratio cq[0 .01 ,0.05]
+
+body-frame wrench is composed of thrust fB and torque τB, defined through the allocation matrix 
+
+B ∈ R6×6 with [fB, τB]T = Bf , where f ∈ R6 are the individual motor forces, with fi = cti Ω2
+
+> i
+
+and cti ∈ R being the thrust coefficient of rotor i. The allocation matrix is given by 
+
+B =
+
+ R1z1 ... R6z6
+
+t1 × R1z1 − α1cqi R1z1 ... t6 × R6z6 − α6cqi R6z6
+
+
+
+. (3) where zi is the thrust direction in the motor frame Mi (zi = [0 , 0, 1] T for all motors), ti is the rotor position relative to the center-of-mass, Ri is the rotation matrix defining the orientation of motor i with respect to the body frame, αi ∈ {− 1, +1 } is the rotor spin direction, and cqi the torque-to-thrust ratio of rotor i. To support large-scale reinforcement learning, we developed a GPU-accelerated simulator using NVIDIA Warp [22] that evolves Nenv instances. Environment instances are simulated in parallel, each with a unique robot morphology, with batched observations across environments, and throughput exceeding 10 9 steps per second on a laptop GPU. 
+
+4.2 Morphology Distribution 
+
+To train the generalist policy, we sample morphologies (shown in Figure 2) from a distribution spanning variations in geometry, mass and inertial properties, actuator dynamics, and thrust charac-teristics. Each sample is fully described by its parameter vector 
+
+θ = [ m, vec (J), t1, ..., t6, vec (R1), ..., vec (R6), ct, cq , κ]. (4) where vec () represents the operator to vectorize the elements of a matrix. Not all randomly generated morphologies correspond to physically meaningful or controllable systems. To limit the distribution to meaningful multirotor configurations we sample systems within the limits described in Table 1 and Figure 2. Note that the motor thrust direction is parameterized only by ϕ, the angle with respect to the z-axis of B, since rotations about the z-axis (yaw) are unrestricted. Additionally, we apply morphology feasibility filtering before training. First, sampled platforms must satisfy a hover feasi-bility condition: being able to produce total thrust higher than the gravitational force while keeping zero moment, i.e. || f max  
+
+> B
+
+|| 2 ≥ mg, τB = 0 . Second, the maximum achievable thrust along the body-frame thrust axis is required to exceed the vehicle weight by a factor bf , i.e., |f max  
+
+> B,z
+
+| ≥ bf mg ,ensuring that the platform can sustain hover with margin. Third, we enforce a minimum control authority skill by requiring a minimum angular acceleration around each axis. 
+
+4.3 Embodiment Conditioning 
+
+To enable generalization to a wide distribution of systems, the generalist policy is conditioned on embodiment information and receives morphology-dependent observations both during training and inference. A key design choice is the representation of the morphology parameters provided to the policy. A straightforward approach is to condition the network on the full parameter vector θ. While 4this representation is sufficient to fully specify the system dynamics, our ablation studies showed that learning improves significantly when using a lower-dimensional, control-oriented embedding 
+
+zmorph = h(θ) that captures the control-relevant structure of the platform. Rather than directly using raw physical parameters, we represent each platform using a mass and inertia normalized allocation matrix Bnorm , derived below. Starting from the multirotor dynamics, the translational and rotational accelerations induced by the rotor forces can be written as 
+
+˙v = 1
+
+m R(q)Bf f + g, (5) 
+
+˙ω = J−1Bτ f − J−1(ω × Jω ), (6) where Bf and Bτ denote the force and torque components of the allocation matrix B = [ Bf , Bτ ]T .We can now write:  ˙v
+
+˙ω
+
+
+
+=
+
+R(q) 00 I
+
+| {z }
+
+> frame mapping
+
+ Bf
+
+mJ−1Bτ
+
+| {z }
+
+> Bnorm
+
+f
+
+m|{z} 
+
+> fnorm
+
++
+
+ g
+
+−J−1(ω × Jω )
+
+
+
+. (7) This motivates the definition of fnorm = f /m and the normalized allocation matrix as Bnorm =[Bf , m J−1Bτ ]T , mapping the normalized rotor thrusts to linear and angular accelerations to di-rectly encode the control authority induced by motor placement, mass distribution, and torque-to-thrust ratios in the acceleration space. Finally, the morphology descriptor provided to the policy is constructed as zmorph = h(θ) = [ vec (Bnorm ), κ, ct]. This normalized descriptor enables training across heterogeneous multirotor embodiments with varying geometry and dynamics. 
+
+4.4 Policy Architecture 
+
+The generalist policy receives both state and morphology information and process them separately by a state and embodiment encoder. The state encoder consists of two fully connected layers with 50 
+
+nodes each, while the embodiment encoder consists of one fully connected layer with 50 nodes. All hidden layers use ELU activations. The resulting latent states are concatenated and fed into a gated recurrent unit (GRU) with hidden size 50 . The GRU output is then used by three linear heads that predict the action mean, the log-standard deviation, and the value estimate. In addition, we include a skip connection from the state latent representation directly to the policy heads, allowing the policy to retain direct access to the current state alongside the recurrent representation. The policy outputs mass-normalized individual motor thrust commands, f ∗
+
+> norm
+
+. These are scaled by the system mass and then converted to desired motor velocities. Then they are applied as desired motor velocities 
+
+at = Ω⋆ in the simulator. The described architecture is shown in Appendix B.4. 
+
+4.5 Training Procedure 
+
+The policy is trained using Proximal Policy Optimization (PPO) with samples from the whole mor-phology distribution. We simulate Nenv = 2048 environments in parallel, each corresponding to a distinct embodiment, and collect rollouts of length H = 32 with a simulation time step ∆t = 0 .01s .Episodes terminate after a maximum horizon of 600 steps. Since different morphologies exhibit varying dynamical characteristics and stabilization behavior, we apply an adaptive sampling strat-egy during training to balance their contribution to the training data distribution. Morphologies with lower recent returns are sampled more frequently, increasing the amount of training data col-lected from configurations that are more challenging for the current policy and thereby improving performance consistency across the morphology distribution. 
+
+Reward Design We define a smooth reward composed of errors for position, heading, velocity, angular velocity, angular velocity increment, and action regularization terms. Let 
+
+ep = ∥pt − p⋆∥, eψ = ψt − ψ⋆, ev = ∥vt − v⋆∥, eω = ∥ωt∥, e∆ω = ∥ωt − ωt−1∥ (8) where p⋆, ψ⋆ and v⋆ being the desired position, heading (yaw) and velocity. Using the defined errors we employ Gaussian shaping functions to calculate the individual reward terms 
+
+ρ(x, λ 1, λ 2) = λ1 exp( −λ2x2), r□ = ρ(e□, λ 1,□, λ 2,□), (9) 5with □ being a placeholder for the above mentioned individual quantities and λ1,□ and λ2,□ being weights on the individual reward terms. To encourage smooth control inputs, we add an action regularization term 
+
+r∆a = −λa∥at − at−1∥2 (10) where λa are the weight scaling the action difference reward term. Additionally, we define a proxim-ity weighting term w = exp( −λwep), which increases the importance of velocity and angular sta-bilization close to the hover target. Here λw describes a tunable weight in the exponential. Episodes are terminated when safety constraints are violated. Specifically, a crash condition is triggered if the position error, velocity error or the angular velocity become to high. Upon termination, a fixed penalty pcrash is applied. The total reward is then defined as 
+
+rt =
+
+pcrash , if crashed 
+
+rp + rv + rω + r∆ω + r∆a + w (4 rv + 16 rω + rψ ) , otherwise . (11) 
+
+Sim-to-Real Training Setup To facilitate zero-shot sim-to-real transfer, we augment the training of the generalist deployed on real systems with observation noise and delayed state estimates. 
+
+## 5 Results and Evaluations 
+
+We evaluate the proposed embodiment-conditioned generalist controller through a set of simulation and real-world experiments. Notably, all policies were trained in only 5 min each on a worksta-tion with an RTX 3090 GPU. Implementation details are provided in Appendix B. Throughout the experimental section, we use three representative embodiments for zero-shot evaluation: a planar configuration, a non-planar partially symmetric configuration, and a fully arbitrary configuration. This section focuses on hexarotors, while key results for quadrotors are also presented. A more detailed analysis is provided in Appendix C. 
+
+5.1 Simulation Studies 
+
+We first evaluate generalization across morphologies in simulation. We compare three policy classes. First, bespoke policies are trained independently for single fixed morphologies θ ∈ Θ, using ob-servations oBS t = [ pt, qt, vt, ωt, Ωt] and an MLP architecture. Note that the choice of a purely MLP based architecture for the bespoke policies is justified by numerous works like [17, 18, 23]. Second, uninformed generalist policies use a recurrent architecture and are trained over the same morphology distribution as our method, but receive no explicit embodiment information, thus 
+
+oDR t = [ pt, qt, vt, ωt]. Finally, our generalist policy is trained over the same morphology distribu-tion, but is conditioned on the proposed embodiment descriptor. The informed general policy and uninformed general policy maximize expected return over the morphology distribution pΘ, whereas the bespoke policies optimize performance only for a single fixed embodiment. All policies are trained with PPO and the same reward function, and hyperparameters. We evaluate the resulting policies over N = 1024 sampled morphologies that include arbitrary, planar and non-planar, sym-metric and asymmetric hexarotors. For each embodiment θi, we run K = 10 trials. At the beginning of each trial, the robot is initialized uniformly at random inside a box of side length 0.5m around the initial reference position, and is then commanded to track a Lissajous trajectory with period 
+
+Ttraj = 7 .5s by providing position and velocity setpoints. We report success rate (SR), defined as the percentage of evaluated embodiments for which the policy completes the trajectory-tracking task without crashing (crash conditions are detailed in the Appendix B), together with the root mean squared errors (RMSE) of position and velocity in Table 2. We compute one RMSE per embodiment by averaging over all trials and timesteps. We report the mean and standard deviation of RMSE (i)
+
+across the evaluated embodiments. The same procedure is repeated for a quadrotor distribution, and the corresponding RMSE values are additionally reported in Table 2. 
+
+Generalization across Morphologies As expected, bespoke policies achieve the highest success rate, since each policy is specialized to a single fixed morphology. However, our generalist policy achieves remarkable generalization and substantially outperforms the uninformed generalist, im-proving the success rate from 38% to 85% for hexarotors and from 58% to 80% for quadrotors, 6Table 2: Comparison of control policies for tracking a Lissajous trajectory showing success rate (SR) and position and velocity RMSE 
+
+SR ( %) p RMSE ( m) v RMSE ( m s −1)Method Hex Quad Hex Quad Hex Quad 
+
+Bespoke Policies 98 97 0.058 ± 0.073 0.086 ± 0.035 0.053 ± 0.114 0.068 ± 0.077 
+
+Uninformed Generalist 38 58 0.142 ± 0.067 0.181 ± 0.080 0.100 ± 0.127 0.066 ± 0.092 
+
+Ours 85 80 0.082 ± 0.037 0.105 ± 0.055 0.037 ± 0.012 0.039 ± 0.014 
+
+while approaching the tracking accuracy of bespoke policies. This demonstrates that recurrence alone is insufficient to infer the relevant embodiment properties over a broad morphology distribu-tion. Explicitly conditioning the policy on a model-based, physics-informed embodiment descriptor is critical for robust generalization. We further examine the failure cases in Appendix E. There, we report results on a restricted distribution of planar, non-symmetric platforms with upright mo-tors, where the generalist achieves 100% success rate and also show that failures are correlated with higher tracking errors of the corresponding bespoke policies. In Figure 3a, the histograms of the position error are shown. Note that the histograms include only configurations capable of success-fully tracking the trajectory. In Figure 3b, we further visualize trajectory-tracking performance on 
+
+50 randomly sampled morphologies, as well as zero-shot performance on the three representative embodiments. Similar results for quadrotors are detailed in the Appendix C. 0.05 0.10 0.15 0.20 0.25 
+
+> Position Error (m)
+> 0
+> 5
+> 10
+> 15
+> 20
+> 25
+> 30
+> Probability Density  Uninformed Generalist (38.0%) Ours (85.0%) Bespoke (98.4%)
+
+(a) −1.0 −0.5 0.0 0.5 1.0   
+
+> x [m]
+> −0.6
+> −0.4
+> −0.2
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> y [m]
+> Planar Symmetric Asymmetric
+
+(b) 
+
+Figure 3: a) Distributions of position errors following the Lissajous trajectory for specialists, the uninformed generalist and policies trained with our method. b) Simulated trajectories of 50 systems controlled by our generalist following a Lissajous trajectory. The systems realized for real-world tests are highlighted. Note that the simulation assumes no noise in the sensor readings or delayed measurements. 
+
+Ablation Studies on the Descriptor We next ablate the components of the proposed embodiment descriptor. We compare the full descriptor against four variants: (i) removing the thrust coefficients and the time constants (altogether called actuator constants), (ii) removing the mass–inertia normal-ization and providing mass and inertia as separate inputs, (iii) replacing the normalized allocation matrix with raw motor positions and orientations, and (iv) removing the embodiment descriptor en-tirely, corresponding to the uninformed baseline. We evaluate all variants using the same setup as above and report success rate, position RMSE, and velocity RMSE in Table 3. The full descriptor achieves the highest success rate, while maintaining a low tracking error. Removing the actuator constants preserves the same success rate but increases the tracking error slightly, suggesting that the recurrent policy can partially infer actuator properties from interaction history; however, actua-tor constants remain important for step-response behavior and should therefore be used if available. In contrast, removing the mass-inertia normalization reduces success rate from 85% to 67% , and replacing the normalized allocation matrix with raw motor poses further reduces it to 54% . Overall, the proposed complete physics-informed descriptor provides a more effective representation than raw dynamics and only geometric morphology information. 7Table 3: Results of the ablation study for our proposed embodiment descriptor showing success rate (SR), as well as position and velocity RMSE.                                               
+
+> Method SR ( %)pRMSE ( m)vRMSE ( m s −1)
+> full descriptor 85 0.082 ±0.037 0.037 ±0.012
+> (i) w/o actuator constants 85 0.084 ±0.046 0.045 ±0.086
+> (ii) w/o mass–inertia normalization 67 0.081 ±0.045 0.043 ±0.076
+> (iii) raw motor poses 54 0.126 ±0.051 0.047 ±0.055
+> (iv) w/o embodiment descriptor 38 0.142 ±0.067 0.100 ±0.127 −101x [m]
+> −0.5
+> 0.0
+> 0.5y [m]
+> Planar Setpoints
+> −101x [m]
+> Symmetric
+> −101x [m]
+> Asymmetric
+> 0.51.01.5Velocity [m/s]
+
+Figure 4: Top: systems used for real-world evaluation. Bottom: resulting trajectories for the real-world experiments. 
+
+5.2 Real-World Validation 
+
+To evaluate the real-world performance of our method, we deploy the informed generalist, trained incorporating the sim-to-real procedure described in Section 4.5, on three distinct systems with vary-ing geometries, thrust coefficients, and motor time constants arising from different motor–propeller combinations, see Appendix D. The three platforms exhibit distinct geometries: a) a planar config-uration, b) a configuration symmetric with respect to the x-z-plane and c) a random non-planar and asymmetric configuration. The systems are deployed in a Qualysis motion capture arena, providing ground truth position feedback. Each platform is equipped with a ModalAI Voxl 2 Mini autopilot board and a ModalAI Voxl ESC. The trained networks are deployed directly on the onboard com-pute hardware through a custom PX4 [24] module. The systems used for the real-world evaluation are shown in Figure 4. We assess the proposed method on a Lissajous trajectory tracking task with a loop period of 7.5s , and the resulting trajectories are presented in Figure 4. The deployed gener-alist achieves a mean position tracking error of 0.13m for the planar configuration, 0.15m for the symmetric non-planar configuration and 0.21m for the random non-planar and asymmetric configu-ration. 
+
+## 6 Limitations 
+
+While our method exhibits strong generalization within a single system family (e.g., hexarotors), it is currently designed for fixed-motor-count systems, and extending it to handle varying numbers of motors represents a promising direction for future work. Although our method achieves a high success rate ( 85% on hexarotors and 80% on quadrotors), it still does not fully reach the near-100% 
+
+reliability of bespoke policies. Further narrowing this gap by refining the adaptive morphology sampling strategy and exploring more expressive architectures capable of capturing extreme, long-tail configurations during training represents a promising research direction. Last, like in RAPTOR we aim to investigate extension to airframes with soft components. 87 Conclusions 
+
+In this work, we introduced an embodiment-informed control generalist for multirotor systems. By conditioning the controller on a model-based descriptor of embodiment-relevant information, our approach achieves robust performance across a broad range of configurations and enables zero-shot transfer to real-world systems on three distinct hexarotor platforms that vary substantially in motor placement, motor orientation, inertia, and propeller type. 
+
+Acknowledgments 
+
+This work was supported by the Horizon Europe Grant Agreement No. 101119774 and the Research Council of Norway under Award NO-357451. The authors are with the Department of Engineering Cybernetics, Norwegian University of Science and Technology (NTNU), Norway. 
+
+## References 
+
+[1] A. Pretto, S. Aravecchia, W. Burgard, N. Chebrolu, C. Dornhege, T. Falck, F. Fleckenstein, A. Fontenla, M. Imperoli, R. Khanna, et al. Building an aerial–ground robotics system for precision farming: an adaptable solution. IEEE Robotics & Automation Magazine , 2020. [2] T. H. Chung, V. Orekhov, and A. Maio. Into the robotic depths: Analysis and insights from the darpa subterranean challenge. Annual Review of Control, Robotics, and Autonomous Systems ,2023. [3] M. Dharmadhikari and K. Alexis. Semantics-aware predictive inspection path planning. IEEE Transactions on Field Robotics , 2025. [4] E. Kaufmann, L. Bauersfeld, A. Loquercio, M. M¨ uller, V. Koltun, and D. Scaramuzza. Champion-level drone racing using deep reinforcement learning. Nature , 2023. [5] S. Rajappa, M. Ryll, H. H. B¨ ulthoff, and A. Franchi. Modeling, control and design optimiza-tion for a fully-actuated hexarotor aerial vehicle with tilted propellers. In IEEE International Conference on Robotics and Automation (ICRA) , 2015. [6] K. Garanger, T. Khamvilai, J. Epps, and E. Feron. The dodecacopter: A versatile multirotor system of dodecahedron-shaped modules. IEEE Transactions on Robotics , 2025. [7] A. Franchi. The n-5 scaling law: Topological dimensionality reduction in the optimal design of fully-actuated multirotors. arXiv preprint arXiv:2512.23619 , 2025. [8] R. Rashad, J. Goerres, R. Aarts, J. B. Engelen, and S. Stramigioli. Fully actuated multirotor uavs: A literature review. IEEE Robotics & Automation Magazine , 2020. [9] R. Shen, D. Huang, Q. Zhan, Y. Shu, K. Bao, H. Huang, and X. Li. Modeling and control of an omnidirectional hexrotor UAV with tilted-rotors. In M. Wu, Y. Niu, M. Gu, and J. Cheng, editors, ICAUS . Springer, 2021. [10] A. Ollero, M. Tognon, A. Suarez, D. Lee, and A. Franchi. Past, present, and future of aerial robotic manipulators. IEEE Transactions on Robotics , 2021. [11] T. Lee, M. Leok, and N. H. McClamroch. Geometric tracking control of a quadrotor UAV on SE(3). In 49th IEEE Conference on Decision and Control (CDC) , 2010. [12] N. Bohlinger, G. Czechmanowski, M. P. Krupka, P. Kicki, K. Walas, J. Peters, and D. Tateo. One policy to run them all: an end-to-end learning approach to multi-embodiment locomotion. In 8th Annual Conference on Robot Learning , 2024. [13] J. Eschmann, D. Albani, and G. Loianno. Raptor: A foundation policy for quadrotor control. 
+
+Science Robotics , 2026. [14] Y. Luo, M. Yao, and X. Xiao. Gcnt: Graph-based transformer policies for morphology-agnostic reinforcement learning. In Proceedings of the Thirty-Fourth International Joint Conference on Artificial Intelligence , 2025. 9[15] Z. Xiong, J. Beck, and S. Whiteson. Universal morphology control via contextual modulation. In Proceedings of the 40th International Conference on Machine Learning (ICML) , 2023. [16] C. Sferrazza, D.-M. Huang, F. Liu, J. Lee, and P. Abbeel. Body transformer: Leveraging robot embodiment for policy learning. In 8th Annual Conference on Robot Learning , 2024. [17] J. Eschmann, D. Albani, and G. Loianno. Learning to Fly in Seconds. IEEE Robotics and Automation Letters , 2024. [18] J. Hwangbo, I. Sa, R. Siegwart, and M. Hutter. Control of a Quadrotor with Reinforcement Learning. IEEE Robotics and Automation Letters , 2017. [19] R. Ferede, T. Blaha, E. Lucassen, C. De Wagter, and G. C. de Croon. One net to rule them all: Domain randomization in quadcopter racing across different platforms. In IEEE International Conference on Robotics and Automation (ICRA) , 2025. [20] A. Molchanov, T. Chen, W. H¨ onig, J. A. Preiss, N. Ayanian, and G. S. Sukhatme. Sim-to-(multi)-real: Transfer of low-level robust control policies to multiple quadrotors. CoRR , 2019. [21] D. Zhang, A. Loquercio, J. Tang, T. Wang, J. Malik, and M. W. Mueller. A learning-based quadcopter controller with extreme adaptation. IEEE Transactions on Robotics , 2024. [22] M. Macklin. Warp: A high-performance python framework for gpu simulation and graphics. 
+
+https://github.com/nvidia/warp , March 2022. NVIDIA GPU Technology Conference (GTC). [23] W. Rehberg, M. Kulkarni, P. Weiss, and K. Alexis. Efficient knowledge transfer for jump-starting control policy learning of multirotors through physics-aware neural architectures. 
+
+IEEE Robotics and Automation Letters , 2026. [24] L. Meier and The PX4 Contributors. PX4 Autopilot. URL https://px4.io .10 Table A.1: Summary of notation used throughout the paper. 
+
+Symbol Description Symbol Description 
+
+Θ Family of multirotor systems f Rotor thrust vector 
+
+θ Morphology parameter vector fB Body-frame thrust 
+
+pΘ Distribution over morphologies τB Body-frame torque 
+
+S State space B Allocation matrix 
+
+A Action space Bf Force allocation matrix 
+
+O Observation space Bτ Torque allocation matrix 
+
+st Environment state at time t Bnorm Normalized allocation matrix 
+
+ot Observation at time t zmorph Morphology descriptor 
+
+at Action applied at time t m System mass 
+
+pT Transition probability distribution J Inertia matrix 
+
+r(st, at) Reward function κ Motor time constants 
+
+γ Discount factor ct Thrust coefficient 
+
+π Control policy cq Torque-to-thrust ratio 
+
+J(π, θ) Expected return R(q) Body-to-world rotation matrix 
+
+T Return horizon N Number of sampled configurations for evaluation 
+
+pt Position in frame W Ri Orientation of motor i
+
+qt Orientation quaternion ti Position of motor i
+
+vt Linear velocity αi Rotor spin direction 
+
+ωt Angular velocity W World frame 
+
+Ωt Rotor angular velocities B Body frame 
+
+Ω∗ Desired rotor velocities M Motor frame 
+
+Nenv Parallel environments H Rollout horizon 
+
+Ttraj Trajectory period pcrash Crash penalty 
+
+bf Hover margin factor p⋆ Desired position 
+
+ψ⋆ Desired heading v⋆ Desired velocity 
+
+λ1,□, λ 2,□ Gaussian shaping weights λa Action regularization weight 
+
+λw Proximity term weight K Evaluation trials per embodiment 
+
+oBSt Bespoke policy observation oDRt Uninformed generalist observation 
+
+fnorm Mass-normalized thrust f ⋆ 
+
+> norm
+
+Normalized thrust command 
+
+## A Morphology Descriptor 
+
+The proposed morphology descriptor zmorph is detailed below for completeness 
+
+zmorph = [vec( Bnorm ), κ, ct] (12) 
+
+Bnorm =
+
+ Bf
+
+mJ−1Bτ
+
+
+
+(13) 
+
+=
+
+" [R1z1 · · · R6z6]
+
+mJ−1 [t1 × R1z1 − α1cq1 R1z1 · · · t6 × R6z6 − α6cq6 R6z6]
+
+#
+
+(14) 
+
+## B Implementation Details 
+
+This section provides further implementation details. 
+
+B.1 Reward Design 
+
+The main text describes the reward in its general form. Here we provide the numerical instantiations used in our experiments. Simulation Reward For the simulation results reported in the main paper, we use the following reward instantiation: 
+
+rp = ρ(ep, 3.0, 5.0) + ρ(ep, 6.0, 12 .0) , (15) 
+
+rv = ρ(ev , 2.0, 10 .0) , (16) 
+
+rω = ρ(eω , 1.0, 0.5) , (17) 
+
+r∆ω = ρ(e∆ω , 1.0, 0.5) , (18) 
+
+rψ = ρ(eψ , 0.75 , 6.0) , (19) with proximity weight 
+
+w = exp( −5ep), (20) and action smoothness penalty 
+
+r∆a = −0.1∥at − at−1∥2. (21) The resulting reward is 
+
+rt = rp + rv + rω + r∆ω + r∆a + w (4 rv + 16 rω + rψ ) . (22) 
+
+Sim-to-Real Reward For policies transferred to the real platform, we use a slightly smoother reward. In particular, we relax the position, velocity, and angular-velocity shaping terms, while increasing the action-difference penalty 
+
+rreal  
+
+> p
+
+= ρ(ep, 3.0, 3.0) + ρ(ep, 4.0, 6.0) , (23) 
+
+rreal  
+
+> v
+
+= ρ(ev , 2.0, 5.0) , (24) 
+
+rreal  
+
+> ω
+
+= ρ(eω , 1.0, 0.3) , (25) 
+
+rreal ∆ω = ρ(e∆ω , 1.0, 0.5) , (26) 
+
+rreal  
+
+> ψ
+
+= ρ(eψ , 0.75 , 6.0) , (27) and 
+
+rreal ∆a = −0.5∥at − at−1∥2. (28) The final reward is 
+
+rreal  
+
+> t
+
+= rreal  
+
+> p
+
++ rreal  
+
+> v
+
++ rreal  
+
+> ω
+
++ rreal ∆ω + rreal ∆a + 17 rreal 
+
+> p
+
+ rreal  
+
+> v
+
++ 8 rreal  
+
+> ω
+
++ rreal 
+
+> ψ
+
+ . (29) This modification reduces the incentive to aggressively minimize small tracking errors in simulation and instead biases the policy toward smoother control actions, which we found important for robust real-world deployment. 
+
+Termination For both reward instantiations, episodes terminate when 
+
+ep > 4.0m , ev > 20 .0m s −1, eω > 20 .0rad s −1. (30) Upon termination, the reward is replaced by a fixed crash penalty: 
+
+rt = −200 . (31) 
+
+B.2 Morphology Feasibility Filtering 
+
+We provide the numerical details of the morphology feasibility filters introduced in Section 4. For the sampled morphology distribution, motor thrust limits are normalized by vehicle weight. For hexarotors, we set fmin ,i = 0 and fmax ,i = mg/ 2 for each motor i. For quadrotors, we set fmax ,i =1.5mg/ 2, Using the allocation matrix notation from the main text, motor thrust commands are constrained to lie within fmin ≤ f ≤ fmax . First, we test hover feasibility by checking whether there exists a feasible motor command u that produces thrust equal to the vehicle weight while generating zero body torque: 
+
+∥Bf f ∥2 = mg, Bτ f = 0, fmin ≤ f ≤ fmax . (32) This feasibility problem is solved numerically with projected gradient-based optimization. 12 GRU 
+
+> 50 50 50 50 50 50 66148 13 50 State Encoder Embodiment Encoder Recurrent Unit Action Mean Head Action Log-SD Head Value Head Concatenate
+
+Figure A.1: Network architecture. Second, we require a minimum thrust-to-weight margin along the body-frame vertical axis: 
+
+f max 
+
+> B,z
+
+mg > b f , (33) where bf = 2 .5 for hexarotors and bf = 1 .5 for quadrotors. Finally, we require sufficient angular authority around all body axes. We estimate the maximum achievable angular acceleration from the maximum attainable torque and the system inertia as 
+
+αmax ≈ J−1τ max . (34) and morphologies are retained only if 
+
+αmax  
+
+> x
+
+> 16rad s −2, αmax  
+
+> y
+
+> 16rad s −2, αmax  
+
+> z
+
+> 16rad s −2. (35) After applying all filters, approximately 40% of sampled hexarotor morphologies and 33% of sam-pled quadrotor morphologies are retained. 
+
+B.3 Difficulty-based Morphology Sampling 
+
+During training, we maintain a running estimate of the mean return achieved for each morphology. To increase the sampling frequency of morphologies that are currently harder for the policy, we convert these returns into a difficulty score. For morphology i, with running mean return ¯Ri, we define 
+
+di = 1 − ¯Ri − min j ¯Rj
+
+max j ¯Rj − min j ¯Rj
+
+. (36) Thus, morphologies with lower mean return receive higher difficulty scores. At reset, new mor-phologies are sampled with probability pi according to 
+
+pi = exp( βd i)
+
+P 
+
+> j
+
+exp( βd j ) . (37) We use β = 1 for hexarotors and β = 4 for quadrotors. This sampling scheme increases the fre-quency of challenging morphologies while still allowing the policy to train over the full morphology distribution. 
+
+B.4 Architecture 
+
+The proposed architecture is shown in Figure A.1. We use a recurrent policy with a residual feed-forward path from the state encoder to the policy head. The recurrent pathway provides memory over past observations, which is useful under observation latency and partial observability induced by unobserved actuator states. The residual pathway preserves direct access to the current state rep-resentation, allowing the policy to combine instantaneous feedback with history-dependent features. This design was chosen empirically to improve robustness under noisy observations for sim-to-real transfer. 13 Table A.2: Performance comparison of control policies on the quadrotor morphology distribution. Success rate (SR), position RMSE, and velocity RMSE are reported over the Lissajous trajectory tracking task.                           
+
+> Method SR ( %)pRMSE ( m)vRMSE ( m s −1)
+> Bespoke Policies 97 0.086 ±0.035 0.068 ±0.077
+> Uninformed Generalist 58 0.181 ±0.080 0.066 ±0.092
+> Ours 80 0.105 ±0.055 0.039 ±0.014
+
+## C Quadrotor Results 
+
+We repeat the simulation study on a population of quadrotor morphologies to verify that the proposed descriptor remains effective beyond the hexarotor setting considered in the main experiments. The quadrotor population is sampled using the same procedure as in the main text, but now each motor is sampled within a ζ = 360 ◦/4 = 90 ◦ sector. We increase the maximum thrust per motor by a factor of 6/4 relative to the hexarotor experiments, keeping the total available thrust comparable across the two morphology families. All other training and evaluation settings are kept unchanged. The evaluation protocol is identical: policies are evaluated on Lissajous trajectory tracking over sampled morphologies, and we report success rate together with position and velocity RMSE. The quantitative results are reported in Table A.2 and Figure A.2. The embodiment-conditioned policy substantially outperforms the uninformed generalist, improving the success rate from 58% 
+
+to 80% and reducing both position and velocity RMSE, while the bespoke policies still provide an upper bound, reaching 97% success rate. In Figure A.2, we also demonstrate simulated trajecto-ries, using our policy. The quadrotor results provide an opportunity to qualitatively compare our approach to RAPTOR [13] which otherwise is limited to planar, symmetric X-quadrotor platforms. Accordingly, we evaluate our policy on a distribution of planar, symmetric X-quadrotors generated following the geometry parameterization of RAPTOR [13], while clamping mass and actuator dy-namics to the range covered by our training distribution. The controller achieves a 96% success rate, with position RMSE of 0.065 ± 0.023 m and velocity RMSE of 0.046 ± 0.038 m/s. These results highlight the increased performance of our generalist on conventional planar systems, while our policy further supports a wider set of systems including non-planar and asymmetric designs.  
+
+> (a) (b)
+
+Figure A.2: Simulation results on quadrotor morphologies. (a) Distribution of position tracking errors during the Lissajous trajectory task for specialist policies, the uninformed generalist, and the proposed embodiment-informed generalist. (b) Trajectories generated by the embodiment-informed generalist across 100 randomly sampled quadrotor embodiments. 
+
+## D The Three Representative Embodiments 
+
+Table A.3 reports the physical parameters of the three representative hexarotor embodiments used for real-world and qualitative evaluations: the planar, the non-planar symmetric and the asymmetric 14 Table A.3: Detailed embodiment parameters of the 3 systems used for real world evaluation.                                                                                                                                           
+
+> Planar Symmetric Asymmetric Mass ( kg )
+> m0.421 0.411 0.402
+> Motor Positions ( m) (with respect to B)
+> motor 1[0 .116 ,−0.072 ,0.000] [0 .106 ,−0.061 ,0.04] [0 .0967 ,−0.088 ,−0.049]
+> motor 2[0 .000 ,−0.137 ,0.000] [0 ., −0.123 ,−0.03] [0 .016 ,−0.132 ,0.042]
+> motor 3[−0.116 ,−0.072 ,0.000] [−0.106 ,−0.061 ,0.04] [−0.093 ,−0.065 ,−0.057]
+> motor 4[−0.116 ,0.072 ,0.000] [−0.106 ,0.061 ,0.04] [−0.108 ,0.061 ,0.063]
+> motor 5[0 .000 ,0.137 ,0.000] [0 ., 0.122 ,−0.03] [−0.011 ,0.138 ,0.0133]
+> motor 6[0 .116 ,0.072 ,0.000] [0 .106 ,0.061 ,0.04] [0 .127 ,0.037 ,0.022]
+> Motor Orientations ( ◦) (xyz-euler angles)
+> ϕ1[0 ,0,0] [14 .4,−25 .3,0.0] [1 .05 ,−13 .3,0.0]
+> ϕ2[0 ,0,0] [−13 .5,25 .7,0.0] [−10 .0,−19 .5,0.0]
+> ϕ3[0 ,0,0] [−28 .9,−0.5,0.0] [4 .9,−1.4,0.0]
+> ϕ4[0 ,0,0] [28 .9,−0.5,0.0] [5 .8,−7.9,0.0]
+> ϕ5[0 ,0,0] [13 .5,25 .7,0.0] [−11 .2,−0.2,0.0]
+> ϕ6[0 ,0,0] [−14 .4,−25 .3,0.0] [4 .2,−3.0,0.0]
+> Thrust Coefficient ( N s 2)
+> propeller 1... 61.286 ×10 −52.308 ×10 −51.286 ×10 −5
+> Time Constant ( s)
+> actuator 1... 60.047 0.05 0.047
+> Torque-to-Thrust Ratio ( m)
+> propeller 1... 60.01 0.015 0.01
+
+(a) Morphology descriptor (b) Policy embedding 
+
+Figure A.3: Two-dimensional projections of morphology-related representations. non-planar morphology. These platforms were selected to cover qualitatively different regions of the morphology distribution, ranging from a conventional planar design to configurations with tilted motors and non-planar motor placements. Figure A.3 visualizes where these three morphologies lie relative to the sampled population. On the left, we show a PCA projection of our morphology descriptor, while on the right a PCA projection of the learned policy embedding. 
+
+## E Analysis of Failing Embodiments 
+
+The morphology distribution considered in this work is intentionally broad and includes highly non-standard multirotor configurations. As a result, the zero-shot success rate of a single generalist policy is not perfect, reaching 85% on hexarotors and 80% on quadrotors. However, these fail-ing embodiments are not uncontrollable, since bespoke policies trained on the same configurations can control them. To better understand these failures, we compare the generalist success labels with the tracking errors achieved by bespoke policies on the same embodiments. As shown in Fig-ure A.4, embodiments on which the generalist fails tend to have higher bespoke position, velocity 15 Table A.4: Performance comparison between the proposed embodiment-informed generalist and bespoke policies on the planar morphology subset. Success rate (SR), position RMSE, and velocity RMSE are reported for the Lissajous trajectory tracking task.                      
+
+> Method SR ( %)pRMSE ( m)vRMSE ( m s −1)
+> Ours 100 0.046 ±0.011 0.038 ±0.010
+> Bespoke 100 0.019 ±0.024 0.003 ±0.036
+> (a) Position error (b) Velocity error (c) Angular-velocity error
+
+Figure A.4: Tracking-error distributions of bespoke policies for embodiments where the embodiment-informed generalist succeeds and fails. Generalist failures are associated with higher position, velocity, and angular-velocity errors under bespoke control and angular-velocity errors. This suggests that generalist failures are correlated with the dynamic characteristics of the morphology, rather than being uniformly distributed across the test set. We further evaluate the generalist on a restricted subset of morphologies with non-tilted motors in Table A.4. This subset follows the same morphology family considered in the main experiments, but fixes δ = 45 ◦ and ϕ = 0 ◦, such that all motors are upright and lie in the x–y plane. On this subset, the generalist achieves 100% success rate and tracking performance comparable to bespoke policies. This indicates that the proposed controller is reliable on standard multirotor designs, while failures mainly arise in the broader morphology distribution containing more challenging non-planar or strongly asymmetric configurations. 
+
+## F Sensitivity Analysis 
+
+We evaluate the robustness of the generalist policy to errors in the embodiment descriptor. At eval-uation time, we perturb one class of the embodiment parameters without informing the policy, mea-suring sensitivity to a mismatch between the assumed and true morphology. Perturbations are scaled relative to nominal parameter ranges: mass is perturbed proportionally to its nominal values, while motor time constants, motor positions and orientations are perturbed additively in seconds, meters and degrees, respectively. As shown in Figure A.5, the policy is highly robust to mass perturbations and motor time-constant perturbations up to moderate noise levels, after which performance drops. The policy is more sensitive to geometric perturbations as expected, since they directly affect the achievable force–torque directions. 
+
+## G Step Responses under Noisy Sim-to-Real Conditions 
+
+We further evaluate the behavior of the generalist controller used for deployment on the real plat-forms. Specifically, we test the policy in simulation under the same observation-noise and latency setting used for sim-to-real training. The three representative systems are excited with a 0.5 m 
+
+step command along the x-axis, and we report the resulting position in Figure A.6a, velocity in Figure A.6b, angular velocity in Figure A.7a, Euler angles in Figure A.7b, and policy actions in Figure A.8. For each embodiment, we show three independent rollouts with different realizations of the observation noise. 16 Figure A.5: Success rate evolution with increasing noise on the embodiment information provided to the generalist. Mass is perturbed proportionally relative to its nominal value. Motor time constants are perturbed uniformly within the range shown on the x-axis in seconds, motor positions in meters and motor orientations in degrees. 
+
+> (a) Position
+> (b) Velocity
+
+Figure A.6: Position and velocity step responses of the policy deployed under sim-to-real noise and latency conditions. The three representative embodiments are excited with a 0.5 m step position command along the x axis. Three independent rollouts per embodiment are shown. 17 (a) Angular velocity 
+
+> (b) Euler angles
+
+Figure A.7: Angular velocity and Euler angle step responses of the policy deployed under sim-to-real noise and latency conditions. 
+
+> (a) Actions
+
+Figure A.8: Motor thrust commands (actions) of the policy deployed under sim-to-real noise and latency conditions. 18
