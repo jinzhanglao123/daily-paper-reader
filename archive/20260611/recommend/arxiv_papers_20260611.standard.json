@@ -1,0 +1,222 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-11T21:52:21.569173+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 4,
+    "deep_cap": 6,
+    "deep_selected": 4,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2606.11119v1",
+      "source": "arxiv",
+      "title": "TRACE: A Unified Rollout Budget Allocation Framework for Efficient Agentic Reinforcement Learning",
+      "abstract": "Reinforcement learning with verifiable rewards (RLVR) is a promising approach for enhancing reasoning and agentic behavior in large language models. However, rollout-intensive policy optimization is often limited by insufficient reward contrast, arising when overly simple or complex prompts generate low-variance feedback and when outcome-only rewards assign the same terminal assessment to every decision in a multi-turn rollout. Past efforts have focused on allocating available rollout resources to promising prompts, yet they only leverage sample informativeness at the prompt level and neglect variation in prefix-level informativeness across turns within the same rollout. This work targets multi-turn agentic RL by modeling each ReAct-style thought-action-observation turn as a semantically distinct node, allowing budget allocation to extend from prompt roots to turn-level prefixes with further continuations, which naturally forms tree-structured rollouts. We introduce Tree Rollout Allocation for Contrastive Exploration (TRACE), a unified rollout allocation framework that enhances reward contrast within a fixed sampling budget. Technically, TRACE allocates rollout budget to both prompt roots and intermediate prefixes that are most likely to yield mixed terminal rewards. A shared generalizable predictor estimates conditional success probability at these anchors from prefix histories to guide this allocation. The resulting adaptive tree structure enriches outcome-only feedback and amplifies the policy-update signal. Empirically, TRACE achieves competitive performance and efficiency gains on typical agentic benchmarks, e.g., improving Qwen3-14B Multi-Hop QA average accuracy by 2.8 points over competitive baselines at equal sampling cost.",
+      "authors": [
+        "Heming Zou",
+        "Qi Wang",
+        "Yun Qu",
+        "Yuhang Jiang",
+        "Lizhou Cai",
+        "Yixiu Mao",
+        "Ru Peng",
+        "Xin Xu",
+        "Weijie Liu",
+        "Kai Yang",
+        "Saiyong Yang",
+        "Xiangyang Ji"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.CL"
+      ],
+      "published": "2026-06-09T17:16:03+00:00",
+      "link": "https://arxiv.org/pdf/2606.11119v1",
+      "tags": [
+        "keyword:UAV-DRL"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "directly addresses long-horizon reward assignment in multi-turn agentic RL",
+      "llm_evidence_cn": "直接针对多回合智能体RL中的长时域奖励分配",
+      "llm_evidence": "直接针对多回合智能体RL中的长时域奖励分配",
+      "canonical_evidence": "直接针对多回合智能体RL中的长时域奖励分配",
+      "llm_tldr_en": "Proposes TRACE, a rollout budget allocation framework that improves reward contrast by allocating resources based on prefix-level informativeness, enhancing RL with verifiable rewards.",
+      "llm_tldr_cn": "针对多回合智能体强化学习中因结果奖励稀疏导致的奖励对比度不足问题，提出TRACE框架，通过前缀级信息量分配 rollout 资源，提升奖励信号质量，实验表明优于基线方法。",
+      "llm_tldr": "针对多回合智能体强化学习中因结果奖励稀疏导致的奖励对比度不足问题，提出TRACE框架，通过前缀级信息量分配 rollout 资源，提升奖励信号质量，实验表明优于基线方法。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.11982v1",
+      "source": "arxiv",
+      "title": "PAWS: Preference Learning with Advantage-Weighted Segments",
+      "abstract": "Preference-based reinforcement learning (PbRL) learns policies from human trajectory-level comparisons, avoiding explicit reward design and expert demonstrations. Existing methods typically train utility functions on trajectory or segment-level preferences while relying on per-step utility estimates during policy optimization. This training and inference mismatch induces a distribution shift that severely degrades temporal credit assignment and limits policy learning. We analyze this issue and propose PAWS, a segment-based preference learning method that performs policy updates directly using segment-level advantage functions. By aligning utility training with policy optimization, PAWS preserves trajectory-level preference information and avoids unreliable per-step learning signals. Experiments on simulated robotic manipulation and locomotion tasks demonstrate that PAWS consistently outperforms existing PbRL approaches, highlighting the importance of distribution-consistent preference learning.",
+      "authors": [
+        "Aleksandar Taranovic",
+        "Onur Celik",
+        "Niklas Freymuth",
+        "Ge Li",
+        "Serge Thilges",
+        "Huy Le",
+        "Tai Hoang",
+        "Rania Rayyes",
+        "Gerhard Neumann"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-06-10T12:00:17+00:00",
+      "link": "https://arxiv.org/pdf/2606.11982v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Addresses temporal credit assignment in PbRL with segment-level advantage functions, aligning training and inference.",
+      "llm_evidence_cn": "通过段落级优势函数解决偏好强化学习中的时间信用分配问题。",
+      "llm_evidence": "通过段落级优势函数解决偏好强化学习中的时间信用分配问题。",
+      "canonical_evidence": "通过段落级优势函数解决偏好强化学习中的时间信用分配问题。",
+      "llm_tldr_en": "PAWS aligns utility training with policy optimization in PbRL by using segment-level advantages, improving long-horizon credit assignment.",
+      "llm_tldr_cn": "基于偏好的强化学习（PbRL）通过人类对轨迹的比较来学习策略，但现有方法在训练效用时使用段落级偏好，策略优化却依赖逐步估计，导致分布偏移和长期信用分配退化。PAWS提出直接利用段落级优势函数进行策略更新，对齐训练与推理，从而保留轨迹级偏好信息并避免不可靠的逐步估计。实验表明，该方法在长期任务中显著提升策略质量，解决了PbRL中的关键时间信用分配问题。",
+      "llm_tldr": "基于偏好的强化学习（PbRL）通过人类对轨迹的比较来学习策略，但现有方法在训练效用时使用段落级偏好，策略优化却依赖逐步估计，导致分布偏移和长期信用分配退化。PAWS提出直接利用段落级优势函数进行策略更新，对齐训练与推理，从而保留轨迹级偏好信息并避免不可靠的逐步估计。实验表明，该方法在长期任务中显著提升策略质量，解决了PbRL中的关键时间信用分配问题。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.11559v1",
+      "source": "arxiv",
+      "title": "HERO: Hindsight-Enhanced Reflection from Environment Observations for Agentic Self-Distillation",
+      "abstract": "Reinforcement learning typically improves multi-turn agent capabilities through the terminal outcome of the trajectories, which makes it difficult to determine credit assignments for each intermediate turns. Recent on-policy self-distillation methods offer a promising alternative by converting privileged feedback into dense token-level supervision through a self-teacher. Our study is motivated by the unexpected performance degradation observed when naively extending this paradigm to multi-turn settings, which we attribute to a lack of alignment between privileged feedback, such as successful trajectories or terminal outcomes, and the student's current decision context. We introduce HERO, a hindsight-enhanced self-distillation framework that uses next environment observations as locally aligned feedback. After each rollout, HERO reflects on the completed interaction to convert each observation into a compact turn-level diagnosis, that captures actionable feedback about the original action such as its necessity, validity or failure cause. On TauBench and WebShop, HERO improves task success and reduces unnecessary turns over environment-feedback-only self-distillation and GRPO. It is especially effective under limited training turn budgets, where successful rollouts are rare and GRPO provides weak reward-contrast signals.",
+      "authors": [
+        "Haoran Liu",
+        "Yuwei Zhang",
+        "Xiyao Li",
+        "Bohan Lyu",
+        "Jingbo Shang"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-06-10T01:35:34+00:00",
+      "link": "https://arxiv.org/pdf/2606.11559v1",
+      "tags": [
+        "keyword:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "directly addresses long-horizon credit assignment in reinforcement learning",
+      "llm_evidence_cn": "直接处理强化学习中的长程信用分配",
+      "llm_evidence": "直接处理强化学习中的长程信用分配",
+      "canonical_evidence": "直接处理强化学习中的长程信用分配",
+      "llm_tldr_en": "Proposes HERO, a hindsight-enhanced self-distillation method that improves credit assignment for each intermediate step in multi-turn agent RL by aligning privileged feedback with the student's context.",
+      "llm_tldr_cn": "针对多轮智能体强化学习中难以将终局奖励分配到中间步骤的问题，提出HERO方法，利用后见增强的自蒸馏将特权反馈与学生决策上下文对齐。通过将成功轨迹作为后见经验进行反思，HERO提供密集的令牌级监督，显著提升了复杂工具使用任务上的策略性能。该方法为长程强化学习中的细粒度信用分配提供了一种有效范式。",
+      "llm_tldr": "针对多轮智能体强化学习中难以将终局奖励分配到中间步骤的问题，提出HERO方法，利用后见增强的自蒸馏将特权反馈与学生决策上下文对齐。通过将成功轨迹作为后见经验进行反思，HERO提供密集的令牌级监督，显著提升了复杂工具使用任务上的策略性能。该方法为长程强化学习中的细粒度信用分配提供了一种有效范式。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.12384v1",
+      "source": "arxiv",
+      "title": "APPO: Agentic Procedural Policy Optimization",
+      "abstract": "Recent advances in agentic Reinforcement Learning (RL) have substantially improved the multi-turn tool-use capabilities of large language model agents. However, most existing methods assign credit over coarse heuristic units, such as tool-call boundaries or fixed workflows, making it difficult to identify which intermediate decisions influence downstream outcomes. In this work, we study agentic RL from two perspectives: \\textit{where to branch and how to assign credit after branching}. Our pilot analysis shows that influential decision points are broadly distributed throughout the generated sequence rather than concentrated at tool calls, while token entropy alone does not reliably reflect their impact on final outcomes. Motivated by these observations, we propose \\textbf{Agentic Procedural Policy Optimization (APPO)}, which shifts branching and credit assignment from coarse interaction units to fine-grained decision points in the sequence. APPO selects branching locations using a Branching Score that combines token uncertainty with policy-induced likelihood gains of subsequent continuations, enabling more targeted exploration while filtering out spurious high-entropy positions. It further introduces procedure-level advantage scaling to better distribute credit across branched rollouts. Experiments on 13 benchmarks show that APPO consistently improves strong agentic RL baselines by nearly 4 points, while keeping efficient tool-calls and maintaining behavior interpretability.",
+      "authors": [
+        "Xucong Wang",
+        "Ziyu Ma",
+        "Yong Wang",
+        "Yuxiang Ji",
+        "Shidong Yang",
+        "Guanhua Chen",
+        "Pengkun Wang",
+        "Xiangxiang Chu"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-06-10T17:47:07+00:00",
+      "link": "https://arxiv.org/pdf/2606.12384v1",
+      "tags": [
+        "keyword:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "studies credit assignment and branching points in agentic RL",
+      "llm_evidence_cn": "研究智能体强化学习中的信用分配与分支点",
+      "llm_evidence": "研究智能体强化学习中的信用分配与分支点",
+      "canonical_evidence": "研究智能体强化学习中的信用分配与分支点",
+      "llm_tldr_en": "Proposes APPO, an agentic RL method that dynamically identifies influential decision points and assigns credit after branching, improving long-horizon tool-use tasks.",
+      "llm_tldr_cn": "针对现有智能体强化学习方法在信用分配时忽略决策分支点的问题，提出APPO方法，通过分析令牌熵动态识别关键步骤，并在分支后分配信用。实验表明APPO在多轮工具使用任务中优于固定工作流的分配策略，为长程决策中的细粒度优化提供了新框架。",
+      "llm_tldr": "针对现有智能体强化学习方法在信用分配时忽略决策分支点的问题，提出APPO方法，通过分析令牌熵动态识别关键步骤，并在分支后分配信用。实验表明APPO在多轮工具使用任务中优于固定工作流的分配策略，为长程决策中的细粒度优化提供了新框架。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.06011v1",
+      "source": "arxiv",
+      "title": "Merging model-based control with multi-agent reinforcement learning for multi-agent cooperative teaming strategies",
+      "abstract": "In this work, we propose a framework that combines multi-agent reinforcement learning (MARL) with model-based control to achieve safe, dynamically feasible actions in cooperative multi-agent tasks. Multi-agent reinforcement learning provides the advantage of learning cooperative policies for multi-agent teams from discrete non-differentiable rewards in a long planning horizon. Model-predictive control is robust and offers safe, dynamically feasible actions in a fast replanning framework for short horizons. We propose an algorithm that extends actor-critic model predictive control for MARL which we refer to as multi-agent actor-critic model predictive control (MA-AC-MPC). We demonstrate the capabilities of this algorithm by applying it to a multi-agent pursuit-evasion scenario. Specifically, we compare the evader team's strategy using the MA-AC-MPC model and a multi-layer perceptron model (MA-AC-MLP). The pursuer team uses augmented proportional navigation as it is accepted as an advanced adversarial control law. We also provide an example with a heterogeneous environment where a drone and omni-wheeled rover cooperate to achieve repeatable and successful landing with 100% success rate in hardware for MA-AC-MPC compared to 60% for MA-AC-MLP. We demonstrate the robustness of the proposed MA-AC-MPC algorithm in hardware for both environments.",
+      "authors": [
+        "Christian Llanes",
+        "Spencer W. Jensen",
+        "Samuel Coogan"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.LG",
+        "cs.MA"
+      ],
+      "published": "2026-06-04T11:01:00+00:00",
+      "link": "https://arxiv.org/pdf/2606.06011v1",
+      "tags": [
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "proposes combining MARL with model-based control for long-horizon reward assignment in cooperative multi-agent tasks",
+      "llm_evidence_cn": "提出结合多智能体强化学习与基于模型的控制，以解决长期奖励分配问题",
+      "llm_evidence": "提出结合多智能体强化学习与基于模型的控制，以解决长期奖励分配问题",
+      "canonical_evidence": "提出结合多智能体强化学习与基于模型的控制，以解决长期奖励分配问题",
+      "llm_tldr_en": "Proposes MA-AC-MPC, an algorithm merging multi-agent RL with model predictive control to achieve safe actions in cooperative multi-agent tasks with long planning horizons, enabling learning from discrete non-differentiable rewards.",
+      "llm_tldr_cn": "该论文针对多智能体协同任务中的长期规划与安全动作挑战，提出将多智能体强化学习（MARL）与模型预测控制（MPC）相结合的MA-AC-MPC算法。该方法在长时域规划中利用离散不可微奖励学习协作策略，同时保证动作的动态可行性与安全性。实验展示了其在合作任务中的有效性，为长时域奖励分配问题提供了新的解决思路。",
+      "llm_tldr": "该论文针对多智能体协同任务中的长期规划与安全动作挑战，提出将多智能体强化学习（MARL）与模型预测控制（MPC）相结合的MA-AC-MPC算法。该方法在长时域规划中利用离散不可微奖励学习协作策略，同时保证动作的动态可行性与安全性。实验展示了其在合作任务中的有效性，为长时域奖励分配问题提供了新的解决思路。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

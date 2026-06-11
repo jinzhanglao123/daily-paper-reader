@@ -6,46 +6,37 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-10
-- 运行时间：2026-06-10 21:58:48 UTC
+- 最新运行日期：2026-06-11
+- 运行时间：2026-06-11 21:58:05 UTC
 - 运行状态：成功
-- 本次总论文数：8
-- 精读区：6
-- 速读区：2
+- 本次总论文数：5
+- 精读区：4
+- 速读区：1
 
 ### 今日简报（AI）
-今日精读聚焦RL驱动网格生成与半导体控制，揭示AI正突破工程仿真与超长流程的自动化天花板。  
-最值得关注的是“多智能体网格生成”与“事件驱动长时域控制”，二者均以9.0高分验证了RL在微观精密制造中的落地潜力。  
-建议读者尽快上手此类任务导向的强化学习框架，尝试将仿真环境与真实产线数据对齐，抢占工业AI的先发优势。
-- 详情：[/202606/10/README](/202606/10/README)
+今日精读两项高分强化学习成果，TRACE框架为智能体训练提供统一算力分配方案，PAWS方法用优势加权片段从偏好中高效学习。  
+两大方向值得跟进：动态计算分配与基于偏好的片段学习正成为提升智能体效率的关键范式。  
+建议关注如何将此类高效训练策略迁移到现实多智能体协作场景。
+- 详情：[/202606/11/README](/202606/11/README)
 
 ### 精读区论文标签
-1. [Dmsh: A Multi-Agent Reinforcement Learning Framework for All-Quad Mesh Generation](/202606/10/2606.10601v1-dmsh-a-multi-agent-reinforcement-learning-framework-for-all-quad-mesh-generation)  
+1. [TRACE: A Unified Rollout Budget Allocation Framework for Efficient Agentic Reinforcement Learning](/202606/11/2606.11119v1-trace-a-unified-rollout-budget-allocation-framework-for-efficient-agentic-reinforcement-learning)  
+   标签：评分：10.0/10、query:uav-drl
+   evidence：直接针对多回合智能体RL中的长时域奖励分配
+2. [PAWS: Preference Learning with Advantage-Weighted Segments](/202606/11/2606.11982v1-paws-preference-learning-with-advantage-weighted-segments)  
    标签：评分：9.0/10、query:uav-drl
-   evidence：实现对混合离散-连续动作空间的高效探索
-2. [Event-Driven Reinforcement Learning Enables Long-Horizon Control in Semiconductor Fabrication](/202606/10/2606.10705v1-event-driven-reinforcement-learning-enables-long-horizon-control-in-semiconductor-fabrication)  
-   标签：评分：9.0/10、query:uav-drl
-   evidence：提出事件驱动深度强化学习解决半导体制造中的长时域控制，直接处理长时域奖励分配问题。
-3. [Bellman-Taylor Score Decoding for Markov Decision Processes with State-Dependent Feasible Action Sets](/202606/10/2606.10979v1-bellman-taylor-score-decoding-for-markov-decision-processes-with-state-dependent-feasible-action-sets)  
-   标签：评分：9.0/10、query:uav-drl
-   evidence：直接解决状态依赖可行动作集的强化学习问题，为DRL提供混合动作空间方法
-4. [Think Like a Pilot: Fine-Grained Long-Horizon UAV Navigation](/202606/10/2606.06836v1-think-like-a-pilot-fine-grained-long-horizon-uav-navigation)  
+   evidence：通过段落级优势函数解决偏好强化学习中的时间信用分配问题。
+3. [HERO: Hindsight-Enhanced Reflection from Environment Observations for Agentic Self-Distillation](/202606/11/2606.11559v1-hero-hindsight-enhanced-reflection-from-environment-observations-for-agentic-self-distillation)  
    标签：评分：8.0/10、query:uav-drl
-   evidence：提出混合长周期无人机导航基准与方法
-5. [Back on Track: Aligning Rewards and States for Reasoning in Diffusion Large Language Models](/202606/10/2606.08501v1-back-on-track-aligning-rewards-and-states-for-reasoning-in-diffusion-large-language-models)  
+   evidence：直接处理强化学习中的长程信用分配
+4. [APPO: Agentic Procedural Policy Optimization](/202606/11/2606.12384v1-appo-agentic-procedural-policy-optimization)  
    标签：评分：8.0/10、query:uav-drl
-   evidence：面向长程推理任务的过程对齐策略优化以改善信用分配
-6. [Embodiment-conditioned Generalist Control for Multirotor Aerial Robots](/202606/10/2606.10857v1-embodiment-conditioned-generalist-control-for-multirotor-aerial-robots)  
-   标签：评分：8.0/10、query:uav-drl
-   evidence：使用近端策略优化（深度强化学习）训练多旋翼通用控制策略，可用于无人机巡检任务。
+   evidence：研究智能体强化学习中的信用分配与分支点
 
 ### 速读区论文标签
-1. [AgenticRL: Self-Refining Agentic Reinforcement Learning for Vision-Conditioned UAV Navigation](/202606/10/2606.03963v3-agenticrl-self-refining-agentic-reinforcement-learning-for-vision-conditioned-uav-navigation)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：为无人机强化学习导航自动化奖励设计，可支持长周期奖励分配
-2. [Uncertainty-Aware LLM-Guided Policy Shaping for Sparse-Reward Reinforcement Learning](/202606/10/2606.06673v1-uncertainty-aware-llm-guided-policy-shaping-for-sparse-reward-reinforcement-learning)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：通过LLM引导策略塑造解决稀疏奖励/长时域RL挑战，与长时域奖励分配相关
+1. [Merging model-based control with multi-agent reinforcement learning for multi-agent cooperative teaming strategies](/202606/11/2606.06011v1-merging-model-based-control-with-multi-agent-reinforcement-learning-for-multi-agent-cooperative-teaming-strategies)  
+   标签：评分：7.0/10、query:uav-drl
+   evidence：提出结合多智能体强化学习与基于模型的控制，以解决长期奖励分配问题
 
 
 <div class="dpr-home-promo-card">
