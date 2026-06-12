@@ -6,37 +6,31 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-11
-- 运行时间：2026-06-11 21:58:05 UTC
+- 最新运行日期：2026-06-12
+- 运行时间：2026-06-12 20:50:44 UTC
 - 运行状态：成功
-- 本次总论文数：5
-- 精读区：4
-- 速读区：1
+- 本次总论文数：3
+- 精读区：1
+- 速读区：2
 
 ### 今日简报（AI）
-今日精读两项高分强化学习成果，TRACE框架为智能体训练提供统一算力分配方案，PAWS方法用优势加权片段从偏好中高效学习。  
-两大方向值得跟进：动态计算分配与基于偏好的片段学习正成为提升智能体效率的关键范式。  
-建议关注如何将此类高效训练策略迁移到现实多智能体协作场景。
-- 详情：[/202606/11/README](/202606/11/README)
+今日研读聚焦于自进化机器人操作与多模态感知，精读了通过分阶段奖励模型让机械臂自我改进的 SARM2，速览了无人机端多模态融合检测和遥感零样本分割。  
+最值得关注的是 SARM2 提出的阶段感知奖励建模，它将复杂操作拆解为子阶段并分别训练奖励，有效缓解了稀疏反馈下的学习难题。  
+建议机器人/具身智能读者深入阅读 SARM2 的 Stage-Aware 设计，CV 方向则可跟进无人机多模态轻量化融合的思路。
+- 详情：[/202606/12/README](/202606/12/README)
 
 ### 精读区论文标签
-1. [TRACE: A Unified Rollout Budget Allocation Framework for Efficient Agentic Reinforcement Learning](/202606/11/2606.11119v1-trace-a-unified-rollout-budget-allocation-framework-for-efficient-agentic-reinforcement-learning)  
-   标签：评分：10.0/10、query:uav-drl
-   evidence：直接针对多回合智能体RL中的长时域奖励分配
-2. [PAWS: Preference Learning with Advantage-Weighted Segments](/202606/11/2606.11982v1-paws-preference-learning-with-advantage-weighted-segments)  
-   标签：评分：9.0/10、query:uav-drl
-   evidence：通过段落级优势函数解决偏好强化学习中的时间信用分配问题。
-3. [HERO: Hindsight-Enhanced Reflection from Environment Observations for Agentic Self-Distillation](/202606/11/2606.11559v1-hero-hindsight-enhanced-reflection-from-environment-observations-for-agentic-self-distillation)  
+1. [SARM2: Multi-Task Stage Aware Reward Modeling for Self Improving Robotic Manipulation](/202606/12/2606.10305v1-sarm2-multi-task-stage-aware-reward-modeling-for-self-improving-robotic-manipulation)  
    标签：评分：8.0/10、query:uav-drl
-   evidence：直接处理强化学习中的长程信用分配
-4. [APPO: Agentic Procedural Policy Optimization](/202606/11/2606.12384v1-appo-agentic-procedural-policy-optimization)  
-   标签：评分：8.0/10、query:uav-drl
-   evidence：研究智能体强化学习中的信用分配与分支点
+   evidence：提出多任务阶段感知奖励模型，为长程任务提供稠密、精确、通用的奖励
 
 ### 速读区论文标签
-1. [Merging model-based control with multi-agent reinforcement learning for multi-agent cooperative teaming strategies](/202606/11/2606.06011v1-merging-model-based-control-with-multi-agent-reinforcement-learning-for-multi-agent-cooperative-teaming-strategies)  
-   标签：评分：7.0/10、query:uav-drl
-   evidence：提出结合多智能体强化学习与基于模型的控制，以解决长期奖励分配问题
+1. [CAMF-Det: Closure-Aware Multimodal Fusion for LiDAR-Camera 3D Object Detection on UAV Platforms](/202606/12/2606.09143v1-camf-det-closure-aware-multimodal-fusion-for-lidar-camera-3d-object-detection-on-uav-platforms)  
+   标签：评分：6.0/10、query:uav-drl
+   evidence：无人机平台多模态3D目标检测以处理遮挡
+2. [ZODS-RS -- Zero-training Oriented Detection & Segmentation for Remote Sensing](/202606/12/2606.10769v1-zods-rs----zero-training-oriented-detection--segmentation-for-remote-sensing)  
+   标签：评分：6.0/10、query:uav-drl
+   evidence：面向无人机遥感图像的零样本检测与分割
 
 
 <div class="dpr-home-promo-card">

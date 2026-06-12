@@ -1,0 +1,136 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-12T20:46:27.282857+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2606.10305v1",
+      "source": "arxiv",
+      "title": "SARM2: Multi-Task Stage Aware Reward Modeling for Self Improving Robotic Manipulation",
+      "abstract": "Fine-tuning vision-language-action (VLA) policies for long-horizon manipulation still relies heavily on behavior cloning, which requires costly high-quality demonstrations and keeps policies near the demonstration distribution. Reward models can reduce this dependence by reweighting demonstrations and providing dense supervision for on-robot reinforcement learning (RL), but they must be dense, accurate, and general. Existing methods fall short: task-specific stage-aware models are accurate but require per-task annotations, while general vision-language-model (VLM) reward models are broadly applicable but too coarse for fine-grained long-horizon progress. We introduce RM, a multi-task stage-aware reward model that combines an action-primitive-based stage estimator with a multi-gate Mixture-of-Experts (MMoE) value head to produce dense per-step rewards across manipulation tasks. Building on RM, we further propose SPIRAL (Self-Policy Improvement via Reward-Aligned Learning), an on-policy reward-guided framework that improves VLA policies from cheap autonomous rollouts. On a 10-task benchmark, RM reduces value-estimation MSE by 80% over the strongest baselines; when used in SPIRAL, it improves task success from around 50% to near-perfect performance on Folding Shorts (58% to 100%) and Cleaning Whiteboard (50% to 90%), showing that high-quality dense rewards are key to a stable robot data flywheel. Project website: https://qianzhong-chen.github.io/sarm2.github.io/.",
+      "authors": [
+        "Qianzhong Chen",
+        "Hau Zheng",
+        "Justin Yu",
+        "Suning Huang",
+        "Jiankai Sun",
+        "Ken Goldberg",
+        "Chuan Wen",
+        "Pieter Abbeel",
+        "Yide Shentu",
+        "Philipp Wu",
+        "Mac Schwager"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-06-09T01:46:23+00:00",
+      "link": "https://arxiv.org/pdf/2606.10305v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "proposes multi-task stage-aware reward model for dense, accurate, general rewards in long-horizon tasks",
+      "llm_evidence_cn": "提出多任务阶段感知奖励模型，为长程任务提供稠密、精确、通用的奖励",
+      "llm_evidence": "提出多任务阶段感知奖励模型，为长程任务提供稠密、精确、通用的奖励",
+      "canonical_evidence": "提出多任务阶段感知奖励模型，为长程任务提供稠密、精确、通用的奖励",
+      "llm_tldr_en": "Proposes a multi-task stage-aware reward model that generates dense, accurate, and general rewards for long-horizon robotic manipulation, reducing reliance on costly demonstrations and improving policy learning efficiency.",
+      "llm_tldr_cn": "针对长程操作中奖励模型密度、精度与泛化性不足的问题，本文提出多任务阶段感知奖励模型SARM2，利用动作基元和阶段信息生成稠密且准确的奖励信号，用于机器人操作的强化学习微调。实验表明该方法能有效减少对高质量演示的依赖并提升长程任务的学习效率，为长程强化学习的奖励分配提供了有效框架。",
+      "llm_tldr": "针对长程操作中奖励模型密度、精度与泛化性不足的问题，本文提出多任务阶段感知奖励模型SARM2，利用动作基元和阶段信息生成稠密且准确的奖励信号，用于机器人操作的强化学习微调。实验表明该方法能有效减少对高质量演示的依赖并提升长程任务的学习效率，为长程强化学习的奖励分配提供了有效框架。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.09143v1",
+      "source": "arxiv",
+      "title": "CAMF-Det: Closure-Aware Multimodal Fusion for LiDAR-Camera 3D Object Detection on UAV Platforms",
+      "abstract": "Multimodal 3D object detection based on LiDAR and cameras has demonstrated excellent performance in ground-vehicle scenarios, but has not been explored for Unmanned Aerial Vehicle (UAV) platforms. In UAV top-down scenes, frequent groundobject occlusion dominated by tree canopies causes spatially varying and modality-dependent information degradation. Existing multimodal fusion frameworks neither explicitly model such ground-object occlusion nor embed occlusion awareness into the detection pipeline, limiting their performance in occluded UAV scenes. To address these challenges, we propose CAMF-Det, a closure-aware multimodal fusion framework for LiDAR-camera 3D object detection on UAV platforms, which derives dual-modal occlusion intensity through physics-inspired modeling and embeds them as priors throughout the detection pipeline. First, a dual-modal closure modeling module explicitly constructs occlusion intensity ground truth for both modalities offline via a Beer-Lambert-inspired formulation and building-mask correction. Second, using these ground-truth maps as supervision, a dual-modal prediction network converts the offline modeling results into online occlusion intensity predictions under single-frame inference. Third, both ground-truth and predicted occlusion intensity are injected into data augmentation, feature encoding, multimodal fusion, and detection head, enabling adaptive detection under spatially varying and modality-dependent information degradation. Experiments on two self-built UAV-based multimodal datasets, SI3D-DI and SI3D-DII, demonstrate that CAMF-Det achieves the best performance across all difficulty levels, with hard-level mAP$_{\\mathrm{BEV}}$ improvements of 9.43% and 4.88% over the best competing methods, respectively. These results confirm the effectiveness of explicit occlusion prior modeling and exploitation for robust multimodal 3D detection in UAV scenes.",
+      "authors": [
+        "Yanze Jiang",
+        "Yanfeng Gu",
+        "Xian Li"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-08T07:40:17+00:00",
+      "link": "https://arxiv.org/pdf/2606.09143v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "multimodal 3D object detection from UAV platforms to handle occlusion",
+      "llm_evidence_cn": "无人机平台多模态3D目标检测以处理遮挡",
+      "llm_evidence": "无人机平台多模态3D目标检测以处理遮挡",
+      "canonical_evidence": "无人机平台多模态3D目标检测以处理遮挡",
+      "llm_tldr_en": "Proposes CAMF-Det, a closure-aware multimodal fusion framework for LiDAR-camera 3D object detection on UAV platforms, explicitly modeling ground-object occlusion under tree canopies.",
+      "llm_tldr_cn": "针对无人机俯视场景中树冠遮挡导致地面目标信息退化、现有多模态融合方法忽视这一问题，提出封闭感知多模态融合框架CAMF-Det。该方法通过推导双模态遮挡估计并嵌入检测管道，利用激光雷达和相机的互补数据，显著提升了遮挡场景下的3D目标检测性能。在无人机数据集上的实验验证了其对遮挡的鲁棒性。",
+      "llm_tldr": "针对无人机俯视场景中树冠遮挡导致地面目标信息退化、现有多模态融合方法忽视这一问题，提出封闭感知多模态融合框架CAMF-Det。该方法通过推导双模态遮挡估计并嵌入检测管道，利用激光雷达和相机的互补数据，显著提升了遮挡场景下的3D目标检测性能。在无人机数据集上的实验验证了其对遮挡的鲁棒性。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "transmission line defect detection from UAV imagery",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.10769v1",
+      "source": "arxiv",
+      "title": "ZODS-RS -- Zero-training Oriented Detection & Segmentation for Remote Sensing",
+      "abstract": "Remote-sensing and UAV applications need models that generalize across platforms and viewpoints without task-specific training. Yet training-free pipelines often falter on oriented geometry, scale/rotation variation, and crowded ports or airfields, and rarely unify detection and segmentation. We introduce ZODS-RS, a training-free, closed-form pipeline that outputs horizontal boxes (HBB) and instance masks. Built on DINOv3 dense features and SAM-style proposals, ZODS-RS chains: PP (prototype purification via Tyler covariance), R-SEM (rotation-scale equivariant matching with separable kernels and global Hungarian assignment), and UAM (uncertainty-aware pixelwise merging with adaptive priors and optional negative prototypes). A lightweight CWLA fuses multiple DINOv3 layers. On FAIR1M (HBB) we obtain $\\mathrm{mAP}_{0.50:0.95}=\\mathbf{13.06}$ and $\\mathrm{AP}_S=\\mathbf{2.93}$ \\emph{(class-averaged over ship/airplane)}; on xView (HBB) we report $\\mathrm{mAP}=\\mathbf{16.69}$. On our UAV dataset, ZODS-RS achieves mask $\\mathrm{mIoU}=\\mathbf{31.10}$ and improves small-object AP by $\\mathbf{+30.70}$ over Grounded-SAM on a single 5090. This work offers a unified, \\emph{no-training} solution for horizontal-box detection plus instance segmentation in aerial imagery; provides explicit closed-form formulations for PP/R-SEM/UAM tightly coupled with DINOv3; and demonstrates \\emph{consistent} gains on small and crowded targets and under cross-domain shifts while keeping deployment simple.",
+      "authors": [
+        "Zuan Gu",
+        "Tianhan Gao",
+        "Langxu Zhao"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-09T12:24:55+00:00",
+      "link": "https://arxiv.org/pdf/2606.10769v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "zero-shot detection and segmentation for UAV remote sensing imagery",
+      "llm_evidence_cn": "面向无人机遥感图像的零样本检测与分割",
+      "llm_evidence": "面向无人机遥感图像的零样本检测与分割",
+      "canonical_evidence": "面向无人机遥感图像的零样本检测与分割",
+      "llm_tldr_en": "Presents a training-free detection and segmentation pipeline for remote sensing and UAV imagery, using DINOv3 features, rotation-scale equivariant matching, and uncertainty-aware merging, achieving strong cross-platform generalization.",
+      "llm_tldr_cn": "针对遥感和无人机应用中缺乏任务特定训练时模型泛化差的问题，提出免训练的定向检测与分割流水线ZODS-RS。该方法基于DINOv3密集特征，通过原型提纯、旋转-尺度等变匹配和不确定性感知像素合并，无需训练即可处理方向几何和尺度旋转变化。在拥挤港口、机场等场景的实验表明，其跨平台泛化能力强，有效解决了训练数据不足的困境。",
+      "llm_tldr": "针对遥感和无人机应用中缺乏任务特定训练时模型泛化差的问题，提出免训练的定向检测与分割流水线ZODS-RS。该方法基于DINOv3密集特征，通过原型提纯、旋转-尺度等变匹配和不确定性感知像素合并，无需训练即可处理方向几何和尺度旋转变化。在拥挤港口、机场等场景的实验表明，其跨平台泛化能力强，有效解决了训练数据不足的困境。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "transmission line defect detection from UAV imagery",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
