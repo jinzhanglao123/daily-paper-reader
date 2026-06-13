@@ -1,0 +1,228 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-13T20:45:46.072643+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 4,
+    "quick_skim_target": 11,
+    "quick_selected": 4
+  },
+  "deep_dive": [
+    {
+      "id": "2606.08815v1",
+      "source": "arxiv",
+      "title": "Momentum for Reasoning: Dense Intrinsic Signals in Policy Optimization",
+      "abstract": "Reinforcement learning with verifiable rewards (RLVR) has emerged as a powerful paradigm for eliciting long-chain reasoning in large language models. However, existing methods based on Group Relative Policy Optimization (GRPO) rely on a binary outcome reward, which induces two structural failure modes: Zero-Advantage Collapse, in which all rollouts in a group share the same outcome and the gradient vanishes, and Hallucinated Certainty, in which the model becomes increasingly confident on incorrect rollouts late in training. We address both modes by densifying the reward with intrinsic signals computed entirely from the policy's own conditional probabilities, and propose ISPO (Intrinsic Signal Policy Optimization, which combines a sequence-level signal measuring how informative the thinking trajectory is for the final answer, with a token-level directional reward whose hallucinated-certainty hinge penalizes confidently-wrong predictions at critical decision tokens. Across three base models and five mathematical reasoning benchmarks, ISPO consistently outperforms competitive baselines, with the largest gains on the hardest benchmarks where zero-advantage collapse is most frequent, and training-dynamics diagnostics confirm that both failure modes are decreased.",
+      "authors": [
+        "Hao Chen",
+        "Zhanming Shen",
+        "Liyao Li",
+        "Yanyu Chen",
+        "Xuhang Zhu",
+        "Xiaomeng Hu",
+        "Qi Zhang",
+        "Ru Peng",
+        "Xiaoyu Shen",
+        "Haobo Wang",
+        "Junbo Zhao"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.CL",
+        "cs.LG"
+      ],
+      "published": "2026-06-07T20:08:36+00:00",
+      "link": "https://arxiv.org/pdf/2606.08815v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 10.0,
+      "llm_evidence_en": "Proposes ISPO to densify rewards in long-horizon RL tasks",
+      "llm_evidence_cn": "提出ISPO方法，通过内在信号解决长时域强化学习的奖励稀疏问题",
+      "llm_evidence": "提出ISPO方法，通过内在信号解决长时域强化学习的奖励稀疏问题",
+      "canonical_evidence": "提出ISPO方法，通过内在信号解决长时域强化学习的奖励稀疏问题",
+      "llm_tldr_en": "ISPO addresses reward sparsity in long-horizon RL by densifying rewards with intrinsic signals from policy probabilities, mitigating zero-advantage collapse and hallucinated certainty.",
+      "llm_tldr_cn": "在长时域强化学习中，基于组相对策略优化（GRPO）的方法依赖二元结果奖励，容易导致零优势坍缩和幻觉确定性。ISPO通过从策略的条件概率中提取序列级和词元级的内在信号，对奖励进行稠密化处理，从而缓解这些失效模式。实验表明ISPO在数学推理任务上优于GRPO，显著提升准确率和训练稳定性，证明了内在信号在长时域奖励分配中的关键作用。",
+      "llm_tldr": "在长时域强化学习中，基于组相对策略优化（GRPO）的方法依赖二元结果奖励，容易导致零优势坍缩和幻觉确定性。ISPO通过从策略的条件概率中提取序列级和词元级的内在信号，对奖励进行稠密化处理，从而缓解这些失效模式。实验表明ISPO在数学推理任务上优于GRPO，显著提升准确率和训练稳定性，证明了内在信号在长时域奖励分配中的关键作用。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.09081v1",
+      "source": "arxiv",
+      "title": "Edge-Constrained UAV Small-Object Detection with P2 Enhancement and Quantum-Inspired Lightweight Structure Search",
+      "abstract": "Unmanned aerial vehicle (UAV) object detection requires compact detectors that retain small-object details under onboard computation and memory constraints. Repeated downsampling inlightweight networks weakens shallow spatial information, while manually adding attention orfusion modules may increase cost without stable gains. This study analyzes YOLOX-Nano underedge-deployment constraints by combining a P2 high-resolution detection branch with a quantum-inspired evolutionary algorithm (QIEA) for lightweight structure screening. The search space isdefined by lightweight priority and task specificity, and the evaluation jointly considers accuracy,floating-point operations (FLOPs), latency, memory consumption, and recall. On VisDrone, theP2 branch increases APamall by 31.10% over the YOLOX-Nano baseline. Compared with NanoDet-Plus with similar model size, YOLOX-Nano+-P2 improves APs0.ss by 17.5% and APamal by 44.9%.The QIEA-selected candidate obtains the highest Recallso, but +P2 remains the strongest AP-oriented variant after full training. Full 100-epoch verification of Random-best, GA-best, andSA/QUBO-best candidates further shows that proxy rankings do not necessarily transfer to finalAPse9s. These results support using P2 as the main small-object enhancement path and QIEA as alightweight tool for candidate screening and accuracy-cost analysis. The source code, configurationfiles, diagnostic scripts, and summarized results are available at https://github.com/Ming23233/UAV-QIEA-Edge-Detection",
+      "authors": [
+        "Wuming Lei",
+        "Yanbin Gao",
+        "Mingyan Sun",
+        "Xiaobin Li",
+        "Xuechen Liang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-08T06:27:58+00:00",
+      "link": "https://arxiv.org/pdf/2606.09081v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "UAV small-object detection method applicable to transmission line defect detection",
+      "llm_evidence_cn": "无人机小目标检测方法可用于输电线路缺陷检测",
+      "llm_evidence": "无人机小目标检测方法可用于输电线路缺陷检测",
+      "canonical_evidence": "无人机小目标检测方法可用于输电线路缺陷检测",
+      "llm_tldr_en": "Proposes a lightweight UAV object detector with P2 enhancement and quantum-inspired search, suitable for onboard defect detection on transmission lines.",
+      "llm_tldr_cn": "针对边缘计算约束下的无人机小目标检测，提出融合P2高分辨率检测分支和量子启发进化算法的方法，在保持精度的同时优化轻量化结构，可用于输电线路缺陷检测，提升无人机巡检效率。",
+      "llm_tldr": "针对边缘计算约束下的无人机小目标检测，提出融合P2高分辨率检测分支和量子启发进化算法的方法，在保持精度的同时优化轻量化结构，可用于输电线路缺陷检测，提升无人机巡检效率。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "transmission line defect detection from UAV imagery",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.07855v1",
+      "source": "arxiv",
+      "title": "Path Planning Using Deep Deterministic Policy Gradient: A Reinforcement Learning Approach",
+      "abstract": "Path-planning for autonomous vehicles in threat-laden environments is a fundamental challenge because the problem is nonlinear and nonconvex even in simplest scenarios. While traditional optimal control methods can be used to find ideal paths, the computational time is often too slow for real-time decision-making. To solve this challenge, we propose a method based on Deep Deterministic Policy Gradient (DDPG) and model the threat as possibly multiple circular 'no-go' zones. A mission is regarded as a failure if the vehicle enters this restricted zone at any time or does not reach a neighborhood of the destination. The DDPG agent is trained through trial and error in a simulated environment, learning a direct mapping from its current state (position and heading) to a series of feasible actions that guide the agent to safely reach its destination. The reword function has three parts: (a) an attractive field centered at the final destination, (b) some repulsive fields centered at the origins of circular obstacles, and (c) a penalty of control energy consumption (the magnitude of heading change) that indirectly in favor for straight path. The DDPG trains the agent using these incentives to find the largest possible set of starting points wherein a safe path to the destination is guaranteed. This provides critical information for mission planning, showing beforehand whether a task is achievable from a given starting point, assisting pre-mission planning activities. The approach is validated in simulation. A comparison between the DDPG method and a traditional optimal control (pseudo-spectral) method is carried out. The results show that the learning-based agent produces effective paths while being significantly faster, making it a better fit for real-time applications.",
+      "authors": [
+        "Qiang Le",
+        "Yaguang Yang",
+        "Isaac E. Weintraub"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "math.OC"
+      ],
+      "published": "2026-06-05T21:35:54+00:00",
+      "link": "https://arxiv.org/pdf/2606.07855v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "DRL (DDPG) path planning method generalizable to UAV inspection",
+      "llm_evidence_cn": "基于DDPG的深度强化学习路径规划方法可推广至无人机巡检",
+      "llm_evidence": "基于DDPG的深度强化学习路径规划方法可推广至无人机巡检",
+      "canonical_evidence": "基于DDPG的深度强化学习路径规划方法可推广至无人机巡检",
+      "llm_tldr_en": "Proposes a DDPG-based method for path planning in threat environments, enabling real-time decision-making; the approach can serve as a module for UAV inspection route optimization.",
+      "llm_tldr_cn": "针对自主车辆在威胁环境中路径规划的非线性非凸难题，提出基于深度确定性策略梯度(DDPG)的强化学习方法。在仿真中训练智能体学习从状态到控制的映射，避免传统最优控制实时性差的缺陷。实验表明该方法能在线生成安全路径，为无人机巡检路径规划提供了可迁移的DRL模块。",
+      "llm_tldr": "针对自主车辆在威胁环境中路径规划的非线性非凸难题，提出基于深度确定性策略梯度(DDPG)的强化学习方法。在仿真中训练智能体学习从状态到控制的映射，避免传统最优控制实时性差的缺陷。实验表明该方法能在线生成安全路径，为无人机巡检路径规划提供了可迁移的DRL模块。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "deep reinforcement learning for UAV inspection tasks",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.08656v1",
+      "source": "arxiv",
+      "title": "From Player to Master: Enhancing Test-Time Learning of LLM Agents via Reinforcement Learning over Memory",
+      "abstract": "Large language model (LLM) agents are increasingly deployed in long-running settings where improving through experience at test time becomes important. A common approach is to update an explicit memory after each interaction to guide future decisions. However, most existing methods rely on hand-designed prompting rules, making it difficult to align memory updates with downstream objectives over multi-step horizons consistently. We propose MemoPilot, a plug-in memory copilot that explicitly trains the memory update process to improve a frozen LLM's performance across sequential interactions. We formulate memory updating as a multi-turn decision problem and optimize it end-to-end with multi-turn GRPO. Our training recipe introduces (i) a turn-wise reward signal and (ii) a context-independent, turn-level advantage estimation across rollouts, enabling finer-grained credit assignment and more stable training in multi-turn settings. We evaluate MemoPilot on two testbeds: multi-round Rock-Paper-Scissors (RPS) and Limit Texas Hold'em (LHE). Across both environments, MemoPilot substantially improves test-time learning of a frozen player over strong baselines, ranking first in Elo ratings on both games (1762 on LHE and 1590 on RPS) and outperforming all baseline memory methods and proprietary models, including DeepSeek-V3.2.",
+      "authors": [
+        "Yishuo Cai",
+        "Xingyu Guo",
+        "Xuancheng Huang",
+        "Jinhua Du",
+        "Can Huang",
+        "Wenxuan Huang",
+        "Wenhan Ma",
+        "Yuyang Hu",
+        "Aohan Zeng",
+        "Jie Tang",
+        "Xu Sun"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-06-07T14:53:19+00:00",
+      "link": "https://arxiv.org/pdf/2606.08656v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Trains memory update policy with multi-turn RL for long-horizon credit assignment in LLM agents",
+      "llm_evidence_cn": "用多轮强化学习训练记忆更新策略，实现LLM智能体长时域信用分配",
+      "llm_evidence": "用多轮强化学习训练记忆更新策略，实现LLM智能体长时域信用分配",
+      "canonical_evidence": "用多轮强化学习训练记忆更新策略，实现LLM智能体长时域信用分配",
+      "llm_tldr_en": "Proposes MemoPilot, which formulates memory updating as a multi-turn RL problem to align memory updates with downstream objectives. Trained via multi-turn GRPO, it improves a frozen LLM's performance across sequential interactions, demonstrating effective long-horizon credit assignment for memory-based agents.",
+      "llm_tldr_cn": "该论文针对LLM智能体在长时域交互中手工记忆更新规则难以对齐下游目标的局限，提出MemoPilot，将记忆更新形式化为多轮决策问题，并使用多轮GRPO端到端优化。通过在多个多轮任务上训练记忆更新策略，显著提升了冻结LLM的持续交互性能，为解决长时域信用分配提供了一种实用方法。",
+      "llm_tldr": "该论文针对LLM智能体在长时域交互中手工记忆更新规则难以对齐下游目标的局限，提出MemoPilot，将记忆更新形式化为多轮决策问题，并使用多轮GRPO端到端优化。通过在多个多轮任务上训练记忆更新策略，显著提升了冻结LLM的持续交互性能，为解决长时域信用分配提供了一种实用方法。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.08708v1",
+      "source": "arxiv",
+      "title": "PRPO: Perception-Reinforced Policy Optimization via Token-Level Dynamic Advantage Reshaping",
+      "abstract": "Reinforcement Learning with Verifiable Rewards (RLVR) has become an effective paradigm for improving the reasoning capability of Large Vision-Language Models (LVLMs). However, existing RLVR methods primarily rely on trajectory-level outcome rewards, which assign identical learning signals across all generated tokens. This coarse-grained credit assignment is fundamentally mismatched to multimodal reasoning, where only a sparse subset of tokens is causally grounded in visual evidence. Consequently, these pivotal perceptual tokens receive weak supervision and are often overwhelmed by language priors or reasoning-template tokens. To address this limitation, we propose Perception-Reinforced Policy Optimization (PRPO), a token-level reinforcement learning framework that explicitly identifies and reinforces pivotal perceptual tokens within long-horizon multimodal reasoning trajectories. PRPO introduces Robust Visual Dependency (RVD), a principled metric that identifies tokens whose predictions are both visually grounded and perturbation-stable, filtering out brittle or noisy visual tokens. Based on RVD, we further propose Perceptual Advantage Reshaping (PAR), a token-level credit assignment technique that amplifies perceptually informative tokens while preserving stable gradients for non-perceptual tokens. Extensive experiments on seven multimodal reasoning benchmarks demonstrate that PRPO consistently outperforms strong LVLM baselines across both 3B and 7B model scales, achieving average gains of 23.3% and 21.1%, respectively. PRPO achieves state-of-the-art performance with improved training efficiency and stronger cross-task generalization. Our findings highlight the importance of fine-grained credit assignment for scalable multimodal reinforcement learning.",
+      "authors": [
+        "Qiming Li",
+        "Tianlun Li",
+        "Xiaolong Cheng",
+        "Hangyu Li",
+        "Ruiyan Gong",
+        "Kangning Niu",
+        "Kaitao Jiang",
+        "Mu Xu"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-06-07T16:06:29+00:00",
+      "link": "https://arxiv.org/pdf/2606.08708v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Proposes token-level dynamic advantage reshaping for credit assignment in RLVR, relevant to long-horizon reward assignment.",
+      "llm_evidence_cn": "提出令牌级动态优势重塑方法，用于RLVR中的信用分配，与长周期奖励分配相关。",
+      "llm_evidence": "提出令牌级动态优势重塑方法，用于RLVR中的信用分配，与长周期奖励分配相关。",
+      "canonical_evidence": "提出令牌级动态优势重塑方法，用于RLVR中的信用分配，与长周期奖励分配相关。",
+      "llm_tldr_en": "PRPO introduces token-level dynamic advantage reshaping to improve credit assignment in RLVR for LVLMs, strengthening perceptual tokens. Experiments show improved multimodal reasoning. This fine-grained credit assignment approach can be applied to other long-sequence RL tasks like UAV inspection.",
+      "llm_tldr_cn": "PRPO针对多模态推理中轨迹级奖励分配的局限性，提出了一种令牌级动态优势重塑方法。通过量化每个令牌的感知相关性并据此调整优势权重，该方法使视觉因果令牌获得更精准的监督信号，缓解了语言先验的干扰。实验表明，PRPO在多个LVLM推理基准上显著优于现有方法，并提升了训练稳定性。其细粒度信用分配思想可推广至其他长周期序列决策任务，如无人机巡检中的长时程奖励分配问题。该方法无需外部知识，仅通过动态重塑内部优势信号即实现感知强化，为长序列RL中的信用分配提供了轻量级解决方案。",
+      "llm_tldr": "PRPO针对多模态推理中轨迹级奖励分配的局限性，提出了一种令牌级动态优势重塑方法。通过量化每个令牌的感知相关性并据此调整优势权重，该方法使视觉因果令牌获得更精准的监督信号，缓解了语言先验的干扰。实验表明，PRPO在多个LVLM推理基准上显著优于现有方法，并提升了训练稳定性。其细粒度信用分配思想可推广至其他长周期序列决策任务，如无人机巡检中的长时程奖励分配问题。该方法无需外部知识，仅通过动态重塑内部优势信号即实现感知强化，为长序列RL中的信用分配提供了轻量级解决方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
