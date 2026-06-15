@@ -1,0 +1,24 @@
+{
+  "label": "2026-06-15",
+  "date": "2026-06-15",
+  "generated_at": "2026-06-15T22:51:03",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202606/15/2606.11419v1-a-modular-dual-camera-pipeline-for-micro-inspection-using-aerial-robots",
+      "section": "quick",
+      "title_en": "A Modular Dual-Camera Pipeline for Micro-Inspection Using Aerial Robots",
+      "authors": "S. H. Mirtajadini, N. Rublein, R. M. Ramakrishnan, G. ter Maat, M. Aldibaja, A. Y. Mersha",
+      "date": "2026-06-09",
+      "pdf": "https://arxiv.org/pdf/2606.11419v1",
+      "score": "6.0",
+      "evidence": "通用无人机微检测流水线，可适用于电力线巡检",
+      "tldr": "现有无人机检测系统难以在安全距离下捕获微小目标细节，依赖目标几何先验及复杂路径，易受扰动和定位误差影响导致视野丢失。本文提出一种模块化双摄像头微检测流水线，集成变焦云台相机实现远距离精细成像，并搭配宽视场立体相机进行目标表面估计与区域划分，结合视觉反馈抑制机身运动。仿真表明覆盖鲁棒性提升，实地实验中成功检测橡树毛虫卵与温室粉虱，获得高细节图像。该流程基于ROS 2开源，可替换检测模块以适配不同微观检查任务。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Most existing drone-based inspection systems require the drone to fly dangerously close to the target or follow complex flight paths to capture small details. In addition, drone flight is affected by disturbances and localization inaccuracies, which can cause the drone to lose sight of its supposed target when it has a narrow view. Furthermore, trajectory planning often requires prior information about the target's geometry, position, and orientation, which is not always available for non-structural targets such as trees, vehicles, or people. To address these challenges, this paper presents aerial_micro_inspection, a generic pipeline for aerial micro-inspection across different use cases. The pipeline assumes a PX4-powered drone equipped with two cameras: (i) a zoomed, gimbal-mounted inspection camera that captures fine details without requiring the drone to fly very close to the target, and (ii) a wide-field-of-view stereo navigation camera that acquires the target surface on site, estimates its range, and partitions it into smaller inspection regions. In addition, a vision-based feedback loop compensates for drone motion while the inspection camera visits small partitions of a larger surface. We evaluate the pipeline in simulation and real-world experiments, mainly in two use-case scenarios: tree inspection for detecting oak processionary caterpillars and their eggs, and greenhouse inspection of sticky traps for detecting whiteflies. The results show improved coverage robustness under drone disturbances in simulation, as well as effective detection of caterpillars and eggs and high-detail imaging of insects in real-world experiments. The pipeline is open-source, developed in ROS 2, and can be adapted to new applications by replacing the surface-segmentation and micro-target detection checkpoints. The code is available at: https://github.com/SaxionMechatronics/aerial_micro_inspection",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

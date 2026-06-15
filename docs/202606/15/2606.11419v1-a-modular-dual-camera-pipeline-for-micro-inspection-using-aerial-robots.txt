@@ -1,0 +1,513 @@
+Title: A Modular Dual-Camera Pipeline for Micro-Inspection Using Aerial Robots
+
+URL Source: https://arxiv.org/pdf/2606.11419v1
+
+Published Time: Thu, 11 Jun 2026 00:17:08 GMT
+
+Number of Pages: 9
+
+Markdown Content:
+# A Modular Dual-Camera Pipeline for Micro-Inspection Using Aerial Robots 
+
+Seyed Hojat Mirtajadini 1, Nils Rublein 2, Rahul Moongayil Ramakrishnan 3,Gerjen ter Maat 4, Mohammad Aldibaja 5, Abeje Yenehun Mersha 6
+
+> 1,2,3,4,6
+
+Smart Mechatronics and Robotics (SMART) Research Group ,
+
+Saxion University of Applied Sciences , Enschede, The Netherlands 
+
+> 5
+
+Faculty of Science and Engineering , University of Groningen , The Netherlands 
+
+> 1
+
+s.h.mirtajadinigoki@saxion.nl, 2n.rublein@saxion.nl, 3r.moongayilramakrishnan@saxion.nl, 
+
+> 4
+
+g.j.termaat@saxion.nl, 5m.aldibaja@rug.nl, 6a.y.mersha@saxion.nl 
+
+Abstract —Most existing drone-based inspection systems re-quire the drone to fly dangerously close to the target or follow complex flight paths to capture small details. In addi-tion, drone flight is affected by disturbances and localization inaccuracies, which can cause the drone to lose sight of its supposed target when it has a narrow view. Furthermore, trajectory planning often requires prior information about the target’s geometry, position, and orientation, which is not al-ways available for non-structural targets such as trees, vehicles, or people. To address these challenges, this paper presents 
+
+aerial_micro_inspection , a generic pipeline for aerial micro-inspection across different use cases. The pipeline as-sumes a PX4-powered drone equipped with two cameras: (i) a zoomed, gimbal-mounted inspection camera that captures fine details without requiring the drone to fly very close to the target, and (ii) a wide-field-of-view stereo navigation camera that acquires the target surface on site, estimates its range, and partitions it into smaller inspection regions. In addition, a vision-based feedback loop compensates for drone motion while the inspection camera visits small partitions of a larger surface. We evaluate the pipeline in simulation and real-world experiments, mainly in two use-case scenarios: tree inspection for detecting oak processionary caterpillars and their eggs, and greenhouse inspection of sticky traps for detecting whiteflies. The results show improved coverage robustness under drone disturbances in simulation, as well as effective detection of caterpillars and eggs and high-detail imaging of insects in real-world experiments. The pipeline is open-source, developed in ROS 2, and can be adapted to new applications by replacing the surface-segmentation and micro-target detection checkpoints. The code is available at: https://github.com/SaxionMechatronics/aerial micro inspection 
+
+Index Terms —aerial robot, visual inspection, gimbal control, visual servoing, calibration 
+
+I. I NTRODUCTION 
+
+Aerial robots have become practical tools for surveying, monitoring, and inspection because they can safely reach viewpoints that are difficult, costly, or hazardous for humans. Civil Unmanned Aerial Systems (UAS) activity and remote-pilot operations continue to grow, indicating broader opera-tional adoption in public services and industry [1]. Current deployments include logistics campuses, rail and port yards, 
+
+This work was partly supported by the Netherlands Organization for Scientific Research (NWO) via SIA RAAK-Public project (Van bestrijden naar beheersen van de EPR, No.10.015) and SIA RAAK-MKB project (Smart Greenhouses, No.17.014). 
+
+(a) 
+
+(b) (c) 
+
+Fig. 1: (a) Example use-case of aerial micro-inspection for detecting small oak processionary caterpillar egg clusters on a mockup tree trunk while keeping a safe distance, (b) wide-view image from stereo camera (navigation camera) required for target surface segmentation, partitioning the surface, gimbal planning, range estimation, and motion-compensation feedback, and (c) fine-detail inspection of a selected partition using the narrow-view camera (inspection camera). 
+
+construction corridors, and utility perimeter monitoring, where automated or semi-automated aerial observation is increasingly used [2]–[5]. Beyond overview imaging, many applications require re-liable inspection of small targets where aerial viewpoints are still beneficial or required. Examples include crack assessment in civil assets such as bridges and wind turbines [6], [7], precision agriculture for crop disease and pest monitoring [8], security monitoring from distant airborne viewpoints [3], and power-line corridor inspection for bird nests and hanging objects [4], [5]. Similar requirements appear in industrial 
+
+> arXiv:2606.11419v1 [cs.RO] 9 Jun 2026
+
+surface inspection, where stable close-up imaging and reliable revisit are essential for defect detection in use cases such as photovoltaic module inspection and quality control in the automotive industry [9]–[11]. These are examples of what we refer to as Aerial Micro-Inspection , where a small target requires high-detail imaging in a way that challenges the safety or dynamic constraints of an aerial robot. The need is therefore not only to fly and see, but to de-liver reliable inspection autonomy that reduces cost, improves repeatability, and limits personnel exposure. This requires robust integration of perception, localization, planning, ob-stacle avoidance, trajectory following, and closed-loop target centering. Many existing systems optimize only a subset of these components for specific scenarios, leaving generalization and modularity underexplored [2], [3], [12]–[17]. Recent systems increasingly replace rigid body-fixed cam-eras with gimballed payloads [3], [18], [19]. This adds pan-tilt degrees of freedom and provides key benefits: sharper imagery through vibration isolation, pointing partially decoupled from quadrotor attitude, and reduced dependence on complex trans-lational trajectories for coverage [18], [19]. With zoom optics, narrow field-of-view (FOV) sensing can capture finer details from safer distances [19]. We present aerial_micro_inspection , a generic pipeline compatible with the PX4 flight stack. It adopts a dual-camera design [3], [16]–[19] that combines a wide-FOV stereo camera for on-site surface acquisition, partitioning, depth estimation, and drone motion compensation with a narrow-FOV gimballed camera for detailed inspection. It requires no prior knowledge of the target geometry; instead, it integrates object detection/segmentation and stereo depth estimation for online surface geometry estimation. The main contributions are: 1) To the best of our knowledge, the first open-source modular ROS 2-based pipeline explicitly focused on aerial micro-inspection. 2) A parametric sweeping strategy to divide any inspection target into zoom-compliant partitions for coverage. 3) A vision-based feedback loop that keeps gimbal pointing aligned with the intended partition under localization error and platform motion. 4) An extrinsic calibration tool between a rigidly attached wide-view camera and a gimbal-mounted inspection camera. The rest of the paper is organized as follows: Section II reviews related work in aerial inspection, dual-camera systems, and gimbal control. Section III describes the kinematic model of the dual-camera system, the extrinsic calibration procedure, and the architecture of the proposed pipeline. Section IV presents simulation and real-world experiments in tree and greenhouse inspection scenarios, followed by a discussion in Section V. Finally, Section VI concludes the paper and discusses future work. II. R ELATED WORK 
+
+A substantial portion of the aerial inspection literature assumes a rigidly mounted camera and frames inspection primarily as a flight-path planning problem under coverage, safety, and operational constraints. For example, ORBIT [13] provides an open-source toolkit for bridge inspection mission planning, generating coordinated waypoint routes for overview and underdeck surveys under realistic constraints. In confined or GNSS-challenged environments, many systems focus on autonomy stacks that tightly integrate task logic with local-ization, mapping, and collision-free navigation. Xu et al. [2] propose a vision-based autonomous unmanned aerial vehicle (UAV) inspection framework for unknown tunnel construction sites with dynamic obstacles, using hierarchical decision-making and planning, a dynamic mapping module, and post-flight reconstruction. Following similar themes, inspection is often coupled to photogrammetry/mapping mission design and coverage-style trajectories. For instance, Simplicio and Pereira [14] design photogrammetry-based mission planning for dam mapping, including resolution/overlap-driven flight proximity and coverage rows. While these approaches enable repeatable inspection and robust navigation, their primary target is commonly path planning, localization/mapping, and safety/avoidance, which can lead to longer flight paths, in-creased operational risk when close proximity is required for high resolution, and, in many cases, dependence on prior struc-ture information or maps for planning and safety margins [2], [13], [14]. Another line of work addresses inspection by generating viewpoints (or camera configurations) to guarantee coverage and spatial resolution. Haneda et al. [18] propose a viewpoint generation algorithm for gimbal-mounted robots to inspect civil engineering structures while leveraging gimbal degrees of freedom to reduce base motion. However, such planning-centric formulations typically do not explicitly account for localization inaccuracies and constant multirotor wobble, and therefore do not ensure that the gimbal is aligned with the intended regions at the correct time. Wu et al. [19] provide a related configuration-planning approach for pan-tilt-zoom (PTZ) camera-equipped robots, explicitly planning PTZ con-figurations to meet required spatial resolution. They divide the target surface into patches and plan PTZ configurations to cover each patch, but they do not consider the dynamics of the system or the potential for target drift, which can lead to misalignment between the planned configurations and the actual inspection targets, especially if the robot is in flight. Inspection payloads have advanced to include multiple cameras with different focal lengths mounted on the same gimbal, often configured as Peripheral-Central or Foveated 
+
+setups [20], [21]. Inspired by human vision, these systems combine a wide peripheral view for situational awareness with a narrow view for detailed analysis, and can be useful for aerial micro-inspection; however, many rely on specialized gimbal payloads that increase cost and system complexity. Related UAV designs place the peripheral camera on the vehicle d
+
+> {N}
+> {I}
+> {G}
+> x axis
+> y axis
+> z axis Fig. 2: Dual-camera inspection kinematic model. The yellow blob represents the target surface; the surface is partitioned and each partition is inspected sequentially by aligning the gimbal to the corresponding direction.
+
+body while keeping the central camera on the gimbal [22], which broadens hardware compatibility. This design allows the peripheral camera to support state estimation, obstacle avoidance, and navigation tasks while being used to guide the gimbal. Similarly, Xu et al. [3] combine a panoramic wide-view sensor with a gimbal camera for detection and tracking, using the wide view for initial discovery and the gimbal payload for higher-definition follow-up. These studies motivate dual-camera perception architectures, but they typically target surveillance or tracking rather than guaranteeing fine-detailed surface coverage and reliable micro-inspection under aerial disturbances. III. M ETHODOLOGY 
+
+Section III-A introduces the kinematic model of the dual-camera system, defining the key variables, parameters, and assumptions. Section III-B describes the extrinsic calibration procedure between the navigation camera and the gimbal base, a necessary prerequisite for the pipeline. Finally, Section III-C presents the pipeline architecture and data flow between its components, including the partitioning algorithm. 
+
+A. Kinematics Model 
+
+Throughout this manuscript, we use a notation that describes a point a expressed in a coordinate frame {X} using X a. For a homogeneous transformation matrix that converts a point from coordinate system {Y } to {X}, we use X TY . Each X TY can be decomposed into a rotation matrix X RY and a translation vector X tY such that  
+
+> X
+
+TY =
+
+X RY X tY
+
+0 1
+
+
+
+. (1) We consider an aerial robot equipped with a stereo wide-angle navigation camera and a gimballed narrow-FOV inspec-tion camera . As described in Fig. 2, the main reference coor-dinates are the navigation camera’s optical frame {N }, gimbal base frame {G}, gimbal instantaneous frame {Gt}, inspection camera frame {C}, and inspection camera’s optical frame {I}.The gimbal base frame is located at the gimbal’s center of rotation and is aligned with the zero pan-tilt configuration.  
+
+> (a) (b)
+> Fig. 3: Calibration using an ArUco marker as a target. In (a) the marker is observed by the navigation camera, and in (b) the marker is observed by the inspection camera.
+
+The gimbal instantaneous frame is the result of rotating the gimbal base frame by the current pan and tilt angles. We need a kinematic model f that relates a pixel in navi-gation camera’s image plane N u to a pixel in the inspection camera’s image plane I u, which is necessary for pointing the gimbal to the correct location on the target surface. This non-linear mapping can be described as  
+
+> I
+
+u = f  N u, d, Gt TG ; θ , (2) where d is the depth value corresponding to N u pixel and  
+
+> Gt
+
+TG is the transformation caused by changing the gimbal’s orientation. Both d and Gt TG are variables. The f also depends on a set of parameters θ which are 
+
+θ = Knav , Kins , GTN , C TGt , I TC . (3) where Knav and Kins are the intrinsic parameters of the navigation and inspection cameras, respectively, GTN is the extrinsic transform between the navigation camera optical frame and the gimbal base frame, C TGt is the extrinsic transform caused by mechanical misalignment of the inspec-tion camera on the gimbal mount, and I TC is the transform between inspection camera and its optical frame. The full kinematic chain in f is explained in Appendix A. In our dual camera formulation, we make the assumption that the inspection target is within a range where stereo depth estimation from the navigation camera can estimate the d vari-able. We also assume that the gimbal rotates perfectly around its center of rotation (the pan-tilt axes are intersecting and orthogonal), meaning that the variable Gt TG is a pure rotation transform that can be directly obtained from the gimbal’s reported pan and tilt angles. To obtain the parameter GTN we introduce an extrinsic calibration tool in the next subsection and we further assume that the mechanical misalignment of the inspection camera on the gimbal mount is negligible, meaning that C TGt is an identity transform and I TC is only a re-axis transform without translation because the inspection camera’s optical frame is aligned with its body frame. 
+
+B. Extrinsic Calibration of the Dual-Camera System 
+
+The problem of extrinsic calibration between two or more rigidly attached cameras is well studied with many open-source tools such as kalibr [23]. Cases where both cameras have free degrees of freedom for pan-tilt-zoom (gimbal for surface     
+
+> mask surface
+> segmentor
+> partitions partitioning
+> updated
+> partitions
+> surface tracking
+> inspection
+> camera
+> intrinsics
+> setpoint
+> pan-tilt
+> pointing
+> surface
+> segmentation
+> checkpoint
+> nav cam to
+> inspection cam
+> extrinsic calibration
+> current
+> partition gimbal
+> trajectory
+> execution MAVLINK
+> gimbal
+> orientation
+> gimbal interface
+> desired overlap
+> micro
+> detector
+> inspection camera RGB
+> image
+> usb camera
+> interface micro detector
+> checkpoint
+> RGB
+> image
+> depth image
+> stereo camera
+> interface
+> state estimation
+> Aerial Micro Inspection Pipeline
+> Drone Hardware and Software
+> navigation camera
+
+Fig. 4: Schematic overview of the proposed aerial micro-inspection pipeline. In this diagram, the processes necessary in our modular pipeline are grouped and separated in the yellow box. The gray box represents components and processes related to a relatively interchangeable aerial robot design. Finally, the red blocks introduce parameters to adjust the pipeline to a different use case. 
+
+pan-tilt) are also investigated [24]. We adopt a similar target-based calibration approach for the case where one camera is rigidly attached to the drone and the other has pan-tilt degrees of freedom in order to obtain the extrinsic parameters GRN
+
+and GtN .As depicted in Fig. 3, we use an ArUco marker as the calibration target, which is observed by both cam-eras. Assuming that the intrinsic parameters of each cam-era (Knav and Kins ) are acquired by standard tools such as ros_camera_calibration [25], and having the dimensions of the marker, we can get the 3D pose of the marker in each camera’s frame by using the 
+
+estimatePoseSingleMarkers function from OpenCV. We denote the pose of the marker in the navigation camera frame at time k as N TM (k) and the pose of the marker in the inspection camera frame as I TM (k). The transform from the inspection camera frame to the navigation camera frame will be N TI (k) = N TM (k) I TM (k)−1. (4) The transform from the inspection camera as described in Appendix A is  
+
+> N
+
+TI (k) = N TG(k) GTGt (k) Gt TI . (5) Solving for N TG, we have  
+
+> N
+
+TG(k) = N TM (k) I TM (k)−1 Gt T−1
+
+> IG
+
+TGt (k)−1. (6) Assuming limited variation in N TG(k) (which requires a stationary target and fixed gimbal orientation in an unsyn-chronized setup), we average the translational components to obtain N tG and use Singular Value Decomposition (SVD) to average the rotational components to obtain N RG.
+
+C. Aerial Micro Inspection Pipeline 
+
+Figure 4 provides a schematic overview of the proposed aerial micro-inspection pipeline. This subsection summarizes its main components and data flow. The navigation camera (also referred to as the peripheral camera) provides a wide field of view in front of the drone. Many aerial inspection methods place both navigation and inspection cameras on the same gimbal [20], [21]. Another approach is to mount the navigation camera on the drone body and the inspection camera on the gimbal [3], [22], which is the design we consider in this work. This choice allows the navigation camera to also support state estimation and navigation modules (Fig. 4). The RGB image is processed by the Surface Segmen-tor , responsible for detecting the target surface, currently implemented as a wrapper around YOLO-based detec-tion/segmentation models [26]. The corresponding model checkpoint is provided as a runtime parameter. Its output is the segmented target surface, which is passed to the partitioning module. In the Partitioning block, we divide the target surface into smaller regions of interest, each approximately matching the projected field of view of the inspection camera. Therefore, we calculate the projected size of the inspection camera’s field of view in the navigation camera’s image plane using the intrinsic parameters of both cameras: 
+
+(wpar , h par ) = 
+
+ fxnav 
+
+fxins 
+
+Wnav , fynav 
+
+fyins 
+
+Hnav 
+
+
+
+, (7) where fxnav and fynav are the focal lengths of the navigation camera, fxins and fyins are the focal lengths of the inspection Algorithm 1 Partitioning of the Segmented Surface in the Image Plane 
+
+Require: Binary mask M ∈ {0, 1}H×W , window size 
+
+(wpar , h par ), overlap o ∈ [0 , 1) , occupancy threshold 
+
+τ ∈ (0 , 1] 
+
+Ensure: Ordered list of accepted windows B 
+
+> 1:
+
+B ← [ ] , A ← wpar · hpar  
+
+> 2:
+
+(Y, X ) ← { (y, x ) | M [y, x ] = 1 } 
+
+> 3:
+
+xmin ← min( X ), x max ← max( X ) 
+
+> 4:
+
+ymin ← min( Y), y max ← max( Y) 
+
+> 5:
+
+sx ← ⌊ wpar (1 − o)⌋ 
+
+> 6:
+
+sy ← ⌊ hpar (1 − o)⌋ 
+
+> 7:
+
+Build X0 from x = xmin : sx : xmax  
+
+> 8:
+
+Build Y0 from y = ymin : sy : ymax then reverse order  
+
+> 9:
+
+for y0 ∈ Y0 do  
+
+> 10:
+
+y1 ← y0 + hpar  
+
+> 11:
+
+for x0 ∈ X0 do  
+
+> 12:
+
+x1 ← x0 + wpar  
+
+> 13:
+
+c ← P M [y0 : y1, x 0 : x1] 
+
+> 14:
+
+if c ≥ τ A then  
+
+> 15:
+
+Append (x0, y 0, x 1, y 1) to B 
+
+> 16:
+
+end if  
+
+> 17:
+
+end for  
+
+> 18:
+
+end for  
+
+> 19:
+
+return B
+
+camera, and Wnav and Hnav are the width and height of the navigation camera’s image. The calculated (wpar , h par ) is also visualized in Fig. 2. Algorithm 1 formalizes partitioning of the target surface in image space so the inspection camera can sweep it. The method first finds the segmented mask M ∈ {0, 1}H×W
+
+extents, computes scan strides with some user-defined overlap 
+
+o ∈ [0 , 1) , and then sweeps bottom-to-top and left-to-right. A candidate window is accepted only when the segmented-pixel occupancy inside that window exceeds a threshold τ ∈ (0 , 1] .Partitioning is not performed every frame; it is triggered at the beginning of a sweep. The resulting partitions are then visited sequentially by pointing the gimbal to each partition center. Because the drone’s motion during the time that the gimbal is visiting all partitions can shift the apparent surface location, the pipeline includes the Surface Tracking module. The tracker is initialized with the surface bounding box whenever partitioning is updated. For each frame, it returns 
+
+(du, dv ) pixel offsets that are applied to all partition centers. We used the Median Flow tracker [27] from OpenCV. Figure 5 shows that partitioning runs at a lower frequency than tracking and gimbal execution. The exact partition set may vary frame to frame because of segmentation jitter and drone motion. Therefore, a sweep should complete before re-partitioning; during a sweep, partition locations are updated using tracker offsets. The partitions need to be sequentially inspected by the gimbal as depicted in Fig. 4 through the Gimbal Trajectory Partitioning  
+
+> Tracking
+> Gimbal Trajectory
+> Execution
+> ... ...
+> Time
+
+Fig. 5: Relative time frequency of partitioning, tracking, and gimbal trajectory execution in the proposed pipeline. Each vertical is an instance of time that the respective task is executed. The partitioning task runs at lowest frequency, such that the entire partitions should be visited by inspection camera before the next partitioning. Gimbal trajectory execution happens at intervals configurable by the user (e.g., every 2 seconds); the gimbal locks on the current partition for some time and moves to next partition. Tracking happens at camera frame-rate, making sure the location of all partitions are updated in real-time to compensate for drone motion. 
+
+Execution block. At fixed intervals (e.g., every 2 seconds), a new partition is selected and passed to the pointing process. The gimbal setpoint is computed by mapping the partition center N u with its average depth d and the extrinsic calibration parameters ( GRN , GtN ) through Eqs. 9 and 11, yielding the target position Gc in the gimbal base frame. Then, the desired pan and tilt angles are 
+
+αpan = arctan 
+
+ Gcy
+
+> G
+
+cx
+
+
+
+, αtilt = arctan 
+
+ −Gcz
+
+qGc2x + Gc2y
+
+ .
+
+(8) Finally, the calculated pan and tilt, through the Gimbal Inter-face and PX4, are applied to the gimbal. The gimbal-mounted camera image is then processed by the Micro Detector to detect the target artifact. This block is also implemented as a wrapper around YOLO-based detection models, and the checkpoint is provided as a runtime parameter. IV. I MPLEMENTATION & R ESULTS 
+
+The aerial inspection pipeline is implemented in ROS 2 for accessibility and was validated in simulation and real-world experiments which will be discussed in this section. 
+
+A. Use Cases 
+
+The pipeline was initially developed for two use cases. The first addresses widespread oak processionary caterpillars in the Netherlands, which pose health risks to humans and animals [28]. Current treatment relies on mass pesticide spray-ing, which is costly and environmentally harmful. In collab-oration with the municipality of Enschede and the province of Overijssel (funded by Regieorgaan SIA), we investigated autonomous aerial detection of caterpillars and eggs to support targeted treatment. Individual caterpillars are typically less than 40 mm in size, and their eggs are even smaller at around 1–2 mm, necessitating high-detail imaging. This use case fits (a)         
+
+> (b)
+> (c)
+> (d)
+> (e)
+> (f)
+> (g)
+> (h)
+> Fig. 6: Example scenes and deployments. (a,b) Wide and close-up views of an oak tree affected by caterpillar nests. (c,d) Greenhouse deployment with sticky-trap inspection. (e,f) Mockup-tree experiments with artificial caterpillar eggs and corresponding inspection views. (g,h) Gazebo simulation environments.
+> (a) (b) (c) (d) (e)
+> Fig. 7: Simulation evaluation for car-body surface inspection. The green path is traced by the gimballed camera pointing ray (the ˆzaxis of
+> {I}) on the target surface, while the red path is the desired setpoint trajectory. (a) Half-completed sweep. (b) Effect of disturbance with surface-tracking feedback disabled. (c) Effect of disturbance with surface-tracking feedback enabled. (d) GPS noise ( σ= 1 .0 m ) without feedback. (e) GPS noise ( σ= 1 .0 m ) with feedback.
+
+our definition of aerial micro-inspection: fine-detail images must be captured and analyzed while flying close to the tree poses collision risks with branches and leaves, and the drone is subject to outdoor disturbances and localization inaccuracies, preventing steady focusing on tree trunks from meters away. Figures 6a and 6b show infected trees, while Figs. 6e and 6f show controlled mockup-tree experiments, related to this use case. The second use case targets monitoring in Dutch flower greenhouses. Whiteflies can severely damage crops, are very small (1–2 mm), and are difficult to monitor manually at green-house scale. Autonomous aerial inspection for these whiteflies is also relevant to aerial micro-inspection: the drone must avoid damaging plants due to downwash, prevent collisions with greenhouse structures, minimize flight path length for efficiency, and cope with localization inaccuracies in GPS-denied environments. As a step toward automated monitoring and treatment, we evaluated the same aerial inspection work-flow in this setting. Figures 6c and 6d show our experiments for testing our pipeline in a flower greenhouse with sticky traps that catch the flies. Another use-case is industrial quality control such as visual inspection of vehicle body surfaces for production defects [11]. Vehicle inspection is investigated in simulation here, mainly to demonstrate the transferability of the proposed pipeline to different applications. 
+
+B. Simulation 
+
+We used Gazebo as the simulation environment. To match our use cases, we created custom worlds including oak-tree and car inspection scenes. Using PX4 Software-In-The-Loop (SITL), we extended the X500 quadrotor model with a gimbal-mounted inspection camera ( 12 ◦ horizontal FOV (HFoV)) and an RGB-D navigation camera ( 120 ◦ HFoV). 
+
+Micro XRCE-DDS has been used to bridge ROS 2 and PX4 communication. Because required gimbal control/status messages were unavailable over Micro XRCE-DDS in our setup, we added a dedicated Gimbal Interface node using MAVLink over UDP (simulation) or serial (real setup). The simulated scenario involves the drone taking off and moving to a waypoint in the vicinity of the target such that its heading is broadly directed towards the target. Our pipeline then acquires the target surface online and performs inspection. Figures 6g and 6h show the simulated environments and the aerial robot for the tree trunk and car inspection use cases, respectively. Coverage is a common inspection-quality metric [29]. In simulation, we reconstruct the target 3D surface (purple point cloud in Fig. 7a) from ground-truth depth and segmentation in the navigation-camera view. Using the inspection camera’s 0.25 0.50 0.75 1.00 1.25 1.50 
+
+> GPS noise standard deviation (m)
+> 86
+> 88
+> 90
+> 92
+> 94
+> 96
+> 98
+> 100
+> Coverage (%)
+> Surface tracking feedback
+> No feedback
+
+Fig. 8: Effect of GPS-noise-induced drone wobble on target-surface coverage. 
+
+ground-truth pose, we project its FOV and center onto that surface. In Fig. 7a, the center trajectory of the gimbal FOV is shown in green, and visited surface regions are colored with RGB values. Coverage is defined as the ratio between visited surface and total target surface. We configure our pipeline to create partitions with 0% overlap such that a successful inspection should yield a coverage of 100% .Flight disturbances directly affect gimbal trajectory execu-tion. Figure 7b shows the effect of a disturbance equal to  
+
+> N
+
+Fdist = [ −50 , −100 , 0] Newtons applied to the drone at a specified moment. Without feedback, the gimbal trajectory deviates from the setpoint path (defined by partition cen-ters). With the proposed surface-tracking feedback, it recovers quickly and follows the setpoint path (Fig. 7c). Imperfect position holding during the flight is another challenge for micro-inspection. This behaviour often stems from low-precision localization or control issues. We simulated this effect by adding gaussian noise to the drone’s simulated GPS sensor and repeating inspection experiment with different standard deviations of noise. Figure 8 shows the resulting cov-erage for each noise level. Figures 7d and 7e compare gimbal trajectory tracking without and with feedback, respectively, under GPS noise with a standard deviation of 1.0 m .
+
+C. Real Setup 
+
+For our experiments, we used a custom quadrotor, based on our open-source aerial robot design, namely SARAX [30] as displayed in Fig. 9. We used a Holybro Pixhawk Jetson Baseboard containing a Pixhawk flight controller and a Jetson Orin Nano as the companion computer. To support stable flight in position hold mode, a Holybro H-RTK F9P module was added to the flight stack. As the navigation camera, we used a StereoLabs ZED 2 RGBD camera featuring a 110° HFoV and as the inspection camera we deployed a Gremsy Pixy LR gimbal with a Sony ILX-LR1 camera mounted on it. The inspection camera was equipped with a 55 mm lens and a 4 times digital zoom, resulting in an effective 9.2° HFoV, yielding an HD resolution image. Note that not all the components in the displayed setup were used for this work. To investigate the pipeline in real-world conditions, cov-erage evaluation is less direct because ground-truth surface Gremsy Pixy LR 
+
+> Gimbal
+> +
+> Sony ILX-LR1
+> Camera
+> +
+> 55 mm lens
+> Stereolabs ZED2i
+> Stereo Camera
+> Realsense D435
+> Stereo Camera
+> Hesai JT128 LiDAR
+> Holybro Pixhawk-
+> Jetson Baseboard
+> Holybro H-RTK F9P
+
+Fig. 9: The drone platform used for real-world experiments. 
+
+geometry and gimbal pose are unavailable. As shown in Fig. 10, we compared the inspection-camera FOV projected in the navigation image (green, manually annotated) against the intended partition (red) for each partition in a full sweep. Let the inspection FOV center be co = ( uo, v o) and the setpoint partition center be cr = ( ur, v r). The angular error is 
+
+θ = cos −1
+
+ d⊤ 
+
+> o
+
+dr
+
+∥do∥ ∥ dr∥
+
+
+
+,
+
+where 
+
+do =
+
+(¯ uo − cx)/f x
+
+(¯ vo − cy)/f y
+
+1
+
+ , dr =
+
+(¯ ur − cx)/f x
+
+(¯ vr − cy)/f y
+
+1
+
+ .
+
+where fx, f y, c x, and cy are navigation-camera calibration parameters. For the inspection of the mockup tree trunk, the average angular error was 2.17 ◦. In the greenhouse sticky-trap experiment, the average error was 3.34 ◦.V. D ISCUSSION 
+
+The simulation results confirm that the surface-tracking feedback loop substantially improves robustness under flight disturbances and localization noise. Coverage degrades only mildly with our pipeline despite increased platform wobble, primarily because the feedback mechanism compensates for disturbances in real time. By contrast, open-loop execution of desired gimbal orientations (as in several related works [18], [19]) shows a stronger coverage drop as noise increases. The position error comparison in Figs. 7d and 7e further illustrates that GPS-induced drift degrades gimbal tracking in open loop, while feedback largely mitigates this effect. In real-world experiments, the 2.17 ◦ average angular error achieved in the mockup tree inspection was sufficient for reliable caterpillar detection. The higher 3.34 ◦ error in the greenhouse sticky-trap case, combined with the current zoom level, was enough to have high quality pictures of insects on the trap but was insufficient to distinguish whiteflies in com-parison to other insects. Spatially varying errors likely stem from modeling and calibration simplifications; in particular, the assumption of perfect alignment between the inspection camera and gimbal end-effector is only approximate. We also observed that the gimbal’s internal zero pan/tilt reference can shift between power cycles, introducing a bias that changes at every start-up unless recalibrated. This effect likely originates from IMU-encoder fusion drift or steady-state error in the gimbal controller. Repeated trials with a stationary drone showed pointing errors of up to 1.3◦ be-tween different power cycles. The resulting pixel displacement depends on the zoom level and can be approximated as 
+
+∆p ≈ f × tan(∆ θ). At the base 55 mm lens ( f ≈ 1972 px), this yields ∆p ≈ 45 px (3.5% of inspection camera’s image width), which is negligible. However, with 10 × zoom, the error grows to ∆p ≈ 448 px ( ≈35% of inspection camera’s image width), which can cause a substantial portion of the intended inspection partition to be missed. A practical short-term mitigation is to increase partition overlap. As a more robust solution, we are considering online cross-camera feature matching for real-time extrinsic refinement. VI. C ONCLUSION 
+
+This paper presented aerial_micro_inspection , a modular and open-source dual-camera inspection pipeline for detecting small objects. The proposed framework combines a wide-FOV navigation camera for on-the-spot surface acquisi-tion and partitioning with a narrow-FOV gimballed inspection camera for high-detail visual sensing. In simulation, the results showed that integrating surface-tracking feedback into gimbal control improves robustness against platform disturbances and localization noise, leading to more reliable target coverage than open-loop pointing. Real-world experiments on tree and greenhouse scenarios further demonstrated that the pipeline can achieve practical pointing accuracy for fine inspection tasks while highlighting key hardware and modeling limita-tions that affect performance at higher zoom levels. Future work will focus on both enhancing the model ac-curacy and operational scalability. First, the current kinematic model will be extended to capture additional gimbal-camera effects, such as non-ideal rotation centers, small mechanical offsets, and boot-dependent orientation biases, to reduce point-ing errors. Second, calibration will be upgraded from an offline target-based procedure toward online, targetless methods that can re-estimate extrinsics at every boot from cross-camera feature correspondences. Third, we will expand the planning layer from local partition sweeping to hierarchical viewpoint generation for larger structures, where multiple wide-view acquisitions must be stitched and scheduled to inspect surfaces that do not fit in a single peripheral view. Finally, the same modular workflow will be validated in broader domains, including infrastructure assets, public transport and vehicle body inspection, and power-line corridor monitoring. APPENDIX 
+
+A. Kinematics Between Navigation and Inspection Cameras 
+
+Let N u = [ u, v ]T denote the pixel location of the target detected in the navigation image. Using the pinhole model 
+
+> (a)
+> (b)
+> Fig. 10: Gimbal pointing accuracy assessment in real-world experi-ments.
+
+and assuming undistorted images, the corresponding 3D point in {N } is  
+
+> N
+
+c = d · K−1nav N ˜u, N ˜u = [ u, v, 1] T , (9) where Knav is the intrinsic calibration matrix of the navigation camera and d is the distance of the target from the navigation camera along optical axis. We model the rigid transform between {N } and {G} as a constant extrinsic: 
+
+> G
+
+TN =
+
+GRN GtN
+
+0 1
+
+
+
+, (10) transforming the same point c, but in the gimbal base frame 
+
+{G}: Gc = GRN N c + GtN . (11) We can obtain the target point in the gimbal’s instantaneous frame {Gt} by applying the gimbal’s current orientation Gt RG
+
+to Gc. Since the gimbals might not perfectly rotate around their center of rotation, an induced translation of Gt tG is assumed:  
+
+> Gt
+
+c = Gt RG Gc + Gt tG. (12) In reality, the gimbal’s instantaneous frame {Gt} might slightly differ from the camera’s frame {C}, due to mechanical imperfections with an angle of δα around an unknown axis n
+
+and some translation δt. Thus, the transformation from {Gt}
+
+to the inspection camera’s optical frame {I} can be broken down to:  
+
+> I
+
+TGt = I TC C TGt , C TGt ≈
+
+R(δα, n) δt0 1
+
+
+
+, (13) where the I TC is a re-axis rotation:  
+
+> I
+
+TC =
+
+RC 00 1
+
+
+
+, RC =
+
+
+
+0 1 00 0 11 0 0
+
+ . (14) The target point in the inspection camera frame will be  
+
+> I
+
+c = I TGt 
+
+> Gt
+
+c. (15) Finally, the pixel location of the target in the inspection image is  
+
+> I
+
+u = Kins  
+
+> I
+
+c 
+
+> I
+
+cz
+
+, (16) where Kins is the intrinsic calibration matrix of the inspection camera and I cz is the third component of I c and serves as the depth value, as visualized in Fig. 2. REFERENCES [1] Federal Aviation Administration, “FAA aerospace forecast fiscal years 2025–2045,” U.S. Department of Transportation, Tech. Rep., 2025. [2] Z. Xu, B. Chen, X. Zhan, Y. Xiu, C. Suzuki, and K. Shimada, “A vision-based autonomous UAV inspection framework for unknown tunnel construction sites with dynamic obstacles,” IEEE Robotics and Automation Letters , vol. 8, no. 8, pp. 4983–4990, 2023. [3] Y. Xu, Y. Liu, H. Li, L. Wang, and J. Ai, “A deep learning approach of intrusion detection and tracking with UAV-based 360 camera and 3-axis gimbal,” Drones , vol. 8, no. 2, p. 68, 2024. [4] J. Liao, H. Xu, X. Fang, Q. Miao, and G. Zhu, “Quantitative assessment framework for non-structural bird’s nest risk information of transmission tower in high-resolution UAV images,” IEEE Transactions on Instrumen-tation and Measurement , vol. 72, pp. 1–12, 2023. [5] C. Yu, Y. Liu, W. Zhang, X. Zhang, Y. Zhang, and X. Jiang, “Foreign objects identification of transmission line based on improved YOLOv7,” 
+
+IEEE Access , vol. 11, pp. 51 997–52 008, 2023. [6] A. Humpe, “Bridge inspection with an off-the-shelf 360° camera drone,” 
+
+Drones , vol. 4, no. 4, p. 67, 2020. [7] J. Xing, Y. Liu, and G.-Z. Zhang, “Improved YOLOV5-based UAV pavement crack detection,” IEEE Sensors Journal , vol. 23, no. 14, pp. 15 901–15 909, 2023. [8] D. C. Tsouros, S. Bibi, and P. G. Sarigiannidis, “A review on UAV-based applications for precision agriculture,” Information , vol. 10, no. 11, p. 349, 2019. [9] P. Bergmann, M. Fauser, D. Sattlegger, and C. Steger, “Mvtec ad–a comprehensive real-world dataset for unsupervised anomaly detection,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2019, pp. 9592–9600. [10] S. Deitsch, V. Christlein, S. Berger, C. Buerhop-Lutz, A. Maier, F. Gall-witz, and C. Riess, “Automatic classification of defective photovoltaic module cells in electroluminescence images,” Solar Energy , vol. 185, pp. 455–468, 2019. [11] F. Chang, M. Liu, M. Dong, and Y. Duan, “A mobile vision inspection system for tiny defect detection on smooth car-body surfaces based on deep ensemble learning,” Measurement Science and Technology , vol. 30, no. 12, p. 125905, 2019. [12] F. Nex and F. Remondino, “UAV for 3D mapping applications: A review,” Applied Geomatics , vol. 6, no. 1, pp. 1–15, 2014. [13] E. T. Bartczak, M. Bassier, and M. Vergauwen, “ORBIT: Optimized routing for bridge inspection toolkit. an open-source UAS flight path planning tool for comprehensive bridge inspections under realistic constraints,” The International Archives of the Photogrammetry, Remote Sensing and Spatial Information Sciences , vol. 48, pp. 25–32, 2025. [14] P. V. Simplicio and G. A. Pereira, “Mission planning for photogrammetry-based autonomous 3D mapping of dams using a com-mercial UAV,” in 2024 International Conference on Unmanned Aircraft Systems (ICUAS) . IEEE, 2024, pp. 464–471. [15] J. Yi, D. Lee, W. Park, W. Byun, S. Huh, and W. Nam, “Autonomous control of UAV for proximity tracking of ground vehicles with AprilTag and feedforward control,” in 2023 International Conference on Un-manned Aircraft Systems (ICUAS) . IEEE, 2023, pp. 349–353. [16] X. Liu, Y. Yang, C. Ma, J. Li, and S. Zhang, “Real-time visual tracking of moving targets using a low-cost unmanned aerial vehicle with a 3-axis stabilized gimbal system,” Applied Sciences , vol. 10, no. 15, p. 5064, 2020. [17] C. Lin, W. Zhang, and J. Shi, “Tracking strategy of unmanned aerial vehicle for tracking moving target,” International Journal of Control, Automation and Systems , vol. 19, no. 6, pp. 2183–2194, 2021. [18] M. Haneda, W. Wu, Y. Funabora, S. Doki, and K. Doki, “Viewpoint generation algorithm for gimbal-mounted robots for visual inspection of civil engineering structures,” IEEE Access , vol. 13, pp. 40 813–40 823, 2025. [19] W. Wu, M. Haneda, Y. Funabora, S. Doki, and K. Doki, “Spatial res-olution ensured configuration planning for visual inspection using pan-tilt-zoom camera-equipped robots,” IEEE Access , vol. 13, pp. 54 105– 54 114, 2025. [20] A. Ude, C. Gaskett, and G. Cheng, “Foveated vision systems with two cameras per eye,” in Proceedings 2006 IEEE International Conference on Robotics and Automation, 2006. ICRA 2006. IEEE, 2006, pp. 3457– 3462. [21] Y. Zhang and S. J. Koppal, “Foveacam++: Systems-level advances for long range multi-object high-resolution tracking,” in 2024 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS) .IEEE, 2024, pp. 11 594–11 601. [22] C. Kang, H. Chaudhry, C. A. Woolsey, and K. Kochersberger, “Develop-ment of a peripheral–central vision system for small unmanned aircraft tracking,” Journal of Aerospace Information Systems , vol. 18, no. 9, pp. 645–658, 2021. [23] P. Furgale, J. Rehder, and R. Siegwart, “Unified temporal and spatial calibration for multi-sensor systems,” in 2013 IEEE/RSJ International Conference on Intelligent Robots and Systems . IEEE, 2013, pp. 1280– 1286. [24] K. Mao, Y. Xu, R. Wang, and S. Pan, “A general calibration method for dual-ptz cameras based on feedback parameters,” Applied Sciences ,vol. 12, no. 18, p. 9148, 2022. [25] J. Bowman and P. Mihelich, “camera calibration - ROS Wiki,” https: //wiki.ros.org/camera calibration, 2020, accessed: 2026-04-29. [26] G. Jocher, A. Chaurasia, and J. Qiu, “Ultralytics yolov8,” 2023. [Online]. Available: https://github.com/ultralytics/ultralytics [27] Z. Kalal, K. Mikolajczyk, and J. Matas, “Forward-backward error: Automatic detection of tracking failures,” in 2010 20th international conference on pattern recognition . IEEE, 2010, pp. 2756–2759. [28] H. W. A. Jans, “Eikenprocessierups, een nog altijd aanwezig gezondheidsprobleem in nederland,” Infectieziekten Bulletin , vol. 22, no. 2, pp. 49–51, Mar. 2011, published 16 March 2011. [Online]. Available: https://www.rivm.nl/infectieziekten-bulletin/jaargang-22-2011-maart/ eikenprocessierups-nog-altijd-aanwezig-gezondheidsprobleem-in-nederland [29] S. Chen, X. Zeng, D. F. Laefer, L. Truong-Hong, and E. Mangina, “Flight path setting and data quality assessments for unmanned-aerial-vehicle-based photogrammetric bridge deck documentation,” Sensors ,vol. 23, no. 16, p. 7159, 2023. [30] A. Alharbat, D. Zwakenberg, H. Esmaeeli, and A. Mersha, “Sarax: An open-source software/hardware framework for aerial manipulators,” in 
+
+2024 International Conference on Unmanned Aircraft Systems (ICUAS) .IEEE, 2024, pp. 1332–1339.
