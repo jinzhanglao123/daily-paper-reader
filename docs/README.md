@@ -6,26 +6,28 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-15
-- 运行时间：2026-06-15 22:50:57 UTC
+- 最新运行日期：2026-06-16
+- 运行时间：2026-06-16 21:49:55 UTC
 - 运行状态：成功
-- 本次总论文数：1
-- 精读区：0
+- 本次总论文数：2
+- 精读区：1
 - 速读区：1
 
 ### 今日简报（AI）
-今日速读一篇关于空中机器人微检测的模块化双摄像头方案，轻量捕捉前沿应用。  
-值得关注的是利用模块化双摄像头管道提升微小缺陷检测的灵活性和精度。  
-下一步可深入探索无人机在基础设施现场检测中的落地案例，跟随工业智能的趋势。
-- 详情：[/202606/15/README](/202606/15/README)
+今日精读一篇高分LLM推理新作，速览一篇视频强化学习研究  
+最值得关注的是大模型推理中“路径条件自蒸馏”如何精准定位信用分配，有效缓解思维链发散  
+建议关注推理能力优化的读者延伸阅读该项自蒸馏技术，它可能成为新一代对齐思路
+- 详情：[/202606/16/README](/202606/16/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [Localizing Credit at the Divergence: Path-Conditioned Self-Distillation for LLM Reasoning](/202606/16/2606.15576v1-localizing-credit-at-the-divergence-path-conditioned-self-distillation-for-llm-reasoning)  
+   标签：评分：8.0/10、query:uav-drl
+   evidence：提出事后自我蒸馏实现长时序强化学习的逐令牌信用分配
 
 ### 速读区论文标签
-1. [A Modular Dual-Camera Pipeline for Micro-Inspection Using Aerial Robots](/202606/15/2606.11419v1-a-modular-dual-camera-pipeline-for-micro-inspection-using-aerial-robots)  
+1. [Video-Based Optimal Transport for Feedback-Efficient Offline Preference-Based Reinforcement Learning](/202606/16/2606.16856v1-video-based-optimal-transport-for-feedback-efficient-offline-preference-based-reinforcement-learning)  
    标签：评分：6.0/10、query:uav-drl
-   evidence：通用无人机微检测流水线，可适用于电力线巡检
+   evidence：基于偏好的RL从少量标签学习奖励函数，与奖励分配相关
 
 
 <div class="dpr-home-promo-card">

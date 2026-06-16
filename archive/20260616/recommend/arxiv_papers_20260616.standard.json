@@ -1,0 +1,92 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-16T21:46:45.435334+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2606.15576v1",
+      "source": "arxiv",
+      "title": "Localizing Credit at the Divergence: Path-Conditioned Self-Distillation for LLM Reasoning",
+      "abstract": "Reinforcement learning from verifiable rewards assigns a single scalar to each rollout, leaving token-level credit assignment underspecified in long reasoning traces. On-policy self-distillation addresses this by letting the same model act as a teacher conditioned on privileged information, producing a dense per-token signal. But the common choice of a ground-truth answer is only an endpoint cue: on terse-answer tasks, the teacher falls silent at the intermediate positions where path-level guidance matters most. We propose Hindsight Self-Distillation (HSD), which conditions the teacher on a successful peer rollout drawn from the current training group. Such a peer is an exact sample from the success-conditioned policy, requiring no additional sampled rollouts. By providing a full successful continuation rather than only the final answer, the resulting credit signal concentrates at the divergence position between a failed rollout and a successful peer. Across Qwen3-8B and Qwen3-32B on math and code benchmarks, HSD obtains the best result against GRPO variants and on-policy distillation baselines, with the largest gains on terse-answer tasks such as AIME.",
+      "authors": [
+        "Yu Li",
+        "Shu Hong",
+        "Tian Lan"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-06-14T03:37:27+00:00",
+      "link": "https://arxiv.org/pdf/2606.15576v1",
+      "tags": [
+        "keyword:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "proposes Hindsight Self-Distillation for per-token credit assignment in long-horizon RL tasks",
+      "llm_evidence_cn": "提出事后自我蒸馏实现长时序强化学习的逐令牌信用分配",
+      "llm_evidence": "提出事后自我蒸馏实现长时序强化学习的逐令牌信用分配",
+      "canonical_evidence": "提出事后自我蒸馏实现长时序强化学习的逐令牌信用分配",
+      "llm_tldr_en": "Proposes Hindsight Self-Distillation (HSD) that conditions the teacher on a successful peer rollout to provide dense per-token credit signal for long-horizon RL, improving LLM reasoning.",
+      "llm_tldr_cn": "针对强化学习中可验证奖励仅提供单个标量、导致长推理链上令牌级信用分配不明确的问题，本文提出事后自我蒸馏（HSD）方法。该方法将教师模型条件于当前训练组中的成功同伴轨迹，从而在中间位置提供稠密的路径级别指导，克服了传统自我蒸馏仅依赖最终答案的缺陷。在多个推理任务上，HSD显著提升了模型的推理能力，为长时序强化学习的信用分配提供了新范式。",
+      "llm_tldr": "针对强化学习中可验证奖励仅提供单个标量、导致长推理链上令牌级信用分配不明确的问题，本文提出事后自我蒸馏（HSD）方法。该方法将教师模型条件于当前训练组中的成功同伴轨迹，从而在中间位置提供稠密的路径级别指导，克服了传统自我蒸馏仅依赖最终答案的缺陷。在多个推理任务上，HSD显著提升了模型的推理能力，为长时序强化学习的信用分配提供了新范式。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.16856v1",
+      "source": "arxiv",
+      "title": "Video-Based Optimal Transport for Feedback-Efficient Offline Preference-Based Reinforcement Learning",
+      "abstract": "Conveying complex objectives to reinforcement learning (RL) agents often requires meticulous reward engineering. Preference-based RL (PbRL) offers a promising alternative by learning reward functions from human feedback, but its scalability is hindered by high labeling costs. Inspired by advances in Video Foundation Models (ViFMs), we present Video-based Optimal Transport Preference (VOTP), a semi-supervised framework that learns effective reward functions from only a handful of labels. By leveraging optimal transport to align visual trajectories within the rich representation space of ViFMs, VOTP effectively generates high-fidelity pseudo-labels for large amounts of unlabeled data, substantially reducing human supervision. Extensive experiments across locomotion and manipulation benchmarks demonstrate the superiority of VOTP, which outperforms state-of-the-art offline PbRL methods under limited feedback budgets. We also showcase the robustness of VOTP in the presence of visual distractors and validate its utility on real robotic tasks, where it learns meaningful rewards with minimal human input.",
+      "authors": [
+        "Tung M. Luu",
+        "Hwanhee Kim",
+        "Younghwan Lee",
+        "Chang D. Yoo"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-06-15T15:31:40+00:00",
+      "link": "https://arxiv.org/pdf/2606.16856v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Preference-based RL learns reward functions from few labels, related to reward assignment",
+      "llm_evidence_cn": "基于偏好的RL从少量标签学习奖励函数，与奖励分配相关",
+      "llm_evidence": "基于偏好的RL从少量标签学习奖励函数，与奖励分配相关",
+      "canonical_evidence": "基于偏好的RL从少量标签学习奖励函数，与奖励分配相关",
+      "llm_tldr_en": "Proposes VOTP, a semi-supervised framework using video optimal transport to align visual trajectories and generate pseudo-labels, significantly reducing human labeling for preference-based RL reward learning.",
+      "llm_tldr_cn": "针对偏好强化学习标注成本高的问题，提出视频最优传输偏好框架，利用视频基础模型对齐轨迹生成伪标签，大幅减少人工监督。实验表明只需少量标签即可学习有效奖励函数，为复杂任务中奖励分配提供了高效方案。",
+      "llm_tldr": "针对偏好强化学习标注成本高的问题，提出视频最优传输偏好框架，利用视频基础模型对齐轨迹生成伪标签，大幅减少人工监督。实验表明只需少量标签即可学习有效奖励函数，为复杂任务中奖励分配提供了高效方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

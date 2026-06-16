@@ -1,0 +1,39 @@
+{
+  "label": "2026-06-16",
+  "date": "2026-06-16",
+  "generated_at": "2026-06-16T21:50:05",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202606/16/2606.15576v1-localizing-credit-at-the-divergence-path-conditioned-self-distillation-for-llm-reasoning",
+      "section": "deep",
+      "title_en": "Localizing Credit at the Divergence: Path-Conditioned Self-Distillation for LLM Reasoning",
+      "authors": "Yu Li, Shu Hong, Tian Lan",
+      "date": "2026-06-14",
+      "pdf": "https://arxiv.org/pdf/2606.15576v1",
+      "score": "8.0",
+      "evidence": "提出事后自我蒸馏实现长时序强化学习的逐令牌信用分配",
+      "tldr": "现有基于可验证奖励的强化学习方法在长推理轨迹中无法细粒度分配token级信用，而自蒸馏方法在简短答案任务中缺乏路径级指导。HSD通过将教师模型条件设置为成功同伴rollout，将密集信用信号集中在失败与成功rollout的分歧位置，从而提供精准路径级监督。在Qwen3-8B和Qwen3-32B的数学与代码基准上，HSD超越GRPO变体及基线，在AIME等简短答案任务上提升最大。该方法为提升大模型推理的信用分配和训练效率提供了新思路。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Reinforcement learning from verifiable rewards assigns a single scalar to each rollout, leaving token-level credit assignment underspecified in long reasoning traces. On-policy self-distillation addresses this by letting the same model act as a teacher conditioned on privileged information, producing a dense per-token signal. But the common choice of a ground-truth answer is only an endpoint cue: on terse-answer tasks, the teacher falls silent at the intermediate positions where path-level guidance matters most. We propose Hindsight Self-Distillation (HSD), which conditions the teacher on a successful peer rollout drawn from the current training group. Such a peer is an exact sample from the success-conditioned policy, requiring no additional sampled rollouts. By providing a full successful continuation rather than only the final answer, the resulting credit signal concentrates at the divergence position between a failed rollout and a successful peer. Across Qwen3-8B and Qwen3-32B on math and code benchmarks, HSD obtains the best result against GRPO variants and on-policy distillation baselines, with the largest gains on terse-answer tasks such as AIME.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/16/2606.16856v1-video-based-optimal-transport-for-feedback-efficient-offline-preference-based-reinforcement-learning",
+      "section": "quick",
+      "title_en": "Video-Based Optimal Transport for Feedback-Efficient Offline Preference-Based Reinforcement Learning",
+      "authors": "Tung M. Luu, Hwanhee Kim, Younghwan Lee, Chang D. Yoo",
+      "date": "2026-06-15",
+      "pdf": "https://arxiv.org/pdf/2606.16856v1",
+      "score": "6.0",
+      "evidence": "基于偏好的RL从少量标签学习奖励函数，与奖励分配相关",
+      "tldr": "偏好强化学习通过人类反馈学习奖励，但高昂标注成本限制其可扩展性。本文提出VOTP框架，利用视频基础模型与最优传输对齐视觉轨迹，从少量标签生成高保真伪标签，显著减少人工监督。在离线基准测试中，VOTP在有限反馈下性能超越现有方法，并对视觉干扰鲁棒。该方法在真实机器人任务上验证有效，为高效奖励学习提供了新途径。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Conveying complex objectives to reinforcement learning (RL) agents often requires meticulous reward engineering. Preference-based RL (PbRL) offers a promising alternative by learning reward functions from human feedback, but its scalability is hindered by high labeling costs. Inspired by advances in Video Foundation Models (ViFMs), we present Video-based Optimal Transport Preference (VOTP), a semi-supervised framework that learns effective reward functions from only a handful of labels. By leveraging optimal transport to align visual trajectories within the rich representation space of ViFMs, VOTP effectively generates high-fidelity pseudo-labels for large amounts of unlabeled data, substantially reducing human supervision. Extensive experiments across locomotion and manipulation benchmarks demonstrate the superiority of VOTP, which outperforms state-of-the-art offline PbRL methods under limited feedback budgets. We also showcase the robustness of VOTP in the presence of visual distractors and validate its utility on real robotic tasks, where it learns meaningful rewards with minimal human input.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
