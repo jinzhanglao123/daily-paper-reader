@@ -1,0 +1,415 @@
+Title: Multi-Modal Agents for Power Distribution Defect Detection: An Evaluation of Foundation Models
+
+URL Source: https://arxiv.org/pdf/2606.12969v1
+
+Published Time: Fri, 12 Jun 2026 00:34:22 GMT
+
+Number of Pages: 16
+
+Markdown Content:
+# Multi-Modal Agents for Power Distribution Defect Detection: An Evaluation of Foundation Models 
+
+Quan Quan 
+
+Abstract 
+
+The power distribution network is critical to reliable electricity delivery, yet traditional inspection methods face limitations in semantic understanding, generalization, and closed-loop automation. To address these challenges, this paper proposes a Multi-Modal Agent framework specifically for power distribution defect detection. Central to this study is the systematic evaluation of multimodal foundation models as unified cognitive engines. We rig-orously assess their integrated performance across three critical capabilities: (1) Perception, where the model must accurately identify equipment and generate expert-level descriptions of defects; (2) Reasoning, where the model interprets visual findings to diagnose causes, assess severity, and plan maintenance strategies based on domain knowledge; and (3) Tool Usage, where the model acts as an autonomous operator to execute actions—such as querying knowledge bases or generating work orders—to achieve closed-loop maintenance. To sup-port this evaluation, a domain-specific evaluation dataset and a comprehensive benchmark are developed. Experimental results demonstrate the strengths and limitations of current foundation models in these three dimensions, providing empirical evidence for deploying autonomous agents in high-stakes industrial environments. 
+
+Keywords: Vision-language models; Multimodal agents; Power distribution inspection; Defect detection; Retrieval-augmented generation; Tool use. 
+
+## 1 Introduction 
+
+As the “last mile” of the power grid that directly serves end-users, the power distribution network plays a pivotal role in ensuring the safe and stable operation of modern society. Traditional in-spection methods rely heavily on manual labor, which is not only inefficient and labor-intensive but also prone to high operational risks. While deep learning techniques—particularly con-volutional neural networks have improved inspection efficiency, their deployment in real-world operation and maintenance scenarios still faces critical bottlenecks, such as the lack of semantic understanding (Semantic Gap), difficulty in recognizing unseen defects (Limited Generalization), and the inability to autonomously trigger workflows (Information Silo). To address these challenges systematically, we envision a more integrated paradigm—the Multi-Modal Agent—as a promising pathway toward truly autonomous inspection. Unlike tra-ditional isolated detection models, such an agent is a computational entity capable of indepen-dently executing complex inspection tasks. The effectiveness of this agent is critically dependent on its core multimodal foundation model (e.g., integrated VLM-LLM architectures). In this pa-per, we evaluate these foundation models as unified cognitive engines that must simultaneously demonstrate three essential capabilities to close the loop from detection to maintenance: 
+
+• (1) Perception: The ability to not only localize objects but also understand and generate detailed, human-like descriptions of complex visual information, effectively bridging the semantic gap between raw images and expert interpretation. 1
+
+> arXiv:2606.12969v1 [cs.AI] 11 Jun 2026
+
+Figure 1: Overview of multi-modal agent framework for power inspection 
+
+• (2) Reasoning: The capacity to act as a “brain” that interprets visual findings, applies domain knowledge to diagnose defect causes, assesses severity levels, and formulates logical maintenance plans. 
+
+• (3) Tool Usage: The capability to translate decisions into executable actions by au-tonomously invoking external tools—such as querying a knowledge base, retrieving camera feeds, or generating standardized work orders, thereby overcoming the information silo. Despite the rapid development of general-purpose multi-modal models, their application to the power distribution domain—characterized by stringent reliability requirements, domain-specific expertise, and high safety standards—remains underexplored. In particular, there is currently no systematic framework to rigorously evaluate how these foundation models per-form across the specific dimensions of perception, reasoning, and tool usage in an industrial context. To bridge this gap, we implement a comprehensive evaluation framework for the founda-tion models of multi-modal agents in the context of autonomous power inspection. Our main contributions are as follows: 
+
+• We propose an evaluation framework for multimodal agents that focuses on assessing their Perception, Reasoning, and Tool Usage capabilities in power inspection tasks, enabling targeted and reproducible performance comparisons across different technology configura-tions. 
+
+• We develop a multi-task, multi-dimensional benchmark tailored to power distribution sce-narios. The benchmark includes a multimodal dataset for evaluating perception and rea-soning, as well as a suite of complex inspection scenarios designed to test the agent’s end-to-end tool execution and task completion capability. 
+
+• Using the proposed framework, we systematically evaluate different agent architectures and core models in power inspection tasks. Our results reveal both the strengths and limitations of these approaches, providing empirical evidence to guide future technology selection and optimization in this domain. 2Figure 2: Representative examples of power equipment defects from the evaluation dataset. The images illustrate the diversity and visual complexity of anomalies across four primary compo-nent categories: towers, conductors, insulators, and metal fittings, highlighting the fine-grained perception capabilities required for automated inspection. 
+
+## 2 Related Work 
+
+2.1 Visual Language Model (VLM) 
+
+Visual Language Models (VLMs) have significantly advanced artificial intelligence from percep-tual to cognitive capabilities by unifying vision and language understanding. Pioneering models like CLIP [1] and ALIGN [2] established zero-shot recognition through shared image-text seman-tic spaces, while subsequent architectures, including the BLIP series [3, 4], InstructBLIP [5], and Flamingo [6], enhanced multimodal fusion for complex tasks such as visual question answering. Recently, integrating powerful visual encoders with large language models has yielded large multimodal models (LMMs) capable of deep conversational interactions and complex reasoning, exemplified by LLaVA [7], MiniGPT-4 [8], Qwen-VL [9], and advanced proprietary models. De-spite their demonstrated potential in areas like medical report generation [10] and autonomous driving [11], effectively applying VLMs to highly specialized power distribution inspection tasks remains a rarely explored frontier, particularly when the same model is expected to support fine-grained equipment recognition, defect description, severity grading, and maintenance-oriented decision support. 
+
+2.2 Agents in Industrial Scenarios 
+
+With the emergence of Large Language Models (LLMs), computing agents have evolved to utilize LLMs as their central “brain” for autonomous decision-making and goal execution [12–14]. Lever-aging robust reasoning capabilities and frameworks like ReAct [15, 16], these LLM-driven agents decompose complex objectives into actionable subtasks and invoke external tools—ranging from APIs to physical actuators [17, 18]—to achieve closed-loop automation. While such agents have seen initial adoption in industrial automation [19–21], our proposed framework conceptu-alizes an LLM-centric agent that ingests rich semantic inputs from VLMs to orchestrate power inspection workflows. By dynamically utilizing domain-specific toolkits, the agent connects vi-sual defect understanding with knowledge-base retrieval, severity assessment, report generation, and alert/work-order actions, representing an exploration of how multimodal perception can be linked to operational maintenance decisions [22, 23]. 
+
+2.3 Evaluation Tasks and Benchmarks 
+
+Existing research on agent evaluation has established systematic multidimensional taxonomic frameworks, comprehensively extending testing scenarios from general common sense to com-plex physical and digital environments[24–26]. In terms of multimodal and expert-level cogni-3tion, the MMMU benchmark[27] challenges models’ deep disciplinary perception and reasoning through over ten thousand university-level questions, while Ego-Exo4D[28] leverages large-scale multi-view video datasets to focus on evaluating agents’ recognition of fine-grained keysteps and skill proficiency. Regarding dynamic environmental interaction and complex workflow planning, GAIA[29] focuses on testing long-horizon planning capabilities in real-world multi-step tasks. Mind2Web[30] and its online version require agents to complete complex operations in authen-tic Web environments filled with interferences such as pop-ups and dynamic layouts, paying high attention to the correctness of the execution process. Furthermore, the recently proposed AgentVista[31] challenges the long-horizon tool-invocation capabilities of generalist multimodal agents driven by visual evidence across multiple sub-domains. 
+
+2.4 Evaluation Metric Systems 
+
+Accompanied by the evolution of agent capabilities, evaluation metrics have developed from sin-gle lexical overlap measures (e.g., BLEU [32] and ROUGE [33]) into a multidimensional system encompassing perception, behavior, reasoning, and system efficiency. On the foundational gen-eration and visual perception fronts, researchers have introduced Pass@ k to measure functional correctness [34], preference-based Elo ratings [35], as well as the POPE [36] and CHAIR [37] frameworks specifically designed to detect and quantify visual hallucinations. For long-horizon tasks and dynamic interactions, the core of evaluation has shifted to Success Rate (SR) [38], tool invocation, and retrieval accuracy (e.g., MRR and NDCG [39]), and the User-Sim Index (USI) [40], which quantifies the sim-to-real behavioral gap between simulators and real humans. More-over, facing the challenge of sparse rewards in complex tasks, the evaluation focus is migrating towards the execution process: Process Reward Model (PRM) scores [41] and hindsight logic backtracking-based credit assignment frameworks (e.g., HCAPO [42]) are utilized to accurately assess the logical consistency and action necessity of intermediate reasoning steps. Meanwhile, efficiency metrics such as Time to First Token (TTFT), throughput, and per-task cost have become crucial standards for measuring the actual production deployment value of models [43]. 
+
+## 3 Method 
+
+To systematically evaluate autonomous capabilities in power distribution inspection, we designed a comprehensive Multi-Modal Agent framework. Conceptually, this agent is defined as a computational entity capable of independently executing complex inspection tasks by closing the loop from perception to action. This section presents the overall design of the framework, the dataset, and the evaluation protocol. 
+
+3.1 Overall Framework 
+
+The agent’s architecture is structured around three key components: the core cognitive engine, the interaction mechanism, and the configuration strategy. (1) The Foundation Model is the heart of our agent. Rather than utilizing separate modules for vision and logic, we employ this single foundation model as the agent’s core reasoning engine. This model is responsible for processing multi-modal information and driving the agent’s three core capabilities: perception, reasoning, and tool usage. (2) Input and Output Mechanism. The agent interacts with the environment through a streamlined multi-modal interface that processes a combined input stream of high-resolution inspection images and natural language task instructions. This dual-input capability allows the agent to analyze visual signals within the context of specific user queries. Conversely, the agent is designed to produce dual-modality outputs: it generates detailed, human-like natural language descriptions to explain equipment status and defects, while simultaneously producing 4machine-parsable structured commands in JSON format to specify tool calls and parameters for automated execution. (3) Prompt Configuration. To adapt the general-purpose foundation model to the spe-cialized power domain, we implement a rigorous prompt engineering strategy that steers the agent’s behavior through a fixed template. This configuration explicitly defines the agent’s role as an experienced power inspection expert to establish a professional context, strictly sets task constraints to valid equipment and defect categories to minimize hallucinations, and incorpo-rates in-context learning via few-shot examples (comprising reference images and expert-verified descriptions) to standardize reasoning logic and output formats. 
+
+3.2 Implementation of Three Core Capabilities 
+
+We implement the agent’s functionality by grounding the foundation model’s behavior in three distinct capabilities, ensuring a robust transition from visual input to executable action. 
+
+3.2.1 Perception 
+
+The perception capability is responsible for extracting deep semantic information from visual signals. Unlike traditional detectors that output discrete labels, our implementation leverages the foundation model’s vision-language alignment to: (1) Identify and Locate: Analyze the image content to identify equipment types and locate key components; (2) Semantic Description: Generate detailed, natural language descriptions of potential defects. For instance, rather than simply flagging an object as “damaged,” the model describes the specific visual features, such as “rust on the flange”. This detailed semantic output bridges the gap between raw pixel data and expert-level understanding. 
+
+3.2.2 Reasoning 
+
+The reasoning capability interprets perception results and plans necessary interventions. To mitigate the hallucination risks common in general-purpose models, we enhance this stage with standards-document Retrieval-Augmented Generation (RAG) using a domain knowledge base. (1) Knowledge retrieval : The system retrieves relevant context from two sources: “Power Equipment Defect Rating Standards” for regulatory compliance and a “Historical Defect Case Library” for comparative analysis; (2) Logical inference : The model combines the visual description with retrieved knowledge to perform comprehensive reasoning. For example, upon detecting flashover traces, the agent queries the standards to confirm that “flashover” constitutes a serious defect. It then plans the subsequent logic: rating the defect level as ‘critical’, generating an emergency repair order, and archiving the report. 
+
+3.2.3 Tool Usage 
+
+The tool usage capability enables the agent to interact with the external environment and close the inspection loop. The foundation model is instructed to function as an autonomous operator, selecting appropriate tools and generating precise arguments to execute tasks. We define a standardized set of API tools for the model to invoke: 
+
+• “get_camera_image(location)”: Retrieves the current camera feed or image data from a specified coordinate or device location. 
+
+• “search_knowledgebase(defect)” Actively queries the internal database for solution proto-cols based on the identified defect information. 
+
+• “write_report(details)”: Compiles the analysis and reasoning results into a standardized inspection report format for archiving. 5Clamp cover fallen off                           
+
+> Missing fuse cover
+> Vacuum switch bushing cover missing
+> Insufficient clearance to trees
+> Flange corrosion
+> Missing main body & lead cover
+> Damaged insulated wire sheath
+> Cotter pin missing
+> Heavy contamination, no visible discharge
+> Loose insulator
+> Broken insulator
+> Foreign object - bird nest
+> Contaminated insulator (discharge marks)
+> Conductor fallen
+> Ball head corrosion
+> Tower top damage
+> Crossarm bent/tilted/deformed
+> Damaged conductor insulation
+> Debris at pole base
+> Pole crack
+> Improper binding wire
+> Foreign object on conductor
+> Transformer oil leak
+> Unbound conductor
+> Tower body damage
+> Arrester tripped
+> Conductor strand break
+> Loose splice connector
+> Contaminated insulator
+> Glaze surface peeling
+> Metal fittings Corrosion
+> Class
+> 0
+> 2000
+> 4000
+> 6000
+> 8000
+> 10000
+> Count
+> 10682
+> 4790
+> 2546 2493
+> 1428 1394
+> 625 527 505 472 364 172 136 105 103 102 84 45 44 42 41 33 18 14 11 655443
+
+Figure 3: Distribution of defect categories in the dataset. The bar chart illustrates the highly imbalanced, long-tail nature of real-world power distribution defects. 
+
+• “send_alert(message)”: Triggers an immediate notification to the relevant personnel in charge when high-risk defects are detected. By strictly defining these interfaces, we evaluate the model’s ability to not only “think” but to “do”—accurately parsing user queries and generating correct function calls to drive the operation. 
+
+## 4 Experiments 
+
+We conduct a systematic and multi-dimensional performance evaluation of our proposed frame-work. The experiments are organized around three parts: first, we evaluate the basic capabilities of different visual language models (VLMs) and their performance under different prompting strategies; second, we explore the effect of exemplar retrieval on VLM performance; finally, we analyze the effectiveness of agents with different designs and cores in performing downstream automation tasks. All experiments are conducted on the private evaluation dataset. 
+
+4.1 Experimental Setup 
+
+To rigorously evaluate the proposed framework on power distribution inspection, we constructed a comprehensive multimodal dataset. The dataset comprises 26,803 meticulously curated high-resolution images collected from drone inspection and field inspection records over the past three years. It encompasses a wide range of geographical environments and climatic conditions, including sunny and cloudy weather, as well as urban, rural, plain, hilly, and mountainous scenarios, ensuring the authenticity and diversity required for evaluating equipment recognition, defect classification, severity grading, and agent-based maintenance workflows. 
+
+4.1.1 Dataset Composition 
+
+The dataset is organized with a fixed held-out evaluation split while preserving the long-tail distribution observed in real inspection records. It covers 10 equipment categories and 31 defect categories. For evaluation, each category contains no more than 2,000 held-out test samples. The dataset contains a portion of majority classes with abundant samples (representing the most common operational anomalies), alongside a significant long-tail portion consisting of rare, low-frequency categories. This natural imbalance is deliberately preserved to explicitly test the model’s few-shot and zero-shot generalization capabilities when confronted with novel or scarce anomalies. 6All data instances are manually annotated to support multidimensional perception and deep reasoning, with the following key elements: 
+
+• Image Data: The high-resolution visual input. 
+
+• Category Information: Hierarchical labels detailing both the specific equipment type and the corresponding defect/anomaly category. 
+
+• Textual Descriptions: Detailed natural language semantics capturing the visual context and anomaly characteristics. 
+
+• Severity Levels: Graded assessments indicating the criticality or magnitude of the defect. 
+
+• Spatial Location Information: Precise positional data and coordinates of the equipment for accurate spatial localization. Furthermore, to enhance the model’s expert-level cognitive and diagnostic abilities, we integrated an authoritative domain-specific defect regulation and standard protocol document. This doc-ument acts as an external knowledge base, utilized to drive Retrieval-Augmented Generation (RAG) processes. By retrieving highly relevant guidelines, it ensures that the agent’s reasoning and final assessments strictly align with established industry standards. To reduce evaluation ambiguity, the equipment and defect vocabularies used in prompts are fixed before inference and are kept consistent with the annotation schema. The few-shot/RAG exemplar pool contains at most 10 examples per category, is separated from the held-out evalua-tion images, and retrieved examples are selected only from this pool to avoid test-image leakage. Text-only RAG provides the exemplar description, equipment label, and defect label, whereas multimodal RAG additionally provides the corresponding reference image. Unless otherwise specified, all models use the same prompt template, the same exemplar budget for each X-shot setting, the same image inputs, and deterministic decoding settings when supported by the model implementation. 
+
+4.1.2 Evaluation Metrics and Protocol 
+
+To ensure reproducibility we follow a fixed evaluation protocol: 
+
+• Detection / Recognition metrics: for the main recognition benchmark, Acc is computed as a label-containing exact-match metric, i.e., a prediction is counted as correct when the generated text explicitly contains the ground-truth equipment or defect label. Re-call , Precision , and F1 are reported as macro-averaged scores over classes after mapping unmatched predictions to an additional other class. 
+
+• Grading / Severity metrics: exact-match rate against expert-assigned grades. 
+
+• End-to-end task metrics: task success rate computed by comparing agent-generated actions (e.g., work orders) with ground-truth expected actions. 
+
+4.2 Evaluation Details 
+
+We evaluated a set of representative multimodal foundation models, including GLM-4.5V, Qwen2.5-VL-32B, Qwen3-VL-30B, LLaVA, DeepSeek-VL2, the Gemma3 family (4B, 12B, and 27B), and Step3. For reasoning-oriented evaluation, we also include models or configurations with explicit thinking capabilities, such as GLM-4.5V-thinking. Unless otherwise stated, all evaluations use deterministic decoding, the same prompt template, and the same held-out eval-uation split. We only test locally deployable or data-security-compliant models to avoid exposing private inspection images. 7Tower/pole 
+
+> Conductor
+> Insulator
+> Metal fittings
+> Right-of-way
+> Pole-mounted vacuum switch
+> Fuse
+> Lightning arrester
+> Transformer bushing
+> Transformer tank
+> Equipment
+> 0.0
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> 0.6
+> 0.7
+> 0.8
+> Accuracy
+> Method
+> Qwen3-30B
+> GLM-4.1V-Thinking
+> Step3
+> Deepseek-VL2
+> LLaVA-1.5
+
+Figure 4: Accuracy of different multimodal models on equipment recognition across various power components. To ensure reproducibility, we use a fixed prompt template and report all model results under the same zero-shot, 1-shot, and 5-shot settings. (1) For zero-shot inference, this prompt directly instructs the model without providing any examples. For example: You are an experienced power inspection expert. Please carefully analyze the following image, identify all power equipment in the image, and describe any defects in detail. Equipment component names include: [All equipment names]. If there are no defects, please answer “No defects.” If there are defects, please select the most appropriate defect type from the following categories: [Pre-defined defect names]. [Image]. 
+
+(2) For few-shot inference , additional reference sample information is provided at the beginning. For example: Reference image: [image id], Similarity: [cosine similarity of embeddings], Description: [Specific appearance feature description]; Equipment type: [Equipment type]; Defect type: [Defect type]. 
+
+4.2.1 Recognition Performance 
+
+In Table 3, we analyze the recognition capabilities of several mainstream existing multimodal large models for power equipment and defects. Here, Acc denotes label-containing exact-match accuracy, while Recall , Precision , and F1 denote macro-averaged scores with unmatched gen-erations mapped to an other class. Under this protocol, equipment recognition is consistently easier than defect recognition; however, the overall recognition performance remains unsatis-factory, with most zero-shot accuracy rates below 10%. Additionally, Figure 4 presents the prediction accuracy of the models for each specific category. Specifically, all models exhibit generally higher recognition accuracy for basic objects (e.g., power poles, conductors, and insu-lators). Nevertheless, when confronted with more specialized power equipment (e.g., fuses and surge arresters), the performance of these models degrades significantly. This observation indi-cates that the pre-training data of general-purpose multimodal foundation models endows them with universal recognition capabilities for common objects, while they lack precise cognition of specific components within specialized industrial domains. 
+
+4.2.2 Impact of Model Scale 
+
+As shown in Fig 5, for the power equipment and defect dataset focused on in this study, without the assistance of domain-related knowledge, the overall performance of the models is unsatis-factory, with the accuracy generally below 10%; even when adopting model architectures with larger parameter scales, there is no significant improvement in performance. However, after integrating domain-specific knowledge of power equipment, the model performance has achieved 85 10 15 20 25 30 35 
+
+> Model Scale [B active parameters]
+> 0
+> 2
+> 4
+> 6
+> 8
+> 10
+> 12
+> 14
+> Accuracy [%]
+> GLM-4.1V
+> Qwen2.5-VL-32B
+> Step3
+> Deepseek-VL2
+> Gemma3-4b
+> Gemma3-27b
+
+(a) Equipment 5 10 15 20 25 30 35   
+
+> Model Scale [B active parameters]
+> 0
+> 2
+> 4
+> 6
+> 8
+> 10
+> 12
+> 14
+> Accuracy [%]
+> GLM-4.1V
+> Qwen2.5-VL-32B
+> Step3
+> Deepseek-VL2
+> Gemma3-4b Gemma3-27b
+
+(b) Defect 5 10 15 20 25 30 35  
+
+> Model Scale [B parameters]
+> 20
+> 25
+> 30
+> 35
+> 40
+> 45
+> 50
+> 55
+> Accuracy [%]
+> GLM-4.1V Step3
+> Deepseek-VL2
+> LLava
+> Gemma3-4b
+> Gemma3-12b
+> Gemma3-27b
+> Qwen3VL-2b
+> Qwen3VL-4b
+> Qwen3VL-8b
+> Qwen3VL-30b
+> Gemma3
+> Qwen3
+
+(c) Equipment (5-shot RAG) 5 10 15 20 25 30 35   
+
+> Model Scale [B parameters]
+> 20
+> 25
+> 30
+> 35
+> 40
+> 45
+> Accuracy [%]  GLM-4.1V Step3
+> Deepseek-VL2
+> LLava
+> Gemma3-4b
+> Gemma3-12b
+> Gemma3-27b
+> Qwen3-2b
+> Qwen3-4b
+> Qwen3-8b
+> Qwen3-30b
+> Gemma3
+> Qwen3
+
+(d) Defect (5-shot RAG) 
+
+Figure 5: Comparison of equipment and defect recognition accuracy across models of different scales, with and without RAG. substantial enhancement. At this point, there is an obvious positive correlation between model performance and parameter scale—models with larger parameter scales often demonstrate su-perior task processing capabilities. 
+
+4.2.3 Effectiveness of Exemplar Retrieval 
+
+Table 3 presents a comparative analysis of model performance enhanced by exemplar retrieval, where the term “X-shot” denotes that X exemplars are supplemented for each category. Com-pared with the foundation-model performance without additional domain exemplars, exemplar retrieval significantly boosts recognition capabilities for both power equipment and defects. Fur-thermore, as shown in Figure 5, a positive correlation is observed between the number of retrieved exemplars and performance improvement; however, this enhancement is subject to a marginal effect. Specifically, when the number of supplementary exemplars reaches a certain threshold, the subsequent performance gain becomes negligible. Two distinct exemplar-retrieval paradigms are further compared in Table 1: one solely pro-viding textual descriptive information of exemplars, and the other integrating both textual descriptions and corresponding image data of exemplars. Experimental results show a trade-off rather than a uniformly dominant choice. Textual descriptive information alone already yields a strong improvement and provides more stable gains for some accuracy-oriented met-rics. Adding image information brings limited additional benefit overall: for DeepSeek under the 5-shot setting, equipment recognition accuracy increases by 2.05%, while several equipment 9Pole Body Crack 
+
+> Flange Corrosion
+> Foreign Object / Bird Nest
+> Tower Top Damage
+> Tower Body Damage
+> Debris Accumulation at Pole Base
+> Broken Conductor Strands
+> Insulated Wire Sheath Damage
+> Foreign Object on Conductor
+> Conductor Insulation Jacket Damage
+> Conductor Fallen
+> Improper Binding Wire
+> Unbound Conductor
+> Insulator Pollution
+> Insulator Damage
+> Insulator Not Firmly Fixed
+> Glaze Surface Peeling
+> Severe Pollution Without Discharge Marks
+> Splice Clamp Loosened
+> Metal Fittings Corrosion
+> Insulation Cover of Clamp Fallen
+> Cotter Pin Fallen
+> Ball Head Corrosion
+> Crossarm Bent / Tilted / Deformed
+> Insufficient Clearance from Trees
+> Vacuum Switch Insulation Cover Missing
+> Fuse Insulation Cover Missing
+> MOA (Lightning Arrester) Tripped
+> Main Body & Lead Insulation Cover Missing
+> Transformer Oil Leakage
+> Tower
+> Conductor
+> Insulator
+> Metal Fittings
+> Channel / Corridor
+> Pole-mounted Vacuum Switch
+> Fuse
+> Lightning Arrester
+> Transformer Bushing
+> Transformer Oil Tank
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> Accuracy
+> 0-shot
+> 1-shot
+> 3-shot
+
+Figure 6: Per-class Detailed accuracy (Defect and equipment) metrics decrease; for defect recognition, accuracy decreases by 0.64%, but recall, precision, and F1 improve. This suggests that visual exemplars can help some recall-oriented defect metrics but may also introduce noise or distractors in fine-grained equipment recognition. Table 1: Performance of equipment and defect prediction under 5-shot settings using text-only and multimodal inputs. (%) Equipment Acc Recall F1 score Prec Descriptions (5-shot) 38.54 34.16 45.28 72.72 + images (5-shot) 40.59 ↑ 32.86 ↓ 42.13 ↓ 63.63 ↓
+
+Defect Acc Recall F1 score Prec Descriptions (5-shot) 33.80 40.98 51.73 81.48 + images (5-shot) 33.16 ↓ 45.96 ↑ 58.19 ↑ 88.88 ↑
+
+4.2.4 Defect Grading & Analysis 
+
+We observe that the agent’s overall grading accuracy is limited, primarily due to errors prop-agated from the defect recognition stage. When conditioning the evaluation on samples with correctly predicted defects, however, the agent achieves substantially higher grading accuracy, as reported by the conditional grading accuracy in Table 2. This indicates that the agent is gener-ally capable of efficiently locating the relevant regulatory clauses and making correct judgments when provided with accurate defect information. For tool-use evaluation, Tool usage accuracy measures whether the model selects the correct tool at each step, averaged over all tool-selection steps. Argument accuracy measures whether the arguments passed to the selected tools are correct, and the final score is averaged across Table 2: End-to-end grading accuracy and grading accuracy conditioned on correct defect pre-diction. (%) Model Step3 Gemma3-27b deepseek-vl2 GLM-4.5V-thinking Qwen3-VL-30B Grading Accuracy 36.34 42.71 31.56 34.89 38.32 Conditional Grading Accuracy 91.02 90.45 90.68 93.02 91.68 10 Table 3: Quantitative comparison of baseline multi-modal models for equipment and defect recognition under zero-shot, 1-shot, and 5-shot configurations. Acc denotes label-containing exact-match accuracy. Recall, F1score, and Prec denote macro-averaged metrics with unmatched predictions mapped to an additional other class. Model GLM-4.5V Qwen2.5-vl-32B Step3 Metric Acc Recall F1score Prec Acc Recall F1score Prec Acc Recall F1score Prec 0-shot equip 5.78 10.13 14.89 50 9.97 22.72 28.67 72.72 6.81 14.79 16.91 27.77 defect 4.47 12.22 14.05 20.83 0.3 1.55 2.64 22.22 14.54 20.67 27.78 50 1-shot equip 45.32 39.43 49.88 72.72 24.91 26.26 36.68 72.72 46.52 41.72 50.96 72.72 defect 32.85 50.64 60.15 88.88 1.27 6.06 8.04 55.55 34.88 51.05 60.34 88.88 5-shot equip 54.39 43.54 53.3 72.72 14.56 29.4 38.52 85.71 56.81 47.48 56.16 72.72 defect 37.52 45.95 55.78 85.18 1.32 0.4 0.8 22.22 40.02 51.9 60.46 81.48 Model Gemma3-4b Gemma3-12b Gemma3-27b Metric Acc Recall F1score Prec Acc Recall F1score Prec Acc Recall F1score Prec 0-shot equip 0.07 0.12 0.24 9.09 0.31 0.6 0.81 9.09 1.75 3.34 5.56 27.27 defect 0 0 0 0 0 0 0 0 0.03 0.1 0.19 3.71 1-shot equip 30.75 32.32 41.99 72.72 33.67 36.28 43.65 72.72 36.85 40.67 46.58 72.72 defect 14.08 27.45 35.71 77.77 27.52 33.46 39.96 77.77 33.36 37.48 44.12 66.66 5-shot equip 40.36 36.23 46.48 72.72 51.91 42.74 46.48 72.72 55.65 44.92 53.79 72.72 defect 35.21 47.44 56.67 81.48 37.34 50.14 59.98 81.48 44.21 56.10 65.31 85.18 Model Qwen3-VL-30B Deepseek-vl2 LLava Metric Acc Recall F1score Prec Acc Recall F1score Prec Acc Recall F1score Prec 0-shot equip 4.12 6.98 9.55 54.54 14.24 15.84 22.23 54.54 11.84 12.65 20.45 54.54 defect 0 0 0 0 1.44 3.01 4.84 33.36 1.44 2.56 3.68 33.36 1-shot equip 44.81 38.7 49.43 72.72 33.17 31.07 41.81 72.72 33.07 31.6 42.93 72.72 defect 39.86 60.91 69.11 88.88 20.67 20.27 27.8 66.66 23.66 31.11 41.84 81.48 5-shot equip 46.72 39.73 49.78 72.72 38.54 34.16 45.28 72.72 37.37 32.96 44.57 72.72 defect 40.74 60.75 69.76 88.88 33.8 40.98 51.73 81.48 24.97 25.48 35.35 77.77 Table 4: Quantitative assessment of tool usage and task execution metrics for various multi-modal large language models, categorized by their function-calling support. Models Function call supported Function call Not supported Step3 GLM-4.5V Qwen3-VL-30B Deepseek-vl2 Qwen2.5-vl-32b Gemma3-12b Tool usage accuracy 0.7083 0.7958 0.316 0.4429 0.6500 0.7100 Argument accuracy 0.8042 0.7875 0.498 0.5762 0.9000 0.8600 Toolchain coherence 0.6042 0.7708 0.305 0.3524 0.5375 0.5812 Task success rate 0.4292 0.3000 0.034 0.1000 0.1833 0.2164 11 Inspect Area A, ...    
+
+> Inspect areas A1
+> and A2 , ...
+> Hallucinated
+> Sub-tasks
+> Send Alert
+> Send Alert
+> Duplicated
+> Action Error
+> Get camera image
+> of area A
+> Recognize defect in A
+> Action Sequence
+> Misalignment
+> Find defect in area
+> A
+> Send Alert
+> Incorrect Tool
+> Invocation
+> ...... ...... ...... Get camera image
+> in area B ...
+> Get camera image
+> of area A
+> Return
+> “/images/a_20250925.j
+> pg ”
+> Invalid Arguments
+> recognize defect of
+> “/a_20250925.jpg ”
+> ......
+
+Figure 7: Typical categories of tool-execution errors in multimodal agents. the whole tool chain. Toolchain coherence evaluates the correctness of the predicted tool chain against the ground-truth tool chain; we use an LLM judge to match the predicted and reference tool sequences and assign a score from 1 to 10, which is then normalized for reporting. Task success rate measures end-to-end task completion: a task is counted as successful if the agent reaches the specified target, such as sending an alert or generating an inspection report, and unsuccessful otherwise. In this section, we evaluate the execution performance of the agent implemented via the ReAct architecture. The evaluation focuses on the agent’s ability to autonomously navigate the three-stage pipeline: Input Parsing, Task Decomposition, and Tool Invocation. Our experiments reveal distinct failure modes in both cognitive planning and operational execution, highlighting the gap between general-purpose capabilities and domain-specific requirements. 
+
+4.2.5 Task Decomposition 
+
+The primary bottleneck observed in the decomposition phase is the knowledge barrier. The task decomposition agent lacks internalized professional knowledge in the field of power inspection, which frequently results in unreasonable task division. Specifically, the agent tends to halluci-nate non-existent targets; for instance, it may arbitrarily divide a single region (e.g., “area A”) into multiple sub-areas without any logical basis, or generate inspection tasks for non-existent equipment points. These illogical decompositions lead to the generation of redundant or in-valid sub-tasks, resulting in significant resource waste and confusion during the execution of the inspection workflow 
+
+4.2.6 Tool Invocation 
+
+In the execution phase, the agent struggles with toolchain coherence and cascading failures. We observed that intelligent agents frequently misunderstand task intentions or tool capabilities, leading to disorganized calling sequences, such as circular or repeated tool calls. Furthermore, the workflow exhibits significant fragility; in a stepwise process, if an earlier step fails (e.g., failure to retrieve an image), subsequent steps often cannot run correctly due to missing prerequisites. This dependency failure triggers a chain reaction, resulting in inaccurate parameter passing, incoherent tool invocation chains, and a reduced overall task success rate, as illustrated in Fig. 7. These issues stem from the agent’s insufficient understanding of tool usage constraints and the inherent instability of the fundamental model. 
+
+## 5 Conclusion 
+
+In this paper, we proposed a holistic evaluation framework for Multi-Modal Agents in power distribution inspection, treating them as unified cognitive engines capable of perception, reason-ing, and tool usage. By establishing a domain-specific benchmark, we systematically assessed 12 the readiness of fundamental models for autonomous industrial maintenance. Our experiments reveal critical insights into the deployment of general-purpose Multi-Modal Large Language Models (MLLMs). First, without domain adaptation, these models exhibit limited capability in recognizing fine-grained power equipment defects, achieving less than 10% accuracy. Second, while Retrieval-Augmented Generation (RAG) significantly bridges this semantic gap, we found that text-only and multimodal retrieval exhibit different trade-offs. Textual exemplars provide stable improvements and are often sufficient for accuracy-oriented recognition, whereas adding visual exemplars can improve some recall-oriented defect metrics but may also introduce noise for fine-grained equipment recognition. Third, regarding agent autonomy, both cognitive planning and toolchain execution remain bottlenecks. Hallucinations during task decomposition frequently lead to invalid inspection tar-gets, while cascading failures during tool invocation reduce end-to-end task success. Future work will focus on internalizing domain knowledge through instruction tuning to reduce depen-dence on external retrieval, and integrating advanced planning algorithms, such as self-reflection mechanisms, to enhance the robustness of agents in complex, long-horizon maintenance tasks. 
+
+## References 
+
+[1] A. Radford, J. W. Kim, C. Hallacy, A. Ramesh, G. Goh, S. Agarwal, G. Sastry, A. Askell, P. Mishkin, J. Clark, G. Krueger, and I. Sutskever, “Learning Transferable Visual Models From Natural Language Supervision,” in Proceedings of the 38th International Conference on Machine Learning . PMLR, Jul. 2021, pp. 8748–8763. [Online]. Available: https://proceedings.mlr.press/v139/radford21a.html [2] C. Jia, Y. Yang, Y. Xia, Y.-T. Chen, Z. Parekh, H. Pham, Q. Le, Y.-H. Sung, Z. Li, and T. Duerig, “Scaling Up Visual and Vision-Language Representation Learning With Noisy Text Supervision,” in Proceedings of the 38th International Conference on Machine Learning . PMLR, Jul. 2021, pp. 4904–4916. [Online]. Available: https://proceedings.mlr.press/v139/jia21b.html [3] J. Li, D. Li, C. Xiong, and S. Hoi, “Blip: Bootstrapping language-image pre-training for unified vision-language understanding and generation,” in International conference on machine learning . PMLR, 2022, pp. 12 888–12 900. [Online]. Available: https://proceedings.mlr.press/v162/li22n.html [4] J. Li, D. Li, S. Savarese, and S. Hoi, “Blip-2: Bootstrapping language-image pre-training with frozen image encoders and large language models,” in International conference on machine learning . PMLR, 2023, pp. 19 730–19 742. [5] W. Dai, J. Li, D. Li, A. M. H. Tiong, J. Zhao, W. Wang, B. Li, P. Fung, and S. Hoi, “In-structBLIP: Towards General-purpose Vision-Language Models with Instruction Tuning,” 
+
+arXiv preprint arXiv:2305.06500 , 2023. [6] J.-B. Alayrac, J. Donahue, P. Luc, A. Miech, I. Barr, Y. Hasson, K. Lenc, A. Mensch, K. Millican, and M. Reynolds, “Flamingo: a visual language model for few-shot learning,” Advances in neural information processing systems , vol. 35, pp. 23 716–23 736, 2022. [Online]. Available: https://proceedings.neurips.cc/paper_files/paper/2022/hash/ 960a172bc7fbf0177ccccbb411a7d800-Abstract-Conference.html [7] H. Liu, C. Li, Q. Wu, and Y. J. Lee, “Visual instruction tuning,” Ad-vances in neural information processing systems , vol. 36, pp. 34 892–34 916, 2023. [Online]. Available: https://proceedings.neurips.cc/paper_files/paper/2023/hash/ 6dcf277ea32ce3288914faf369fe6de0-Abstract-Conference.html 13 [8] D. Zhu, J. Chen, X. Shen, X. Li, and M. Elhoseiny, “MiniGPT-4: Enhancing Vision-Language Understanding with Advanced Large Language Models,” Oct. 2023, arXiv:2304.10592 [cs]. [Online]. Available: http://arxiv.org/abs/2304.10592 [9] P. Wang, S. Bai, S. Tan, S. Wang, Z. Fan, J. Bai, K. Chen, X. Liu, J. Wang, W. Ge et al. ,“Qwen2-vl: Enhancing vision-language model’s perception of the world at any resolution,” 
+
+arXiv preprint arXiv:2409.12191 , 2024. [10] C. Li, C. Wong, S. Zhang, N. Usuyama, H. Liu, J. Yang, T. Naumann, H. Poon, and J. Gao, “Llava-med: Training a large language-and-vision assistant for biomedicine in one day,” Advances in Neural Information Processing Systems , vol. 36, pp. 28 541–28 564, 2023. [Online]. Available: https://proceedings.neurips.cc/paper_files/paper/2023/hash/ 5abcdf8ecdcacba028c6662789194572-Abstract-Datasets_and_Benchmarks.html [11] C. Sima, K. Renz, K. Chitta, L. Chen, H. Zhang, C. Xie, J. Beißwenger, P. Luo, A. Geiger, and H. Li, “Drivelm: Driving with graph visual question answering,” in European conference on computer vision . Springer, 2024, pp. 256–274. [12] Z. Xi, W. Chen, X. Guo, W. He, Y. Ding, B. Hong, M. Zhang, J. Wang, S. Jin, E. Zhou, R. Zheng, X. Fan, X. Wang, L. Xiong, Y. Zhou, W. Wang, C. Jiang, Y. Zou, X. Liu, Z. Yin, S. Dou, R. Weng, W. Qin, Y. Zheng, X. Qiu, X. Huang, Q. Zhang, and T. Gui, “The rise and potential of large language model based agents: a survey,” Science China Information Sciences , vol. 68, no. 2, p. 121101, Feb. 2025. [Online]. Available: https://link.springer.com/10.1007/s11432-024-4222-0 [13] L. Wang, C. Ma, X. Feng, Z. Zhang, H. Yang, J. Zhang, Z. Chen, J. Tang, X. Chen, Y. Lin, W. X. Zhao, Z. Wei, and J. Wen, “A survey on large language model based autonomous agents,” Frontiers of Computer Science , vol. 18, no. 6, p. 186345, Dec. 2024. [Online]. Available: https://link.springer.com/10.1007/s11704-024-40231-1 [14] J. S. Park, J. O’Brien, C. J. Cai, M. R. Morris, P. Liang, and M. S. Bernstein, “Generative Agents: Interactive Simulacra of Human Behavior,” in Proceedings of the 36th Annual ACM Symposium on User Interface Software and Technology . San Francisco CA USA: ACM, Oct. 2023, pp. 1–22. [Online]. Available: https://dl.acm.org/doi/10.1145/3586183.3606763 [15] S. Yao, J. Zhao, D. Yu, N. Du, I. Shafran, K. R. Narasimhan, and Y. Cao, “React: Synergizing reasoning and acting in language models,” in The eleventh international conference on learning representations , 2022. [Online]. Available: https: //openreview.net/forum?id=WE_vluYUL-X [16] J. Wei, X. Wang, D. Schuurmans, M. Bosma, F. Xia, E. Chi, Q. V. Le, and D. Zhou, “Chain-of-thought prompting elicits reasoning in large language models,” Advances in neural information processing systems , vol. 35, pp. 24 824– 24 837, 2022. [Online]. Available: https://proceedings.neurips.cc/paper/2022/hash/ 9d5609613524ecf4f15af0f7b31abca4-Abstract-Conference.html [17] T. Schick, J. Dwivedi-Yu, R. Dessì, R. Raileanu, M. Lomeli, E. Hambro, L. Zettlemoyer, N. Cancedda, and T. Scialom, “Toolformer: Language models can teach themselves to use tools,” Advances in Neural Information Processing Systems , vol. 36, pp. 68 539–68 551, 2023. [Online]. Available: https://proceedings.neurips.cc/paper_files/paper/2023/hash/ d842425e4bf79ba039352da0f658a906-Abstract-Conference.html [18] Y. Qin, S. Hu, Y. Lin, W. Chen, N. Ding, G. Cui, Z. Zeng, X. Zhou, Y. Huang, C. Xiao, C. Han, Y. R. Fung, Y. Su, H. Wang, C. Qian, R. Tian, K. Zhu, S. Liang, X. Shen, B. Xu, Z. Zhang, Y. Ye, B. Li, Z. Tang, J. Yi, Y. Zhu, Z. Dai, L. Yan, X. Cong, Y. Lu, W. Zhao, 14 Y. Huang, J. Yan, X. Han, X. Sun, D. Li, J. Phang, C. Yang, T. Wu, H. Ji, G. Li, Z. Liu, and M. Sun, “Tool Learning with Foundation Models,” ACM Computing Surveys , vol. 57, no. 4, pp. 1–40, Apr. 2025. [Online]. Available: https://dl.acm.org/doi/10.1145/3704435 [19] Y. Xia, N. Jazdi, and M. Weyrich, “Applying Large Language Models for intelligent industrial automation,” atp magazin , vol. 66, no. 6–7, pp. 62–71, 2024. [Online]. Available: https://atpinfo.de/wp-content/uploads/2025/04/xia.pdf [20] S. Madani, A. Tavasoli, Z. K. Astaneh, and P.-O. Pineau, “Large Language Models integration in Smart Grids,” Apr. 2025, arXiv:2504.09059 [cs]. [Online]. Available: http://arxiv.org/abs/2504.09059 [21] J. Vyas and M. Mercangöz, “Autonomous industrial control using an agentic framework with large language models,” IFAC-PapersOnLine , vol. 59, no. 6, pp. 349–354, 2025. [22] H. Jin, K. Kim, and J. Kwon, “Gridmind: Llms-powered agents for power system analysis and operations,” in Proceedings of the SC’25 Workshops of the International Conference for High Performance Computing, Networking, Storage and Analysis , 2025, pp. 560–568. [23] Z. Wang, X. Zhou, J. Mao, C. Zhang, C. Cui, and J. Yang, “Llm-mtmp: A large language model-based multi-agent task and motion planning framework for power inspection robots,” 
+
+Journal of Industrial Information Integration , p. 101014, 2025. [24] J. Xie, Z. Chen, R. Zhang, and G. Li, “Large multimodal agents: a survey,” 
+
+Visual Intelligence , vol. 3, no. 1, p. 24, Dec. 2025. [Online]. Available: https: //link.springer.com/10.1007/s44267-025-00093-y [25] M. Mohammadi, Y. Li, J. Lo, and W. Yip, “Evaluation and Benchmarking of LLM Agents: A Survey,” in Proceedings of the 31st ACM SIGKDD Conference on Knowledge Discovery and Data Mining V.2 . Toronto ON Canada: ACM, Aug. 2025, pp. 6129–6139. [Online]. Available: https://dl.acm.org/doi/10.1145/3711896.3736570 [26] A. Yehudai, L. Eden, A. Li, G. Uziel, Y. Zhao, R. Bar-Haim, A. Cohan, and M. Shmueli-Scheuer, “Survey on Evaluation of LLM-based Agents,” Mar. 2025, arXiv:2503.16416 [cs]. [Online]. Available: http://arxiv.org/abs/2503.16416 [27] X. Yue, Y. Ni, K. Zhang, T. Zheng, R. Liu, G. Zhang, S. Stevens, D. Jiang, W. Ren, Y. Sun et al. , “Mmmu: A massive multi-discipline multimodal understanding and reasoning benchmark for expert agi,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2024, pp. 9556–9567. [28] K. Grauman, A. Westbury, L. Torresani, K. Kitani, J. Malik, T. Afouras, K. Ashutosh, V. Baiyya, S. Bansal, B. Boote et al. , “Ego-exo4d: Understanding skilled human activity from first-and third-person perspectives,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2024, pp. 19 383–19 400. [29] G. Mialon, C. Fourrier, T. Wolf, Y. LeCun, and T. Scialom, “Gaia: a benchmark for general ai assistants,” in The Twelfth International Conference on Learning Representations , 2023. [30] X. Deng, Y. Gu, B. Zheng, S. Chen, S. Stevens, B. Wang, H. Sun, and Y. Su, “Mind2web: Towards a generalist agent for the web,” Advances in Neural Information Processing Sys-tems , vol. 36, pp. 28 091–28 114, 2023. [31] Z. Su, J. Gao, H. Guo, Z. Liu, L. Zhang, X. Geng, S. Huang, P. Xia, G. Jiang, C. Wang et al. ,“Agentvista: Evaluating multimodal agents in ultra-challenging realistic visual scenarios,” 
+
+arXiv preprint arXiv:2602.23166 , 2026. 15 [32] K. Papineni, S. Roukos, T. Ward, and W.-J. Zhu, “Bleu: a method for automatic evaluation of machine translation,” in Proceedings of the 40th annual meeting of the Association for Computational Linguistics , 2002, pp. 311–318. [33] C.-Y. Lin, “Rouge: A package for automatic evaluation of summaries,” in Text summariza-tion branches out , 2004, pp. 74–81. [34] M. Chen, J. Tworek, H. Jun, Q. Yuan, H. P. D. O. Pinto, J. Kaplan, H. Edwards, Y. Burda, N. Joseph, G. Brockman et al. , “Evaluating large language models trained on code,” arXiv preprint arXiv:2107.03374 , 2021. [35] L. Zheng, W.-L. Chiang, Y. Sheng, S. Zhuang, Z. Wu, Y. Zhuang, Z. Lin, Z. Li, D. Li, E. Xing et al. , “Judging llm-as-a-judge with mt-bench and chatbot arena,” Advances in neural information processing systems , vol. 36, pp. 46 595–46 623, 2023. [36] Y. Li, Y. Du, K. Zhou, J. Wang, W. X. Zhao, and J.-R. Wen, “Evaluating object halluci-nation in large vision-language models,” in Proceedings of the 2023 conference on empirical methods in natural language processing , 2023, pp. 292–305. [37] A. Rohrbach, L. A. Hendricks, K. Burns, T. Darrell, and K. Saenko, “Object hallucination in image captioning,” in Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing , 2018, pp. 4035–4045. [38] X. Liu, H. Yu, H. Zhang, Y. Xu, X. Lei, H. Lai, Y. Gu, H. Ding, K. Men, K. Yang et al. ,“Agentbench: Evaluating llms as agents,” arXiv preprint arXiv:2308.03688 , 2023. [39] I. Schwartz, “Ensemble of mrr and ndcg models for visual dialog,” in Proceedings of the 2021 Conference of the North American Chapter of the Association for Computational Linguis-tics: Human Language Technologies , 2021, pp. 3272–3363. [40] X. Zhou, W. Sun, Q. Ma, Y. Xie, J. Liu, W. Du, S. Welleck, Y. Yang, G. Neubig, S. T. Wu et al. , “Mind the sim2real gap in user simulation for agentic tasks,” arXiv preprint arXiv:2603.11245 , 2026. [41] H. Lightman, V. Kosaraju, Y. Burda, H. Edwards, B. Baker, T. Lee, J. Leike, J. Schul-man, I. Sutskever, and K. Cobbe, “Let’s verify step by step,” in The twelfth international conference on learning representations , 2023. [42] H.-Z. Tan, X.-W. Yang, H. Chen, J.-J. Shao, Y. Wen, Y. Shen, W. Luo, X. Du, L.-Z. Guo, and Y.-F. Li, “Hindsight credit assignment for long-horizon llm agents,” arXiv preprint arXiv:2603.08754 , 2026. [43] J. Liu, B. Chen, and C. Zhang, “Speculative prefill: Turbocharging ttft with lightweight and training-free token importance estimation,” arXiv preprint arXiv:2502.02789 , 2025. 16

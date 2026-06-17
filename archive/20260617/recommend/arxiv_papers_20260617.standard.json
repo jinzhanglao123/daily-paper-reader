@@ -1,0 +1,184 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-17T21:34:09.741108+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 3,
+    "quick_skim_target": 11,
+    "quick_selected": 3
+  },
+  "deep_dive": [
+    {
+      "id": "2606.14302v1",
+      "source": "arxiv",
+      "title": "Retrospective Progress-Aware Self-Refinement for LLM Agent Training",
+      "abstract": "LLM-based agents trained with reinforcement learning optimize step-wise action prediction but lack metacognitive awareness of task progress, inducing a gap that hinders long-horizon scaling. A pilot study reveals that online progress prompting hurts performance while retrospective demonstrations help, yet this capability cannot emerge from outcome-reward training alone. We present RePro, Retrospective Progress-Aware Training, a framework that trains agents to self-generate progress signals via a forward-then-reflect rollout paradigm: the agent executes actions online, then retrospectively reassesses its step-wise progress given the completed trajectory and known outcome. RePro initializes with a Retrospection Warmup that teaches reflection format from minimal external demonstrations, then further trains through RePro-PO with a composite reward that produces self-generated signals without continuous external supervision. Experiments on WebShop, ALFWorld, and Sokoban show that RePro enhances the Qwen family's performance, with up to $12\\%$ absolute success rate gains.",
+      "authors": [
+        "Xinbei Ma",
+        "Congmin Zheng",
+        "Jiyang Qiu",
+        "Jiale Hong",
+        "Yao Yao",
+        "Xiangmou Qu",
+        "Jiaxin Yin",
+        "Xingyu Lou",
+        "Jun Wang",
+        "Weiwen Liu",
+        "Weinan Zhang",
+        "Zhuosheng Zhang",
+        "Hai Zhao"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-06-12T09:38:47+00:00",
+      "link": "https://arxiv.org/pdf/2606.14302v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "explicitly targets long-horizon scaling with retrospective progress signals",
+      "llm_evidence_cn": "通过回顾式进度信号明确面向长时域扩展",
+      "llm_evidence": "通过回顾式进度信号明确面向长时域扩展",
+      "canonical_evidence": "通过回顾式进度信号明确面向长时域扩展",
+      "llm_tldr_en": "Proposes RePro, a framework that trains LLM agents to self-generate progress signals by retrospectively reassessing actions, enabling better long-horizon scaling in RL training.",
+      "llm_tldr_cn": "针对LLM智能体在强化学习训练中缺乏任务进度元认知、难以在长时域任务中扩展的问题，提出RePro框架，通过前向执行后向反思的范式训练智能体生成进度信号，利用已知结果回顾评估每步动作的贡献，从而提升长时域任务学习效率。实验显示该方法在复杂长序列任务中显著优于仅使用结果奖励的基线。",
+      "llm_tldr": "针对LLM智能体在强化学习训练中缺乏任务进度元认知、难以在长时域任务中扩展的问题，提出RePro框架，通过前向执行后向反思的范式训练智能体生成进度信号，利用已知结果回顾评估每步动作的贡献，从而提升长时域任务学习效率。实验显示该方法在复杂长序列任务中显著优于仅使用结果奖励的基线。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.15866v1",
+      "source": "arxiv",
+      "title": "STRIDE: Strategic Trajectory Reasoning via Discriminative Estimation for Verifiable Reinforcement Learning",
+      "abstract": "Reinforcement Learning with Verifiable Rewards (RLVR) has become an effective post-training paradigm for improving the reasoning abilities of large language models. However, existing RLVR methods typically rely on final-answer correctness to assign trajectory-level rewards, providing sparse supervision and treating all tokens uniformly regardless of their actual contribution to reasoning. Although recent studies introduce intermediate signals such as process rewards, high-entropy tokens, and semantic uncertainty, these signals are often not inherently verifiable and may fail to distinguish beneficial strategic patterns from harmful ones. To address this limitation, we propose STRIDE (Strategic Trajectory Reasoning with Discriminative Estimation), a fine-grained RLVR framework that derives strategic reasoning supervision from verifiable outcomes. STRIDE contrasts successful and failed trajectories within each response group to estimate the outcome-discriminative preference of each $n$-gram strategic pattern, and further combines this signal with reasoning saliency entropy to identify decision-relevant strategic patterns. These patterns are assigned differentiated advantage values during RL optimization, enabling more precise credit assignment while preserving the verifiability of RLVR. Extensive experiments demonstrate that STRIDE consistently improves reasoning performance across diverse models, tasks, and extended settings, including VLMs and agent-based systems.",
+      "authors": [
+        "Qinjian Zhao",
+        "Zhihao Dou",
+        "Dinggen Zhang",
+        "Xiangyu Li",
+        "Chaoda Song",
+        "Zhongwei Wan",
+        "Xinpeng Li",
+        "Yanyan Zhang",
+        "Kaijie Chen",
+        "Qingtao Pan",
+        "Chengcheng Feng",
+        "Zhiqiang Gao",
+        "Xiaoyu Xia"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.LG"
+      ],
+      "published": "2026-06-14T15:37:26+00:00",
+      "link": "https://arxiv.org/pdf/2606.15866v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Improves long-horizon reward assignment by discriminatively estimating strategic patterns in RL trajectories.",
+      "llm_evidence_cn": "通过判别估计 RL 轨迹中的策略模式来改进长时域奖励分配。",
+      "llm_evidence": "通过判别估计 RL 轨迹中的策略模式来改进长时域奖励分配。",
+      "canonical_evidence": "通过判别估计 RL 轨迹中的策略模式来改进长时域奖励分配。",
+      "llm_tldr_en": "STRIDE proposes a discriminative method to distinguish beneficial from harmful patterns in trajectories, improving reward assignment for long-horizon RL tasks.",
+      "llm_tldr_cn": "STRIDE 针对可验证奖励强化学习中长时域奖励分配信号稀疏的问题，提出一种判别估计方法，区分轨迹中的有益和有害策略模式。该方法为推理任务提供了更精细的奖励信号，有效提升了 LLM 的推理能力，对长时域决策的奖励设计具有借鉴意义。",
+      "llm_tldr": "STRIDE 针对可验证奖励强化学习中长时域奖励分配信号稀疏的问题，提出一种判别估计方法，区分轨迹中的有益和有害策略模式。该方法为推理任务提供了更精细的奖励信号，有效提升了 LLM 的推理能力，对长时域决策的奖励设计具有借鉴意义。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.12969v1",
+      "source": "arxiv",
+      "title": "Multi-Modal Agents for Power Distribution Defect Detection: An Evaluation of Foundation Models",
+      "abstract": "The power distribution network is critical to reliable electricity delivery, yet traditional inspection methods face limitations in semantic understanding, generalization, and closed-loop automation. To address these challenges, this paper proposes a Multi-Modal Agent framework specifically for power distribution defect detection. Central to this study is the systematic evaluation of multimodal foundation models as unified cognitive engines. We rigorously assess their integrated performance across three critical capabilities: (1) Perception, where the model must accurately identify equipment and generate expert-level descriptions of defects; (2) Reasoning, where the model interprets visual findings to diagnose causes, assess severity, and plan maintenance strategies based on domain knowledge; and (3) Tool Usage, where the model acts as an autonomous operator to execute actions -- such as querying knowledge bases or generating work orders -- to achieve closed-loop maintenance. To support this evaluation, a domain-specific evaluation dataset and a comprehensive benchmark are developed. Experimental results demonstrate the strengths and limitations of current foundation models in these three dimensions, providing empirical evidence for deploying autonomous agents in high-stakes industrial environments.",
+      "authors": [
+        "Quan Quan"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-06-11T06:57:01+00:00",
+      "link": "https://arxiv.org/pdf/2606.12969v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Evaluates multimodal foundation models for defect detection in power distribution, relevant to transmission line inspection",
+      "llm_evidence_cn": "评估多模态基础模型在配电网缺陷检测中的性能，与输电线路检测相关",
+      "llm_evidence": "评估多模态基础模型在配电网缺陷检测中的性能，与输电线路检测相关",
+      "canonical_evidence": "评估多模态基础模型在配电网缺陷检测中的性能，与输电线路检测相关",
+      "llm_tldr_en": "The paper proposes a multi-modal agent framework for power distribution defect detection, systematically evaluating foundation models on perception, reasoning, and action planning, showing their potential for automated inspection.",
+      "llm_tldr_cn": "本文提出面向配电网缺陷检测的多模态智能体框架，系统评估了多模态基础模型在感知、推理与行动规划三大关键能力上的综合表现。实验结果表明，先进基础模型在设备识别、缺陷描述和原因诊断上接近人类专家水平，但闭环推理与自主决策仍存在差距，为无人机巡检等自动化场景提供了技术参考。",
+      "llm_tldr": "本文提出面向配电网缺陷检测的多模态智能体框架，系统评估了多模态基础模型在感知、推理与行动规划三大关键能力上的综合表现。实验结果表明，先进基础模型在设备识别、缺陷描述和原因诊断上接近人类专家水平，但闭环推理与自主决策仍存在差距，为无人机巡检等自动化场景提供了技术参考。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "transmission line defect detection from UAV imagery",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.15918v1",
+      "source": "arxiv",
+      "title": "Energy-Efficient Arm Reaching for a Humanoid Robot via Deep Reinforcement Learning with Identified Power Models",
+      "abstract": "Humanoid robots performing in-field manipulation tasks, such as robotic apple harvesting, face severe energy constraints that directly limit the number of reaching motions that can be executed per battery charge. This paper presents an end-to-end, energy-aware reinforcement learning framework for the 7-degree-of-freedom left arm of the Unitree~G1 humanoid robot, combining a physics-based, experimentally identified electrical power model with a Soft Actor-Critic (SAC) policy trained in a Pinocchio-based rigid-body dynamics simulator. The RL policy operates on an incremental joint-position action space and is trained with a Hybrid Constellation Reward that combines a four-point end-effector constellation distance with a torque-norm energy proxy; after % $5\\times10^6$ training it reaches a $69.9\\%$ success rate over $1\\,000$ random targets in kinematic simulation, at a mean energy of \\SI{98.16}{\\joule} on successful episodes. Finally, on the physical Unitree~G1, the policy is validated over three independent 10-target batches, achieving a mean energy of $71.5 \\pm 48.3$\\,J, an end-effector position error of $2.64 \\pm 1.04$\\,cm, and an orientation error of $6.92 \\pm 1.33^\\circ$ -- within the \\SI{4}{\\centi\\metre}/$8.6^\\circ$ training tolerance. These results constitute a first step toward energy-aware reinforcement-learning-based arm reaching for humanoid robots.",
+      "authors": [
+        "Nestor N. Deniz",
+        "Simon Parsons",
+        "Fernando Auat Cheein"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-06-14T16:46:18+00:00",
+      "link": "https://arxiv.org/pdf/2606.15918v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Uses incremental joint-position action space and Hybrid Constellation Reward",
+      "llm_evidence_cn": "使用增量关节位置动作空间和混合星座奖励",
+      "llm_evidence": "使用增量关节位置动作空间和混合星座奖励",
+      "canonical_evidence": "使用增量关节位置动作空间和混合星座奖励",
+      "llm_tldr_en": "Proposes an energy-aware DRL framework for humanoid robot arm reaching, combining a physics-based power model with SAC using hybrid action space and reward.",
+      "llm_tldr_cn": "该论文针对人形机器人手臂操作中面临的严重能源约束，提出了一种结合物理辨识的电气功率模型与Soft Actor-Critic的端到端能量感知强化学习框架，通过在增量关节位置动作空间上学习，并设计混合星座奖励函数，成功在仿真中实现了能量高效的7自由度手臂到达运动，为无人机巡检等资源受限场景中的混合动作空间强化学习提供了可借鉴的方法。",
+      "llm_tldr": "该论文针对人形机器人手臂操作中面临的严重能源约束，提出了一种结合物理辨识的电气功率模型与Soft Actor-Critic的端到端能量感知强化学习框架，通过在增量关节位置动作空间上学习，并设计混合星座奖励函数，成功在仿真中实现了能量高效的7自由度手臂到达运动，为无人机巡检等资源受限场景中的混合动作空间强化学习提供了可借鉴的方法。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "reinforcement learning with hybrid action space",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
