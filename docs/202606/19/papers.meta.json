@@ -1,0 +1,54 @@
+{
+  "label": "2026-06-19",
+  "date": "2026-06-19",
+  "generated_at": "2026-06-19T20:31:56",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202606/19/2606.19134v1-pareto-q-learning-with-reward-machines",
+      "section": "quick",
+      "title_en": "Pareto Q-Learning with Reward Machines",
+      "authors": "Arnaud Lequen, Clément Legrand-Lixon, Léo Saulières",
+      "date": "2026-06-17",
+      "pdf": "https://arxiv.org/pdf/2606.19134v1",
+      "score": "7.0",
+      "evidence": "奖励机编码长时序奖励结构",
+      "tldr": "在多目标强化学习中，奖励机编码的非马尔可夫奖励结构常导致现有算法样本效率低下。PQLRM 算法融合了帕累托 Q 学习与奖励机 Q 学习，利用分解自动机结构维持向量值 Q 估计集，从而高效逼近帕累托前沿。实验显示，PQLRM 比朴素 PQL 加速收敛，并能合成 QRM 无法获得的帕累托最优策略，显著提升了复杂奖励任务中多策略学习的有效性和表达能力。",
+      "tags": "query:uav-drl",
+      "abstract_en": "We present Pareto Q-Learning with Reward Machines (PQLRM), a multi-objective reinforcement learning algorithm for tasks whose reward structure is specified by a set of reward machines (RMs). PQLRM combines Pareto Q-Learning (PQL), which maintains sets of vector-valued Q-estimates to approximate the Pareto front, with enhancements from Q-Learning with Reward Machines (QRM), which exploits the factored automaton structure of the reward signal. This yields a multi-policy algorithm that remains sample-efficient under non-Markovian, RM-encoded rewards. Experimental trials show that PQLRM converges faster than a naive PQL baseline applied to the cross-product MDP and can synthesize Pareto-optimal policies that QRM cannot.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/19/2606.15840v1-multi-stage-stochastic-optimization-and-reinforcement-learning-approaches-for-dynamic-inspection-of-infrastructure-systems",
+      "section": "quick",
+      "title_en": "Multi-Stage Stochastic Optimization and Reinforcement Learning Approaches for Dynamic Inspection of Infrastructure Systems",
+      "authors": "Juan-Alberto Estrada-Garcia, Siqian Shen",
+      "date": "2026-06-14",
+      "pdf": "https://arxiv.org/pdf/2606.15840v1",
+      "score": "6.0",
+      "evidence": "强化学习用于基础设施动态检测路径规划",
+      "tldr": "针对基础设施系统中存在随机故障和内生不确定性的动态检测问题，构建多阶段随机混合整数规划模型，提出随机对偶动态整数规划与强化学习算法，实现多车辆路径与调度顺序的联合优化，解决决策依赖的可靠性演化难题，为类似无人机输电线路巡检等自动化检测任务提供了可迁移的优化框架。",
+      "tags": "query:uav-drl",
+      "abstract_en": "We study a dynamic inspection problem for infrastructure systems in which multiple vehicles are routed and scheduled to monitor components subject to heterogeneous and stochastic failures. A key challenge is endogenous uncertainty in which failure-time realizations are filtered through prior inspection actions and failure-propagation dynamics. This yields a multi-stage decision problem that integrates routing, scheduling, and decision-dependent reliability dynamics over time. We formulate the problem as a multi-stage stochastic mixed-integer program that jointly optimizes routing and scheduling decisions under endogenous uncertainty. We develop a stochastic dual dynamic integer programming (SDDiP) algorithm that integrates dual approximation, integer state reduction, and sampling-based forward simulation to approximate cost-to-go functions. In parallel, we propose a reinforcement learning framework that learns job clustering structures and routing policies through interaction with simulated system dynamics and failure processes. Numerical experiments on infrastructure networks with diverse topologies and failure patterns show that SDDiP yields high-quality solutions but faces scalability limitations, while the learning-based approach achieves strong scalability with competitive performance, highlighting a trade-off between optimality and tractability. This work advances the modeling of endogenous uncertainty in multi-stage stochastic routing problems and bridges stochastic programming with learning-based approaches. The results provide guidance on when to deploy optimization-based versus learning-based methods, enabling more effective and scalable inspection planning in practice. More broadly, the framework supports risk-aware allocation of inspection resources and improved reliability of critical infrastructure systems.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/19/2606.19752v1-temporal-self-imitation-learning",
+      "section": "quick",
+      "title_en": "Temporal Self-Imitation Learning",
+      "authors": "Yinsen Jia, Boyuan Chen",
+      "date": "2026-06-18",
+      "pdf": "https://arxiv.org/pdf/2606.19752v1",
+      "score": "6.0",
+      "evidence": "基于时间效率自模仿的长时域强化学习",
+      "tldr": "长时域机器人操作中，策略常利用密集奖励导致低效交互，且高效行为易被遗忘。为此，提出时间自我模仿学习（TSIL）框架，挖掘时序高效成功轨迹作为自我监督信号，通过自适应时间目标和效率加权模仿学习改进策略。在15种长时域操作任务上，TSIL持续提升学习与任务完成效率，并增强对不稳定训练条件的鲁棒性。结果表明，成功行为的时间结构本身可为强化学习提供可扩展的自我监督信号。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Long-horizon robot manipulation policies trained with reward shaping can still exploit dense rewards through inefficient interaction, while rare efficient behaviors may be forgotten during training. We argue that temporal efficiency itself provides a powerful and underutilized source of self-supervision for reinforcement learning. We introduce Temporal Self-Imitation Learning (TSIL), a reinforcement learning framework that mines temporally efficient successful trajectories generated during learning and converts them into reusable supervision for future policy improvement. TSIL progressively refines learning using configuration-conditioned adaptive temporal targets derived from fast successful trajectories, while preserving and replaying efficient behaviors through efficiency-weighted self-imitation learning. Across 15 distinct long-horizon manipulation tasks, TSIL consistently improves learning efficiency, task-completion efficiency, revisitation of fast successful behaviors, and robustness to unstable training conditions. More broadly, our results suggest that the temporal structure of successful behavior itself provides a scalable self-supervisory signal for reinforcement learning beyond manually engineered reward shaping alone.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

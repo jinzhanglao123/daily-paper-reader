@@ -1,0 +1,128 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-19T20:28:58.826980+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 3,
+    "quick_skim_target": 11,
+    "quick_selected": 3
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2606.19134v1",
+      "source": "arxiv",
+      "title": "Pareto Q-Learning with Reward Machines",
+      "abstract": "We present Pareto Q-Learning with Reward Machines (PQLRM), a multi-objective reinforcement learning algorithm for tasks whose reward structure is specified by a set of reward machines (RMs). PQLRM combines Pareto Q-Learning (PQL), which maintains sets of vector-valued Q-estimates to approximate the Pareto front, with enhancements from Q-Learning with Reward Machines (QRM), which exploits the factored automaton structure of the reward signal. This yields a multi-policy algorithm that remains sample-efficient under non-Markovian, RM-encoded rewards. Experimental trials show that PQLRM converges faster than a naive PQL baseline applied to the cross-product MDP and can synthesize Pareto-optimal policies that QRM cannot.",
+      "authors": [
+        "Arnaud Lequen",
+        "Clément Legrand-Lixon",
+        "Léo Saulières"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-06-17T14:44:31+00:00",
+      "link": "https://arxiv.org/pdf/2606.19134v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Reward machines encode long-horizon temporal rewards",
+      "llm_evidence_cn": "奖励机编码长时序奖励结构",
+      "llm_evidence": "奖励机编码长时序奖励结构",
+      "canonical_evidence": "奖励机编码长时序奖励结构",
+      "llm_tldr_en": "This paper introduces Pareto Q-Learning with Reward Machines, a multi-objective RL algorithm that leverages reward automata to handle non-Markovian rewards, facilitating long-horizon reward assignment. It converges faster than baselines and yields Pareto-optimal policies not obtainable by standard QRM, offering a structured approach for complex sequential decision-making.",
+      "llm_tldr_cn": "本文提出结合奖励机的帕累托Q学习（PQLRM）算法，通过将非马尔可夫奖励结构编码为自动机，高效处理多目标强化学习中的长时序奖励分配问题。相比朴素PQL和标准QRM，PQLRM收敛更快，并能找到QRM无法获得的帕累托最优策略，为复杂序列决策中的奖励设计提供了结构化方法。",
+      "llm_tldr": "本文提出结合奖励机的帕累托Q学习（PQLRM）算法，通过将非马尔可夫奖励结构编码为自动机，高效处理多目标强化学习中的长时序奖励分配问题。相比朴素PQL和标准QRM，PQLRM收敛更快，并能找到QRM无法获得的帕累托最优策略，为复杂序列决策中的奖励设计提供了结构化方法。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.15840v1",
+      "source": "arxiv",
+      "title": "Multi-Stage Stochastic Optimization and Reinforcement Learning Approaches for Dynamic Inspection of Infrastructure Systems",
+      "abstract": "We study a dynamic inspection problem for infrastructure systems in which multiple vehicles are routed and scheduled to monitor components subject to heterogeneous and stochastic failures. A key challenge is endogenous uncertainty in which failure-time realizations are filtered through prior inspection actions and failure-propagation dynamics. This yields a multi-stage decision problem that integrates routing, scheduling, and decision-dependent reliability dynamics over time. We formulate the problem as a multi-stage stochastic mixed-integer program that jointly optimizes routing and scheduling decisions under endogenous uncertainty. We develop a stochastic dual dynamic integer programming (SDDiP) algorithm that integrates dual approximation, integer state reduction, and sampling-based forward simulation to approximate cost-to-go functions. In parallel, we propose a reinforcement learning framework that learns job clustering structures and routing policies through interaction with simulated system dynamics and failure processes. Numerical experiments on infrastructure networks with diverse topologies and failure patterns show that SDDiP yields high-quality solutions but faces scalability limitations, while the learning-based approach achieves strong scalability with competitive performance, highlighting a trade-off between optimality and tractability. This work advances the modeling of endogenous uncertainty in multi-stage stochastic routing problems and bridges stochastic programming with learning-based approaches. The results provide guidance on when to deploy optimization-based versus learning-based methods, enabling more effective and scalable inspection planning in practice. More broadly, the framework supports risk-aware allocation of inspection resources and improved reliability of critical infrastructure systems.",
+      "authors": [
+        "Juan-Alberto Estrada-Garcia",
+        "Siqian Shen"
+      ],
+      "primary_category": "math.OC",
+      "categories": [
+        "math.OC"
+      ],
+      "published": "2026-06-14T14:42:21+00:00",
+      "link": "https://arxiv.org/pdf/2606.15840v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Reinforcement learning for dynamic inspection routing of infrastructure",
+      "llm_evidence_cn": "强化学习用于基础设施动态检测路径规划",
+      "llm_evidence": "强化学习用于基础设施动态检测路径规划",
+      "canonical_evidence": "强化学习用于基础设施动态检测路径规划",
+      "llm_tldr_en": "Studies dynamic inspection of infrastructure with stochastic failures, formulates a multi-stage stochastic mixed-integer program, and develops SDDiP and RL algorithms to jointly optimize routing and scheduling under endogenous uncertainty.",
+      "llm_tldr_cn": "针对基础设施系统中存在随机故障和内生不确定性的动态检测问题，构建多阶段随机混合整数规划模型，提出随机对偶动态整数规划与强化学习算法，实现多车辆路径与调度顺序的联合优化，解决决策依赖的可靠性演化难题，为类似无人机输电线路巡检等自动化检测任务提供了可迁移的优化框架。",
+      "llm_tldr": "针对基础设施系统中存在随机故障和内生不确定性的动态检测问题，构建多阶段随机混合整数规划模型，提出随机对偶动态整数规划与强化学习算法，实现多车辆路径与调度顺序的联合优化，解决决策依赖的可靠性演化难题，为类似无人机输电线路巡检等自动化检测任务提供了可迁移的优化框架。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "automated inspection of transmission lines using drones",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.19752v1",
+      "source": "arxiv",
+      "title": "Temporal Self-Imitation Learning",
+      "abstract": "Long-horizon robot manipulation policies trained with reward shaping can still exploit dense rewards through inefficient interaction, while rare efficient behaviors may be forgotten during training. We argue that temporal efficiency itself provides a powerful and underutilized source of self-supervision for reinforcement learning. We introduce Temporal Self-Imitation Learning (TSIL), a reinforcement learning framework that mines temporally efficient successful trajectories generated during learning and converts them into reusable supervision for future policy improvement. TSIL progressively refines learning using configuration-conditioned adaptive temporal targets derived from fast successful trajectories, while preserving and replaying efficient behaviors through efficiency-weighted self-imitation learning. Across 15 distinct long-horizon manipulation tasks, TSIL consistently improves learning efficiency, task-completion efficiency, revisitation of fast successful behaviors, and robustness to unstable training conditions. More broadly, our results suggest that the temporal structure of successful behavior itself provides a scalable self-supervisory signal for reinforcement learning beyond manually engineered reward shaping alone.",
+      "authors": [
+        "Yinsen Jia",
+        "Boyuan Chen"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "published": "2026-06-18T03:31:56+00:00",
+      "link": "https://arxiv.org/pdf/2606.19752v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Long-horizon RL using temporal efficiency-based self-imitation",
+      "llm_evidence_cn": "基于时间效率自模仿的长时域强化学习",
+      "llm_evidence": "基于时间效率自模仿的长时域强化学习",
+      "canonical_evidence": "基于时间效率自模仿的长时域强化学习",
+      "llm_tldr_en": "Introduces Temporal Self-Imitation Learning (TSIL) that mines temporally efficient trajectories from training to provide self-supervision for long-horizon RL, applicable to tasks like UAV inspection.",
+      "llm_tldr_cn": "针对长时域任务中奖励设计繁重、高效行为易遗忘的问题，提出了时间自模仿学习框架，通过从训练历史中挖掘时间高效的成功轨迹，并将其转化为可重用的监督信号来持续改进策略，该方法无需手工奖励微调，即可有效提升长时间规划任务的样本效率与最终性能，为无人机输电线路巡检等需要长期奖励分配的任务提供了新的学习范式。",
+      "llm_tldr": "针对长时域任务中奖励设计繁重、高效行为易遗忘的问题，提出了时间自模仿学习框架，通过从训练历史中挖掘时间高效的成功轨迹，并将其转化为可重用的监督信号来持续改进策略，该方法无需手工奖励微调，即可有效提升长时间规划任务的样本效率与最终性能，为无人机输电线路巡检等需要长期奖励分配的任务提供了新的学习范式。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

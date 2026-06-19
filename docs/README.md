@@ -6,46 +6,32 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-18
-- 运行时间：2026-06-18 22:06:09 UTC
+- 最新运行日期：2026-06-19
+- 运行时间：2026-06-19 20:31:43 UTC
 - 运行状态：成功
-- 本次总论文数：8
-- 精读区：4
-- 速读区：4
+- 本次总论文数：3
+- 精读区：0
+- 速读区：3
 
 ### 今日简报（AI）
-今日深入探讨了强化学习在多智能体博弈与设备端部署的最新进展，从平均场博弈的逆强化学习到新型Q-learning方法齐亮相。  
-最值得关注的是平均奖励下的最大熵逆强化学习破解平均场博弈难题，以及Reversal Q-Learning带来的价值学习新视角。  
-想落地应用的读者，不妨从TetraRL的端侧自适应运行时和高速路自动驾驶的统一安全框架开始跟进。
-- 详情：[/202606/18/README](/202606/18/README)
+今日速读三篇前沿论文，聚焦强化学习在多目标优化、动态规划与模仿学习中的新思路。  
+最值得关注的是《Pareto Q-Learning with Reward Machines》，用奖励机把复杂任务分解，让智能体在多目标间找到帕累托最优均衡。  
+建议跟进奖励结构设计对策略多样性的影响，尤其是如何用形式化规范自动生成高质量探索方向。
+- 详情：[/202606/19/README](/202606/19/README)
 
 ### 精读区论文标签
-1. [Maximum Entropy Inverse Reinforcement Learning for Mean-Field Games with Average Reward](/202606/18/2606.16759v1-maximum-entropy-inverse-reinforcement-learning-for-mean-field-games-with-average-reward)  
-   标签：评分：8.0/10、query:uav-drl
-   evidence：针对平均奖励无穷时域平均场博弈的逆强化学习，直接处理长时域奖励
-2. [Reversal Q-Learning](/202606/18/2606.17551v1-reversal-q-learning)  
-   标签：评分：8.0/10、query:uav-drl
-   evidence：通过流匹配和偏差-方差缩减缓解异策略强化学习中的长时域问题
-3. [When Does Trajectory-Level Supervision Permit Efficient Offline Reinforcement Learning?](/202606/18/2606.18531v1-when-does-trajectory-level-supervision-permit-efficient-offline-reinforcement-learning)  
-   标签：评分：8.0/10、query:uav-drl
-   evidence：研究离线RL中从轨迹级结果进行长时程奖励分配
-4. [R2D-RL: A RoboCup 2D Soccer Environment for Multi-Agent Reinforcement Learning](/202606/18/2606.18786v1-r2d-rl-a-robocup-2d-soccer-environment-for-multi-agent-reinforcement-learning)  
-   标签：评分：8.0/10、query:uav-drl
-   evidence：支持混合参数化动作空间的强化学习环境
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [TetraRL: A Self-Adaptive Runtime for On-Device Deep Reinforcement Learning Systems](/202606/18/2606.13891v1-tetrarl-a-self-adaptive-runtime-for-on-device-deep-reinforcement-learning-systems)  
+1. [Pareto Q-Learning with Reward Machines](/202606/19/2606.19134v1-pareto-q-learning-with-reward-machines)  
    标签：评分：7.0/10、query:uav-drl
-   evidence：面向无人机的设备端深度强化学习运行时，支持巡检任务中的实时自主决策
-2. [Safe Reinforcement Learning of Autonomous Highway Driving: A Unified Framework for Safety and Efficiency](/202606/18/2606.14609v1-safe-reinforcement-learning-of-autonomous-highway-driving-a-unified-framework-for-safety-and-efficiency)  
-   标签：评分：7.0/10、query:uav-drl
-   evidence：使用奖励机器将阶段性目标编码为奖励，实现长时域奖励分配
-3. [TRIDENT: Breaking the Hybrid-Safety-Physics Coupling for Provably Safe Multi-Agent Reinforcement Learning](/202606/18/2606.18308v1-trident-breaking-the-hybrid-safety-physics-coupling-for-provably-safe-multi-agent-reinforcement-learning)  
-   标签：评分：7.0/10、query:uav-drl
-   evidence：处理强化学习中的混合离散-连续动作空间，并考虑安全约束，与混合动作空间需求相关
-4. [Learning to Adapt: Representation-Based Reinforcement Learning for Multi-Task Skill Transfer](/202606/18/2606.12890v1-learning-to-adapt-representation-based-reinforcement-learning-for-multi-task-skill-transfer)  
+   evidence：奖励机编码长时序奖励结构
+2. [Multi-Stage Stochastic Optimization and Reinforcement Learning Approaches for Dynamic Inspection of Infrastructure Systems](/202606/19/2606.15840v1-multi-stage-stochastic-optimization-and-reinforcement-learning-approaches-for-dynamic-inspection-of-infrastructure-systems)  
    标签：评分：6.0/10、query:uav-drl
-   evidence：将强化学习用于四旋翼轨迹跟踪，可应用于无人机巡检任务
+   evidence：强化学习用于基础设施动态检测路径规划
+3. [Temporal Self-Imitation Learning](/202606/19/2606.19752v1-temporal-self-imitation-learning)  
+   标签：评分：6.0/10、query:uav-drl
+   evidence：基于时间效率自模仿的长时域强化学习
 
 
 <div class="dpr-home-promo-card">
