@@ -1,0 +1,39 @@
+{
+  "label": "2026-06-20",
+  "date": "2026-06-20",
+  "generated_at": "2026-06-20T21:28:07",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202606/20/2606.18556v1-wind-resilient-trajectory-optimization-for-uav-bs-networks-td3-for-continuous-service-availability",
+      "section": "quick",
+      "title_en": "Wind-Resilient Trajectory Optimization for UAV-BS Networks: TD3 for Continuous Service Availability",
+      "authors": "Azim Akhtarshenas German Svistunov, Kuangyu Zheng, David Lopez-Perez",
+      "date": "2026-06-17",
+      "pdf": "https://arxiv.org/pdf/2606.18556v1",
+      "score": "6.0",
+      "evidence": "应用TD3深度强化学习实现风扰下无人机轨迹优化，该方法可迁移至无人机检测任务。",
+      "tldr": "针对无人机基站易受风扰导致位置漂移和链路质量下降的问题，提出基于TD3的风扰弹性轨迹优化框架。该方法将风建模为随机运动学扰动，无需复杂气动模型，使智能体学习自适应控制策略以维持最优覆盖。仿真结果表明，所提方法在湍流条件下显著提升了服务质量，其基于深度强化学习的轨迹调控思路可推广至无人机巡检等任务。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Unmanned aerial vehicle (UAV)-mounted base stations are highly susceptible to wind disturbances such as gusts and turbulence, which induce positional drift and degrade communication link quality, particularly in emergency scenarios. To address this challenge, we propose a DRL-based framework for wind-resilient trajectory adjustment and positioning based on the Twin Delayed Deep Deterministic Policy Gradient (TD3) algorithm. The method models wind as a stochastic kinematic perturbation, avoiding complex aerodynamic modeling, thereby enabling the TD3 agent to learn adaptive control policies that maintain optimal coverage footprints. By prioritizing user-centric performance metrics under turbulent conditions, the proposed architecture ensures continuous service availability despite external disruptions. Simulation results demonstrate that the TD3-based approach effectively compensates for wind-induced displacements and outperforms benchmark methods, including Proximal Policy Optimization (PPO), in terms of throughput stability and robustness in windy environments.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/20/2606.18594v1-benchmarking-action-spaces-in-reinforcement-learning-for-vision-based-robotic-manipulation",
+      "section": "quick",
+      "title_en": "Benchmarking Action Spaces in Reinforcement Learning for Vision-based Robotic Manipulation",
+      "authors": "Seyed Alireza Azimi, Homayoon Farrahi, Abhishek Naik, Colin Bellinger, A. Rupam Mahmood",
+      "date": "2026-06-17",
+      "pdf": "https://arxiv.org/pdf/2606.18594v1",
+      "score": "6.0",
+      "evidence": "比较强化学习中用于操控的不同动作空间表示",
+      "tldr": "在基于视觉的机器人操作任务中，强化学习策略的性能高度依赖于动作空间的表示形式，但缺乏系统的对比研究。为此，本文在物体拾取和推动两个典型任务上，对姿态增量、姿态速度、关节位置增量、关节速度四种动作空间进行了基准测试，从仿真训练到真实世界迁移。结果显示，关节速度空间在策略训练收敛速度、轨迹平滑度和真实环境任务成功率上均显著占优，且sim-to-real迁移鲁棒性更强。最后，作者为RL从业者提供了选择动作空间的实用建议，强调在视觉操作中优先考虑关节速度表示，并指出仿真实验中的表现可能误导真实场景的选择。",
+      "tags": "query:uav-drl",
+      "abstract_en": "In real-world reinforcement learning (RL), the choice of action space can play a key role in shaping motion smoothness, safety, and overall task performance. In this study, we evaluate pose increment, pose velocity, joint position increment, and joint velocity across two vision-based manipulation tasks: object picking and pushing. We train policies in simulation and deploy them to the real world using sim-to-real transfer. We find that action-space representation indeed significantly affects sim-to-real performance. In particular, we find that the joint velocity action space is best for the vision-based picking and pushing tasks in terms of smoothness and final task performance. We also provide practical guidance for RL practitioners in choosing action spaces for both simulation and real-world experiments.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

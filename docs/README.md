@@ -6,32 +6,29 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-19
-- 运行时间：2026-06-19 20:31:43 UTC
+- 最新运行日期：2026-06-20
+- 运行时间：2026-06-20 21:28:01 UTC
 - 运行状态：成功
-- 本次总论文数：3
+- 本次总论文数：2
 - 精读区：0
-- 速读区：3
+- 速读区：2
 
 ### 今日简报（AI）
-今日速读三篇前沿论文，聚焦强化学习在多目标优化、动态规划与模仿学习中的新思路。  
-最值得关注的是《Pareto Q-Learning with Reward Machines》，用奖励机把复杂任务分解，让智能体在多目标间找到帕累托最优均衡。  
-建议跟进奖励结构设计对策略多样性的影响，尤其是如何用形式化规范自动生成高质量探索方向。
-- 详情：[/202606/19/README](/202606/19/README)
+今日速读两篇强化学习应用研究，分别聚焦无人机基站抗风轨迹优化与机器人视觉操作的动作空间对比。  
+抗风优化方向值得关注：TD3算法让无人机在强风中维持连续服务，而机器人操作对比显示离散动作空间未必逊于连续空间。  
+建议读者结合两篇论文，思考连续控制算法在真实物理约束下的泛化瓶颈。
+- 详情：[/202606/20/README](/202606/20/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Pareto Q-Learning with Reward Machines](/202606/19/2606.19134v1-pareto-q-learning-with-reward-machines)  
-   标签：评分：7.0/10、query:uav-drl
-   evidence：奖励机编码长时序奖励结构
-2. [Multi-Stage Stochastic Optimization and Reinforcement Learning Approaches for Dynamic Inspection of Infrastructure Systems](/202606/19/2606.15840v1-multi-stage-stochastic-optimization-and-reinforcement-learning-approaches-for-dynamic-inspection-of-infrastructure-systems)  
+1. [Wind-Resilient Trajectory Optimization for UAV-BS Networks: TD3 for Continuous Service Availability](/202606/20/2606.18556v1-wind-resilient-trajectory-optimization-for-uav-bs-networks-td3-for-continuous-service-availability)  
    标签：评分：6.0/10、query:uav-drl
-   evidence：强化学习用于基础设施动态检测路径规划
-3. [Temporal Self-Imitation Learning](/202606/19/2606.19752v1-temporal-self-imitation-learning)  
+   evidence：应用TD3深度强化学习实现风扰下无人机轨迹优化，该方法可迁移至无人机检测任务。
+2. [Benchmarking Action Spaces in Reinforcement Learning for Vision-based Robotic Manipulation](/202606/20/2606.18594v1-benchmarking-action-spaces-in-reinforcement-learning-for-vision-based-robotic-manipulation)  
    标签：评分：6.0/10、query:uav-drl
-   evidence：基于时间效率自模仿的长时域强化学习
+   evidence：比较强化学习中用于操控的不同动作空间表示
 
 
 <div class="dpr-home-promo-card">

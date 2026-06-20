@@ -1,0 +1,95 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-20T21:26:29.857549+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2606.18556v1",
+      "source": "arxiv",
+      "title": "Wind-Resilient Trajectory Optimization for UAV-BS Networks: TD3 for Continuous Service Availability",
+      "abstract": "Unmanned aerial vehicle (UAV)-mounted base stations are highly susceptible to wind disturbances such as gusts and turbulence, which induce positional drift and degrade communication link quality, particularly in emergency scenarios. To address this challenge, we propose a DRL-based framework for wind-resilient trajectory adjustment and positioning based on the Twin Delayed Deep Deterministic Policy Gradient (TD3) algorithm. The method models wind as a stochastic kinematic perturbation, avoiding complex aerodynamic modeling, thereby enabling the TD3 agent to learn adaptive control policies that maintain optimal coverage footprints. By prioritizing user-centric performance metrics under turbulent conditions, the proposed architecture ensures continuous service availability despite external disruptions. Simulation results demonstrate that the TD3-based approach effectively compensates for wind-induced displacements and outperforms benchmark methods, including Proximal Policy Optimization (PPO), in terms of throughput stability and robustness in windy environments.",
+      "authors": [
+        "Azim Akhtarshenas German Svistunov",
+        "Kuangyu Zheng",
+        "David Lopez-Perez"
+      ],
+      "primary_category": "eess.SY",
+      "categories": [
+        "eess.SY",
+        "eess.SP"
+      ],
+      "published": "2026-06-17T00:12:23+00:00",
+      "link": "https://arxiv.org/pdf/2606.18556v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Applies TD3 deep reinforcement learning for wind-resilient UAV trajectory optimization, a method transferable to UAV inspection tasks.",
+      "llm_evidence_cn": "应用TD3深度强化学习实现风扰下无人机轨迹优化，该方法可迁移至无人机检测任务。",
+      "llm_evidence": "应用TD3深度强化学习实现风扰下无人机轨迹优化，该方法可迁移至无人机检测任务。",
+      "canonical_evidence": "应用TD3深度强化学习实现风扰下无人机轨迹优化，该方法可迁移至无人机检测任务。",
+      "llm_tldr_en": "Proposes a DRL-based framework using TD3 for wind-resilient trajectory adjustment of UAV-mounted base stations, modeling wind as stochastic perturbation to learn adaptive control policies that maintain coverage, demonstrating potential for UAV inspection tasks.",
+      "llm_tldr_cn": "针对无人机基站易受风扰导致位置漂移和链路质量下降的问题，提出基于TD3的风扰弹性轨迹优化框架。该方法将风建模为随机运动学扰动，无需复杂气动模型，使智能体学习自适应控制策略以维持最优覆盖。仿真结果表明，所提方法在湍流条件下显著提升了服务质量，其基于深度强化学习的轨迹调控思路可推广至无人机巡检等任务。",
+      "llm_tldr": "针对无人机基站易受风扰导致位置漂移和链路质量下降的问题，提出基于TD3的风扰弹性轨迹优化框架。该方法将风建模为随机运动学扰动，无需复杂气动模型，使智能体学习自适应控制策略以维持最优覆盖。仿真结果表明，所提方法在湍流条件下显著提升了服务质量，其基于深度强化学习的轨迹调控思路可推广至无人机巡检等任务。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "deep reinforcement learning for UAV inspection tasks",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.18594v1",
+      "source": "arxiv",
+      "title": "Benchmarking Action Spaces in Reinforcement Learning for Vision-based Robotic Manipulation",
+      "abstract": "In real-world reinforcement learning (RL), the choice of action space can play a key role in shaping motion smoothness, safety, and overall task performance. In this study, we evaluate pose increment, pose velocity, joint position increment, and joint velocity across two vision-based manipulation tasks: object picking and pushing. We train policies in simulation and deploy them to the real world using sim-to-real transfer. We find that action-space representation indeed significantly affects sim-to-real performance. In particular, we find that the joint velocity action space is best for the vision-based picking and pushing tasks in terms of smoothness and final task performance. We also provide practical guidance for RL practitioners in choosing action spaces for both simulation and real-world experiments.",
+      "authors": [
+        "Seyed Alireza Azimi",
+        "Homayoon Farrahi",
+        "Abhishek Naik",
+        "Colin Bellinger",
+        "A. Rupam Mahmood"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "published": "2026-06-17T01:45:13+00:00",
+      "link": "https://arxiv.org/pdf/2606.18594v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Compares action space representations in RL for manipulation",
+      "llm_evidence_cn": "比较强化学习中用于操控的不同动作空间表示",
+      "llm_evidence": "比较强化学习中用于操控的不同动作空间表示",
+      "canonical_evidence": "比较强化学习中用于操控的不同动作空间表示",
+      "llm_tldr_en": "Evaluates pose increment, pose velocity, joint increment, and joint velocity action spaces in RL for vision-based picking and pushing, finding joint velocity best; provides guidance for action space design, relevant to hybrid action space research.",
+      "llm_tldr_cn": "本文系统评估了深度强化学习中动作空间表示对视觉机器人操作任务的影响。在拾取和推动两个典型任务上，比较了姿态增量、姿态速度、关节位置增量和关节速度四种动作空间。训练环境为仿真，并通过仿真到真实迁移验证。结果表明关节速度动作空间在运动平滑性和最终任务性能上均表现最佳，为强化学习动作空间选择提供了实证依据。这些发现对设计混合动作空间以平衡离散和连续控制的强化学习系统具有指导意义，虽针对操作任务，但方法学可迁移至无人机巡检的混合动作空间设计。",
+      "llm_tldr": "本文系统评估了深度强化学习中动作空间表示对视觉机器人操作任务的影响。在拾取和推动两个典型任务上，比较了姿态增量、姿态速度、关节位置增量和关节速度四种动作空间。训练环境为仿真，并通过仿真到真实迁移验证。结果表明关节速度动作空间在运动平滑性和最终任务性能上均表现最佳，为强化学习动作空间选择提供了实证依据。这些发现对设计混合动作空间以平衡离散和连续控制的强化学习系统具有指导意义，虽针对操作任务，但方法学可迁移至无人机巡检的混合动作空间设计。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "reinforcement learning with hybrid action space",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
