@@ -1,0 +1,613 @@
+Title: Towards UAV Image Dehazing: A UAV Atmospheric Scattering Model, Benchmark, and Geometry-Aware Deep Unfolding Network
+
+URL Source: https://arxiv.org/pdf/2606.16392v1
+
+Published Time: Tue, 16 Jun 2026 02:27:35 GMT
+
+Number of Pages: 11
+
+Markdown Content:
+# Towards UAV Image Dehazing: A UAV Atmospheric Scattering Model, Benchmark, and Geometry-Aware Deep Unfolding Network 
+
+## Wenxuan Fang 1, Jiangwei Weng 1, Yu Zheng 1, Junkai Fan 1, Guangfa Wang 1,Xiang Chen 1, Jian Yang 1, Jun Li 1*
+
+> 1
+
+School of Computer Science and Engineering, Nanjing University of Science and Technology 
+
+Abstract 
+
+In UAV applications, haze significantly obscures distant de-tails and weaken structural information, hindering the re-covery of details. Current UAV scenarios still face two key challenges: (i) paired hazy/clean images from the real world are unobtainable, while the classical atmospheric scattering model is inadequate for modeling the spatially non-uniform haze in UAV imagery; (ii) existing dehazing methods struggle to remove the heavy haze accumulated in the upper regions of UAV images. To address these issues, we first propose a UAV Atmospheric Scattering Model (UASM), which ex-plicitly incorporates flight altitude, viewing pitch, and extinc-tion to characterize the non-uniform haze distribution in UAV imaging. Based on UASM, we develop a physics-driven de-hazing framework, termed Geometry-aware Proximal Deep Unfolding Network (GP-DUN). Specifically, GP-DUN con-sists of three key modules: a Latent Geometry Estimator (LGE) that infers transmittance consistent with UAV imag-ing geometry, a Geometry-aware Gradient Descent Module (GeoGDM) that embeds UASM into the data-fidelity term and performs physics-consistent closed-form updates, and an Pooling-Expert Proximal Mapping Module (PE-PMM) that learns an implicit prior to restore textures and structures be-yond the capability of explicit physical modeling. In addition, we further construct UASM-HazeSet, which provides control-lable paired synthetic data together with 2,285 real UAV haze images for testing. Extensive experiments show that GP-DUN consistently outperforms existing methods on both UASM-HazeSet and real UAV haze benchmarks. 
+
+## Introduction 
+
+UAVs have become an important visual sensing platform for urban inspection, traffic monitoring, and aerial map-ping (Zhao et al. 2025). However, under hazy conditions, light scattering and absorption significantly reduce image contrast and wash out distant details, which directly de-grades the reliability of downstream tasks such as object detection (Fang et al. 2023), semantic understanding (Zhou et al. 2019). Therefore, developing robust dehazing methods tailored to UAV imagery is of both practical importance and research interest. Despite existing dehazing methods (Zheng et al. 2023; Fang et al. 2025; Fu et al. 2025) have made significant progress in horizontal-view ground scenes, directly applying this methods to drone scenarios still faces challenges. Mostly 
+
+Copyright © 2027, Association for the Advancement of Artificial Intelligence (www.aaai.org). All rights reserved. Ours UASM          
+
+> 𝐀
+> 𝐀 (𝐀 ) = 𝐀 𝐀 𝐀 −𝐀 /ℎ𝐀
+> 𝐀 =H−𝐀 𝐀𨀀𝐀 𝐀
+> LOS
+> ℎ𝐀
+> 𝐀 (𝐀 )=𝐀𝐀𝐀 (− 𝐀 𝐀 (𝐀 ))
+> Classical ASM
+> Top-heavy
+> Haze
+> Closer
+> Ground
+> Aerosol
+> rise
+> Domain
+> Shift
+> Domain
+> match
+> CORUN COA PHATN et Ours
+
+Figure 1: Motivation. Our UASM better synthesis top-heavy UAV haze than the conventional ASM, reducing the synthetic-to-real domain gap. Existing dehazing (Fang et al. 2024; Ma et al. 2025; Tsai et al. 2025) methods leave residual haze in the near-air region, our method produces clearer and more natural dehazing results. methods (Wu et al. 2023; Fang et al. 2025; Fu et al. 2025) implicitly assume spatially uniform haze in the image plane, resulting in unstable restoration for distant regions. However, UAV imaging at high altitudes and large pitch angles causes image pixels to correspond to light rays with significantly dif-ferent viewing directions and path lengths, which typically leads to a characteristic top-heavy haze distribution (Heald et al. 2011). As illustrated in Fig. 1, representative models (e.g., CORUN (Fang et al. 2024), COA (Ma et al. 2025), and PHATNet (Tsai et al. 2025)) still leave noticeable residual haze around the skyline. More importantly, to the best of our knowledge, there is still no dedicated benchmark for UAV im-age dehazing. However, in reality, it is almost impossible to obtain paired hazy/clean UAV images captured from the same viewpoint and under the same scene conditions. Most exist-ing dehazing datasets (Ancuti, Ancuti, and Timofte 2020; Li et al. 2018) are acquired by ground-based cameras at low alti-tudes and near-horizontal viewing angles using atmospheric scattering models (ASM) (Nishita, Dobashi, and Nakamae 1996); their degradation patterns differ fundamentally from those found in high-altitude UAV images.                   
+
+> arXiv:2606.16392v1 [cs.CV] 15 Jun 2026 0.2 0.5 1.0
+> Sunlight
+> Diffuse Light
+> 𝐀 (𝐀 )=𝐀𗠀𝐀 (− 𝐀 𝐀 (𝐀 ))
+> 𝐀 (𝐀 )
+> 𝐀 𝐀 (𝐀 ) = 𝐀 𝐀 (𝐀 )𝐀 (𝐀 ) + 𝐀 𝐀 (𝐀 −𝐀 (𝐀 ))
+> Scattering Medium
+> (a) Atmospheric scattering model
+> 𝐀𗠀𝐀 ( 𝐀
+> 𝐀
+> 𝐀 𝐀 𝐀𗠀𝐀 (−  𝐀
+> 𝐀 𝐀
+> )( 𝐀  + 𝐀 𝐀 (𝐀 )) 𝐀𝐀
+> Scattering Medium  0.2 0.5 1.0
+> H
+> 𝐀  = 𝐀 /𝐀𨀀𝐀 𝐀
+> Camera
+> Height
+> 𝐀
+> =𝐀 −𝐀 𝐀𨀀𝐀 𝐀
+> 𝐀 (𝐀 ) = 𝐀 𝐀 𝐀 −𝐀 /ℎ𝐀
+> 𝐀 𝐀 (𝐀 ) = 𝐀 𝐀 (𝐀 )𝐀 (𝐀 ;𝐀 ,𝐀 ) + 𝐀 𝐀 (𝐀 )( 𝐀 −𝐀 (𝐀 ;𝐀 ,𝐀 ))
+> Sunlight
+> Diffuse Light
+> ℎ𝐀
+> Scattering
+> Coefficient
+> 𝐀
+> (b) UAV Atmospheric Scattering Model
+
+Figure 2: Illustration of the classical atmospheric scattering model and the proposed UAV atmospheric scattering model (UASM). The classical ASM models haze formation with a depth-dependent transmittance under a homogeneous medium assumption, while UASM additionally considers flight altitude, viewing pitch, and altitude-varying extinction to describe the top-heavy non-uniform haze in UAV imaging. As shown in Fig. 2(a), ASM assumes a homogeneous medium with a constant extinction coefficient and models the transmittance as t(p) = exp( −βd (p)) . However, in UAV imaging, haze formation is jointly influenced by flight alti-tude, viewing pitch angle, and vertical atmospheric stratifi-cation. As a result, the standard ASM deviates noticeably from real UAV haze and is insufficient to capture its strong spatial variation. To address this limitation, we propose a 
+
+UAV Atmospheric Scattering Model (UASM). As illustrated in Fig. 2(b), UASM explicitly accounts for flight altitude, viewing pitch angle, and altitude-dependent extinction, and models optical thickness via light-of-sight (LOS) integra-tion, thereby better characterizing the geometry-dependent and spatially non-uniform haze formation in UAV imagery. Built upon UASM, we further construct the first dedicated UAV dehazing benchmark, termed UASM-HazeSet . By ex-plicitly controlling pitch angle, flight altitude, and visibility, we synthesize 22,208 paired UAV images. In addition, we collect 2,285 real-world hazy UAV images captured under diverse altitudes and viewpoints to form a test set for evalu-ating the generalization and robustness of dehazing methods in practical UAV scenarios. To effectively address haze restoration under large-pitch UAV imaging, we propose a Geometry-aware Proximal Deep Unfolding Network (GP-DUN) for UAV image de-hazing. GP-DUN formulates the UASM-constrained dehaz-ing process as an energy minimization problem and un-rolls the corresponding optimization into an end-to-end net-work, where physically consistent updates and learned priors are alternately performed through deep unfolding. Specifi-cally, GP-DUN consists of three key modules: (1) a Latent Geometry Estimator (LGE) that explicitly injects UAV geometry and predicts pixel-wise transmittance to capture the top-heavy non-uniform degradation; (2) a Geometry-aware Gradient Descent Module (GeoGDM) that derives a closed-form geometry-aware update for progressive haze cor-rection, enabling stable and physically meaningful restora-tion in distant regions with severe haze accumulation; and (3) an Pooling-Expert Proximal Mapping Module (PE-PMM) that learns an implicit frequency-aware prior via multi-expert fusion to recover textures and structures be-yond the capacity of explicit physical modeling. Extensive experiments demonstrate that GP-DUN achieves clear ad-vantages on UASM-HazeSet and delivers more stable visual quality with stronger cross-condition generalization on real UAV hazy images. Our main contributions as follows: 
+
+• To the best of our knowledge, we are the first to adapt the classical ASM to UAV viewpoints, introducing the UAV Atmospheric Scattering Model (UASM). Through explicit modeling of flight altitude, viewing pitch an-gle, and altitude-dependent extinction, UASM effectively characterizes the spatially non-uniform haze unique to UAV imagery. 
+
+• We construct the UAV-oriented dehazing benchmark, 
+
+UASM-HazeSet , which consists of a controllable syn-thetic paired subset ( UASM-S , 22,208 images) and a real-world UAV haze test set ( UASM-R , 2,285 images), en-abling systematic evaluation under varying pitch angles, flight altitudes, and visibility conditions. 
+
+• We propose GP-DUN, a geometry-aware proximal deep unfolding framework that integrates UASM-consistent closed-form gradient updates (GeoGDM) with a learned multi-expert proximal mapping prior (PE-PMM), achiev-ing superior performance on UASM-HazeSet and im-proved robustness on real UAV hazy images. 
+
+## Related Works 
+
+Image Dehazing. Image dehazing aims to recover clear images from haze-degraded observations. Early methods mainly relied on physical priors, such as the dark channel prior (He, Sun, and Tang 2010) and color-lines (Fattal 2014). With the rapid development of deep learning, substantial progress has been achieved. Some studies incorporate ASM-related priors (Wang et al. 2025; Fan et al. 2025; Deng et al. 2020) to improve restoration quality. For instance, Fan et al. (Fan et al. 2025) estimate the transmission map for haze re-moval, while Deng et al. (Deng et al. 2020) reformulate ASM and introduce haze-aware representation distillation. Other works (Song et al. 2023; Fang et al. 2025; Guo et al. 2022; Cui et al. 2023; Yang et al. 2024c) directly learn the mapping from hazy to clean images, such as the Transformer-based method with transmission-aware positional embeddings pro-posed by Guo et al. (Guo et al. 2022). Beyond network archi-tecture design, contrastive learning (Fang et al. 2026; Zheng et al. 2023), domain adaptation (Tsai et al. 2025; Yang et al. 2024b; Zhang et al. 2025b), and diffusion flow (Shin et al. 2025; Lan et al. 2025) have also been explored. For example, Cui et al. (Cui et al. 2023) enhance important spatial and fre-quency responses via a dual-domain selection mechanism, while HazeFlow (Shin et al. 2025) reformulates ASM as an ordinary differential equation. Despite these advances, exist-ing methods still struggle to generalize to real-world UAV cross-domain haze, limiting their practical applicability. 
+
+Deep Unfolding Image Restoration. Deep unfolding net-works (DUNs) bridge model-based optimization and data-driven learning, and therefore offer improved interpretability and flexibility compared with purely learning-based archi-tectures. Recently, DUNs have been successfully applied to a wide range of image restoration (Zhang et al. 2025a; Li et al. 2023; Yang and Sun 2018; He et al. 2025; Fang et al. 2024). Among them, DGUN (Mou, Wang, and Zhang 2022) introduced a generic proximal-gradient formulation to learn image degradations. However, it does not explicitly disen-tangle prior knowledge from the degradation process, and relies on a single-path unfolding strategy to model com-plex degradations. CORUN (Fang et al. 2024) further im-proves the dehazing framework by performing dual proximal gradient descent over the atmospheric scattering model and scene features. UnfoldIR (He et al. 2025) introduced IDIR model with dedicated regularization terms for smoothing il-lumination and enhancing texture. In contrast to previous unfolding-based dehazing methods, our approach explicitly couple geometry-aware physical modeling and a learnable proximal unfolding framework to handle top-heavy and spa-tially non-uniform haze in the UAV scences. 
+
+## UAV Atmospheric Scattering Model (UASM) 
+
+Definition of Atmospheric Scattering Model. As shown in Fig. 2(a), given a hazy observation I ∈ RH×W ×3, the ASM formulates the image formation as: 
+
+Ic(p) = Jc(p) t(p) + Ac (1 − t(p)) , c ∈ { r, g, b }, (1) where p denotes the pixel location, J is the haze-free scene, 
+
+A ∈ R3 is the atmospheric light, and t(p) ∈ (0 , 1] is the transmittance. Under the common homogeneous-medium as-sumption, the extinction coefficient β is treated as a constant, leading to t(p) = exp( −β d (p)) , where d(p) represents the distance associated with pixel p.
+
+Limitations of ASM. For UAV imaging, flight altitude and camera pitch angle jointly determine the LOS length and the portion of atmosphere traversed by each ray, while aerosol density also varies with altitude. As a result, UAV haze usu-ally exhibits a characteristic top-heavy pattern (Heald et al. 2011), with denser haze in the upper image regions and lighter haze near the bottom. This is because upper-image rays are generally more oblique and travel through a longer effective atmospheric path, leading to stronger scattering and lower transmittance. Therefore, the conventional ASM is in-adequate for modeling UAV-specific haze formation. To this end, we explicitly incorporating UAV geometry and altitude-varying extinction, resulting in a UASM. 
+
+Geometry and pitch-angle definition. As shown in Fig. 2(b), we define the ground plane as Π : z = 0 and place the UAV camera center at altitude H. For each pixel location p, its LOS is parameterized by the traveled distance 
+
+s, with s = 0 corresponding to the camera center. Following a UAV-oriented convention, the pitch angle φ is defined as the angle between the LOS direction and the ground plane, such that the nadir view corresponds to φ = 90 ◦. Under this definition, the altitude of a point along the LOS is: 
+
+z(s) = H − s sin φ, s ∈ [0 , d (p)] . (2) 
+
+Line-of-sight optical thickness. Unlike the classical ASM, which assumes a homogeneous medium with constant ex-tinction, UAV imaging often occurs in a vertically stratified atmosphere, where the extinction decreases with altitude. By further considering a slowly varying spatial perturbation, the optical thickness along the LOS can be written as: 
+
+τ (p; φ, H ) = 
+
+Z d(p)0
+
+βg exp 
+
+
+
+− H − s sin φhs
+
+ 
+
+1+ δβ (p)
+
+
+
+ds, 
+
+(3) where βg is the near-ground extinction coefficient, hs is the scale height controlling the vertical decay, and δβ (p) denotes a slowly varying spatial perturbation satisfying |δβ (p)| ≪ 1.
+
+βg can be linked to visibility V via Koschmieder’s law (Lee and Shang 2016), i.e., βg ≈ 3.912 /V .For ground-intersecting rays, where d(p) = s =
+
+H/ sin φ, the dominant geometry-aware component admits the following closed-form expression: 
+
+τ (p; φ, H ) = βg hs
+
+sin φ
+
+
+
+1 − e−H/h s
+
+ 
+
+1 + δβ (p)
+
+
+
+. (4) Eq. (4) shows that the optical thickness increases as the pitch angle decreases, which explains the top-heavy haze pattern commonly observed in UAV imagery. The transmittance is defined as: 
+
+t(p; φ, H ) = exp   − τ (p; φ, H ). (5) Based on the above geometry-aware transmittance, the UAV haze formation process is modeled as: 
+
+Ic(p) = Jc(p) t(p; φ, H )+ Ac(p)
+
+
+
+1−t(p; φ, H )
+
+
+
+, c ∈ { r, g, b },
+
+(6) 
+
+The complete derivation is provided in Appendix.2. 
+
+## Methodology 
+
+Based on UASM, we transform the UAV image dehazing problem into a physics-driven energy minimization problem. Given an observed hazy image I, our goal is to recover the latent clear image J by minimizing: 
+
+min  
+
+> J
+
+L(J) = 12 ∥D uasm (J) − I∥22
+
+| {z }
+
+> Data fidelity
+
++λ gθ (J)
+
+| {z } 
+
+> Implicit prior
+
+, (7) LGE 𝐀 𝐀        
+
+> Conv
+> GAP
+> MLP
+> Tanh  𝐀
+> GeoGDM
+> 𝐀 𝐀 ,𝐀 𝐀
+> PE-PMM
+> 𝐀 𝐀
+> GeoGDM
+> 𝐀 𝐀 ,𝐀 𝐀
+> PE -PMM
+> 𝐀 𝐀
+> GeoGDM
+> 𝐀 𝐀 −𝐀 ,𝐀 𝐀 −𝐀
+> PE -PMM
+> 𝐀 𝐀 −𝐀
+> GeoGDM
+> 𝐀 𝐀 ,𝐀 𝐀
+> PE -PMM
+> 𝐀 𝐀
+> Stage 1 Stage 2 Stage K-1 Stage K
+
+# ⋯
+
+# ⋯
+
+𝐀 0
+
+𝐀 𝐀              
+
+> 1.Physics Step
+> 𝐀 𝐀 =𝐀 𝐀 𝐀 𝐀 +𝐀 𝐀 (1−𝐀 𝐀 )
+> 3.Correction Step
+> 2.R esidual Step
+> 𝐀 𝐀 =𝐀 𝐀 𝐀 𝐀 ⨀𝐀 𝐀
+> 𝐀 𝐀 =𝐀 𝐀 −𝐀
+> 𝐀 𝐀
+> 𝐀 𝐀
+> 𝐀 𝐀
+
+𝐀 𝐀                 
+
+> Gradient
+> Update
+> 𝐀 𝐀
+> Norm
+> GAP
+> Expert
+> MP
+> Expert
+> LP
+> Expert
+> MD
+> Expert
+> 𝐀 𝐀
+> 𝐀 ℎ
+> 𝐀 𝐀
+> 𝐀 ℎ
+> 𝐀 𝐀
+> 𝐀 ℎ
+> 𝐀
+> 𝐀 𝐀 ⊙(𝐀 𝐀 −𝐀 𝐀 )𝐀 𝐀 ⊙ ( 𝐀 𝐀 ⊙𝐀 𝐀 )(𝐀 𝐀 ⊙𝐀 𝐀 ) ⊙ (𝐀 𝐀 ⊙𝐀 𝐀 )
+> T1
+> T2
+> T3
+> Norm  Norm  Norm
+> T1 T2 T3
+
+c
+
+# ⋅
+
+# ⋅
+
+# ⋅
+
+# ⋅
+
+# ⋅ c Concat Dot product   
+
+> Conv  𝐀 𝐀 +𝐀
+> LGE Latent Geometry
+> Estimator
+> Conv
+> Degraded
+> image
+> Geometry-aware Gradient Descent Module Pooling-Expert Proximal Mapping Module
+
+𝐀 𝐀 
+
+𝐀 
+
+𝐀 Figure 3: Architecture of the proposed GP-DUN. The network unrolls UAV image dehazing into multiple stages, where LGE estimates the geometry-aware transmittance, GeoGDM performs UASM-guided gradient updates, and PE-PMM approximates the proximal mapping with multi-expert fusion for texture and structure restoration. where Duasm (·) denotes the Eq.6 and gθ (·) represents an im-plicit image prior learned by a neural network. We solve Eq. 7 via proximal gradient descent (PGD), which alternates be-tween a physics-driven gradient step and a proximal mapping step. The detailed solution process is in the Appendix.5. 1) Physics-driven gradient step. Let D(x) = 
+
+> 12
+
+∥D uasm (J) − I∥22. Since ∂Duasm /∂ J = t, the gradient admits a closed form: 
+
+∇JD(J) = t ⊙  J ⊙ t + A ⊙ (1 − t) − I. (8) The model alternately updates J during the iteration process. The following section will use the k-th iteration ( 1 ≤ k ≤ K)to illustrate the alternative solution process. Accordingly, we update an intermediate variable zk by 
+
+zk = Jk−1 − ρk ∇JD(Jk−1), (9) where ρk denotes the step size. This step is implemented by our GeoGDM to perform geometry-consistent corrections. 
+
+2) Proximal mapping step. Next, PGD solves the subprob-lem associated with the implicit prior: 
+
+Jk = prox ρk λg θ (zk). (10) The PGD iterations in Eqs. (9)-(10) are unrolled into a 
+
+K-stage network, with the number of stages set to K = 7 .
+
+Geometry-aware Gradient Descent Module 
+
+To explicitly capture UAV geometry-dependent scattering mechanism, we design the Geometry-aware Gradient De-scent Module (GeoGDM) that transforms the overall physi-cal process into learnable geometric inferences based on the closed-form solution in Eq. 9. As shown in Fig. 3, given the stage-k latent clean estimate 
+
+Jk and the hazy image I, GeoGDM first infers the physical factors required by the UASM model, then re-projects Jk to the observation space to form a data-fidelity residual, and finally updates Jk along the UASM consistent descent di-rection. We first estimate the transmittance map ˆtk via the proposed Latent Geometry Estimator (LGE) . By inject-ing normalized image-plane coordinates, LGE endows the network with spatial awareness and predicts a spatial distri-bution map M together with a global intensity scalar α:
+
+ˆtk = HLGE (I) = exp( −α ⊙ M) , (11) where M ≈ 1/ sin φ serves as a proxy of the geometry-induced path variation, and α ≈ βg hs(1 − e−H/h s ) summa-rizes the scene-level haze strength (details in . Alg. 1). To robustly estimate the airlight, we aggregate global scene statistics through global average pooling and a MLP, followed by a Tanh nonlinearity and a learnable scale β:
+
+ˆAk = β ⊙ tanh 
+
+
+
+Mmlp 
+
+ G(I)
+
+, (12) where G(·) denotes GAP and Mmlp (·) denotes the MLP. With (ˆ tk, ˆAk), we re-project the current estimate back to the observation space using the UASM forward operator: 
+
+ˆyk = Jk ⊙ ˆtk + ˆAk ⊙ (1 − ˆtk), Rk = ˆ yk − I, (13) where Rk measures the physical inconsistency between the rendered observation and the input, and it is exactly the error term of the UASM-constrained data-fidelity energy. 
+
+Closed-form geometry-aware gradient descent. Then, Ge-oGDM converts the physical residual into a mathematically consistent descent direction. Since the UASM forward model is linear with respect to Jk and its element-wise Jacobian satisfies ∂ ˆyk/∂ Jk = ˆ tk, the gradient of the data-fidelity term reduces to a transmittance-weighted residual (cf. Eq. 8). Therefore, GeoGDM performs the stage-wise update: 
+
+zk = Jk − ρk ˆtk ⊙ Rk, (14) Algorithm 1: Latent Geometry Estimator (LGE)  
+
+> 1:
+
+Input: Hazy image I ∈ RB×3×H×W 
+
+> 2:
+
+Output: physical transmittance map ˆtk ∈
+
+(0 , 1] B×1×H×W 
+
+> 3:
+
+Step 1: Geometry-aware coordinate injection  
+
+> 4:
+
+Gx, Gy ← Meshgrid ([ −1, 1]) {normalized coordi-nates}  
+
+> 5:
+
+Gin ← Concat (I, Gx, Gy ) {B × 5 × H × W } 
+
+> 6:
+
+F ← σ(Conv 3×3(Gin )) {σ: LeakyReLU}  
+
+> 7:
+
+Step 2: Spatial distribution (proxy for 1/ sin φ) 
+
+> 8:
+
+M ← Softplus  SpatialNet (F) {M(p) ≥ 0} 
+
+> 9:
+
+Step 3: Global intensity (proxy for haze-strength)  
+
+> 10:
+
+α ← Softplus  MLP (GAP (F))  {α ≥ 0} 
+
+> 11:
+
+Step 4: Physics-driven synthesis  
+
+> 12:
+
+ˆtk ← exp( −α ⊙ M) 
+
+> 13:
+
+{UASM alignment: τ (p) ≈ α M(p), where M(p) ≈
+
+1/ sin φ and α ≈ βg hs(1 − e−H/h s )} 
+
+> 14:
+
+return ˆtk.where ρk is a learnable step size. Intuitively, ˆtk acts as a geometry-aware sensitivity map: in heavy-haze regions (small ˆtk), the observation is dominated by airlight and is less informative about Jk, hence the update is naturally at-tenuated to avoid unstable corrections. 
+
+Pooling-Expert Proximal Mapping Module 
+
+Relying solely on physics-driven gradient updates often fails to recover fine details. To overcome this limitation, we de-sign the Pooling-Expert Proximal Mapping Module (PE-PMM) which consists of multiple proximal frequency do-main experts to approximate the proximal operators in PGD and inject learnable implicit priors at each expansion stage. Given the input feature zk ∈ RB×C×H×W from the out-put of GeoGDM, we first obtain the normalized feature 
+
+˜zk = Norm( zk). PE-PMM then employs a set of pooling experts {P m}4 
+
+> m=1
+
+to extract complementary perspectives from ˜zk. Each expert decomposes the feature into a pooled low-frequency component and a high-frequency component, followed by learnable channel-wise reweighting: 
+
+eLm = W lm⊙P m(˜ zk), eHm = ( 1+W hm)⊙ ˜zk−P m(˜ zk),
+
+(15) where W lm, W hm are learnable channel-wise parameters, and ⊙ denotes element-wise multiplication. The expert set includes global average pooling, local average pool-ing, and max pooling, and denote their outputs as 
+
+(GL, G H ), (LL, L H ), (ML, M H ), which respectively cap-ture global smooth context, local structural and salient re-sponses. We further introduce a context modulation expert to provide a larger-receptive-field structural gate. Its high-frequency response is produced by a dilated max pooling operator: 
+
+Hd = EDIL -MAX (˜ zk), Ld = ˜ zk − Hd, (16) and the context modulation output is defined as 
+
+V = W (d) 
+
+> l
+
+⊙Ld+( 1+W (d) 
+
+> h
+
+)⊙Hd + a⊙(˜ zk ⊙Hd) + b⊙˜zk,
+
+(17) where W (d) 
+
+> l
+
+, W (d) 
+
+> h
+
+, a, b ∈ RC×1×1 are learnable parameters. 
+
+V serves as a unified context gate to modulate subsequent interaction features, so that distant-haze regions rely more on large-scale structural consistency, while near-haze regions preserve more details. After obtaining the low/high-frequency components, we construct three complementary interaction features to jointly model (i) low-frequency discrepancy, (ii) high-frequency agreement, and (iii) low-high coherence: 
+
+T1 = Norm 
+
+
+
+Lh ⊙ (Gl − Ml)
+
+
+
+, (18) 
+
+T2 = Norm 
+
+
+
+Ll ⊙ (Gh ⊙ Mh)
+
+
+
+, (19) 
+
+T3 = Norm 
+
+
+
+(Gh ⊙ Mh) ⊙ (Gl ⊙ Ml)
+
+
+
+, (20) where T1 modulates local high-frequency responses by low-frequency discrepancy to suppress unreliable textures; T2
+
+strengthens structure responses that are consistent across ex-perts; and T3 emphasizes regions where low/high-frequency cues are simultaneously coherent. We then apply the context gate V to all interaction features: 
+
+˜Ti = Ti ⊙ V, i ∈ { 1, 2, 3}. (21) Finally, we concatenate the gated features and fuse them with a 1×1 convolution to obtain a proximal correction term, followed by a residual output for stable refinement: 
+
+∆xk = Conv 1×1
+
+ [ ˜T1, ˜T2, ˜T3], xk+1 = zk + ∆ xk.
+
+(22) This design enables PE-PMM to realize a learnable proximal mapping via frequency-complementary expert decomposi-tion and interaction based fusion. 
+
+Loss Functions. Given clear target x∗, the network outputs a restored image ˆx. Our training objective is a weighted com-bination of pixel-wise fidelity, structural consistency, and frequency preservation: 
+
+L = λ1 L1(ˆ x, x ∗) + λs LSSIM (ˆ x, x ∗) + λf LFFT (ˆ x, x ∗).
+
+(23) where ℓ1 is the L1 loss, LSSIM is the SSIM loss to preserve structural content. LFFT is the FFT loss to retain textures and suppress over-smoothing. λ1, λ s, λ f are the weights of each loss, which are 0.5, 0.3, and 0.1, respectively. 
+
+## UAV Atmospheric Scattering Model Hazeset 
+
+Motivation. In practice, the UAV flight trajectory cannot be exactly repeated, and the scene content cannot be guaranteed to remain unchanged across captures. As a result, it is almost impossible to obtain paired hazy/clean UAV images under identical viewpoints and scene conditions. Meanwhile, exist-ing hazy datasets rarely consider UAV-specific factors such as flight altitude and viewing pitch, making it difficult to system-atically evaluate cross-view generalization. Motivated by the proposed UASM, we therefore construct UASM-HazeSet , a physics-guided benchmark with controllable UAV factors for both training and evaluation. 
+
+Dataset Organization and Distribution. We capture haze-free UAV images using a DJI Mavic 3 Pro . The data are 00 
+
+> 20 °
+> 90 °
+> 30 °
+> 45 °
+> Total:22,208
+> Number:5,276
+> Proportion:23.8%
+> Number:5,772
+> Proportion:25.9% Number:5,988
+> Proportion:26.9%
+> Number:5,172
+> Proportion:23.2%
+> 60m
+> 80m
+> 100m
+> 120m
+> 60m
+> 80m
+> 100m
+> 120m
+> 60m
+> 80m
+> 100m
+> 120m
+> 60m
+> 80m
+> 100m
+> 120m
+> 1,648
+> 1,484
+> 1,320
+> 824
+> 996
+> 1,080
+> 1,664
+> 2,052
+> 1,380
+> 1,920
+> 1,748
+> 940
+> 1,084
+> 1,008
+> 1,160
+> 1,920
+
+45 °      
+
+> (a) Distributions of UASM-HazeSet
+> (b) Distributions of t-SNE (c) Haze of Visibility
+> Visibility:400m Visibility:800m
+> Visibility:1200m Visibility:1800m
+> (d) Haze generation effects at different angles
+
+30 °20 ° 90 °
+
+> Synthesis Images
+> Num:22,208
+> Real Images
+> Num:2,285
+
+Figure 4: (a) Dataset distributions. (b) t-SNE comparison of feature distributions. (c) Haze generation results under different visibility levels. (d) Synthesized UAV haze examples at different pitch angles. Table 1: Quantitative comparison with recent state-of-the-art methods on UASM-S, RW 2AH, and UASM-R. UASM-S RW 2AH UASM-R Methods Venus PSNR ↑ SSIM ↑ FADE ↓ NIQE ↓ PSNR ↑ SSIM ↑ FADE ↓ NIQE ↓ FADE ↓ NIQE ↓ NIMA ↑ Params DehazeFormer TIP’23 18.63 0.631 1.036 4.623 20.36 0.612 0.690 5.806 1.310 3.106 3.647 25.44M C2PNet CVPR’23 17.64 0.639 0.912 4.614 15.51 0.472 0.615 7.012 1.314 3.415 3.938 7.17M CORUN NIPS’24 19.85 0.664 1.261 4.224 16.68 0.550 0.533 5.399 0.403 3.052 4.423 18.67M DCMPNet CVPR’24 20.51 0.307 0.818 4.951 20.13 0.587 0.472 5.654 0.889 4.162 4.068 7.16M DEANet TIP’24 20.63 0.678 0.603 3.689 21.14 0.564 0.804 5.439 0.530 3.732 4.167 3.65M SGDN AAAI’25 20.62 0.672 0.586 4.598 22.26 0.668 0.400 5.008 0.776 3.120 4.330 13.32M COA CVPR’25 15.88 0.539 0.544 6.292 15.72 0.480 0.572 6.761 0.633 3.837 3.446 12.63M PHATNet ICCV’25 19.81 0.651 0.676 4.268 16.79 0.503 0.563 6.140 1.036 3.067 4.450 26.0M HOGformer AAAI’26 21.63 0.689 0.707 5.064 18.02 0.547 0.703 5.567 0.364 2.617 4.472 16.64M BiLaLoRA CVPR’26 22.10 0.694 0.563 4.672 19.72 0.604 0.491 5.336 0.409 3.168 4.215 3.76M 
+
+Ours - 23.63 0.707 0.536 3.553 22.37 0.680 0.413 4.813 0.328 2.452 4.910 18.87M collected on clear days with good illumination, and the scenes cover typical UAV viewpoints in urban/campus en-vironments, including buildings, roads, and vegetation. Due to airspace regulations, the flight altitude is restricted to 
+
+H ∈ { 60 , 80 , 100 , 120 } m. Based on these clear reference images, we generate paired hazy observations using the UASM. For UAV viewing geometry, we consider represen-tative pitch angles φ ∈ { 20 ◦, 30 ◦, 45 ◦, 90 ◦}. All images are resized to 1920 ×1080 to standardize training and evaluation. As shown in Fig. 4(a), UASM-HazeSet consists of two parts: a synthetic paired UAV dataset (UASM-S) and a real-world UAV haze set (UASM-R). The synthetic paired dataset con-tains 22,208 images in total, with pitch-angle proportions of 23.8% for 20 ◦, 25.9% for 30 ◦, 26.9% for 45 ◦, and 23.2% for 90 ◦. Within each pitch-angle subset, we further cover multiple flight altitudes, and each clear image is augmented into four haze severity levels by controlling the visibility. In addition, we collected 2,285 real high-altitude haze drone images at arbitrary heights and angles as a test set to evaluate the model’s performance in real-world scenarios. In addition, Fig. 4(b) compares the feature distribution of our dataset with real hazy data. Compared with existing benchmarks ( See Appendix.3.1 ), UASM-HazeSet is closer to the real distribution, which helps reduce the synthetic-to-real domain gap. 
+
+## Experiments 
+
+Datasets and evaluation metrics. We conduct experiments on UASM-HazeSet and RW 2AH (Fang et al. 2025). UASM-HazeSet includes 22,208 synthetic haze/clear UAV image pairs with varying pitch angles, flight altitudes, and visi-bility levels, together with a real-world UAV haze test set for evaluating practical generalization. RW 2AH (Fang et al. 2025) contains 1,758 real-world well-aligned haze/clear pairs collected from stationary webcams. For paired evaluation, Input CORUN COA BiLaLoRA HOGFormer Ours GT Figure 5: Visual comparison on the UASM-S dataset. Our method removes spatially non-uniform haze more effectively and produces results that are visually closer to the ground truth. Input CORUN COA PHATN et HOGFormer Ours BiLaLoRA 
+
+Figure 6: Visualization results of representative dehazing effects on the UASM-R dataset were collected by DJI Mavic 3 Pro in a foggy urban environment. More real-world results and failure examples are in Appendix. 6 & 7. we use PSNR and SSIM; for real-world evaluation, we adopt FADE (Choi, You, and Bovik 2015), NIQE (Mittal, Soundararajan, and Bovik 2012), and NIMA (Talebi and Milanfar 2018) to measure residual haze, perceptual natural-ness, and overall image quality. 
+
+Main Results 
+
+We compare GP-DUN with several recent state-of-the-art de-hazing methods, including DehazeFormer (Song et al. 2023), C2PNet (Zheng et al. 2023), CORUN (Fang et al. 2024), DCMPNet (Zhang, Zhou, and Li 2024), DEANet (Chen, He, and Lu 2024), SGDN (Fang et al. 2025), COA (Ma et al. 2025), PHATNet (Tsai et al. 2025), BiLaLoRA (Zhang et al. 2026) and HOGformer (Wu et al. 2025). For fair compar-ison, all competing methods are retrained under the same experimental protocol to achieve optimal performance. The quantitative results are reported in Table 1. The results of RTTS is in Appendix 4. Quantitative results. On the proposed UASM-S bench-mark, GP-DUN achieves the best performance across all reported metrics. Compared with the recently added base-line BiLaLoRA (Zhang et al. 2026), GP-DUN improves PSNR +1 .53 dB and SSIM from 0.694 to 0.707, while fur-ther reducing FADE and NIQE to 0.536 and 3.553, respec-tively. Compared with the unfolding-based CORUN (Fang et al. 2024), GP-DUN also consistently yields better perfor-mance on all metrics. Compared with the strongest com-petitor, HOGFormer (Wu et al. 2025), GP-DUN improves PSNR by more than 9% relatively and increases SSIM from 0.689 to 0.707, while also obtaining lower FADE and NIQE. (a) Clean image (b) Depth (c) ASM w/o Depth   
+
+> (d) ASM w/Depth (e) Ours UASM
+> w/Depth
+> (f) Ours UASM
+> w/ o Depth
+
+Figure 7: Ablation on UASM. Compared with conventional ASM, depth-guided variants and our UASM. Transmittance 
+
+> Correction map
+> Residual map
+> Update map Input
+
+Figure 8: Visualization of intermediate responses in Ge-oGDM, including the estimated transmittance map, residual map, correction map, and update map. These results indicate that our method not only improves distortion-based fidelity, but also produces clearer and more natural restorations. On RW 2AH, GP-DUN still delivers the best overall performance, despite this dataset not being UAV-specific. In particular, it surpasses SGDN (Fang et al. 2025) and DEANet (Chen, He, and Lu 2024) in PSNR by 0.49% and 5.82%, respectively, and achieves the best SSIM and NIQE. Although its FADE is slightly inferior to SGDN, the overall results suggest that GP-DUN provides higher-quality restoration with better fidelity and perceptual quality. On the real-world UASM-R benchmark, GP-DUN shows even clearer advantages. It achieves the best FADE, NIQE, and NIMA, demonstrating stronger haze removal ability and bet-ter perceptual restoration on real UAV images. 
+
+Qualitative results. Fig. 5 presents qualitative comparisons on UASM-S. Existing methods, such as CORUN (Fang et al. 2024), COA (Ma et al. 2025), SGDN (Fang et al. 2025), BiLaLoRA (Zhang et al. 2026) and HOGFormer (Wu et al. 2025), often leave noticeable residual haze near the skyline and show unstable enhancement in the upper image regions. In contrast, GP-DUN removes spatially non-uniform haze more effectively and produces results that are visually closer to the ground truth. Fig. 6 further shows that, on real UAV haze images, our method achieves cleaner restoration with fewer contrast shifts and more faithful background colors than competing methods. Table 2: Module ablation on UASM-S. Method Variant PSNR ↑ SSIM ↑                    
+
+> w/o LGE 23.22 0.671 w/o GeoGDM 20.17 0.663 w/o PE-PMM 19.49 0.626 Full GP-DUN 23.63 0.707
+> PE-PMM design ablation
+> Single expert 22.34 0.676 w/o context modulation 23.56 0.684 w/o T1 23.50 0.697 w/o T2 23.55 0.684 w/o T3 23.49 0.695 Full PE-PMM 23.63 0.707
+
+Table 3: Cross-dataset generalization results on UASM-R. All methods are trained on different source datasets and eval-uated on UASM-R. Training Set Method UASM-R FADE ↓ NIQE ↓ NIMA ↑                                    
+
+> RW 2AH PHATNet 1.414 4.881 4.021 HOGFormer 0.698 3.704 4.267 BiLaLoRA 0.571 4.352 4.086
+> Ours 0.487 2.869 4.623
+> SOTS-Outdoor PHATNet 1.786 5.012 3.554 HOGFormer 0.843 4.221 3.196 BiLaLoRA 0.818 4.487 4.012
+> Ours 0.532 3.015 4.541
+> UASM-S PHATNet 1.036 3.067 4.450 HOGFormer 0.364 2.617 4.472 BiLaLoRA 0.409 3.168 4.215
+> Ours 0.328 2.452 4.910
+
+Ablation Studies 
+
+Effect of UASM. We further compare different atmospheric scattering models for UAV haze synthesis in Fig. 7. The classical ASM assumes a homogeneous medium and thus produces nearly uniform haze over the image plane, which is inconsistent with the spatially varying degradation in UAV imagery. Introducing monocular depth estimated by DepthV2 (Yang et al. 2024a) can partially increase spatial variation, but its performance is limited by inaccurate long-range depth prediction under aerial viewpoints. A similar limitation is observed when such estimated depth is directly incorporated into UASM. In contrast, our UASM explicitly models flight altitude, viewing pitch, and altitude-dependent extinction, enabling more realistic top-heavy and geometry-consistent haze synthesis without relying on unstable external depth estimation. 
+
+Each Components. Table 2 presents the ablation results of the main components. Removing any major module leads to a consistent performance drop, which confirms that the pro-posed framework benefits from the complementarity among physics-guided optimization, and learned proximal refine-ment. In particular, the largest degradation is observed when PE-PMM is removed, indicating that the proximal prior plays a crucial role in recovering textures and structures beyond the capacity of the physical data term alone. We further verify the complementarity of the experts inside PE-PMM. Remov-ing any of the interaction terms consistently degrades the Figure 9: Comparison of PSNR, inference time, and param-eter count on 256 × 256 images. performance, confirming that the proposed cross-frequency interactions are all effective for proximal refinement. Fig. 8 illustrates the internal behavior of GeoGDM. Starting from the estimated transmittance map, the model first identifies the spatially varying haze distribution in the input image. Based on geometry-aware prior, the residual map highlights the re-gions where the current reconstruction is still inconsistent with the observation, especially in severely degraded areas. The subsequent correction map further concentrates on these haze-dominant regions, while the final update map filters out less relevant responses and preserves only the major restora-tion cues. Such a progressive refinement process verifies that GeoGDM effectively turns geometry-aware haze estimation into stable and targeted updates for UAV dehazing. 
+
+Cross-dataset generalization on UASM-R. We further compare the training gap between other natural dehazing datasets and our proposed UASM-S, with the real UASM-R used for testing. Table 3 shows a clear trend: all meth-ods perform substantially better when trained on UASM-S 
+
+rather than RW 2AH or SOTS-Outdoor. This verifies that our UASM-S is better aligned with the degradation characteris-tics of UAV imagery. Among all methods, Ours consistently achieves the best results under all training settings, and its advantage becomes most evident when trained on UASM-S. These results confirm both the effectiveness of the proposed benchmark and the strong real-world generalization of GP-DUN in UAV dehazing. 
+
+Runtime comparison. Fig. 9 compares the PSNR, inference time, and parameter count of different methods on 256 × 256 
+
+images, where the bubble size denotes the model size. Our method achieves the best PSNR while maintaining competi-tive inference efficiency. Specifically, although BiLaLoRA is slightly faster and lighter, its restoration performance is still inferior to ours. Compared with CORUN and PHATNet, our method achieves clearly higher PSNR with lower or compa-rable inference cost. In contrast, HOGformer requires sub-stantially longer inference time while still delivering lower PSNR than our method. These results demonstrate that GP-DUN strikes a favorable trade-off among restoration quality, runtime efficiency, and model complexity. 
+
+## Conclusion 
+
+In this paper, we introduce UASM-HazeSet , a physics-guided benchmark for UAV dehazing that explicitly models pitch, altitude, and visibility variations, and provides both synthetic paired data and real-world UAV haze images for evaluation. Based on this benchmark, we further propose 
+
+GP-DUN , a geometry-aware deep unfolding framework that integrates UASM-consistent optimization with learned prox-imal refinement. Extensive experiments demonstrate that our method achieves superior performance on both UASM-HazeSet and real UAV hazy images. We hope that UASM-HazeSet will facilitate future research on UAV-oriented im-age restoration under adverse weather conditions. 
+
+## References 
+
+Ancuti, C. O.; Ancuti, C.; and Timofte, R. 2020. NH-HAZE: An image dehazing benchmark with non-homogeneous hazy and haze-free images. In Proceedings of the IEEE/CVF con-ference on computer vision and pattern recognition work-shops , 444–445. Chen, Z.; He, Z.; and Lu, Z.-M. 2024. DEA-Net: Single image dehazing based on detail-enhanced convolution and content-guided attention. IEEE transactions on image pro-cessing , 33: 1002–1015. Choi, L. K.; You, J.; and Bovik, A. C. 2015. Referenceless prediction of perceptual fog density and perceptual image defogging. IEEE Transactions on Image Processing , 24(11): 3888–3901. Cui, Y.; Ren, W.; Cao, X.; and Knoll, A. 2023. Focal net-work for image restoration. In Proceedings of the IEEE/CVF international conference on computer vision , 13001–13011. Deng, Q.; Huang, Z.; Tsai, C.-C.; and Lin, C.-W. 2020. Hardgan: A haze-aware representation distillation gan for single image dehazing. In European conference on com-puter vision , 722–738. Springer. Fan, J.; Li, X.; Qian, J.; Li, J.; and Yang, J. 2025. Non-aligned supervision for real image dehazing. IEEE Transactions on Circuits and Systems for Video Technology .Fang, C.; He, C.; Xiao, F.; Zhang, Y.; Tang, L.; Zhang, Y.; Li, K.; and Li, X. 2024. Real-world image dehazing with coherence-based pseudo labeling and cooperative unfolding network. Advances in Neural Information Processing Sys-tems , 37: 97859–97883. Fang, W.; Fan, J.; Zheng, Y.; Weng, J.; Tai, Y.; and Li, J. 2025. Guided real image dehazing using ycbcr color space. In 
+
+Proceedings of the AAAI conference on artificial intelligence ,volume 39, 2906–2914. Fang, W.; Weng, J.; Qian, J.; Yang, J.; and Li, J. 2026. Weath-ercycle: Unpaired multi-weather restoration via color space decoupled cycle learning. IEEE Transactions on Circuits and Systems for Video Technology .Fang, W.; Zhang, G.; Zheng, Y.; and Chen, Y. 2023. Multi-task learning for uav aerial object detection in foggy weather condition. Remote Sensing , 15(18): 4617. Fattal, R. 2014. Dehazing using color-lines. ACM transac-tions on graphics (TOG) , 34(1): 1–14. Fu, J.; Liu, S.; Liu, Z.; Guo, C.-L.; Park, H.; Wu, R.; Wang, G.; and Li, C. 2025. Iterative predictor-critic code decoding for real-world image dehazing. In Proceedings of the Com-puter Vision and Pattern Recognition Conference , 12700– 12709. Guo, C.-L.; Yan, Q.; Anwar, S.; Cong, R.; Ren, W.; and Li, C. 2022. Image dehazing transformer with transmission-aware 3d position embedding. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,5812–5820. He, C.; Zhang, R.; Xiao, F.; Fang, C.; Tang, L.; Zhang, Y.; and Farsiu, S. 2025. Unfoldir: Rethinking deep unfolding network in illumination degradation image restoration. arXiv preprint arXiv:2505.06683 .He, K.; Sun, J.; and Tang, X. 2010. Single image haze removal using dark channel prior. IEEE transactions on pattern analysis and machine intelligence , 33(12): 2341– 2353. Heald, C.; Coe, H.; Jimenez, J.; Weber, R.; Bahreini, R.; Middlebrook, A.; Russell, L.; Jolleys, M.; Fu, T.-M.; Allan, J.; et al. 2011. Exploring the vertical profile of atmospheric organic aerosol: comparing 17 aircraft field campaigns with a global model. Atmospheric Chemistry and Physics , 11(24): 12673–12696. Lan, Y.; Cui, Z.; Luo, X.; Liu, C.; Wang, N.; Zhang, M.; Su, Y.; and Liu, D. 2025. When Schrodinger bridge meets real-world image dehazing with unpaired training. In Proceedings of the IEEE/CVF International Conference on Computer Vi-sion , 8756–8765. Lee, Z.; and Shang, S. 2016. Visibility: how applicable is the century-old Koschmieder model? Journal of the Atmo-spheric Sciences , 73(11): 4573–4581. Li, B.; Ren, W.; Fu, D.; Tao, D.; Feng, D.; Zeng, W.; and Wang, Z. 2018. Benchmarking single-image dehazing and beyond. IEEE transactions on image processing , 28(1): 492– 505. Li, M.; Fu, Y.; Liu, J.; and Zhang, Y. 2023. Pixel adaptive deep unfolding transformer for hyperspectral image recon-struction. In Proceedings of the IEEE/CVF International Conference on Computer Vision , 12959–12968. Ma, L.; Feng, Y.; Zhang, Y.; Liu, J.; Wang, W.; Chen, G.-Y.; Xu, C.; and Su, Z. 2025. Coa: Towards real image dehaz-ing via compression-and-adaptation. In Proceedings of the computer vision and pattern recognition conference , 11197– 11206. Mittal, A.; Soundararajan, R.; and Bovik, A. C. 2012. Making a “completely blind” image quality analyzer. IEEE Signal processing letters , 20(3): 209–212. Mou, C.; Wang, Q.; and Zhang, J. 2022. Deep generalized unfolding networks for image restoration. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 17399–17410. Nishita, T.; Dobashi, Y.; and Nakamae, E. 1996. Display of clouds taking into account multiple anisotropic scattering and sky light. In Proceedings of the 23rd annual conference on Computer graphics and interactive techniques , 379–386. Shin, J.; Chung, S.; Yang, Y.; and Kim, T. H. 2025. Haze-Flow: Revisit Haze Physical Model as ODE and Non-Homogeneous Haze Generation for Real-World Dehazing. In Proceedings of the IEEE/CVF International Conference on Computer Vision , 6263–6272. Song, Y.; He, Z.; Qian, H.; and Du, X. 2023. Vision trans-formers for single image dehazing. IEEE Transactions on Image Processing , 32: 1927–1941. Talebi, H.; and Milanfar, P. 2018. NIMA: Neural image assessment. IEEE transactions on image processing , 27(8): 3998–4011. Tsai, F.-J.; Peng, Y.-T.; Lin, Y.-Y.; and Lin, C.-W. 2025. PHATNet: A Physics-guided Haze Transfer Network for Domain-adaptive Real-world Image Dehazing. In Proceed-ings of the IEEE/CVF International Conference on Computer Vision , 5591–5600. Wang, X.; Yang, G.; Ye, T.; and Liu, Y. 2025. Dehaze-retinexgan: real-world image dehazing via retinex-based gen-erative adversarial network. In Proceedings of the AAAI Con-ference on Artificial Intelligence , volume 39, 7997–8005. Wu, J.; Yang, Z.; Wang, Z.; and Jin, Z. 2025. Gradient as conditions: Rethinking HOG for all-in-one image restoration. 
+
+arXiv preprint arXiv:2504.09377 .Wu, R.-Q.; Duan, Z.-P.; Guo, C.-L.; Chai, Z.; and Li, C. 2023. Ridcp: Revitalizing real image dehazing via high-quality codebook priors. In Proceedings of the IEEE/CVF con-ference on computer vision and pattern recognition , 22282– 22291. Yang, D.; and Sun, J. 2018. Proximal dehaze-net: A prior learning-based deep network for single image dehazing. In 
+
+Proceedings of the european conference on computer vision (ECCV) , 702–717. Yang, L.; Kang, B.; Huang, Z.; Zhao, Z.; Xu, X.; Feng, J.; and Zhao, H. 2024a. Depth anything v2. Advances in Neural Information Processing Systems , 37: 21875–21911. Yang, S.; Tian, Z.; Jiang, L.; and Jia, J. 2024b. Unified language-driven zero-shot domain adaptation. In Proceed-ings of the IEEE/CVF conference on computer vision and pattern recognition , 23407–23415. Yang, Y.; Wang, C.; Guo, X.; and Tao, D. 2024c. Robust unpaired image dehazing via density and depth decompo-sition. International Journal of Computer Vision , 132(5): 1557–1577. Zhang, J.; Zhao, L.; Zhang, J.; Wang, A.; and Bai, H. 2025a. Joint deep-unfolding optimization learning for depth map arbitrary-scale super-resolution. IEEE Transactions on Mul-timedia .Zhang, X.; Ding, H.; Xie, F.; Pan, L.; Zi, Y.; Wang, K.; and Zhang, H. 2025b. Beyond spatial domain: Cross-domain pro-moted fourier convolution helps single image dehazing. In 
+
+Proceedings of the AAAI conference on artificial intelligence ,volume 39, 10221–10229. Zhang, Y.; Ma, L.; Feng, Y.; Huang, Z.; Zhou, F.; and Su, Z. 2026. Bilevel Layer-Positioning LoRA for Real Image Dehazing. arXiv preprint arXiv:2603.10872 .Zhang, Y.; Zhou, S.; and Li, H. 2024. Depth information assisted collaborative mutual promotion network for single image dehazing. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2846–2855. Zhao, J.; Luo, Q.; Zhang, S.; Gao, S.; and Wu, J. 2025. HDCFN: Haze Distribution-aware Cross-modal Fusion Net-work for Infrared-guided Dense Haze Removal in UAVs. In 
+
+Proceedings of the 33rd ACM International Conference on Multimedia , 10867–10875. Zheng, Y.; Zhan, J.; He, S.; Dong, J.; and Du, Y. 2023. Curric-ular contrastive regularization for physics-aware single image dehazing. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 5785–5794. Zhou, B.; Zhao, H.; Puig, X.; Xiao, T.; Fidler, S.; Barriuso, A.; and Torralba, A. 2019. Semantic understanding of scenes through the ade20k dataset. International journal of com-puter vision , 127(3): 302–321.

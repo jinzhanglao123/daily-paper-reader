@@ -6,29 +6,31 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-20
-- 运行时间：2026-06-20 21:28:01 UTC
+- 最新运行日期：2026-06-21
+- 运行时间：2026-06-21 21:10:17 UTC
 - 运行状态：成功
-- 本次总论文数：2
-- 精读区：0
+- 本次总论文数：3
+- 精读区：1
 - 速读区：2
 
 ### 今日简报（AI）
-今日速读两篇强化学习应用研究，分别聚焦无人机基站抗风轨迹优化与机器人视觉操作的动作空间对比。  
-抗风优化方向值得关注：TD3算法让无人机在强风中维持连续服务，而机器人操作对比显示离散动作空间未必逊于连续空间。  
-建议读者结合两篇论文，思考连续控制算法在真实物理约束下的泛化瓶颈。
-- 详情：[/202606/20/README](/202606/20/README)
+今日精读：自我解法驱动的自条件信用分配突破可验证奖励延迟瓶颈，速读同时涵盖工具代理协同训练与无人机图像去雾。
+最值得看：用自身成功轨迹塑造内部奖励信号，让强化学习在数学推理等任务上高效克服稀疏奖励；多轮工具代理也可通过特权轨迹协同提升交互可靠性。
+建议关注自我改进型推理模型的内部信用分配机制，并留意协同训练如何降低工具代理的多轮交互成本。
+- 详情：[/202606/21/README](/202606/21/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [Learning from Own Solutions: Self-Conditioned Credit Assignment for Reinforcement Learning with Verifiable Rewards](/202606/21/2606.18810v1-learning-from-own-solutions-self-conditioned-credit-assignment-for-reinforcement-learning-with-verifiable-rewards)  
+   标签：评分：9.0/10、query:uav-drl
+   evidence：提出自条件信用分配，解决长序列中的奖励分配问题。
 
 ### 速读区论文标签
-1. [Wind-Resilient Trajectory Optimization for UAV-BS Networks: TD3 for Continuous Service Availability](/202606/20/2606.18556v1-wind-resilient-trajectory-optimization-for-uav-bs-networks-td3-for-continuous-service-availability)  
+1. [PACT: Privileged Trace Co-Training for Multi-Turn Tool-Use Agents](/202606/21/2606.16215v1-pact-privileged-trace-co-training-for-multi-turn-tool-use-agents)  
+   标签：评分：7.0/10、query:uav-drl
+   evidence：解决多轮RL中的弱信用分配问题，提出特权轨迹协同训练
+2. [Towards UAV Image Dehazing: A UAV Atmospheric Scattering Model, Benchmark, and Geometry-Aware Deep Unfolding Network](/202606/21/2606.16392v1-towards-uav-image-dehazing-a-uav-atmospheric-scattering-model-benchmark-and-geometry-aware-deep-unfolding-network)  
    标签：评分：6.0/10、query:uav-drl
-   evidence：应用TD3深度强化学习实现风扰下无人机轨迹优化，该方法可迁移至无人机检测任务。
-2. [Benchmarking Action Spaces in Reinforcement Learning for Vision-based Robotic Manipulation](/202606/20/2606.18594v1-benchmarking-action-spaces-in-reinforcement-learning-for-vision-based-robotic-manipulation)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：比较强化学习中用于操控的不同动作空间表示
+   evidence：开发无人机图像去雾方法，提升图像质量，有助于输电线路缺陷检测。
 
 
 <div class="dpr-home-promo-card">

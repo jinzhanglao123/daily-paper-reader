@@ -1,0 +1,54 @@
+{
+  "label": "2026-06-21",
+  "date": "2026-06-21",
+  "generated_at": "2026-06-21T21:10:29",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202606/21/2606.18810v1-learning-from-own-solutions-self-conditioned-credit-assignment-for-reinforcement-learning-with-verifiable-rewards",
+      "section": "deep",
+      "title_en": "Learning from Own Solutions: Self-Conditioned Credit Assignment for Reinforcement Learning with Verifiable Rewards",
+      "authors": "Yingyu Shan, Yuhang Guo, Zihao Cheng, Zeming Liu, Xiangrong Zhu, Xinyi Wang, Jiashu Yao, Wei Lin, Hongru Wang, Heyan Huang",
+      "date": "2026-06-17",
+      "pdf": "https://arxiv.org/pdf/2606.18810v1",
+      "score": "9.0",
+      "evidence": "提出自条件信用分配，解决长序列中的奖励分配问题。",
+      "tldr": "在强化学习与可验证奖励（RLVR）训练LLM推理中，GRPO对令牌均匀分配信用，造成梯度浪费和关键步骤欠学习。本文提出自条件化GRPO（SC-GRPO），利用模型在自身验证轨迹上的条件化KL散度作为乘性梯度权重，实现自适应信用分配。在数学、代码和代理任务五个基准上，SC-GRPO分别超越GRPO和DAPO达8.1%和5.9%，且分布外泛化更强。该方法为纯RLVR提供了无需外部教师的细粒度信用分配手段，并证明了自教师蒸馏的不可行性。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Reinforcement learning with verifiable rewards (RLVR) has driven substantial progress in training LLMs for reasoning tasks, but representative methods such as GRPO assign uniform credit across all tokens, wasting gradient on routine tokens while under-crediting pivotal reasoning steps. Existing token-level credit assignment methods require resources beyond the model's own rollouts. GRPO variants rely on process reward models or ground-truth answers. Knowledge distillation assigns credit through per-token divergence but requires external teachers (On-Policy Distillation) or privileged information (On-Policy Self Distillation). However, these dependencies limit applicability in the pure RLVR setting. We observe that conditioning the model on its own verified trajectories induces a measurable per-token KL divergence between the original and conditioned distributions, and prove that distilling from a self-teacher constructed by verified trajectories leads to infeasible weighted-average solutions when multiple verified trajectories exist. We propose SC-GRPO (Self-Conditioned GRPO), which uses KL divergence mentioned before as a multiplicative weight on GRPO gradients. Across five benchmarks spanning math, code, and agentic tasks, SC-GRPO consistently outperforms 8.1% over GRPO and 5.9% over DAPO with stronger OOD performance. Moreover, SC-GRPO achieves higher performance than OPD.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/21/2606.16215v1-pact-privileged-trace-co-training-for-multi-turn-tool-use-agents",
+      "section": "quick",
+      "title_en": "PACT: Privileged Trace Co-Training for Multi-Turn Tool-Use Agents",
+      "authors": "Zhenbang Du, Jun Luo, Zhiwei Zheng, Xiangchi Yuan, Kejing Xia, Dachuan Shi, Qirui Jin, Qijia He, Shaofeng Zou, Yingbin Liang, Wenke Lee",
+      "date": "2026-06-15",
+      "pdf": "https://arxiv.org/pdf/2606.16215v1",
+      "score": "7.0",
+      "evidence": "解决多轮RL中的弱信用分配问题，提出特权轨迹协同训练",
+      "tldr": "多轮工具使用代理的后训练面临强化学习奖励稀疏和SFT过约束的挑战。PACT框架提出训练时利用特权专家轨迹作为优化信号，但不用于推理。通过轨迹条件RL代理和组件感知SFT损失，并引入提示锚定，缓解对轨迹的过度依赖。实验显示在FTRL、BFCL和ToolHop上一致超越强基线，突显特权轨迹共训练的价值。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Multi-turn tool-use agents must reason, call tools, and adapt to observations across several interaction turns. Post-training such agents is challenging, as reinforcement learning often suffers from sparse rewards and weak credit assignment despite matching the prompt-only inference setting, while supervised fine-tuning on expert traces provides dense process supervision but can over-constrain the model to fixed trajectories. To tackle this, we propose PACT, a Privileged trAce Co-Training framework for multi-turn tool-use agents. The key idea is to use expert traces only as training-time optimization signals rather than rollout-time hints. PACT keeps rollout generation prompt-only, then uses expert traces to guide optimization through two complementary signals: a trace-conditioned RL surrogate that evaluates prompt-only rollouts under expert-trace context, and a component-aware SFT loss that supervises reasoning prefixes and tool-calls with annealed strength. To reduce over-reliance on the training-only trace context, PACT further introduces a prompt-only anchoring. We also provide a latent-trace view that connects the two trace-based objectives and explains how expert traces can guide optimization without being used during rollout generation. Experiments on FTRL, BFCL, and ToolHop show that PACT consistently improves over strong SFT- and RL-based baselines, highlighting the value of privileged trace co-training for multi-turn tool-use learning.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/21/2606.16392v1-towards-uav-image-dehazing-a-uav-atmospheric-scattering-model-benchmark-and-geometry-aware-deep-unfolding-network",
+      "section": "quick",
+      "title_en": "Towards UAV Image Dehazing: A UAV Atmospheric Scattering Model, Benchmark, and Geometry-Aware Deep Unfolding Network",
+      "authors": "Wenxuan Fang, Jiangwei Weng, Yu Zheng, Junkai Fan, Guangfa Wang, Xiang Chen, Jian Yang, Jun Li",
+      "date": "2026-06-15",
+      "pdf": "https://arxiv.org/pdf/2606.16392v1",
+      "score": "6.0",
+      "evidence": "开发无人机图像去雾方法，提升图像质量，有助于输电线路缺陷检测。",
+      "tldr": "针对无人机图像去雾面临的非均匀雾建模与真实配对数据缺失挑战，提出无人机大气散射模型(UASM)，将飞行高度、视角和消光系数引入雾分布建模；在此基础上设计几何感知深度展开网络GP-DUN，通过隐式几何估计、几何感知梯度下降与池化专家近端映射模块实现物理一致的闭式更新与纹理恢复；构建UASM-HazeSet数据集，提供可控合成与真实测试图像；实验表明GP-DUN在合成和真实场景下均优于主流方法，为无人机去雾提供了有效物理模型与基准。",
+      "tags": "query:uav-drl",
+      "abstract_en": "In UAV applications, haze significantly obscures distant details and weaken structural information, hindering the recovery of details. Current UAV scenarios still face two key challenges: (i) paired hazy/clean images from the real world are unobtainable, while the classical atmospheric scattering model is inadequate for modeling the spatially non-uniform haze in UAV imagery; (ii) existing dehazing methods struggle to remove the heavy haze accumulated in the upper regions of UAV images. To address these issues, we first propose a UAV Atmospheric Scattering Model (UASM), which explicitly incorporates flight altitude, viewing pitch, and extinction to characterize the non-uniform haze distribution in UAV imaging. Based on UASM, we develop a physics-driven dehazing framework, termed Geometry-aware Proximal Deep Unfolding Network (GP-DUN). Specifically, GP-DUN consists of three key modules: a Latent Geometry Estimator (LGE) that infers transmittance consistent with UAV imaging geometry, a Geometry-aware Gradient Descent Module (GeoGDM) that embeds UASM into the data-fidelity term and performs physics-consistent closed-form updates, and an Pooling-Expert Proximal Mapping Module (PE-PMM) that learns an implicit prior to restore textures and structures beyond the capability of explicit physical modeling. In addition, we further construct UASM-HazeSet, which provides controllable paired synthetic data together with 2,285 real UAV haze images for testing. Extensive experiments show that GP-DUN consistently outperforms existing methods on both UASM-HazeSet and real UAV haze benchmarks.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
