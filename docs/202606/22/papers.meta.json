@@ -1,0 +1,39 @@
+{
+  "label": "2026-06-22",
+  "date": "2026-06-22",
+  "generated_at": "2026-06-22T21:30:06",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202606/22/2606.16621v1-reinforcement-learning-with-inner-loop-dynamics-estimator-for-aerial-manipulation-under-uncertainty",
+      "section": "quick",
+      "title_en": "Reinforcement Learning with Inner-loop Dynamics Estimator for Aerial Manipulation under Uncertainty",
+      "authors": "Shivansh Pratap Singh, Samaksh Ujjwal, Ishita Chaudhary, V R Vasudevan, Rishabh Dev Yadav, Spandan Roy",
+      "date": "2026-06-15",
+      "pdf": "https://arxiv.org/pdf/2606.16621v1",
+      "score": "6.0",
+      "evidence": "将RL应用于空中操作，相关无人机控制问题，可迁移至无人机巡检。",
+      "tldr": "无人机操作臂在快速臂运动、负载变化及未知动态不确定性下，直接全身操作面临巨大挑战。本文提出结合强化学习（RL）与内环动态估计器的分层控制框架，RL外环将期望末端轨迹映射为全身指令，内环估计器实时补偿惯性变化与扰动。硬件实验表明，该方法较RL+PID和RL+INDI+PID基线，末端跟踪误差显著降低，任务成功率提升。结果表明，学习全身协调与低层基于估计的补偿相结合，提升了空中操作精度和鲁棒性。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Aerial manipulators enable physical interaction in hard-to-reach environments; however, the combined problem of direct whole-body aerial manipulation under rapid arm motion, payload changes, and related unknown dynamic uncertainty remains a largely unsolved problem. We present a hierarchical control framework that combines Reinforcement Learning (RL) with an inner-loop dynamics estimator to address this problem. The RL outer loop maps desired 6-degrees-of-freedom (DOF) end-effector targets to coordinated whole-body commands, enabling direct task-driven control without relying on a fully accurate coupled dynamic model in the policy layer. An inner loop then tracks these commands while compensating for transient inertial shifts and uncertainty during execution via a dynamics estimator scheme without requiring system model knowledge. We validate the proposed approach on a custom quadrotor equipped with a 3-DoF manipulator through hardware experiments under varying payload conditions. Compared with RL+PID and RL+INDI+PID baselines, the proposed method reduces end-effector tracking error and improves task success rate across the tested hardware conditions. These results show that combining learned whole-body coordination with estimator-based low-level compensation improves the precision and robustness of aerial manipulation under changing operating conditions.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/22/2606.19236v1-stare-surprisal-guided-token-level-advantage-reweighting-for-policy-entropy-stability",
+      "section": "quick",
+      "title_en": "STARE: Surprisal-Guided Token-Level Advantage Reweighting for Policy Entropy Stability",
+      "authors": "Haipeng Luo, Qingfeng Sun, Songli Wu, Can Xu, Wenfeng Deng, Han Hu, Yansong Tang",
+      "date": "2026-06-17",
+      "pdf": "https://arxiv.org/pdf/2606.19236v1",
+      "score": "6.0",
+      "evidence": "通过优势权重重分配解决长序列RL中的令牌级信用分配不匹配，与长视距奖赏分配相关",
+      "tldr": "基于可验证奖励的强化学习（如GRPO）主导大模型推理后训练，却常出现策略熵崩溃。STARE通过一阶梯度分析揭示token级信用分配不匹配，提出以批次内惊讶分位数定位熵关键token，选择性重加权其有效优势，并辅以目标熵闭环门控。在1.5B至32B模型及三类任务上，STARE实现数千步稳定训练，熵保持在目标区间；AIME24/25准确率较DAPO等基线提升4%-8%，反思标记和响应长度同步增长。该工作维持探索-利用平衡，解锁强化学习训练潜力。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Reinforcement Learning with Verifiable Rewards algorithms like GRPO have emerged as the dominant post-training paradigm for complex reasoning in LLMs, yet commonly suffer from policy entropy collapse during training. We conduct a first-order gradient analysis of token-level entropy dynamics under GRPO and identify a token-level credit assignment mismatch: the per-token entropy variation decomposes into the product of the trajectory-level advantage and an entropy sensitivity function over the next-token distribution, yielding an advantage-surprisal four-quadrant structure and a near-criticality property. Motivated by it, we propose STARE (Surprisal-guided Token-level Advantage Reweighting for policy Entropy stability), which identifies entropy-critical token subsets via batch-internal surprisal quantiles, selectively reweights their effective advantages, and incorporates a target-entropy closed-loop gate for stable entropy regulation. Across model scales from 1.5B to 32B and three task families (Short CoT, Long CoT, and Multi-Turn Tool Use), STARE sustains stable RL training over thousands of steps while maintaining policy entropy within the target band. On AIME24 and AIME25, STARE outperforms DAPO and other competitive baselines by 4%-8% in average accuracy, with reflection tokens and response length growing in tandem, indicating sustained exploration-exploitation balance that further unlocks RL training potential.Code is available at https://github.com/hp-luo/STARE.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

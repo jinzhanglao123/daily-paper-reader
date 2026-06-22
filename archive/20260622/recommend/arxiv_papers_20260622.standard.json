@@ -1,0 +1,100 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-22T21:28:19.810753+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2606.16621v1",
+      "source": "arxiv",
+      "title": "Reinforcement Learning with Inner-loop Dynamics Estimator for Aerial Manipulation under Uncertainty",
+      "abstract": "Aerial manipulators enable physical interaction in hard-to-reach environments; however, the combined problem of direct whole-body aerial manipulation under rapid arm motion, payload changes, and related unknown dynamic uncertainty remains a largely unsolved problem. We present a hierarchical control framework that combines Reinforcement Learning (RL) with an inner-loop dynamics estimator to address this problem. The RL outer loop maps desired 6-degrees-of-freedom (DOF) end-effector targets to coordinated whole-body commands, enabling direct task-driven control without relying on a fully accurate coupled dynamic model in the policy layer. An inner loop then tracks these commands while compensating for transient inertial shifts and uncertainty during execution via a dynamics estimator scheme without requiring system model knowledge. We validate the proposed approach on a custom quadrotor equipped with a 3-DoF manipulator through hardware experiments under varying payload conditions. Compared with RL+PID and RL+INDI+PID baselines, the proposed method reduces end-effector tracking error and improves task success rate across the tested hardware conditions. These results show that combining learned whole-body coordination with estimator-based low-level compensation improves the precision and robustness of aerial manipulation under changing operating conditions.",
+      "authors": [
+        "Shivansh Pratap Singh",
+        "Samaksh Ujjwal",
+        "Ishita Chaudhary",
+        "V R Vasudevan",
+        "Rishabh Dev Yadav",
+        "Spandan Roy"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-06-15T12:16:01+00:00",
+      "link": "https://arxiv.org/pdf/2606.16621v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Applies RL to aerial manipulation, a related UAV control problem, offering methods transferable to UAV inspection.",
+      "llm_evidence_cn": "将RL应用于空中操作，相关无人机控制问题，可迁移至无人机巡检。",
+      "llm_evidence": "将RL应用于空中操作，相关无人机控制问题，可迁移至无人机巡检。",
+      "canonical_evidence": "将RL应用于空中操作，相关无人机控制问题，可迁移至无人机巡检。",
+      "llm_tldr_en": "Proposes a hierarchical RL framework with inner-loop dynamics estimator for whole-body aerial manipulation under uncertainty, demonstrating robust control that could be adapted for UAV inspection tasks.",
+      "llm_tldr_cn": "该论文提出一种结合强化学习与内环动力学估计器的分层控制框架，解决空中机械臂在快速运动和负载变化下的不确定性操控问题。RL外环直接映射末端执行器目标至全身指令，内环补偿瞬态惯性变化，实现了鲁棒任务驱动控制。该方法可迁移到无人机巡检中的灵巧操控与抗扰动需求。",
+      "llm_tldr": "该论文提出一种结合强化学习与内环动力学估计器的分层控制框架，解决空中机械臂在快速运动和负载变化下的不确定性操控问题。RL外环直接映射末端执行器目标至全身指令，内环补偿瞬态惯性变化，实现了鲁棒任务驱动控制。该方法可迁移到无人机巡检中的灵巧操控与抗扰动需求。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "deep reinforcement learning for UAV inspection tasks",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.19236v1",
+      "source": "arxiv",
+      "title": "STARE: Surprisal-Guided Token-Level Advantage Reweighting for Policy Entropy Stability",
+      "abstract": "Reinforcement Learning with Verifiable Rewards algorithms like GRPO have emerged as the dominant post-training paradigm for complex reasoning in LLMs, yet commonly suffer from policy entropy collapse during training. We conduct a first-order gradient analysis of token-level entropy dynamics under GRPO and identify a token-level credit assignment mismatch: the per-token entropy variation decomposes into the product of the trajectory-level advantage and an entropy sensitivity function over the next-token distribution, yielding an advantage-surprisal four-quadrant structure and a near-criticality property. Motivated by it, we propose STARE (Surprisal-guided Token-level Advantage Reweighting for policy Entropy stability), which identifies entropy-critical token subsets via batch-internal surprisal quantiles, selectively reweights their effective advantages, and incorporates a target-entropy closed-loop gate for stable entropy regulation. Across model scales from 1.5B to 32B and three task families (Short CoT, Long CoT, and Multi-Turn Tool Use), STARE sustains stable RL training over thousands of steps while maintaining policy entropy within the target band. On AIME24 and AIME25, STARE outperforms DAPO and other competitive baselines by 4%-8% in average accuracy, with reflection tokens and response length growing in tandem, indicating sustained exploration-exploitation balance that further unlocks RL training potential.Code is available at https://github.com/hp-luo/STARE.",
+      "authors": [
+        "Haipeng Luo",
+        "Qingfeng Sun",
+        "Songli Wu",
+        "Can Xu",
+        "Wenfeng Deng",
+        "Han Hu",
+        "Yansong Tang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.CL"
+      ],
+      "published": "2026-06-17T16:13:42+00:00",
+      "link": "https://arxiv.org/pdf/2606.19236v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "addresses token-level credit assignment mismatch in long-horizon RL via advantage reweighting, relevant to long-horizon reward assignment",
+      "llm_evidence_cn": "通过优势权重重分配解决长序列RL中的令牌级信用分配不匹配，与长视距奖赏分配相关",
+      "llm_evidence": "通过优势权重重分配解决长序列RL中的令牌级信用分配不匹配，与长视距奖赏分配相关",
+      "canonical_evidence": "通过优势权重重分配解决长序列RL中的令牌级信用分配不匹配，与长视距奖赏分配相关",
+      "llm_tldr_en": "Proposes STARE, which identifies and corrects token-level credit assignment mismatch in GRPO by reweighting advantages based on surprisal, preventing entropy collapse and improving reasoning in LLMs.",
+      "llm_tldr_cn": "针对GRPO等可验证奖励强化学习算法中的策略熵崩溃问题，通过梯度分析揭示令牌级信用分配不匹配，提出STARE方法依据意外度对令牌级优势进行重加权，稳定策略熵并提升长文本推理性能。该方法为长视距奖赏分配提供了一种新颖的数据驱动调整策略。",
+      "llm_tldr": "针对GRPO等可验证奖励强化学习算法中的策略熵崩溃问题，通过梯度分析揭示令牌级信用分配不匹配，提出STARE方法依据意外度对令牌级优势进行重加权，稳定策略熵并提升长文本推理性能。该方法为长视距奖赏分配提供了一种新颖的数据驱动调整策略。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

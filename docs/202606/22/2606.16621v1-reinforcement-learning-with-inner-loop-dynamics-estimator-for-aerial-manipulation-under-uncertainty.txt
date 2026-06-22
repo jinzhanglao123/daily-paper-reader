@@ -1,0 +1,341 @@
+Title: Reinforcement Learning with Inner-loop Dynamics Estimator for Aerial Manipulation under Uncertainty
+
+URL Source: https://arxiv.org/pdf/2606.16621v1
+
+Published Time: Tue, 16 Jun 2026 02:11:41 GMT
+
+Number of Pages: 6
+
+Markdown Content:
+# Reinforcement Learning with Inner-loop Dynamics Estimator for Aerial Manipulation under Uncertainty 
+
+Shivansh P. Singh 1∗, Samaksh Ujjwal 1∗, Ishita Chaudhary 1, V. R. Vasudevan 1, Rishabh Yadav 2, Spandan Roy 1
+
+Abstract — Aerial manipulators enable physical interaction in hard-to-reach environments; however, the combined problem of direct whole-body aerial manipulation under rapid arm motion, payload changes, and related unknown dynamic uncertainty remains a largely unsolved problem. We present a hierarchical control framework that combines Reinforcement Learning (RL) with an inner-loop dynamics estimator to address this problem. The RL outer loop maps desired 6-degrees-of-freedom (DOF) end-effector targets to coordinated whole-body commands, enabling direct task-driven control without relying on a fully accurate coupled dynamic model in the policy layer. An inner loop then tracks these commands while compensating for transient inertial shifts and uncertainty during execution via a dynamics estimator scheme without requiring system model knowledge. We validate the proposed approach on a custom quadrotor equipped with a 3-DoF manipulator through hardware experiments under varying payload conditions. Com-pared with RL+PID and RL+INDI+PID baselines, the proposed method reduces end-effector tracking error and improves task success rate across the tested hardware conditions. These results show that combining learned whole-body coordination with estimator-based low-level compensation improves the precision and robustness of aerial manipulation under changing operating conditions. 
+
+I. I NTRODUCTION 
+
+Aerial manipulators integrate a multi-rotor UAV with a robotic arm, enabling physical interaction in complex 3D environments, including inspection and contact-rich pick-and-place in confined or hard-to-reach spaces [1], [2]. Re-liable deployment remains challenging because arm motion strongly couples with the underactuated aerial base, causing shifts in center of gravity, inertia, and disturbances during grasping, release, or rapid motion [3]–[5]. These uncertain-ties make stable and precise aerial manipulation difficult. Existing control methods are broadly categorized into model-based and learning-based approaches, reviewed below. 
+
+A. Related Works 1) Model-based Control for Aerial Manipulators: Recent model-based methods address uncertainty and external dis-turbances, such as wind, using robust control approaches [6]– [8], as well as adaptive methods [9]–[13]. However, analyt-ically modeling center-of-mass shifts, mass/inertia redistri-bution, and UAV–manipulator coupling remains extremely           
+
+> This work is partly supported by “Edge-AI-GGCNN” project sponsored by Qualcomm Technologies. ∗denotes equal contribution.
+> 1International Institute of Information Technology Hyderabad, India. Emails: shivansh.singh@research.iiit.ac.in ,
+> samaksh.ujjawal@research.iiit.ac.in ,
+> vasudevanvr2002@gmail.com ;ishitachaudhary2003@gmail.com ,
+> spandan.roy@iiit.ac.in .
+> 2Department of Computer Science, University of Manchester, UK. Email:
+> rishabh.yadav@postgrad.manchester.ac.uk .
+
+difficult [14]. These methods are also mainly designed for tracking, interaction regulation, or grasp stabilization, rather than direct whole-body action generation from manipulation objectives. 
+
+2) Learning-based Control for Aerial Manipulation: To reduce reliance on exact analytical models, recent studies have introduced learning the residual dynamic model [15]– [20]. Recent works also use language and vision models for grasping, placement, and task-level reasoning, including clutter-aware aerial grasping, language-grounded placement, and VLM-based skill selection [21]–[23]. Directly learning the control is promising for aerial manipulation because it can learn coordinated policies from interaction while reducing dependence on accurate analytical models [24]– [28]. RL is particularly useful for mapping end-effector ob-jectives to coordinated UAV–manipulator commands. How-ever, decoupled RL approaches treat the UAV and arm separately, ignoring unavoidable coupling and degrading performance [1], [26]–[28]. Recent work addresses this by learning whole-body commands for both the aerial base and manipulator [26], but still relies on inner-loop controllers based on simplified linear models. This remains limiting because aerial manipulator dynamics are highly nonlinear, strongly coupled, and difficult to model under grasp/release inertia changes, rapid arm motion, and arm-induced distur-bances [29, Ch.5.3]. Despite substantial progress, direct whole-body aerial manipulation under abrupt payload changes, arm-induced motion, and dynamic uncertainty remains an open challenge. We address this with a hierarchical RL framework with inner-loop uncertainty estimation for aerial manipulators (Fig. 1). The RL policy maps a desired 6-DOF end-effector target to coordinated whole-body commands, while the inner-loop controller tracks these commands and compensates for tran-sient unknown dynamics during execution without requiring an a priori system model. The main contributions are:  
+
+> •
+
+A hierarchical architecture combining RL-based whole-body command generation with estimator-based inner-loop tracking and uncertainty compensation.  
+
+> •
+
+A dynamics-estimation execution layer for transient UAV–arm coupling changes, including grasp/release-induced inertial variation and rapid manipulator motion.  
+
+> •
+
+Evaluation under off-nominal aerial-manipulation con-ditions, including payload variation and dynamic cou-pling during arm motion.  
+
+> •
+
+Demonstration that learned coordination with estimator-based feedback improves end-effector regulation accu-racy and smoothness under dynamic uncertainty. 
+
+> arXiv:2606.16621v1 [cs.RO] 15 Jun 2026
+
+II. P ROPOSED METHODOLOGY 
+
+A. Notation and Preliminaries 
+
+We define four primary coordinate frames: the inertial World frame {W }, the quadrotor Body frame {B} attached to its center of mass, the End-effector (gripper) frame {E}
+
+attached to the geometric center of the gripper claws and the goal frame {G}. The system motion variables are denoted as follows: linear (position, velocity, acceleration) as (p, v, a),quaternion as q, Euler angles (roll, pitch, yaw) as (φ , ϑ , ψ),angular velocity as ω; Rotation matrix as R and arm joint angular position and velocity as (θ , ˙θ ). The symbol t denotes time, while T denotes collective thrust. The inner loop control output (torque) is denoted by τ. A leading superscript denotes the reference frame in which a physical quantity is expressed. The following subscript denotes the entity for which the physical quantity is expressed ( b for aerial base, 
+
+e for end effector, α for manipulator arm and g for target). The subscript d or {(·), d} represents a desired quantity either outputted by RL agent or the controller. For example, W pe ∈
+
+R3 represents the position of the end effector expressed in the world frame and Bωb,d ∈ R3 represents the desired angular velocity of the aerial base in the body frame. The rotation matrix W RB ∈ SO (3) and the quaternion W qB maps vectors from {B} to {W }.
+
+B. System Overview 
+
+We consider an aerial manipulator composed of a quadro-tor and a 3-DoF arm. The objective is goal-conditioned end-effector pose regulation: given a desired target pose 
+
+(W pg,W RG) ∈ SE (3), the controller must generate coor-dinated base and manipulator motion that drives the end effector to the goal while preserving stable flight. The over-all architecture is hierarchical. A forward-kinematics block reconstructs the end-effector pose from the measured base state and joint configuration, an RL policy generates high-level motion commands, and an inner-loop controller that converts these commands into actuator inputs. At each control step, the policy receives the current base pose, base velocity, body angular velocity, end-effector pose, and joint states, together with the target pose. The policy then outputs desired base linear acceleration, desired yaw, desired body rates, and desired joint-position commands. The desired linear acceleration and yaw are converted into a desired base attitude and the required collective thrust via thrust vector decomposition, while the desired body rates serve as rotational feedforward commands. Finally, these reference commands, together with real-time attitude and body-rate measurements from the flight controller, are fed into the estimator-based inner-loop controller. This controller computes the body torques required for the aerial base and the joint torques required for the manipulator arm. 
+
+o(t) = O(x(t), G ), A (t) = π(o(t)) , u(t) = τ⊤ 
+
+> b
+
+(t) τ⊤ 
+
+> α
+
+(t) Td (t)⊤
+
+(1) 
+
+where x(t) denotes the full system state, G =[W p⊤ 
+
+> g
+
+, (W φg,W ϑg,W ψg)⊤]⊤ represents the 6 DOF goal pose, 
+
+o(t) is the policy observation, A (t) is the high-level actions,                                                                                                                     
+
+> TABLE I REWARD AND PENALTY CONFIGURATIONS
+> Rewards Penalties
+> Term r1r2r3r4xTerm p1p2xrpos 10 10 22Wpg−Wper∥a∥41Wab,d
+> rori 20 5412 arccos  |Wq⊤
+> E WqG|r∥ω∥45Bωb,d
+> rlinvel 1500Wvbr∥ψ∥25ψd
+> rangvel 1.5 200Bωbr∆a45Wab,d(t)−Wab,d(t−1)
+> rjvel 2500˙θr∆ω412 Bωb,d(t)−Bωb,d(t−1)
+> reevel 0.5 50.5 2Wver∆ψ412 ψd(t)−ψd(t−1)
+> rup 2.5 52.5 21−e⊤
+> 3WRBe3r∆θ412 θd(t)−θd(t−1)
+
+and u(t) collects the low-level control inputs applied to the system. The system evolves as x(t + 1) = f (x(t), u(t)) .
+
+C. Reinforcement Learning Formulation 
+
+We model the problem as a continuous-state, continuous-action Markov decision process. The observation vector has dimension 33 and is constructed as 
+
+o(t) = W ˜p⊤
+
+> gb
+
+, vec  W RB(:, 0 : 2 )⊤ ,W ˜v⊤ 
+
+> b
+
+, Bω⊤ 
+
+> b
+
+, 
+
+> W
+
+˜p⊤
+
+> ge
+
+, vec 
+
+W R⊤ 
+
+> E W
+
+RG
+
+⊤
+
+, θ ⊤, ˙θ ⊤⊤ ∈ R33 ,
+
+(2) where  
+
+> W
+
+˜pgb = 
+
+> W
+
+pg −W pb
+
+10 , W ˜vb = 
+
+> W
+
+vb
+
+10 , W ˜pge = 
+
+> W
+
+pg −W pe
+
+10 .
+
+The observation design exposes both task-space geometric errors and motion-state variables required for stable whole-body coordination. The action vector is given by 
+
+A (t) = (W ab,d )⊤, (Bωb,d )⊤, ψd , θ ⊤
+
+> d
+
+⊤ ∈ R10 , (3) with 3 translational components, 3 body-rate components, 1 yaw command, and 3 desired joint positions. This action parameterization is deliberate: the policy learns task-level coordinated motion commands, while the inner loops handle UAV attitude tracking and manipulator joint actuation. 
+
+D. Reward Function Design 
+
+We use a two-scale exponential shaping for rewards with a general structure as in (4). We superimpose two expo-nential functions, one of wider variance and another of lower variance. The higher variance exponential prevents gradients from vanishing when the system is away from the target, whereas the lower variance exponential maintains high reward gradients near the target enforcing precision. The penalties are defined by (5), which is always negative. 
+
+r = r1 e−r2 x2
+
++ r3 e−r4 x2
+
+(4) 
+
+p = p1(e−p2 x2
+
+− 1) (5) We reward the agent for reaching the goal pose (position reward rpos , orientation reward rori ), for maintaining low velocities (linear velocity reward rlinvel , angular velocity reward rangvel , joint angular velocity reward rjvel , end-effector velocity reward reevel ) and for maintaining upright position of aerial base (upright reward rup ). We penalize it for high action magnitudes (linear acceleration penalty r∥a∥, body rate penalty r∥ω∥, yaw penalty r∥ψ∥) and for high difference between current and previous actions (linear acceleration difference penalty r∆a, body rate difference penalty r∆ω , yaw difference penalty r∆ψ , joint action difference penalty r∆θ ), Observations   
+
+> 512 256 128 Policy Output a
+> ψ
+> Actions 8192 Environments
+
+Aerial Gym Onboard      
+
+> Policy Training (PPO)
+> Vector Decomposition
+> Desired Attitude Inner-Loop Controller Sensor Feedback Body Torque Collective Thrust Arm Torque ()()Offline Training
+> ψ
+> (T d)
+> dddd
+> ,ad,,
+> dFig. 1. Overview of the proposed hierarchical control framework.
+
+to enforce smoothness. The coefficients for the rewards and penalties are given in Table I. We also introduce a temporal shaping reward (progress reward) shown in equation (6). It rewards progress of the end effector towards the goal position. The asymmetry of this reward, i.e. a higher penalty for moving away strongly discourages limit cycles and oscillatory behavior. 
+
+rprog =
+
+(
+
+50 ∆ep, ∆ep > 0,
+
+100 ∆ep, ∆ep ≤ 0,
+
+∆ep = ∥W ege (t − 1)∥2 − ∥ W ege (t)∥2, W ege = W pg −W pe.
+
+(6) The reward components are aggregated as 
+
+rgeneral = kpos rpos + kori rori 
+
++ kpen ( r∆a + r∆ω + r∆ψ + r∆θ
+
++ r∥a∥ + r∥ω∥ + r∥ψ∥) + rup 
+
++ rlinvel + rangvel + reevel + rjvel ,
+
+(7) 
+
+rnear = rori + rlinvel + rangvel + reevel 
+
++ rjvel + r∥a∥ + r∥ω∥ + r∥ψ∥
+
++ r∆a + r∆ω + r∆ψ + r∆θ ,
+
+(8) and the total reward is defined as 
+
+rtotal = rprog + rpos rnear + rgeneral 
+
+100 . (9) The weighting coefficients kpos , kori , and kpen balance the positional, orientation, and penalty terms. We set them to 
+
+kpos = 50, kori = 3, and kpen = 2.5. To ensure a robust learning process and prevent reward hacking, we employ a multiplicative coupling between the primary task objective and secondary performance metrics. Specifically, the reward structure integrates the positional ac-curacy ( rpos ) with stability and smoothness objectives ( rnear )such that the agent can only “unlock” significant secondary rewards upon satisfying the primary goal of reaching the target. This hierarchical reward shaping ensures that the policy prioritizes global convergence before optimizing for fine-grained control effort and stability. 
+
+E. Policy Training Procedure and Setup 
+
+The policy is trained in a GPU-accelerated vectorized simulation on an NVIDIA GeForce RTX 4090, using the same structured closed loop as the real system in Fig. 1. At each step, the simulator provides x(t), the observation o(t)
+
+is constructed, and the policy outputs A (t). This action is converted into desired attitude, thrust, and joint references, which are tracked by the estimator-based inner loop and joint controller. Thus, training occurs with the same control structure used during deployment rather than a simplified kinematic abstraction. We use PPO [30] through RL Games in Aerial Gym [31]. The actor and critic are MLPs with hidden layers 
+
+[512 , 256 , 128 ] and ELU activations. Training uses 8192 parallel environments, horizon length 32, minibatch size 8192, 4 epochs per update, discount factor 0 .99, learning rate 10 −4 with adaptive scheduling, KL threshold 0 .008, and clipping parameter ε = 0.1. The RL loop runs at 100 Hz with ONNX Runtime inference, while the inner-loop controller runs at 300 Hz. Episodes terminate after 500 steps or when the end-effector–goal distance exceeds 5 .5 m. For robustness, domain randomization is applied at every reset: payload mass is sampled from [0.1, 0.5] kg, manipula-tor link lengths from [0.8, 1.2] with consistent inertial scaling, motor time constants from [0.95 , 1.05 ], joint stiffness from 
+
+[0.5, 1.5], and joint damping from [0.9, 1.1]. Initial poses and velocities are randomized, and target orientation is sampled with roll/pitch in − π 
+
+> 6
+
+, π
+
+> 6
+
+ and yaw in [−π, π].F. Control Architecture 
+
+The inner-loop controller receives the policy output A (t)
+
+from (3) and generates the corresponding low-level control input τ. The aerial-base branch converts the commanded acceleration and yaw (W ab,d , ψd ) into the desired attitude  
+
+> W
+
+RB,d and collective thrust Td using the standard geomet-ric quadrotor construction of Mellinger and Kumar [32]. The corresponding attitude and angular-rate tracking errors are also computed following [32], and are passed to the estimator-based inner-loop controller together with the de-sired joint configuration θ d .Therefore, the RL policy operates at the motion-reference level rather than directly issuing actuator commands. Specifi-cally, it outputs a desired translational acceleration, a desired yaw angle, and a desired body-rate reference. Through vector decomposition, the desired translational acceleration and yaw are converted into the desired vehicle attitude W RB,d and the collective thrust command. The estimator-based inner-loop controller then uses (φb,d , ϑb,d , ψb,d ) = Euler (W RB,d ),the desired body-rate reference Bωb,d as rotational feedfor-ward information, and the desired joint configuration θ d ,together with the measured vehicle attitude (φb, ϑb, ψb) = 
+
+Euler (W RB), measured body rates Bωb, and manipulator states, to compute the low-level control inputs, namely the quadrotor body torques and manipulator joint torques. In this way, the proposed architecture maintains a clear and physically grounded separation between high-level motion generation and low-level coupled stabilization and tracking. 
+
+G. Inner-Loop Controller 
+
+To describe the controller, we define a generic configura-tion vector η = [( φb, ϑb, ψb)⊤, θ ⊤]⊤. The coupled inner-loop dynamics in the standard Euler-Lagrange form can then be written as [1], [2] 
+
+Mη (η) ¨η + Hη (η, ˙η,t) = τη , (10) where Mη is the effective inertia matrix, Hη collects the Coriolis, dissipative, coupling, and disturbance terms, and 
+
+τη is the torque input. Introducing a user-defined constant diagonal matrix ¯Mη , the same dynamics can be rewritten as ¯Mη ¨η + ¯Hη (η, ˙η,t) = τη , (11) with ¯Hη = ( Mη − ¯Mη ) ¨η + Hη (12) being defined as the lumped unknown dynamics and uncer-tainty. Note that the coupled inertial terms, represented by the off-diagonal terms in Mη and other terms Hη , are the ones which are the most difficult to model. Hence, ¯Mη is selected as a diagonal matrix for control design, whereas the off-diagonal terms are grouped under unknown lumped uncertainty function ¯Hη .Let ηd denote the desired generalized-coordinate trajectory induced by (( φb,d , ϑb,d , ψb,d )⊤, θ ⊤ 
+
+> d
+
+), and define the tracking error as eη = η − ηd and ˙ eη = ˙η − ˙ηd . The estimator-based inner-loop control law is defined as 
+
+τη = ¯Mη
+
+  ¨ηd − Kpη eη − Kdη ˙eη
+
+ + ˆ¯Hη . (13) where Kpη and Kdη are positive-definite gain matrices and ˆ¯Hη is a delay-based estimate of the lumped uncertainty computed from past state and control input as ˆ¯Hη (t) = τη (t − L) − ¯Mη ¨η(t − L), (14) with L > 0 is the delay induced owing to usage of past data. Substituting (13) into (11) yields the closed-loop error dynamics ¨eη + Kdη ˙eη + Kpη eη = ¯M−1
+
+> η
+
+ ˆ¯Hη − ¯Hη
+
+
+
+. (15) From the properties of Euler–Lagrange robotic system dy-namics it is well known that they do not exhibit finite-time escape (cf. [33, Ch. 2]). Therefore, the mismatch ( ˆ¯Hη − ¯Hη ),i.e., the discrepancy in state evaluation between the delay interval L always remains bounded (cf. [34, Ch. 3]). Hence, there exists a positive scalar ε < ∞ such that 
+
+¯M−1
+
+> η
+
+ ˆ¯Hη − ¯Hη
+
+
+
+≤ ε. (16) Therefore, the right-hand side of (15) is bounded, and the tracking error remains bounded by the standard results for linear systems with bounded input. This boundedness argument justifies the use of the estimator-based inner loop for compensating modeling mismatch, unmodeled coupling, and fast transient variations during flight. We implement the inner-loop controller as the torque-level tracking layer for both the aerial base and the manipulator. Following the formulation in this subsection, the controller takes the desired attitude (φb,d , ϑb,d , ψb,d ), and desired joint configuration θ d as reference inputs, while the RL-generated body-rate commands are incorporated as feedforward rota-tional terms. The loop is closed using real-time measure-ments of the vehicle attitude, body rates, and manipulator joint positions from the onboard flight controller sensors and the Dynamixel encoders, respectively. Based on these signals, the controller computes the body-torque command 
+
+τb for the quadrotor and the joint-torque command τα for the manipulator. In practice, direct low-level torque interfacing with the Dynamixel actuators is nontrivial; therefore, we transmit τα through the ROS 2 control stack, which provides reliable actuator communication and executes the command in current-based torque mode. Importantly, the proposed control law does not require a fully accurate coupled system model. The delay parameter L is selected as the smallest interval over which past measurements are available, which is naturally determined by the control update rate. Likewise, ¯Mη is chosen using nominal diagonal mass/inertia terms, while the remaining coupling effects, unmodeled dynamics, and disturbances are compensated through the delay-based estimate ˆ¯Hη (t).III. E XPERIMENTS 
+
+We validate the proposed framework on an aerial-manipulation platform and evaluate three questions: 1) whether the method can accurately track planned path in hardware, 2) how performance changes under increased payload and speed, and 3) how it compares with other baselines. 
+
+A. Experimental Setup a) Hardware Setup: Hardware experiments are con-ducted on a Tarot-450 quadrotor with SunnySky V4006 Planned Path Executed path Fig. 2. Hardware trajectory-tracking result for the figure-eight experiment, with annotated pick-up and drop-off locations indicating the grasp and release events that induce in-flight payload variation. Micro XRCE-DDS Orin Nano Super Sensor Information Body Torque & Thrust DShot 600 digital signal 300 hz Joint Torque Command 
+
+> U2D2
+
+Fig. 3. Experimental platform and onboard control architecture. 
+
+motors, 13-inch propellers, a 6S LiPo battery, and a 3-DoF Dynamixel XM430-W210-T manipulator. A custom 3D-printed gripper driven by an additional Dynamixel actuator is used for pick-and-place tasks. The complete platform weighs approximately 3 .0 kg, with the manipulator and gripper powered through a U2D2 Power Hub Board (Fig. 3). A CUAV X7+ flight controller runs customized PX4 firmware for the aerial base, while a Jetson Orin Nano Super handles high-level computation, policy inference, and the estimator-based inner loop. Communication be-tween the Jetson and flight controller is handled through 
+
+micro-ROS /DDS in ROS 2 . Manipulator commands are sent through ROS2 control in current-based torque mode, with commanded torques approximated from Dynamixel internal effort estimates and tracked at 100 Hz. Base state feedback comes from OptiTrack at 120 Hz fused with onboard IMU data, while manipulator joint states are obtained from Dynamixel encoders. The learned policy and estimator-based controller run at 100 Hz and generate collective thrust and body/joint torque commands, which are converted by the customized PX4 stack into rotor-speed commands at 300 Hz. 
+
+B. Experimental Protocol 
+
+We evaluate the platform on a planar figure-eight trajec-tory, which induces repeated curvature reversals and strong translational–rotational coupling. The trajectory is executed with payloads of 200 g and 400 g at nominal speeds of 0.5 m/s and 1 m/s. During execution, the platform also per-forms pick-up and drop-off actions at the locations marked in Fig. 2, creating in-flight payload changes and testing 
+
+TABLE II BASELINE COMPARISON ON THE FIGURE -EIGHT PATH . E ACH ENTRY REPORTS RMSE [ M] / SUCCESS RATE [%].                 
+
+> Payload Speed RL+PID INDI Ours 200 g 0.5 m/s 0.242 / 85 0.195 / 95 0.180 / 95 200 g 1.0 m/s 0.315 / 70 0.220 / 90 0.151 / 95 400 g 0.5 m/s 0.288 / 75 0.210 / 95 0.195 / 95 400 g 1.0 m/s 0.392 / 60 0.285 / 85 0.205 / 90 RMSE std. [m] –0.062 0.038 0.024 RMSE red. [%] –0.0 26.4 40.9 INDI denotes the RL + INDI + PID arm baseline.
+
+grasp/release-induced transient mismatch. All controllers are evaluated under the same trajectory, payload, and speed settings, and the resulting end-effector tracking performance is summarized in Table II. 
+
+C. Baselines and Evaluation Metrics 
+
+We compare against two baselines with the same RL outer loop but different inner-loop controllers: RL+PID, using cascaded PID for the aerial base and joint-space PID for the arm, and RL+INDI+PID, using INDI for the base while retaining PID arm tracking. Performance is measured using end-effector tracking RMSE and task success rate under the tested high-speed and high-payload conditions. IV. R ESULTS AND DISCUSSION 
+
+As shown in Fig. 3 and Fig. 2, the proposed controller is deployable on hardware and achieves stable coupled flight– manipulation. The executed figure-eight trajectory closely tracks the planned path, with bounded errors during simul-taneous base motion and arm actuation. Table II shows that the proposed method attains the lowest end-effector RMSE across all payload–speed conditions, with the largest gains in aggressive cases such as 200 g, 1 m /s and 400 g, 1 m /s. The success rates show the same trend, indicating improved reliability as payload and speed increase. Aggregated over the hardware trials, the proposed method reduces mean RMSE by 40 .9% relative to RL+PID and 26 .4% relative to RL+INDI+PID. It also lowers the RMSE standard deviation to 0 .024 m, compared with 0 .038 m for RL+INDI+PID and 0.062 m for RL+PID, demonstrating better repeatability un-der hardware variability. These gains arise from the hierar-chical design: the RL outer loop generates task-level whole-body commands, while the estimator-based inner loop com-pensates for payload shifts, manipulator-induced coupling, and unmodeled dynamics. Overall, the results support the claim that learned whole-body coordination is more effective when paired with estimator-based low-level compensation, especially in high-speed and high-payload regimes. Since the comparison is limited to the figure-eight hardware study and does not include formal significance testing, the results should be interpreted as strong empirical evidence. V. C ONCLUSION 
+
+We presented a hierarchical control framework for aerial manipulation that combines an RL outer loop for task-level whole-body command generation with a delay-based inner-loop dynamics estimator for low-level uncertainty compensation. Hardware experiments demonstrate that the proposed method consistently outperforms RL+PID and RL+INDI+PID, achieving the lowest tracking error across all tested conditions, improving mean RMSE by up to 40 .9%, and yielding the smallest trial-to-trial variation. These results show that coupling learned whole-body coordination with estimator-based inner-loop compensation substantially im-proves precision, robustness, and repeatability under chang-ing payload and motion conditions. REFERENCES [1] A. Ollero, M. Tognon, A. Suarez, D. Lee, and A. Franchi, “Past, present, and future of aerial robotic manipulators,” IEEE Transactions on Robotics , vol. 38, no. 1, pp. 626–645, 2021. [2] M. Orsag, C. Korpela, S. Bogdan, and P. Oh, “Dexterous aerial robots—mobile manipulation using unmanned aerial systems,” IEEE Transactions on Robotics , vol. 33, no. 6, pp. 1453–1466, 2017. [3] A. Sharma, S. Gupta, S. P. Singh, R. D. Yadav, H. Song, W. Pan, S. Roy, and S. Baldi, “Impedance and stability targeted adaptation for aerial manipulator with unknown coupling dynamics,” in 2025 25th International Conference on Control, Automation and Systems (ICCAS) . IEEE, 2025, pp. 471–476. [4] R. D. Yadav, B. Jones, S. Gupta, A. Sharma, J. Sun, J. Zhao, and S. Roy, “An integrated approach to aerial grasping: Combining a bistable gripper with adaptive control,” IEEE/ASME Transactions on Mechatronics , 2025. [5] E. Yilmaz, H. Zaki, and M. Unel, “Nonlinear adaptive control of an aerial manipulation system,” in 2019 18th European Control Conference (ECC) . IEEE, 2019, pp. 3916–3921. [6] G. Zhang, Y. He, B. Dai, F. Gu, J. Han, and G. Liu, “Robust control of an aerial manipulator based on a variable inertia parameters model,” 
+
+IEEE Transactions on Industrial Electronics , vol. 67, no. 11, pp. 9515– 9525, 2020. [7] S. Kim, S. Choi, H. Kim, J. Shin, H. Shim, and H. J. Kim, “Robust control of an equipment-added multirotor using disturbance observer,” 
+
+IEEE Transactions on Control Systems Technology , vol. 26, no. 4, pp. 1524–1531, 2018. [8] D. Lee, J. Byun, and H. J. Kim, “Rise-based trajectory tracking control of an aerial manipulator under uncertainty,” IEEE Control Systems Letters , vol. 6, pp. 3379–3384, 2022. [9] X. Liang, Y. Wang, H. Yu, Z. Zhang, J. Han, and Y. Fang, “Observer-based nonlinear control for dual-arm aerial manipulator systems suffer-ing from uncertain center of mass,” IEEE Transactions on Automation Science and Engineering , vol. 22, pp. 1984–1995, 2025. [10] H. Li, Z. Li, F. Song, X. Yu, X. Yang, and J. J. Rodr´ ıguez-Andina, “Finite-time fast adaptive backstepping attitude control for aerial manipulators based on variable coupling disturbance compensation,” 
+
+IEEE Transactions on Industrial Electronics , vol. 71, no. 11, pp. 14 730–14 739, 2024. [11] Y. Chen, J. Liang, Y. Wu, Z. Miao, H. Zhang, and Y. Wang, “Adaptive sliding-mode disturbance observer-based finite-time control for unmanned aerial manipulator with prescribed performance,” IEEE Transactions on Cybernetics , vol. 53, no. 5, pp. 3263–3276, 2023. [12] S. Kim, H. Seo, S. Choi, and H. J. Kim, “Vision-guided aerial manipulation using a multirotor with a robotic arm,” IEEE/ASME Transactions on Mechatronics , vol. 21, no. 4, pp. 1912–1923, 2016. [13] J. Liang, Y. Chen, Y. Wu, Z. Miao, H. Zhang, and Y. Wang, “Adaptive prescribed performance control of unmanned aerial manipulator with disturbances,” IEEE Transactions on Automation Science and Engi-neering , vol. 20, no. 3, pp. 1804–1814, 2023. [14] R. D. Yadav, S. Dantu, W. Pan, S. Sun, S. Roy, and S. Baldi, “Mod-ular adaptive aerial manipulation under unknown dynamic coupling forces,” IEEE/ASME Transactions on Mechatronics , vol. 30, no. 4, pp. 2688–2698, 2024. [15] W. Cao, A. Capone, R. Yadav, S. Hirche, and W. Pan, “Computation-aware learning for stable control with gaussian process,” arXiv preprint arXiv:2406.02272 , 2024. [16] S. Ujjawal, N. S. Nair, S. P. Singh, R. D. Yadav, W. Pan, and S. Roy, “Learn structure, adapt on the fly: Multi-scale residual learning and online adaptation for aerial manipulators,” arXiv preprint arXiv:2603.11638 , 2026. [17] R. D. Yadav, S. Ujjawal, S. Sun, S. Roy, and W. Pan, “Learning cross-coupled and regime dependent dynamics for aerial manipulation,” 
+
+arXiv preprint arXiv:2605.14805 , 2026. [18] S. Ujjawal, S. P. Singh, N. S. Nair, R. D. Yadav, W. Pan, and S. Roy, “Aermani-diffusion: Regime-conditioned diffusion for dynamics learn-ing in aerial manipulators,” arXiv preprint arXiv:2512.10773 , 2025. [19] R. D. Yadav, A. Das, H. Song, S. Kaski, and W. Pan, “Arcade: Adap-tive robot control with online changepoint-aware bayesian dynamics learning,” arXiv preprint arXiv:2512.14331 , 2025. [20] R. D. Yadav, S. Ujjawal, S. Sun, S. Roy, and W. Pan, “Physics-aware sparse learning and selective online adaptation for euler-lagrange robot dynamics,” arXiv preprint arXiv:2606.09640 , 2026. [21] S. P. Singh, N. S. Nair, S. Ujjawal, S. Mishra, S. Patil, R. D. Yadav, and S. Roy, “Aerograb: A unified framework for aerial grasping in cluttered environments,” arXiv preprint arXiv:2603.15097 , 2026. [22] S. Mishra, R. D. Yadav, N. Nair, W. Pan, and S. Roy, “Aeroplace-flow: Language-grounded object placement for aerial manipulators via visual foresight and object flow,” arXiv preprint arXiv:2603.07744 ,2026. [23] S. Mishra, R. D. Yadav, A. Das, S. Gupta, W. Pan, and S. Roy, “Aermani-vlm: Structured prompting and reasoning for aerial manipu-lation with vision language models,” arXiv preprint arXiv:2511.01472 ,2025. [24] H. Alzorgan, A. Razi, and A. J. Moshayedi, “Actuator trajectory planning for uavs with overhead manipulator using reinforcement learning,” in 2023 IEEE 34th Annual International Symposium on Personal, Indoor and Mobile Radio Communications (PIMRC) . IEEE, 2023, pp. 1–6. [25] E. Cuniato, I. Geles, W. Zhang, O. Andersson, M. Tognon, and R. Siegwart, “Learning to open doors with an aerial manipulator,” in 2023 IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS) . IEEE, 2023, pp. 6942–6948. [26] S. Deshmukh, J. Alonso-Mora, and S. Sun, “Global end-effector pose control of an underactuated aerial manipulator via reinforcement learning,” arXiv preprint arXiv:2512.21085 , 2025. [27] Y.-C. Liu and C.-Y. Huang, “Ddpg-based adaptive robust tracking control for aerial manipulators with decoupling approach,” IEEE Transactions on Cybernetics , vol. 52, no. 8, pp. 8258–8271, 2022. [28] O. Y. Nieto and L. J. Colombo, “Safe learning-based control for an aerial robot with manipulator arms,” IFAC-PapersOnLine , vol. 58, no. 6, pp. 36–41, 2024, presented at the 8th IFAC Workshop on Lagrangian and Hamiltonian Methods for Nonlinear Control. [29] M. Orsag, C. Korpela, P. Oh, and S. Bogdan, “Aerial manipulator dynamics,” in Aerial Manipulation . Springer, 2017, pp. 123–163. [30] J. Schulman, F. Wolski, P. Dhariwal, A. Radford, and O. Klimov, “Proximal policy optimization algorithms,” arXiv preprint arXiv:1707.06347 , 2017. [31] M. Kulkarni, W. Rehberg, and K. Alexis, “Aerial gym simulator: A framework for highly parallelized simulation of aerial robots,” IEEE Robotics and Automation Letters , vol. 10, no. 4, pp. 4093–4100, 2025. [32] D. Mellinger and V. Kumar, “Minimum snap trajectory generation and control for quadrotors,” in 2011 IEEE International Conference on Robotics and Automation (ICRA) , Shanghai, China, May 2011, pp. 2520–2525. [33] R. Ortega, A. Loria, P. J. Nicklasson, and H. Sira-Ramirez, “Euler-lagrange systems,” in Passivity-based Control of Euler-Lagrange Systems: Mechanical, Electrical and Electromechanical Applications .Springer, 1998, pp. 15–37. [34] H. K. Khalil and J. W. Grizzle, Nonlinear systems . Prentice hall Upper Saddle River, NJ, 2002, vol. 3.
