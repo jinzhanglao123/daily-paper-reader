@@ -1,0 +1,436 @@
+Title: RARM: Confidence-Gated Progress Reward Modeling for RL in Manipulation
+
+URL Source: https://arxiv.org/pdf/2606.22027v1
+
+Published Time: Tue, 23 Jun 2026 02:19:37 GMT
+
+Number of Pages: 22
+
+Markdown Content:
+# RARM: Confidence-Gated Progress Reward Modeling for RL in Manipulation 
+
+Pengzhi Yang †*
+
+pengzhi.yang@u.nus.edu 
+
+Xinyu Wang ‡*
+
+xinyu.wang1@booking.com 
+
+Pengyu Jing †*
+
+e1538124@u.nus.edu 
+
+Kehan Wen †*
+
+wen.kehan@u.nus.edu 
+
+Yiduo Qu †§
+
+yiduoqu@gmail.com 
+
+Zhenhao Huang †
+
+huangzhenhao@u.nus.edu 
+
+Minghao Fu ¶
+
+fumh@lamda.nju.edu.cn 
+
+Xin Liu †
+
+liu15764167516@sjtu.edu.cn 
+
+Yaheng Shen †
+
+iriscream@u.nus.edu 
+
+Fan Shi †♯
+
+fan.shi@nus.edu.sg  
+
+> †
+
+NUS Human-Centered Robotic Lab ‡ Booking.com  
+
+> §
+
+University of Cambridge ¶ School of Artificial Intelligence, Nanjing University  
+
+> *
+
+Equal contribution ♯ Corresponding author 
+
+Abstract: 
+
+Reinforcement learning for robot manipulation is often bottlenecked by reward design, especially in long-horizon tasks: sparse success rewards provide weak su-pervision, while hand-crafted dense rewards are tedious to design and generalize poorly across tasks. Progress-based reward models offer a promising alternative by estimating how far an observation has advanced toward task completion, but existing approaches often require task-specific demonstrations or progress labels, and can assign high rewards to visually plausible but physically incorrect states. We introduce the Reference-Anchored Reward Model (RARM), a lightweight visual comparator that converts a single successful demonstration into a dense, progress-aware reward. RARM is trained once on general-purpose videos with a contrastive temporal objective, requiring no robot-specific data, task-specific reward labels, or per-task reward engineering. At deployment, RARM matches rollout clips to reference clips and rewards only confident forward progress, sup-pressing uncertain matches that may otherwise produce false-positive rewards. Across 9 simulated manipulation tasks from LIBERO and MetaWorld and 4 real-world tasks, RARM achieves the best overall success rates in subsequent RL training, with particularly large gains on long-horizon tasks such as cloth folding, where unreliable progress estimates are especially harmful. Our project webpage: https://rarm-robotics.github.io/. 
+
+Keywords: Reward Modeling, Robot Manipulation, Reinforcement Learning 
+
+# 1 Introduction 
+
+Imitation learning (IL) underlies many recent vision–language–action (VLA) models [1, 2, 3, 4, 5], but policies trained by pure imitation generalize poorly to out-of-distribution states, where small errors compound and drive the robot into regions rarely covered by demonstrations [6, 7, 8]. Re-inforcement learning (RL) offers a complementary route: through interaction, an agent can im-prove beyond demonstrated trajectories and acquire corrective and recovery behaviors. This is es-
+
+> arXiv:2606.22027v1 [cs.RO] 20 Jun 2026
+
+pecially valuable in long-horizon and contact-rich manipulation tasks, but its central obstacle is reward design. Sparse outcome rewards give weak, delayed signal, while hand-crafted dense re-wards are labor-intensive and struggle to generalize across tasks and embodiments. This motivates learned reward models that offer dense feedback automatically, most naturally by estimating task progress—how far the current observation has advanced toward completion. Progress, however, is usable only when the model knows how much to trust it. A rollout can look near-complete in a coarse visual sense while being physically wrong and such false-positive progress prediction will be exploited by the RL agent [9, 10, 11]. A practical progress reward should therefore be both data-light, as opposed to the heavy demonstration budgets imitation learn-ing requires—and confidence-aware, able to withhold reward when its own estimate is unreliable. Ungated progress Our gated progress Time Progress Estimation  
+
+> High false positive rate/ Progress over estimate
+> Uncertain progress suppressed
+> High Confidence High Confidence Low Confidence
+
+Figure 1: Motivation. Exist-ing reward models often overesti-mate failed states, provide unreli-able progress signals during fail-ures. RARM addresses these fail-ure modes with confidence-gate by rewarding only confident forward progress along the reference and suppressing uncertain matches. Existing methods rarely achieve both. VLM-based reward models [12, 13, 14, 15] carry broad semantic priors but are costly to query and over-score visually plausible failures; smaller task-specific models [16, 17, 10, 18] cut inference cost but demand substantial per-task data and still overesti-mate progress under distribution shift. Approaches that explic-itly model uncertainty, such as VIPER, Diffusion Reward, and PROGRESSOR [19, 20, 10], recognize that dense progress should not be trusted blindly—but they still rely on task-specific or task-related data, limiting their ability to transfer directly to new tasks. We propose Reference-Anchored Reward Model (RARM) ,a lightweight reward model that resolves this tension by turn-ing a single successful demonstration into a confidence-gated dense progress reward. The demonstration acts as a progress anchor—a sequence for localizing how far a rollout has ad-vanced, not a trajectory to imitate frame by frame. RARM compares each rollout clip against the reference clips to es-timate progress, but never rewards raw similarity. Instead it rewards confident forward progress and suppresses uncertain matches, so misleading dense labels are withheld exactly when progress localization is unreliable. Crucially, this confidence signal arises naturally from the similarity comparison itself, needing no separate uncertainty model, failure data, or subtask labels. RARM is trained once on ordinary videos with a contrastive temporal objective; at RL time it needs only one reference demonstration per task and no expensive reward-model queries in the control loop. Our contributions are summarized as follows: • We introduce RARM , which turns a single successful demonstration into a dense progress reward with no task-specific reward supervision—achieving data-light, confidence-aware progress estimation where prior work meets only one of these criteria. • RARM rewards confident forward progress and explicitly filters out low-confidence matches, suppressing the false-positive rewards that drive reward hacking. • Across 9 simulated tasks (LIBERO [21], MetaWorld [22]) and 4 real-world tasks, RARM achieves the best overall success rates with low-overhead reward queries, with especially large gains on long-horizon settings such as cloth folding. 
+
+# 2 Related Works 
+
+2.1 Reward Model 
+
+Learned reward models aim to replace brittle task-specific reward engineering with dense feed-back derived from videos, demonstrations, language, or foundation-model priors. A major direction 2learns progress- or value-like rewards from visual and multimodal supervision, including value-/representation-based rewards [23, 24], temporal progress learning [17, 10, 18], task-structured re-wards for long-horizon manipulation [25, 26, 16], and language- or VLM-conditioned reward mod-els and critics [15, 27, 28, 12, 29, 13, 14, 30, 31]. Another line grounds rewards in reference behavior through inverse reward learning, trajectory alignment, object/keypoint matching, or visual similar-ity [32, 33, 34, 35, 36]. Generative approaches instead use video prediction or diffusion models to score expert-likeness or task consistency [19, 20], while automated reward construction from foundation models provides another route to dense feedback [37, 38]. Despite their effectiveness, these methods remain imperfect reward proxies. VLM-based rewards can be computationally expensive and prone to false positives on visually plausible but physically incorrect states; task-specific progress models often require in-domain videos, success/failure data, online refinement, or subtask annotations; and trajectory-, point-, or object-motion matching rewards can be sensitive to temporal misalignment, occlusion, and deviations from the demonstrated path. Generative uncertainty or push-back refinement can reduce overconfident rewards [20, 19, 10], but typically depends on task-related videos or online rollout data. More broadly, learned rewards may introduce dataset biases, shortcut correlations, overconfidence, or exploitable failure modes during RL [39, 40, 9, 11]. 
+
+2.2 Reinforcement Learning for Manipulation 
+
+RL for manipulation has long been constrained by reward design: the sparse, long-horizon nature of manipulation forces task-specific shaping to navigate the exploration–exploitation trade-off [41]. A range of approaches has emerged to mitigate this limitation. Sim-to-real RL exploits privileged information in simulation for reward engineering and transfers via domain randomization [42, 43]; large-scale real-world RL bypasses simulation through massive on-robot data collection [44]; and sample-efficient real-world RL incorporates demonstrations and human interventions to reduce in-teraction cost [45, 46]. Inverse RL and adversarial imitation approaches [47, 48] instead infer re-wards from expert trajectories, while hindsight relabeling [49] and intrinsic motivation [50] alle-viate exploration inefficiency without explicit shaping. Our work, in contrast, defines rewards via a general-purpose pixel-level visual comparator that bypasses task-specific reward engineering and requires only a single reference demonstration, in contrast to the large datasets typically needed by imitation-based methods [3, 51]. 
+
+# 3 Approach 
+
+We introduce the Reference-Anchored Reward Model (RARM), a lightweight video-clip comparator that derives confidence-gated progress rewards from a single reference demonstration. RARM is trained by self-supervised contrastive learning, requiring no action or progress labels, task annota-tions, or large-scale robot data. At deployment, it uses the reference demonstration as a progress anchor: rather than directly rewarding visual similarity, it estimates how far the agent’s recent be-havior has advanced along the reference and rewards only confident forward progress. Figure 2 provides an overview, and the following sections describe contrastive clip learning (Sec. 3.1), the model architecture (Sec. 3.2), and reward computation for reinforcement learning (Sec. 3.3). 
+
+3.1 Contrastive Learning from Unlabeled Video 
+
+RARM compares short, fixed-length clips ( T =5 frames). Its training only requires videos with directed temporal change: over the short horizon of a clip, the scene should evolve rather than remain static or immediately return to a previous state. This mild assumption holds for many natural videos, allowing reward-model training without curated task demonstrations or reward labels. 
+
+Anchors, positives, and negatives. From each video, we select a contiguous anchor region and sample an anchor clip from it. Positives are additional clips randomly drawn from the same anchor region; they share the anchor’s local temporal context and should be close to it in the learned space. 3Figure 2: Method Overview. Reward Model Training: As shown in (c), we sample an anchor clip from an unlabeled video, positives from the same temporal region, and negatives from three complementary sources. These clip pairs are scored by the comparator in (a), which is trained with the soft-nearest-neighbours loss in Eq. (1). RL Training: Given a reference video and a rollout video in (b), we compare each rollout clip with all reference clips to form the comparison matrix in (d). Rather than using these similarities directly as rewards, RARM uses them to estimate where the rollout lies along the reference, reading progress from the best-matched reference clips. To avoid false-positive progress, this estimate is passed through a confidence gate in (e): uncertain matches are suppressed, so the policy is not rewarded when progress localization is unreliable. The policy is updated with the resulting reward as new rollouts are collected iteratively. The confidence threshold is computed once from self-comparisons within the reference demonstration, which sets how strong a valid match should be. 
+
+Negatives come from three sources: (1) clips from disjoint regions of the same video, (2) time-reversed clips from the anchor region, which preserve appearance but reverse dynamics, and (3) clips from other videos, as seen in Figure 2(c). For data augmentation, we apply random resized cropping and color jitter independently to each clip, using the same augmentation parameters for all frames within that clip to preserve temporal consistency. All clips sampled from the same video share the same random horizontal flip. These augmentations encourage robustness to framing, illumination, color shifts, and viewpoint changes while preserving the temporal structure needed for clip comparison. 
+
+Objective. Let gθ (·, ·) denote the scalar clip similarity score produced by the comparator (Sec. 3.2). For an anchor a with positive set P and negative set N , we minimize the soft-nearest-neighbours loss [52]: 
+
+LSNN = − log 
+
+P 
+
+> p∈P
+
+exp  gθ (a, p )/τ P 
+
+> p∈P
+
+exp  gθ (a, p )/τ  + P 
+
+> n∈N
+
+exp  gθ (a, n )/τ  , (1) averaged over the batch, with temperature τ =0 .1.
+
+3.2 Model Architecture 
+
+The comparator gθ maps a pair of clips to a scalar score, as illustrated in Figure 2(a). 
+
+Clip encoder. Given a short video clip, we first embed each frame with a pretrained DINOv3 [53] equipped with lightweight LoRA adapters [54]. The resulting patch-token features are spatially pooled, augmented with temporal rotary position encodings [55], and processed by a lightweight self-attention layer [56] across frames to produce a temporally aware clip representation. The clip encoder is shared across both inputs during comparison, forming a Siamese branch. 
+
+Cross-attention comparator and head. Given two clip representations X and Y from the clip encoder, we use X tokens as queries and Y tokens as keys and values in a cross-attention block, followed by a projection to a lower dimension. This produces a representation of X conditioned on 
+
+Y , making the comparison directional: “how does the rollout clip compare to the reference clip?” 4A lightweight head maps the comparison tokens to the scalar score gθ (X, Y ), where larger values indicate stronger temporal compatibility between the two motion clips. 
+
+3.3 Reward Computation for Policy Learning 
+
+Using raw comparator scores gθ directly as rewards can be unstable: the scores may jitter from step to step and destabilise training. We therefore use the comparator only to locate progress along the reference, and derive reward from confident progress advancement. Given a target task, we slide a fixed window over a single reference demonstration to obtain over-lapping clips {rj }Mj=1 . Each reference clip is assigned a progress value πj ∈ [0 , 1] according to its normalized temporal position in the demonstration; this requires no annotation and increases monotonically along the reference. During RL training, we form the current rollout clip ct from the agent’s recent frames and score it against all reference clips: 
+
+j⋆(t) = arg max  
+
+> j
+
+gθ (ct, r j ). (2) This all-to-all rollout–reference comparison is not tied to synchronized timestamps: the current clip can match any point along the reference, allowing the policy to move at a different speed, pause, or recover before advancing. A per-clip confidence threshold δj , seen in Figure 2(e), is calibrated offline from the reference’s own match-score statistics and gates whether the match is trustworthy. If the match is confident, the corresponding reference progress provides the current progress estimate; otherwise, progress is held at its previous value. This reflects the behavior we observe during RL: failures and out-of-distribution states often appear not as reliable backward progress, but as a loss of confident match to the reference. The progress estimate and reward are therefore: 
+
+pt =
+
+(πj⋆(t), gθ
+
+ ct, r j⋆(t)
+
+ ≥ δj⋆(t),pt−1, otherwise, rprog  
+
+> t
+
+= 1{pt > p t−1} . (3) The agent receives reward only when it reaches a higher confident progress value. Low-confidence matches and repeated visits to the same progress level receive zero reward. Rewarding progress change rather than raw similarity provides a stable dense signal and reduces reward hacking from static high-similarity states or noisy score fluctuations. We use RARM as a drop-in reward with DrQ-v2 [57] for training from scratch in simulation, and with DSRL [58] for steering initial noise for a VLA policy in the real world. 
+
+# 4 Experiments 
+
+We evaluate RARM in both simulation and real-world settings. Our experiments are designed to answer four questions: 1. Can RARM provide dense rewards for RL training from scratch? 2. How does RARM compare with representative reference-based and VLM-based progress reward models? 3. Can RARM support policy fine-tuning in noisy real-world settings? 4. Which components are important for reliable progress rewards? 
+
+4.1 Comparisons and ablations 
+
+We evaluate RL training from scratch on four MetaWorld tasks and five LIBERO-10 tasks, covering both short- and long-horizon manipulation. All methods are trained with DrQ-v2 [57] for 10 6 envi-ronment steps using five random seeds. We evaluate every 10 k steps with 10 rollouts per seed. Each method uses its own predicted dense reward together with the task success signal. Experiments are run on NVIDIA RTX 5090 and GH200 GPUs. 5Short horizon tasks     
+
+> MT: coffee pull MT: button press wall MT: drawer open MT: soccer LIB10: book in caddy
+
+Long horizon tasks          
+
+> LIB10: stove + pot LIB10: bowl in drawer + close LIB10: mug + pudding LIB10: mug in microwave + close
+> RARM (Ours) RoboCLIP TemporalOT GVL RoboMeter RoboDopamine AblationSim
+
+Figure 3: Success rate over 1M environment steps across 4 MetaWorld and 5 LIBERO-10 tasks (same 5 seeds). Baselines consists of: VLM-based (GVL, RoboMeter, RoboDopamine), refernced-based (RoboCLIP, TemporalOT), and an ablation (AblationSim). Our method, RARM (blue), achieves consistently better performance across all tasks. 
+
+Baselines. We compare RARM against representative reference-based and VLM-based reward mod-els. The reference-based baselines are RoboCLIP [59], which scores a rollout by video-language embedding similarity to a reference, and TemporalOT [33], which aligns a robot trajectory to an expert demonstration using temporally constrained optimal transport. The VLM-based baselines are 
+
+GVL [12], RoboDopamine [30], and RoboMeter [14], which predict task progress from visual observations using large vision-language models or VLM-trained reward models. We also include 
+
+Similarity Reward , an ablation of RARM that removes progress-change computation and directly uses the maximum rollout–reference similarity as the step reward. 
+
+> LIB10: stove + pot
+> MT: drawer open
+
+Figure 4: Ablation. Success rate over 1M steps for four component ablations on one LIBERO and one MetaWorld task, averaged over the same five seeds. 
+
+Main results. Figure 3 summarizes the simulation learn-ing curves and addresses Q1–Q2: RARM provides dense rewards that support RL training from scratch and out-perform representative reference-based and VLM-based progress reward models, it achieves the strongest over-all performance across both benchmark suites. On short-horizon MetaWorld tasks, several baselines can eventu-ally learn useful policies, but RARM reaches high success faster and more consistently. On long-horizon LIBERO-10 tasks, reference-similarity baselines such as Robo-CLIP and TemporalOT struggle, suggesting that direct trajectory or embedding alignment is brittle when roll-outs differ in speed, include pauses, or require intermedi-ate corrections. VLM-based baselines provide dense se-mantic progress estimates, but their predictions are often noisy or over-optimistic on partially completed rollouts; we analyze this failure mode qualitatively in Sec. 4.2. In contrast, RARM uses reference matching only to localize progress and rewards confidence-gated progress changes, which yields stable dense rewards even for long-horizon tasks. 
+
+Ablation studies. The full comparison includes Similarity Reward on all nine tasks, testing whether raw rollout–reference similarity alone is sufficient. Its weaker performance shows the importance of converting confident matches into progress-change rewards. We further ablate the 6Figure 5: Progress prediction on cloth folding tasks. Cumulative predicted reward on a paired success/failure cloth-folding rollout, normalized per model by its own success-rollout final reward. Our model (red) tracks the linear oracle on success and saturates at 0.50 of its success total on failure, while all four baselines assign more than 80% of their success reward to failure (GVL 0.97 ,Robometer 0.88 , RoboDopamine 0.84 , VIP 0.82 ) and cannot tell the two trajectories apart; the three VLM-based baselines (GVL, Robometer, RoboDopamine) additionally front-load nearly all reward before the fold is complete. The Ours w/o threshold ablation (pale rose) remove the per-clip similarity threshold so every nearest-demo-clip match is accepted as confident; the failure rollout then accumulates more reward than the success rollout (ratio ≈ 1.89 ), confirming that the necessity of our proposed confidence gated progress estimation. confidence gate, cross-attention comparator, and temporal processor on one long-horizon LIBERO task and one short-horizon MetaWorld task (Fig. 4). Removing the gate admits unreliable matches, whereas an overly strict gate suppresses useful progress updates. Removing cross-attention weakens rollout–reference matching, while removing the temporal processor discards motion-order informa-tion needed to distinguish forward from reversed motion. All variants perform worse than the full model, showing that confidence gating, learned comparison, and temporal reasoning jointly support reliable progress estimation. 
+
+4.2 Qualitative Comparisons 
+
+We further analyze Q4 by visualizing how different reward models assign progress on paired suc-cessful and failed rollouts. Figure 5 shows a cloth-folding example. A reliable progress reward should accumulate on the successful rollout while avoiding high reward on a visually plausible failure. RARM follows the oracle progress on success and saturates on failure, indicating that low-confidence or non-progressing clips are not converted into reward. In contrast, the baselines assign most of their success reward to the failed rollout or front-load reward before completion. Removing RARM’s threshold accepts every nearest-reference match as confident, causing the failed rollout to receive even more reward than the success rollout. This directly supports the main design choice behind RARM: progress estimates must be confidence-gated before being used as dense RL rewards. 
+
+4.3 Real-world experiments Setup. We evaluate RARM as a drop-in dense reward for DSRL [58] on top of the π0 VLA [4], deployed on an AIRBOT Play dual-arm platform. Four real-world tasks span the practical difficulty spectrum: two single-arm short-horizon tasks ( Pick Eraser , Drawer Open ) and two dual-arm long-horizon tasks ( Bimanual Hand-over and the three-stage Bimanual Clothes Folding ); full task setups, success criteria, and filmstrip visualisations are given in Appendix. For each task we compare three settings — the base π0, DSRL driven by a sparse binary success reward ( BinR ), and DSRL driven by our RARM reward ( Ours ) — at training budgets of {30 , 60 , 90 } on-robot rollouts, and evaluate every resulting checkpoint over 10 rollouts (Table 1). 
+
+Results. Table 1 answers Q3: RARM can serve as a dense reward for real-world DSRL training under noisy, low-data conditions. The base π0 succeeds on only 1–2 of 10 rollouts on every task, confirming that off-the-shelf VLA imitation alone is insufficient on this hardware. Across the two short-horizon tasks and the bimanual hand-over, RARM consistently dominates the sparse-binary 7baseline by 1–3 rollouts at every training budget — and already at the smallest budget (e.g. 6/10 vs. 
+
+4/10 on Drawer Open, 6/10 vs. 3/10 on Pick Eraser, and 5/10 vs. 2/10 on Hand-over at 30 rollouts) — so the dense progress signal lets DSRL extract a useful gradient from substantially fewer real-robot episodes. The gap then widens decisively on Clothes Folding, the hardest task in the suite: BinR barely improves on the base policy ( 2/10 at 90 rollouts versus 1/10 without DSRL), because a clean three-stage fold almost never occurs during exploration and so the binary signal leaves the policy with virtually no useful gradient. RARM instead recovers a dense progress signal even on partial folds (Stage 1 alone, Stage 1 plus the 45 ◦ rotation, etc.) and reaches 8/10 at the same budget — a 4× improvement over BinR. This is the regime where reference-anchored reward shaping helps most: when binary success is vanishing during exploration, a continuous progress signal turns an otherwise un-trainable task into a tractable one. 
+
+Robustness to lighting and environmental noise. Unlike the controlled simulators in Section 4, the real-world rollouts include uncontrolled perturbations: per-rollout operator-randomised object pose, ambient illumination drift between trials (overhead-light flicker, side-window sunlight), and changing background clutter (cables, tripod legs, secondary objects) drifting in and out of the cam-era frame. Because RARM is trained with strong color-jitter and random-crop augmentation on Table 1: Real-world success rates over 10 eval-uation rollouts before and after 30/60/90 DSRL training episodes. w/o DSRL: base VLA policy. 
+
+BinR: DSRL with sparse binary success reward. 
+
+Ours: DSRL with the proposed RARM reward. Task w/o DSRL 30 rollouts 60 rollouts 90 rollouts BinR Ours BinR Ours BinR Ours Drawer open 2/10 4/10 6/10 6/10 7/10 8/10 10/10                      
+
+> Pick eraser 2/10 3/10 6/10 5/10 8/10 8/10 9/10
+> Hand over 2/10 2/10 5/10 4/10 6/10 5/10 6/10
+> Clothes folding 1/10 0/10 1/10 1/10 3/10 2/10 8/10
+
+generic ordinary videos rather than on task-specific demonstrations (Section 3.1), the same comparator checkpoint produces a sta-ble, monotone progress signal under these con-ditions — no per-task fine-tuning of the re-ward model was required for any of the four tasks. This robustness is precisely what mo-tivated a reference-anchored, video-trained re-ward model over a task-specific reward clas-sifier, and we view it as the primary rea-son RARM worked in real-world reinforcement learning. Further investigation of generated reference demonstrations as an alternative to human-collected ones is provided in the Appendix, showing that RARM can leverage synthetically generated task trajectories as coarse progress anchors to enable scalability for unseen tasks. 
+
+# 5 Conclusion 
+
+We presented Reference-Anchored Reward Model (RARM), a lightweight reward model that de-rives confidence-gated progress rewards from a single successful demonstration. Rather than using raw similarity as reward, RARM localizes rollout progress along the reference and rewards only confident forward progress, reducing false-positive reward assignment during RL. Trained with self-supervised contrastive learning, RARM requires no task-specific reward supervision, subtask annotations, failure data, or large-scale robot datasets. Experiments in simulation and the real world show that RARM provides fast, low-overhead re-ward queries and outperforms VLM-based, trajectory-alignment, and raw-similarity reward base-lines. Ablations confirm the importance of confidence gating and learned clip comparison. While RARM assumes access to a representative reference demonstration, its effectiveness suggests that reference-anchored, confidence-gated progress rewards offer a practical route toward reliable RL post-training for robotic manipulation. 
+
+# 6 Limitations 
+
+RARM provides a lightweight and data-efficient way to derive progress rewards from one reference demonstration, but it also has several limitations. First, because RARM relies on visual clip compar-8ison rather than explicit semantic reasoning, its robustness may degrade under large embodiment, viewpoint, or scene changes. Second, like other vision-based reward models, RARM may struggle with fine-grained manipulation details that are difficult to infer from RGB observations alone. Small contact changes, grasp stability, force interaction, or subtle object deformation can be critical for success but visually ambiguous. Incorporating additional modalities such as depth, tactile sensing may help improve. Third, RARM provides progress based on reference trajetory, which makes repetitive or cyclic tasks challenging, since visually similar states may appear multiple times at different progress levels. Extending RARM to handle repeated stages, multi-reference demonstrations, or explicit memory over longer horizons is an important direction for future work. 9References 
+
+[1] O. M. Team, D. Ghosh, H. Walke, K. Pertsch, K. Black, O. Mees, S. Dasari, J. Hejna, T. Kreiman, C. Xu, et al. Octo: An open-source generalist robot policy. arXiv preprint arXiv:2405.12213 , 2024. [2] B. Zitkovich, T. Yu, S. Xu, P. Xu, T. Xiao, F. Xia, J. Wu, P. Wohlhart, S. Welker, A. Wahid, et al. Rt-2: Vision-language-action models transfer web knowledge to robotic control. In 
+
+Conference on Robot Learning , pages 2165–2183. PMLR, 2023. [3] C. Chi, Z. Xu, S. Feng, E. Cousineau, Y. Du, B. Burchfiel, R. Tedrake, and S. Song. Diffusion policy: Visuomotor policy learning via action diffusion. The International Journal of Robotics Research , 44(10-11):1684–1704, 2025. [4] K. Black, N. Brown, D. Driess, A. Esmail, M. Equi, C. Finn, N. Fusai, L. Groom, K. Hausman, B. Ichter, et al. Pi 0: A vision-language-action flow model for general robot control. arXiv preprint arXiv:2410.24164 , 2024. [5] P. Intelligence, A. Amin, R. Aniceto, A. Balakrishna, K. Black, K. Conley, G. Connors, J. Darpinian, K. Dhabalia, J. DiCarlo, et al. Pi 0.6: a vla that learns from experience. arXiv preprint arXiv:2511.14759 , 2025. [6] S. Ross, G. Gordon, and D. Bagnell. A reduction of imitation learning and structured predic-tion to no-regret online learning. In Proceedings of the fourteenth international conference on artificial intelligence and statistics , pages 627–635. JMLR Workshop and Conference Pro-ceedings, 2011. [7] P. De Haan, D. Jayaraman, and S. Levine. Causal confusion in imitation learning. Advances in neural information processing systems , 32, 2019. [8] F. Codevilla, E. Santana, A. M. L´ opez, and A. Gaidon. Exploring the limitations of behavior cloning for autonomous driving. In Proceedings of the IEEE/CVF international conference on computer vision , pages 9329–9338, 2019. [9] R. Tian, Y. Wu, and A. Bacjsy. Position: Good embodied reward models need bad behavior data, 2026. [10] T. W. Ayalew, X. Zhang, K. Y. Wu, T. Jiang, M. Maire, and M. R. Walter. Progressor: A perceptually guided reward estimator with self-supervised online refinement. In Proceedings of the IEEE/CVF International Conference on Computer Vision , pages 10297–10306, 2025. [11] J. Leng, C. Huang, B. Zhu, and J. Huang. Taming overconfidence in llms: Reward calibration in rlhf. In International Conference on Learning Representations , volume 2025, pages 16484– 16517, 2025. [12] Y. J. Ma, J. Hejna, C. Fu, D. Shah, J. Liang, Z. Xu, S. Kirmani, P. Xu, D. Driess, T. Xiao, et al. Vision language models are in-context value learners. In The Thirteenth International Conference on Learning Representations , 2024. [13] T. Lee, A. Wagenmaker, K. Pertsch, P. Liang, S. Levine, and C. Finn. Roboreward: General-purpose vision-language reward models for robotics. arXiv preprint arXiv:2601.00675 , 2026. [14] A. Liang, Y. Korkmaz, J. Zhang, M. Hwang, A. Anwar, S. Kaushik, A. Shah, A. S. Huang, L. Zettlemoyer, D. Fox, et al. Robometer: Scaling general-purpose robotic reward models via trajectory comparisons. arXiv preprint arXiv:2603.02115 , 2026. [15] J. Zhang, Y. Luo, A. Anwar, S. A. Sontakke, J. J. Lim, J. Thomason, E. Biyik, and J. Zhang. Rewind: Language-guided rewards teach robot policies without new demonstrations. arXiv preprint arXiv:2505.10911 , 2025. 10 [16] Q. Chen, J. Yu, M. Schwager, P. Abbeel, Y. Shentu, and P. Wu. Sarm: Stage-aware reward modeling for long horizon robot manipulation. arXiv preprint arXiv:2509.25358 , 2025. [17] Y. Liu, C. Wen, Y. Hu, D. Jayaraman, and Y. Gao. Timerewarder: Learning dense reward from passive videos via frame-wise temporal distance. arXiv preprint arXiv:2509.26627 , 2025. [18] D. Yang, D. Tjia, J. Berg, D. Damen, P. Agrawal, and A. Gupta. Rank2reward: Learning shaped reward functions from passive video. In 2024 IEEE International Conference on Robotics and Automation (ICRA) , pages 2806–2813. IEEE, 2024. [19] A. Escontrela, A. Adeniji, W. Yan, A. Jain, X. B. Peng, K. Goldberg, Y. Lee, D. Hafner, and P. Abbeel. Video prediction models as rewards for reinforcement learning. Advances in Neural Information Processing Systems , 36:68760–68783, 2023. [20] T. Huang, G. Jiang, Y. Ze, and H. Xu. Diffusion reward: Learning rewards via conditional video diffusion. In European Conference on Computer Vision , pages 478–495. Springer, 2024. [21] B. Liu, Y. Zhu, C. Gao, Y. Feng, Q. Liu, Y. Zhu, and P. Stone. Libero: Benchmarking knowl-edge transfer for lifelong robot learning. Advances in Neural Information Processing Systems ,36:44776–44791, 2023. [22] T. Yu, D. Quillen, Z. He, R. Julian, K. Hausman, C. Finn, and S. Levine. Meta-world: A benchmark and evaluation for multi-task and meta reinforcement learning. In Conference on robot learning , pages 1094–1100. PMLR, 2020. [23] Y. J. Ma, S. Sodhani, D. Jayaraman, O. Bastani, V. Kumar, and A. Zhang. Vip: Towards universal visual reward and representation via value-implicit pre-training. arXiv preprint arXiv:2210.00030 , 2022. [24] Y. J. Ma, V. Kumar, A. Zhang, O. Bastani, and D. Jayaraman. Liv: Language-image repre-sentations and rewards for robotic control. In International Conference on Machine Learning ,pages 23301–23320. PMLR, 2023. [25] Z. Zhang, Y. Li, O. Bastani, A. Gupta, D. Jayaraman, Y. J. Ma, and L. Weihs. Universal visual decomposer: Long-horizon manipulation made easy. In 2024 IEEE International Conference on Robotics and Automation (ICRA) , pages 6973–6980. IEEE, 2024. [26] C. Kim, M. Heo, D. Lee, J. Shin, H. Lee, J. J. Lim, and K. Lee. Subtask-aware visual reward learning from segmented demonstrations. arXiv preprint arXiv:2502.20630 , 2025. [27] Y. Yang, M. Chen, Q. Qiu, J. Wu, W. Wang, B. Lin, Z. Guan, and X. He. Adapt2reward: Adapt-ing video-language models to generalizable robotic rewards via failure prompts. In European Conference on Computer Vision , pages 163–180. Springer, 2024. [28] A. K. Jain, V. Mohta, S. Kim, A. Bhardwaj, J. Ren, Y. Feng, S. Choudhury, and G. Swamy. A smooth sea never made a skilled sailor: Robust imitation via learning to search. In The Thirty-ninth Annual Conference on Neural Information Processing Systems , 2025. [29] S. Zhai, Q. Zhang, T. Zhang, F. Huang, H. Zhang, M. Zhou, S. Zhang, L. Liu, S. Lin, and J. Pang. A vision-language-action-critic model for robotic real-world reinforcement learning. 
+
+arXiv preprint arXiv:2509.15937 , 2025. [30] H. Tan, S. Chen, Y. Xu, Z. Wang, Y. Ji, C. Chi, Y. Lyu, Z. Zhao, X. Chen, P. Co, et al. Robo-dopamine: General process reward modeling for high-precision robotic manipulation. arXiv preprint arXiv:2512.23703 , 2025. [31] S. Chen, C. Harrison, Y.-C. Lee, A. J. Yang, Z. Ren, L. J. Ratliff, J. Duan, D. Fox, and R. Kr-ishna. Topreward: Token probabilities as hidden zero-shot rewards for robotics. arXiv preprint arXiv:2602.19313 , 2026. 11 [32] S. Kumar, J. Zamora, N. Hansen, R. Jangir, and X. Wang. Graph inverse reinforcement learning from diverse videos. In Conference on Robot Learning , pages 55–66. PMLR, 2023. [33] Y. Fu, H. Zhang, D. Wu, W. Xu, and B. Boulet. Robot policy learning with temporal optimal transport reward. Advances in Neural Information Processing Systems , 37:122078–122103, 2024. [34] J. Shi, J. Smith, J. Qian, and D. Jayaraman. Points2reward: Robotic manipulation rewards from just one video. [35] I. Guzey, Y. Dai, G. Savva, R. Bhirangi, and L. Pinto. Bridging the human to robot dexterity gap through object-oriented rewards. In 2025 IEEE International Conference on Robotics and Automation (ICRA) , pages 3344–3351. IEEE, 2025. [36] K. Yu, S. Zhang, H. Soora, F. Huang, H. Huang, P. Tokekar, and R. Gao. Genflowrl: Shaping rewards with generative object-centric flow in visual reinforcement learning. In Proceedings of the IEEE/CVF International Conference on Computer Vision , pages 13183–13192, 2025. [37] Y. J. Ma, W. Liang, G. Wang, D.-A. Huang, O. Bastani, D. Jayaraman, Y. Zhu, L. Fan, and A. Anandkumar. Eureka: Human-level reward design via coding large language models. arXiv preprint arXiv:2310.12931 , 2023. [38] S. K. S. Ghasemipour, A. Wahid, J. Tompson, P. Sanketi, and I. Mordatch. Self-improving embodied foundation models. arXiv preprint arXiv:2509.15155 , 2025. [39] L. Gao, J. Schulman, and J. Hilton. Scaling laws for reward model overoptimization. In 
+
+International Conference on Machine Learning , pages 10835–10866. PMLR, 2023. [40] W. Shen, R. Zheng, W. Zhan, J. Zhao, S. Dou, T. Gui, Q. Zhang, and X.-J. Huang. Loose lips sink ships: Mitigating length bias in reinforcement learning from human feedback. In Findings of the Association for Computational Linguistics: EMNLP 2023 , pages 2859–2873, 2023. [41] M. Riedmiller, R. Hafner, T. Lampe, M. Neunert, J. Degrave, T. Wiele, V. Mnih, N. Heess, and J. T. Springenberg. Learning by playing solving sparse reward tasks from scratch. In 
+
+International conference on machine learning , pages 4344–4353. PMLR, 2018. [42] J. Tobin, R. Fong, A. Ray, J. Schneider, W. Zaremba, and P. Abbeel. Domain randomization for transferring deep neural networks from simulation to the real world. In 2017 IEEE/RSJ international conference on intelligent robots and systems (IROS) , pages 23–30. IEEE, 2017. [43] O. M. Andrychowicz, B. Baker, M. Chociej, R. Jozefowicz, B. McGrew, J. Pachocki, A. Petron, M. Plappert, G. Powell, A. Ray, et al. Learning dexterous in-hand manipulation. 
+
+The International Journal of Robotics Research , 39(1):3–20, 2020. [44] D. Kalashnikov, A. Irpan, P. Pastor, J. Ibarz, A. Herzog, E. Jang, D. Quillen, E. Holly, M. Kalakrishnan, V. Vanhoucke, et al. Scalable deep reinforcement learning for vision-based robotic manipulation. In Conference on robot learning , pages 651–673. PMLR, 2018. [45] A. Rajeswaran, V. Kumar, A. Gupta, G. Vezzani, J. Schulman, E. Todorov, and S. Levine. Learning complex dexterous manipulation with deep reinforcement learning and demonstra-tions. arXiv preprint arXiv:1709.10087 , 2017. [46] J. Luo, Z. Hu, C. Xu, Y. L. Tan, J. Berg, A. Sharma, S. Schaal, C. Finn, A. Gupta, and S. Levine. Serl: A software suite for sample-efficient robotic reinforcement learning. In 2024 IEEE Inter-national Conference on Robotics and Automation (ICRA) , pages 16961–16969. IEEE, 2024. [47] J. Ho and S. Ermon. Generative adversarial imitation learning. Advances in neural information processing systems , 29, 2016. 12 [48] C. Finn, S. Levine, and P. Abbeel. Guided cost learning: Deep inverse optimal control via policy optimization. In International conference on machine learning , pages 49–58. PMLR, 2016. [49] M. Andrychowicz, F. Wolski, A. Ray, J. Schneider, R. Fong, P. Welinder, B. McGrew, J. To-bin, O. Pieter Abbeel, and W. Zaremba. Hindsight experience replay. Advances in neural information processing systems , 30, 2017. [50] D. Pathak, P. Agrawal, A. A. Efros, and T. Darrell. Curiosity-driven exploration by self-supervised prediction. In International conference on machine learning , pages 2778–2787. PMLR, 2017. [51] T. Z. Zhao, V. Kumar, S. Levine, and C. Finn. Learning fine-grained bimanual manipulation with low-cost hardware. arXiv preprint arXiv:2304.13705 , 2023. [52] R. Salakhutdinov and G. Hinton. Learning a nonlinear embedding by preserving class neigh-bourhood structure. In Artificial intelligence and statistics , pages 412–419. PMLR, 2007. [53] O. Sim´ eoni, H. V. Vo, M. Seitzer, F. Baldassarre, M. Oquab, C. Jose, V. Khalidov, M. Szafraniec, S. Yi, M. Ramamonjisoa, et al. Dinov3. arXiv preprint arXiv:2508.10104 ,2025. [54] E. J. Hu, Y. Shen, P. Wallis, Z. Allen-Zhu, Y. Li, S. Wang, L. Wang, W. Chen, et al. Lora: Low-rank adaptation of large language models. Iclr , 1(2):3, 2022. [55] J. Su, M. Ahmed, Y. Lu, S. Pan, W. Bo, and Y. Liu. Roformer: Enhanced transformer with rotary position embedding. Neurocomputing , 568:127063, 2024. [56] A. Vaswani, N. Shazeer, N. Parmar, J. Uszkoreit, L. Jones, A. N. Gomez, Ł. Kaiser, and I. Polo-sukhin. Attention is all you need. Advances in neural information processing systems , 30, 2017. [57] D. Yarats, R. Fergus, A. Lazaric, and L. Pinto. Mastering visual continuous control: Improved data-augmented reinforcement learning. arXiv preprint arXiv:2107.09645 , 2021. [58] A. Wagenmaker, M. Nakamoto, Y. Zhang, S. Park, W. Yagoub, A. Nagabandi, A. Gupta, and S. Levine. Steering your diffusion policy with latent space reinforcement learning. arXiv preprint arXiv:2506.15799 , 2025. [59] S. Sontakke, J. Zhang, S. Arnold, K. Pertsch, E. Bıyık, D. Sadigh, C. Finn, and L. Itti. Robo-clip: One demonstration is enough to learn robot policies. Advances in Neural Information Processing Systems , 36:55681–55693, 2023. [60] S. Caelles, J. Pont-Tuset, F. Perazzi, A. Montes, K.-K. Maninis, and L. Van Gool. The 2019 davis challenge on vos: Unsupervised multi-object segmentation. arXiv:1905.00737 , 2019. [61] H. Ding, C. Liu, S. He, X. Jiang, P. H. Torr, and S. Bai. MOSE: A new dataset for video object segmentation in complex scenes. In ICCV , 2023. 13 A Simulation Environments 
+
+Table 2: Simulation tasks used in our evaluation. The image column is reserved for task visualiza-tions. 
+
+Simulation Envi-ronment Task Image Description 
+
+MetaWorld (MT50) Task 7 Bypass a wall and press a button. MetaWorld (MT50) Task 9 Pull a mug from a coffee machine. MetaWorld (MT50) Task 18 Open a drawer. MetaWorld (MT50) Task 43 Kick a soccer into the goal. LIBERO-10 (libero-long) Task 2 Turn on the stove and put the moka pot on it. LIBERO-10 (libero-long) Task 3 
+
+Put the black bowl in the bottom drawer of the cabi-net and close it. LIBERO-10 (libero-long) Task 5 
+
+Pick up the book and place it in the back compartment of the caddy. 
+
+Continued on next page 
+
+14 Simulation Envi-ronment Task Image Description 
+
+LIBERO-10 (libero-long) Task 6 
+
+Put the white mug on the plate and put the chocolate pudding to the right of the plate. LIBERO-10 (libero-long) Task 9 
+
+Put the yellow and white mug in the microwave and close it. 
+
+# B Real-world Tasks 
+
+Hardware and Training Setup 
+
+All four real-world tasks are executed on a single AIRBOT Play dual-arm platform. Each arm has 6 revolute joints plus a 1-DoF parallel-jaw gripper (maximum opening width 0.07 m), giving a 7-dimensional per-arm joint + gripper action space. The two single-arm tasks ( Pick Eraser , Drawer Open ) use only the left arm of the same robot; the two dual-arm tasks ( Hand-over , Clothes Folding )use both arms in coordination. Observations come from three Intel RealSense cameras streaming 
+
+640 ×480 color at 30 fps — one top-mounted scene camera and two wrist-mounted cameras (one per arm) — downsampled to 128 ×128 as input to the π0 policy and to 384 ×384 as input to the RARM comparator. The base π0 policy predicts an action chunk of 50 future steps and re-infers every 25 executed steps; actions are streamed to the robot at 20 Hz . RARM rewards are scored at clip boundaries with a stride of 4 environment steps ( ≈ 5 Hz reward updates), which keeps GPU usage low without sacrificing temporal resolution of the progress signal. 
+
+A note on figure orientation. For visualisation we record the filmstrips in this section from a fixed high-angle camera placed in front of the robot (i.e. facing the robot from the opposite side of the workspace). Because of this viewpoint the on-screen left/right is mirrored relative to the robot’s own frame: the gripper that appears on the right side of each frame is the robot’s left arm, and the gripper on the left side is the robot’s right arm. Whenever the text below refers to “left arm” or “right arm” we mean the robot’s own arms, not the on-screen positions. 
+
+B.1 Task 1: Pick Eraser from Box (Single-Arm, Short-Horizon) 
+
+> Approach box Descend over eraser Close gripper Lift clear of rim Place on tabletop
+
+Figure 6: Task 1 — Pick Eraser from Box. Filmstrip of one successful rollout sampled at uniform intervals; action-phrase labels appear under each frame. 
+
+Task description. A single-arm short-horizon pick-and-place task. The robot must reach into a green storage box, grasp an orange-and-yellow blackboard eraser whose pose inside the box is ran-domised across episodes, lift it cleanly past the box rim, and release it onto the open tabletop. The 15 task tests precise vision-based grasping inside a contained workspace and a clean release-then-retract motion at the end. 
+
+Setup & metrics. The episode timeout is 200 control steps ( 10 s at 20 Hz). A rollout counts as a success if, at the timeout, the eraser lies on the tabletop fully outside the box footprint and the gripper has released and retracted. Evaluated over 10 rollouts (Table 1, row “Pick eraser”). 
+
+B.2 Task 2: Open Red Drawer (Single-Arm, Short-Horizon) 
+
+> Approach drawer Align with handle Close on blue handle Pull halfway Pull fully open
+
+Figure 7: Task 2 — Open Red Drawer. Filmstrip of one successful rollout sampled at uniform intervals; action-phrase labels appear under each frame. 
+
+Task description. A single-arm short-horizon articulated-object manipulation task. The robot must localise the blue plastic handle on the red drawer (mounted on the drawer face that points toward the robot, hence not visible in the top-down filmstrip view above), close the gripper firmly on it, and execute a straight pulling motion along the drawer rail until the drawer is fully extended. The task probes handle localisation accuracy and the policy’s ability to maintain a stable grasp throughout a constrained linear motion against the rail’s reaction forces. 
+
+Setup & metrics. The episode timeout is 200 control steps ( 10 s at 20 Hz). A rollout counts as a success if, at the timeout, the drawer is extended by more than ∼70% of its travel range and the gripper is still attached to the handle. Evaluated over 10 rollouts (Table 1, row “Drawer open”). 
+
+B.3 Task 3: Bimanual Hand-over (Dual-Arm, Long-Horizon) 
+
+> Both arms at home Left grasps container Lift to hand-over pose Right closes, left releases Right places on table
+
+Figure 8: Task 3 — Bimanual Hand-over. Filmstrip of one successful rollout sampled at uniform intervals; action-phrase labels appear under each frame. 
+
+Task description. A dual-arm long-horizon coordination task. The left arm picks the off-white container off the tabletop, raises it to a mid-air hand-over pose, and must hold steady while the right arm reaches in and closes around the same object; only after the right gripper is closed does the left arm release. The right arm then transports the container down to the tabletop and releases. The task stresses cross-arm temporal synchronisation: an early release by the left arm drops the container, a late close by the right arm collides with the container, and the reward signal must credit hand-over progress as a coordinated event rather than rewarding either arm in isolation. 
+
+Setup & metrics. The episode timeout is 600 control steps ( 30 s at 20 Hz), chosen to comfortably cover the longest rollout including the mid-air dwell during the handshake. A rollout counts as a success if, by the timeout, the container has been placed on the tabletop at the right arm’s release pose and both grippers are clear of the object. Evaluated over 10 rollouts (Table 1, row “Hand over”). 16 Flat orange shirt Bimanual first fold Cooperative  
+
+> 45 ◦rotation Left pinches near side Final folded shape
+
+Figure 9: Task 4 — Bimanual Clothes Folding. Filmstrip of one successful rollout sampled at uniform intervals; action-phrase labels appear under each frame. 
+
+B.4 Task 4: Bimanual Clothes Folding (Dual-Arm, Long-Horizon, Multi-Stage) Task description. A dual-arm long-horizon multi-stage cloth-manipulation task on a flat orange shirt. Stage 1 : both arms simultaneously pinch one side of the shirt and fold it across to the opposite side. Stage 2 : the two arms cooperatively rotate the partially folded shirt by 45 ◦ on the tabletop to re-align it. Stage 3 : the left arm alone pinches the side now closest to it and folds it across to the corresponding opposite side, yielding the final folded shape. This is the most demanding evaluation task in our suite: it combines bi-manual coordination, deformable-object dynamics, and three causally-ordered stages, which jointly make it an effective stress test of the reward model’s progress signal under long-horizon multi-stage behaviour. 
+
+Setup & metrics. The episode timeout is 1200 control steps ( 60 s at 20 Hz). A rollout counts as a success only if all three stages complete in order and the final folded shape lies within the target footprint on the tabletop; partial folds (e.g. Stage 1 only) are recorded as failures. Evaluated over 10 
+
+rollouts (Table 1, row “Clothes folding”). 
+
+# C Settings 
+
+C.1 Hyperparameters 
+
+Table 3: DrQ-v2 optimization hyperparameters. Identical across MetaWorld and LIBERO. 
+
+Parameter Value 
+
+Optimizer Adam (separate for encoder, actor, critic) Learning rate 1 × 10 −4
+
+Batch size 256 Discount factor γ 0.99 
+
+n-step return 3Critic target EMA τ 0.01 Update frequency every 2 env steps Seed frames (no updates before) 4000 Exploration steps (uniform random) 2000 Exploration noise schedule σ(t) = linear(1 .0, 0.1, 500 ,000) 
+
+Exploration noise clip 0.3 
+
+C.2 Data used for RARM Training 
+
+RARM is trained entirely with a self-supervised contrastive objective (Sec. 3.1) and requires no task labels, reward annotations, or robot-specific demonstrations. The training corpus is drawn from DAVIS [60] and MOSE [61], two standard video object segmentation benchmarks covering a wide variety of real-world scenes: people, animals, vehicles, and outdoor activities. We filter out near-static sequences by computing the per-frame IoU of the annotated object mask between con-secutive frames and discarding any sequence whose mean inter-frame IoU exceeds a fixed threshold. The remaining sequences provide diverse natural motion and appearance variation, encouraging the 17 Table 4: DrQ-v2 network architecture. 
+
+Component Layer / Operation Specification Output Shape 
+
+Data Augmentation RandomShiftsAug (Replicate padding +4 , random crop) (Nchannel , 84 , 84) 
+
+Shared CNN Encoder Conv2d (Output channels: 32, Kernel: 3 × 3, Stride: 2) + ReLU (32 , 41 , 41) 
+
+Conv2d (Output channels: 32, Kernel: 3 × 3, Stride: 1) + ReLU (32 , 39 , 39) 
+
+Conv2d (Output channels: 32, Kernel: 3 × 3, Stride: 1) + ReLU (32 , 37 , 37) 
+
+Conv2d (Output channels: 32, Kernel: 3 × 3, Stride: 1) + ReLU (32 , 35 , 35) 
+
+Flatten 39 , 200 
+
+Shared Trunk Linear( 39 , 200 → 50 ) + LayerNorm + Tanh 50 (Embedding Dim) 
+
+Actor Head Linear( 50 → 1024 ) + ReLU 1024 
+
+Linear( 1024 → A dim ) → Truncated Normal Adim 
+
+Critic Head ( ×2) Linear(( 50 + Adim ) → 1024 ) + ReLU 1024 
+
+Linear( 1024 → 1) 1
+
+Table 5: Observation stack and replay buffer settings. 
+
+Parameter MetaWorld LIBERO 
+
+Frame stack 3 3Channels per frame 3 (agentview RGB) 6 (agentview + wrist RGB) Stacked observation shape 9 × 84 × 84 18 × 84 × 84 
+
+comparator to learn temporal dynamics that generalise beyond any specific robot or laboratory set-ting. 18 D Additional Results 
+
+D.1 video generation for RM generalization 
+
+(a) 0.0 0.2 0.4 0.6 0.8 1.0  
+
+> Steps 1e6
+> 0.00
+> 0.25
+> 0.50
+> 0.75
+> 1.00
+> Success Rate
+> MT: pull
+> RARM (demo generated by SeeDance, 4 seeds)
+> RARM (demo with different object type, 4 seeds)
+
+(b) 
+
+Figure 10: Generated reference demonstration on the MetaWorld pull task. (a) Learning curves comparing RARM using a real reference with a different object instance, and synthetic refer-ences generated by SeeDance 2.0. (b) Example frames from two synthetic trajectories generated by SeeDance 2.0 from an initial scene image and task instruction. RARM requires a single reference demonstra-tion for each new task configuration. While this requirement is substantially lighter than collect-ing large task-specific demonstration datasets, the need for even a single human-collected ref-erence can still limit scalability when tasks scale combinatorially or when human data collection is expensive. We therefore study whether RARM can successfully leverage non-expert, visually mismatched, or synthetically generated reference videos as approximate progress anchors. We evaluate this capability on the MetaWorld pull task across two distinct challenge settings: 1. Robustness to Novel Objects : The refer-ence video depicts the correct underlying task structure but features an object instance with a completely different appearance (color, shape, and texture) from the one encountered by the robot during RL training. This setting evaluates whether RARM relies on pixel-level compar-ison or can instead abstract task-level motion correspondences across distinct objects. The resulting learning curve of 2 different object types with 2 seeds for each is illustrated in or-ange in Figure 10 (a). 2. Learning from Synthetic References :Given only a static initial scene image and a textual language instruction describing the target task, we utilize SeeDance 2.0 to synthesize a suc-cessful execution video. This generated video is utilized as the sole reference trajectory for RARM, completely eliminating human capture from the loop. The corresponding learning curve is shown in blue in Figure 10 (a). As shown in Figure 10, policy training remains highly effective when relying on both visually mis-matched and synthetically generated references, achieving asymptotic success rates and sample ef-ficiency comparable to a human-collected baseline. These results support the interpretation that RARM does not require pixel-perfect alignment with the reference video (more robustness analy-sis can be found in D.2). Instead, the cross-attention comparator treats the reference trajectory as a coarse temporal scaffold for progress localization, while the calibrated confidence gate naturally suppresses the visual artifacts, hallucinations, and structural inconsistencies inherent to generative video models. This validation points to a highly scalable paradigm for visual reward design: down-stream policies can be optimized using automated pipelines where text-to-video foundation models generate approximate progress anchors on demand. 
+
+D.2 RARM Robustness to Visual Perturbations 
+
+A reward model deployed in the real world must produce stable progress estimates despite the visual variability of uncontrolled environments. To assess this robustness, we conducted a controlled per-turbation study using Task 4 from our Real-World Experiments. Starting from a single successful 19 Reference Demonstration: Task 4 — Bimanual Clothes Folding as seen in Figure 9  
+
+> Flat orange shirt Bimanual first fold Cooperative
+> 45 ◦rotation Left pinches near side Final folded shape
+
+Augment 1 (Glare) : with blinding white spots 
+
+Augment 2 (Color Shift) : with green filter 
+
+Augment 3 (Occlusion) : with black box 
+
+Augment 4 (Viewpoint) : with perspective pitch and yaw 
+
+Figure 11: RARM Robustness : Comparison of RARM progress estimates on augmented rollouts compared with a fixed reference demonstration. rollout trajectory, we digitally augmentations to its frames and then used RARM to re-estimate the progress of the altered rollout against a different, but unaltered, reference demonstration. We evaluated four augmentations, each targeting a distinct real-world failure mode: • Augment 1 (Glare): synthetic white spots and halos that partially occlude the rollout frames, simulating specular highlights and lens flare. • Augment 2 (Color shift): a green tint applied across the frame, simulating changes in ambient lighting and white balance. 20 • Augment 3 (Occlusion): a black box covering part of the image, simulating a foreground obstruction. • Augment 4 (Viewpoint): a perspective warp introducing pitch and yaw, simulating camera misalignment. For every augmentation, RARM continued to recover a coherent progress signal. We visualize this by overlaying the ideal linear progress of the successful rollout against the progress estimated by RARM (Figure 11). In all cases the estimated progress closely tracks the ideal linear trend, deviating only by a small margin, indicating that RARM’s progress estimates are robust to occlusion, lighting changes, and viewpoint shifts. 
+
+D.3 Inference Speed and GPU Cost Comparisons 
+
+To benchmark the inference speed and CUDA memory usage of our RARM against the baseline reward models, we ran the reward model inference on 125 images composing of 1 rollout trajectory. As seen in Table 6, our RARM performs in the same band as the rest, being able to process each frame of the 125 in under 10ms. It also uses much less GPU memory compared to VLM-based Reward Models (GVL, Robometer, RoboDopamine). Table 6: Per-frame inference cost and peak memory by reward-model baseline. Baseline ms/frame Mem (MB) GVL < 50 13200 Robometer < 100 13200 RoboDopamine < 300 19000 VIP < 10 4200 RoboCLIP < 10 5400 TemporalOT < 10 6600 
+
+RARM (Ours) < 10 5100 
+
+# E Utilized Approaches 
+
+E.1 Algorithmic Backbone: Drq-v2 
+
+We train our simulation policies from scratch using Drq-v2 [57], an off-policy, image-based model-free reinforcement learning algorithm optimized for continuous robotic control. Drq-v2 builds upon the deterministic actor-critic framework to achieve high sample efficiency and stability directly from pixel observations. The policy training architecture consists of five core components: 
+
+Visual Regularization : The environment provides RGB observations, and consecutive frames are stacked to capture short-term temporal context. During optimization, random-shift augmentation is applied to pixel observations, encouraging invariance to small spatial translations and reducing visual overfitting. 
+
+Random State Initialization in Libero: To improve exploration, we initialize training episodes from intermediate states of a task demonstration rather than always resetting to the default initial state. At reset time, the environment restores a non-terminal simulator state. This exposes the policy to diverse progress regions and helps DrQ-v2 learn from later-stage frames that are rarely reached under random exploration. 
+
+Actor-Critic Architecture: A shared convolutional encoder extracts visual features for both the policy and value networks. These features are projected through a compact trunk representation. The deterministic actor maps this representation to continuous actions, with exploration controlled by Gaussian noise following a decay schedule. Full architectural details are provided in Table 4, and optimization hyperparameters are listed in Table 3. 21 Value Optimization: DrQ-v2 uses twin critics together with EMA target networks to stabilize value learning. Each critic estimates the expected return from the encoded observation and action, and is trained with multi-step temporal-difference targets from an off-policy replay buffer: 
+
+L(θi) = E(s,a,r, s′)∼D 
+
+ Qθi (s, a) −
+
+> 2
+
+X
+
+> k=0
+
+γkrt+k + γ3 min  
+
+> j=1 ,2
+
+Q¯θj (st+3 , at+3 )
+
+!! 2 (4) 
+
+RARM Reward Integration. RARM is used as a drop-in dense reward function inside the DrQ-v2 loop. While the actor operates on the low-resolution stacked observations, rollout frames are buffered and scored by RARM to produce progress-aware scalar rewards. These rewards are then used as the active environment reward rt in the standard DrQ-v2 Bellman update. 
+
+E.2 pi0 VLA backbone. We use π0 (Pi-Zero) as the base VLA policy on AIRBOT Play. The model predicts smooth continuous action trajectories from RGB observations and language instructions using a flow-matching-based action generator. In our framework, π0 provides the initial policy, while DSRL further improves it using either sparse binary rewards or our RARM dense reward. 
+
+Deployment details. The policy predicts 50 -step action chunks on a 50 Hz temporal grid and replans every 25 executed steps. The predicted actions are sent to the AIRBOT Play control interface, which runs at approximately 20 Hz in our real-robot setup. The policy consumes 128 × 128 RGB observations, while camera streams are ordered as environment, left-wrist, and right-wrist views. 
+
+E.3 DSRL: Diffusion Steering RL for Real-Robot Adaptation 
+
+For real-robot experiments we use Diffusion Steering RL (DSRL) [58] to adapt a frozen π0 diffusion policy [4] to each task. A pixel-based SAC agent learns to predict the latent noise that seeds π0’s diffusion process; π0 itself is never updated. RARM produces one reward per π0 query step from the captured rollout frames, replacing the default −1 rewards in default DSRL implementation. The SAC actor and twin Q-critics share a small CNN encoder over 128 ×128 multi-camera RGB inputs and 3-layer MLPs with hidden size 1024 . Batch size 256 , γ=0 .99 , learning rates 10 −4 (actor) and 3 × 10 −4 (critic, temperature), target entropy 0. The first 10 rollouts use random noise to fill in the buffer. Comparatively, RARM uses 384 × 384 images for higher-fidelity visual comparison. Task-specific settings:                
+
+> Task max timesteps Query steps Episode Length (seconds) fold clothes 1000 40 50 open drawer 175 78.75 pick eraser 200 810 handover 300 12 15
+
+Each task uses one reference demonstration (frames of a successful rollout from initial π0); no progress labels or task-specific reward engineering are required. At the end of every rollout the operator records success ( 1) or failure ( 0). 22

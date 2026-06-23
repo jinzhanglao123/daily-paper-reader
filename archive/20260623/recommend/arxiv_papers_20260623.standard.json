@@ -1,0 +1,213 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-23T22:01:39.008602+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 3,
+    "quick_skim_target": 11,
+    "quick_selected": 3
+  },
+  "deep_dive": [
+    {
+      "id": "2606.21136v1",
+      "source": "arxiv",
+      "title": "Horizon Adaptive Offline Policy Learning via Value Stitching",
+      "abstract": "Learning accurate value functions plays a decisive role for reinforcement learning (RL) agents to solve long-horizon, complex tasks. Conventional temporal-difference (TD) learning objectives suffer from value-estimation bias that accumulates over the horizon, while extended-horizon modeling methods, such as n-step TD backups and Q-chunking, adopt a rigid, fixed-horizon value-modeling recipe that is often not flexible enough to capture complex value structures in long-horizon, multi-stage tasks. In this paper, we show that enabling value updates with dynamic horizon composition can yield a strong offline policy learning scheme. Our method, Horizon Adaptive Offline Policy Learning via VAlue STitching (VAST), replaces fixed-horizon backups with recursive, horizon-adaptive value composition. Its key ingredient is to couple value optimization with a future state- and horizon-length-conditioned auxiliary value function that is learned through direct data supervision, and a stitching policy that optimally selects the reward-maximizing horizon length and future sub-goal to achieve horizon-adaptive value stitching. This design enables direct estimation and compositional \"stitching\" of variable-length returns grounded in actionable sub-goal states, providing an accurate and greedily exploitable value-supervision signal for offline policy optimization. Across 50 tasks on OGBench, VAST outperforms fixed-step, extended-horizon methods, and generative-value offline RL baselines, achieving strong performance particularly in high-complexity, long-horizon decision-making tasks.",
+      "authors": [
+        "Kexin Zheng",
+        "Xianyuan Zhan",
+        "Xintao Yan"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.RO"
+      ],
+      "published": "2026-06-19T06:20:45+00:00",
+      "link": "https://arxiv.org/pdf/2606.21136v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "proposes horizon adaptive value updates for long-horizon complex tasks, addressing reward assignment in RL",
+      "llm_evidence_cn": "提出用于长时域复杂任务的自适应时序价值更新方法，解决强化学习中的奖励分配问题",
+      "llm_evidence": "提出用于长时域复杂任务的自适应时序价值更新方法，解决强化学习中的奖励分配问题",
+      "canonical_evidence": "提出用于长时域复杂任务的自适应时序价值更新方法，解决强化学习中的奖励分配问题",
+      "llm_tldr_en": "The method VAST replaces fixed-horizon backups with recursive, horizon-adaptive updates to improve value estimation in long-horizon tasks.",
+      "llm_tldr_cn": "现有长时域强化学习价值估计存在偏差累积，固定时域方法无法灵活捕捉多阶段任务中的复杂价值结构。VAST方法通过递归的时序自适应备份替代固定时域备份，动态组合不同时间尺度进行价值更新。实验证明该方法在离线策略学习中显著提升长时域任务性能，为长时域信用分配提供了新思路。",
+      "llm_tldr": "现有长时域强化学习价值估计存在偏差累积，固定时域方法无法灵活捕捉多阶段任务中的复杂价值结构。VAST方法通过递归的时序自适应备份替代固定时域备份，动态组合不同时间尺度进行价值更新。实验证明该方法在离线策略学习中显著提升长时域任务性能，为长时域信用分配提供了新思路。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2606.21350v1",
+      "source": "arxiv",
+      "title": "A Reward-Petri-Net Interpretation of Temporal Behavior Trees",
+      "abstract": "This paper introduces an interpretation of Temporal Behavior Trees (TBTs) as Reward-Petri-Nets (RPNs) for reinforcement learning (RL). Designing reward functions for complex, long-horizon robotic tasks is notoriously difficult, especially when tasks have hierarchical structure and temporal constraints. TBTs extend conventional behavior trees (BTs) used in robotic applications by incorporating temporal properties into their leaf nodes. This allows TBTs to represents not only the behavioral task structure defined by BT operators such as Sequence, Fallback, and Parallel, but also the task's temporal constraints. In this work, the constraints are specified in the leaf nodes using Linear Temporal Logic. In order to inform RL rewards using TBTs, we provide a translation from TBT into a Petri Net (PN) and show how rewards can be automatically assigned based on the TBT's structure, resulting in a RPN. In a series of increasingly challenging environments, we demonstrate how TBT-based rewards enable learning where vanilla RL fails, improve sample efficiency, and offer flexible, intuitive control over the learning progress. We showcase the learning impact by using different reward distribution schemes and TBT structures.",
+      "authors": [
+        "Till Schmeil",
+        "Günther Waxenegger-Wilfing",
+        "Sebastian Schirmer"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-06-19T11:47:54+00:00",
+      "link": "https://arxiv.org/pdf/2606.21350v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "designs reward functions for long-horizon tasks using temporal behavior trees and LTL",
+      "llm_evidence_cn": "使用时间行为树和线性时序逻辑为长时序任务设计奖励函数",
+      "llm_evidence": "使用时间行为树和线性时序逻辑为长时序任务设计奖励函数",
+      "canonical_evidence": "使用时间行为树和线性时序逻辑为长时序任务设计奖励函数",
+      "llm_tldr_en": "Presents a translation from Temporal Behavior Trees to Reward-Petri-Nets, enabling structured reward design for complex, long-horizon robotic tasks in RL.",
+      "llm_tldr_cn": "该论文将扩展了时序约束的行为树转换为奖励Petri网，从而为机器人长时序任务的结构化奖励设计提供框架，实验表明该方法能有效指导强化学习。",
+      "llm_tldr": "该论文将扩展了时序约束的行为树转换为奖励Petri网，从而为机器人长时序任务的结构化奖励设计提供框架，实验表明该方法能有效指导强化学习。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.22027v1",
+      "source": "arxiv",
+      "title": "RARM: Confidence-Gated Progress Reward Modeling for RL in Manipulation",
+      "abstract": "Reinforcement learning for robot manipulation is often bottlenecked by reward design, especially in long-horizon tasks: sparse success rewards provide weak supervision, while hand-crafted dense rewards are tedious to design and generalize poorly across tasks. Progress-based reward models offer a promising alternative by estimating how far an observation has advanced toward task completion, but existing approaches often require task-specific demonstrations or progress labels, and can assign high rewards to visually plausible but physically incorrect states. We introduce the Reference-Anchored Reward Model (RARM), a lightweight visual comparator that converts a single successful demonstration into a dense, progress-aware reward. RARM is trained once on general-purpose videos with a contrastive temporal objective, requiring no robot-specific data, task-specific reward labels, or per-task reward engineering. At deployment, RARM matches rollout clips to reference clips and rewards only confident forward progress, suppressing uncertain matches that may otherwise produce false-positive rewards. Across 9 simulated manipulation tasks from LIBERO and MetaWorld and 4 real-world tasks, RARM achieves the best overall success rates in subsequent RL training, with particularly large gains on long-horizon tasks such as cloth folding, where unreliable progress estimates are especially harmful.",
+      "authors": [
+        "Pengzhi Yang",
+        "Xinyu Wang",
+        "Pengyu Jing",
+        "Kehan Wen",
+        "Yiduo Qu",
+        "Zhenhao Huang",
+        "Minghao Fu",
+        "Xin Liu",
+        "Yaheng Shen",
+        "Fan Shi"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "published": "2026-06-20T13:03:21+00:00",
+      "link": "https://arxiv.org/pdf/2606.22027v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "long-horizon reward assignment via progress reward modeling",
+      "llm_evidence_cn": "通过进展奖励建模实现长周期奖励分配",
+      "llm_evidence": "通过进展奖励建模实现长周期奖励分配",
+      "canonical_evidence": "通过进展奖励建模实现长周期奖励分配",
+      "llm_tldr_en": "RARM converts a single demonstration into a dense, progress-aware reward for long-horizon manipulation RL, improving training efficiency.",
+      "llm_tldr_cn": "针对长周期操作任务中奖励设计困难的问题，该论文提出参考锚定奖励模型（RARM），利用单一成功演示将进展感知的稠密奖励信号注入强化学习，避免手工设计奖励，实验表明该方法能提升长周期任务的学习效率。",
+      "llm_tldr": "针对长周期操作任务中奖励设计困难的问题，该论文提出参考锚定奖励模型（RARM），利用单一成功演示将进展感知的稠密奖励信号注入强化学习，避免手工设计奖励，实验表明该方法能提升长周期任务的学习效率。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.19752v2",
+      "source": "arxiv",
+      "title": "Temporal Self-Imitation Learning",
+      "abstract": "Long-horizon robot manipulation policies trained with reward shaping can still achieve high return through inefficient interactions, while rare efficient behaviors discovered during training may be forgotten. We argue that temporal efficiency itself provides a powerful and underutilized source of self-supervision for reinforcement learning. We introduce Temporal Self-Imitation Learning (TSIL), a reinforcement learning framework that mines temporally efficient successful trajectories generated during learning and converts them into reusable supervision for future policy improvement. TSIL progressively refines learning using configuration-conditioned adaptive temporal targets derived from fast successful trajectories, while preserving and replaying efficient behaviors through efficiency-weighted self-imitation learning. Across 15 distinct long-horizon manipulation tasks, TSIL consistently improves learning efficiency, task-completion efficiency, revisitation of fast successful behaviors, and robustness to unstable training conditions. More broadly, our results suggest that the temporal structure of successful behavior itself provides a scalable self-supervisory signal for reinforcement learning beyond manually engineered reward shaping alone.",
+      "authors": [
+        "Yinsen Jia",
+        "Boyuan Chen"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "published": "2026-06-18T03:31:56+00:00",
+      "link": "https://arxiv.org/pdf/2606.19752v2",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "temporal self-imitation learning for long-horizon reward shaping",
+      "llm_evidence_cn": "针对长周期任务的时间自模仿学习奖励塑形",
+      "llm_evidence": "针对长周期任务的时间自模仿学习奖励塑形",
+      "canonical_evidence": "针对长周期任务的时间自模仿学习奖励塑形",
+      "llm_tldr_en": "TSIL mines temporally efficient trajectories during RL to create self-supervision, boosting sample efficiency and policy performance in long-horizon manipulation.",
+      "llm_tldr_cn": "针对长周期机器人操作任务中奖励塑形依然可能引发低效交互的问题，该论文提出时间自模仿学习(TSIL)，通过挖掘训练过程中产生的高效轨迹构建自监督信号，反复优化策略，实验表明该方法能显著提升样本效率与最终性能。",
+      "llm_tldr": "针对长周期机器人操作任务中奖励塑形依然可能引发低效交互的问题，该论文提出时间自模仿学习(TSIL)，通过挖掘训练过程中产生的高效轨迹构建自监督信号，反复优化策略，实验表明该方法能显著提升样本效率与最终性能。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2606.23640v1",
+      "source": "arxiv",
+      "title": "Learning Process Rewards via Success Visitation Matching for Efficient RL",
+      "abstract": "In many modern applications of reinforcement learning (RL), the natural reward for a task of interest is inherently sparse: a reward of 0 is given everywhere except when the task is completed, when a reward of +1 is given. Training a policy to maximize such a sparse reward requires solving a challenging credit assignment problem, leading to slow or ineffective RL improvement. We propose a simple approach to transform a sparse outcome reward into a dense process reward. Our approach relies on training a discriminator to distinguish between previous successful and unsuccessful episodes, and using this discriminator to incentivize the RL-learned policy to match the state-action visitations of successful episodes, while avoiding those of unsuccessful episodes. By incentivizing the policy to match the visitations over all states, not just those that correspond to task success, this reward provides dense feedback on whether progress is being made towards task completion, and, we show, provably achieves this without changing the optimal policy. Focusing on finetuning of robotic control policies, we demonstrate that our approach leads to significantly faster RL finetuning performance on both simulated and real-world manipulation tasks, as compared to simply maximizing the sparse outcome reward.",
+      "authors": [
+        "Raymond Tsao",
+        "Andrew Wagenmaker",
+        "Sergey Levine"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.RO",
+        "stat.ML"
+      ],
+      "published": "2026-06-22T17:30:24+00:00",
+      "link": "https://arxiv.org/pdf/2606.23640v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Proposes learning dense process rewards via success visitation matching for long-horizon reinforcement learning tasks.",
+      "llm_evidence_cn": "提出通过成功访问匹配为长时程强化学习任务学习密集过程奖励。",
+      "llm_evidence": "提出通过成功访问匹配为长时程强化学习任务学习密集过程奖励。",
+      "canonical_evidence": "提出通过成功访问匹配为长时程强化学习任务学习密集过程奖励。",
+      "llm_tldr_en": "To solve credit assignment in sparse reward RL, this work trains a discriminator to distinguish successful vs unsuccessful episodes, using it to shape process rewards that match successful state-action visitations. This significantly improves sample efficiency on long-horizon tasks.",
+      "llm_tldr_cn": "针对强化学习中稀疏奖励带来的信用分配难题，本文提出了一种通过成功访问匹配学习密集过程奖励的方法。该方法训练一个判别器区分历史成功与失败轨迹，并利用其引导策略匹配成功轨迹的状态-动作分布，从而将稀疏结果奖励转化为密集过程奖励。实验表明，该方法在长时程任务上显著提升了样本效率和最终性能。此方法为需要长时间规划的复杂决策问题提供了有效的奖励塑形方案。",
+      "llm_tldr": "针对强化学习中稀疏奖励带来的信用分配难题，本文提出了一种通过成功访问匹配学习密集过程奖励的方法。该方法训练一个判别器区分历史成功与失败轨迹，并利用其引导策略匹配成功轨迹的状态-动作分布，从而将稀疏结果奖励转化为密集过程奖励。实验表明，该方法在长时程任务上显著提升了样本效率和最终性能。此方法为需要长时间规划的复杂决策问题提供了有效的奖励塑形方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
