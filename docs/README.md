@@ -6,37 +6,29 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-23
-- 运行时间：2026-06-23 22:06:51 UTC
+- 最新运行日期：2026-06-24
+- 运行时间：2026-06-24 20:35:43 UTC
 - 运行状态：成功
-- 本次总论文数：5
-- 精读区：2
-- 速读区：3
+- 本次总论文数：2
+- 精读区：0
+- 速读区：2
 
 ### 今日简报（AI）
-今日精读聚焦离线策略学习视野自适应与行为树的奖励网解释，速读三篇探索过程奖励与自模仿学习。  
-最值得看：价值拼接实现跨视域泛化；用Petri网统一行为树与奖励，为复杂任务提供新解释；置信门控与成功访问匹配推动高效RL。  
-下步建议：关注过程奖励与行为树结构的融合，尝试在长视域机器人任务中设计时序感知的奖励模型。
-- 详情：[/202606/23/README](/202606/23/README)
+速读两篇LLM智能体新研究，既有评估标准的“自适应进化”，也有通信策略的“形式验证蒸馏”。  
+ARCO用与智能体协同进化的评分框架让多步任务评估更客观，决策树蒸馏则为多智能体通信提供了可解释的安全保障。  
+下一步可对比体验LLM智能体的动态评估方法，并将可验证的通信机制引入自己的多智能体项目。
+- 详情：[/202606/24/README](/202606/24/README)
 
 ### 精读区论文标签
-1. [Horizon Adaptive Offline Policy Learning via Value Stitching](/202606/23/2606.21136v1-horizon-adaptive-offline-policy-learning-via-value-stitching)  
-   标签：评分：8.0/10、query:uav-drl
-   evidence：提出用于长时域复杂任务的自适应时序价值更新方法，解决强化学习中的奖励分配问题
-2. [A Reward-Petri-Net Interpretation of Temporal Behavior Trees](/202606/23/2606.21350v1-a-reward-petri-net-interpretation-of-temporal-behavior-trees)  
-   标签：评分：8.0/10、query:uav-drl
-   evidence：使用时间行为树和线性时序逻辑为长时序任务设计奖励函数
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [RARM: Confidence-Gated Progress Reward Modeling for RL in Manipulation](/202606/23/2606.22027v1-rarm-confidence-gated-progress-reward-modeling-for-rl-in-manipulation)  
+1. [ARCO: Adaptive Rubric with Co-Evolution for Multi-Step LLM-Based Agents](/202606/24/2606.21262v1-arco-adaptive-rubric-with-co-evolution-for-multi-step-llm-based-agents)  
    标签：评分：7.0/10、query:uav-drl
-   evidence：通过进展奖励建模实现长周期奖励分配
-2. [Learning Process Rewards via Success Visitation Matching for Efficient RL](/202606/23/2606.23640v1-learning-process-rewards-via-success-visitation-matching-for-efficient-rl)  
-   标签：评分：7.0/10、query:uav-drl
-   evidence：提出通过成功访问匹配为长时程强化学习任务学习密集过程奖励。
-3. [Temporal Self-Imitation Learning](/202606/23/2606.19752v2-temporal-self-imitation-learning)  
+   evidence：提出基于自适应评分细则的步级奖励分配方法用于强化学习智能体
+2. [Formal Verification of Learned Multi-Agent Communication Policies via Decision Tree Distillation](/202606/24/2606.19632v1-formal-verification-of-learned-multi-agent-communication-policies-via-decision-tree-distillation)  
    标签：评分：6.0/10、query:uav-drl
-   evidence：针对长周期任务的时间自模仿学习奖励塑形
+   evidence：验证无人机群安全关键应用中的学习通信策略，保障DRL部署安全
 
 
 <div class="dpr-home-promo-card">

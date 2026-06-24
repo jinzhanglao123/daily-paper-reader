@@ -1,0 +1,98 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-24T20:33:39.589686+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2606.21262v1",
+      "source": "arxiv",
+      "title": "ARCO: Adaptive Rubric with Co-Evolution for Multi-Step LLM-Based Agents",
+      "abstract": "Reinforcement learning for multi-step LLM agents often relies on scalar rewards that indicate success but cannot explain why a trajectory is good or bad. Rubric-based rewards improve interpretability through natural-language criteria, but existing methods score at the trajectory level and freeze the scorer behind a closed-source judge, leaving step-level credit assignment unresolved and the judge itself static. We propose ARCO (Adaptive Rubric CO-evolution), a rubric framework in which a same-scale model $μ$ shares a backbone with two heads: a generation head that produces per-step criteria, and a score head that predicts rubric-conditioned step-level rewards. A trajectory decomposition constraint ties the sum of step rewards to the terminal outcome, enabling credit assignment without step-level labels, while $μ$ and the policy $π$ are jointly updated on on-policy data so that the rubric content and the scoring function co-evolve at the parameter level. Across HotpotQA, 2WikiMultiHopQA, and MuSiQue with two open-source backbones, ARCO improves the best EM in every setting over strong outcome-, rubric-, and process-reward baselines, and analyses show that its rubrics are step-specific, robust to design choices, and useful for diagnosing agent behavior. Codes and data are available at https://github.com/zihangtian/ARCO.",
+      "authors": [
+        "Zihang Tian",
+        "Jingsen Zhang",
+        "Rui Li",
+        "Xiaohe Bo",
+        "Yuanzi Li",
+        "Xu Chen"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.CL"
+      ],
+      "published": "2026-06-19T09:38:02+00:00",
+      "link": "https://arxiv.org/pdf/2606.21262v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "proposes step-level reward assignment using adaptive rubrics for RL agents",
+      "llm_evidence_cn": "提出基于自适应评分细则的步级奖励分配方法用于强化学习智能体",
+      "llm_evidence": "提出基于自适应评分细则的步级奖励分配方法用于强化学习智能体",
+      "canonical_evidence": "提出基于自适应评分细则的步级奖励分配方法用于强化学习智能体",
+      "llm_tldr_en": "This paper addresses the lack of step-level credit assignment in multi-step LLM agents by introducing ARCO, a framework that generates per-step criteria and predicts rubric-conditioned step rewards with trajectory consistency, improving interpretability and performance.",
+      "llm_tldr_cn": "针对多步LLM智能体强化学习中缺乏步级信用分配的问题，提出ARCO框架；通过共享模型生成每步评估标准并预测基于评分细则的步级奖励，施加轨迹分解约束；实验显示步级奖励显著提升可解释性与任务成功率，为细粒度奖励设计提供了通用方案。",
+      "llm_tldr": "针对多步LLM智能体强化学习中缺乏步级信用分配的问题，提出ARCO框架；通过共享模型生成每步评估标准并预测基于评分细则的步级奖励，施加轨迹分解约束；实验显示步级奖励显著提升可解释性与任务成功率，为细粒度奖励设计提供了通用方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.19632v1",
+      "source": "arxiv",
+      "title": "Formal Verification of Learned Multi-Agent Communication Policies via Decision Tree Distillation",
+      "abstract": "Multi-agent reinforcement learning (MARL) enables agents to develop coordination strategies through emergent communication, but neural policies lack the formal safety guarantees required for safety-critical robotic deployment in drone swarms and autonomous vehicle fleets. We present the first end-to-end framework for safety verification of learned multi-agent communication policies through policy abstraction: neural policies are distilled into interpretable decision trees, then formally verified, with empirical validation confirming that verified safety properties transfer to original networks. Our four-stage pipeline consists of domain-specific feature extraction from agent observations, decision tree distillation achieving 97.9% +/- 1.2% fidelity to neural policies, automated translation to PRISM probabilistic model checker specifications with complete feature-to-state-variable correspondence, and compositional verification of Probabilistic Computation Tree Logic (PCTL) properties via pairwise decomposition with union-bound aggregation and empirical neighbor modeling. Evaluating Vector-Quantized Variational Information Bottleneck (VQ-VIB) policies for multi-drone coordination with 5-7 agents, we verify 18 temporal logic properties across safety, liveness, and cooperation, achieving 88.9% property satisfaction with all five safety thresholds satisfied (0.3% collision probability vs. 1% threshold). Monte Carlo validation of original neural policies confirms that verified safety properties transfer with <=0.6 percentage-point deviation (95% CI). Discrete VQ-VIB messages provide +11.6 to +13.6 percentage-point fidelity advantages over continuous methods, enabling 3-4x faster verification. Our framework provides empirically validated safety verification for distilled policy abstractions, serving as a practical bridge between deep MARL and formal safety workflows for multi-robot deployment.",
+      "authors": [
+        "Ahmad Farooq",
+        "Kamran Iqbal"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI",
+        "cs.LG",
+        "cs.LO",
+        "cs.MA"
+      ],
+      "published": "2026-06-17T22:22:28+00:00",
+      "link": "https://arxiv.org/pdf/2606.19632v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "formally verifies learned multi-agent communication policies for safety-critical drone swarms, enabling safe DRL deployment for inspection",
+      "llm_evidence_cn": "验证无人机群安全关键应用中的学习通信策略，保障DRL部署安全",
+      "llm_evidence": "验证无人机群安全关键应用中的学习通信策略，保障DRL部署安全",
+      "canonical_evidence": "验证无人机群安全关键应用中的学习通信策略，保障DRL部署安全",
+      "llm_tldr_en": "Distills neural multi-agent policies into decision trees for formal verification, ensuring safety of learned communication in drone swarms.",
+      "llm_tldr_cn": "提出首个端到端安全验证框架，将神经网络多智能体策略蒸馏为可解释决策树并形式化验证，经验证的安全属性可传递回原网络，为无人机群等安全关键系统的DRL通信策略部署提供保障。",
+      "llm_tldr": "提出首个端到端安全验证框架，将神经网络多智能体策略蒸馏为可解释决策树并形式化验证，经验证的安全属性可传递回原网络，为无人机群等安全关键系统的DRL通信策略部署提供保障。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "deep reinforcement learning for UAV inspection tasks",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

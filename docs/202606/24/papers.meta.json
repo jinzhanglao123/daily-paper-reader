@@ -1,0 +1,39 @@
+{
+  "label": "2026-06-24",
+  "date": "2026-06-24",
+  "generated_at": "2026-06-24T20:35:54",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202606/24/2606.21262v1-arco-adaptive-rubric-with-co-evolution-for-multi-step-llm-based-agents",
+      "section": "quick",
+      "title_en": "ARCO: Adaptive Rubric with Co-Evolution for Multi-Step LLM-Based Agents",
+      "authors": "Zihang Tian, Jingsen Zhang, Rui Li, Xiaohe Bo, Yuanzi Li, Xu Chen",
+      "date": "2026-06-19",
+      "pdf": "https://arxiv.org/pdf/2606.21262v1",
+      "score": "7.0",
+      "evidence": "提出基于自适应评分细则的步级奖励分配方法用于强化学习智能体",
+      "tldr": "多步LLM智能体强化学习中，标量奖励缺乏可解释性，现有量规方法只做轨迹级评分且评分器静态，无法细粒度分配步骤信用。ARCO框架引入共享骨干的双头模型，同时生成每步量规和预测步骤级奖励，并通过轨迹分解约束将步骤奖励之和绑定最终结果，实现无步骤标签的信用分配。在三个多跳问答数据集上，ARCO在所有设置中超越多种强基线，提高最佳精确匹配率。该方法让量规内容与评分函数在参数层级协同进化，产出步骤特定、设计鲁棒的评分，有助于诊断智能体行为。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Reinforcement learning for multi-step LLM agents often relies on scalar rewards that indicate success but cannot explain why a trajectory is good or bad. Rubric-based rewards improve interpretability through natural-language criteria, but existing methods score at the trajectory level and freeze the scorer behind a closed-source judge, leaving step-level credit assignment unresolved and the judge itself static. We propose ARCO (Adaptive Rubric CO-evolution), a rubric framework in which a same-scale model $μ$ shares a backbone with two heads: a generation head that produces per-step criteria, and a score head that predicts rubric-conditioned step-level rewards. A trajectory decomposition constraint ties the sum of step rewards to the terminal outcome, enabling credit assignment without step-level labels, while $μ$ and the policy $π$ are jointly updated on on-policy data so that the rubric content and the scoring function co-evolve at the parameter level. Across HotpotQA, 2WikiMultiHopQA, and MuSiQue with two open-source backbones, ARCO improves the best EM in every setting over strong outcome-, rubric-, and process-reward baselines, and analyses show that its rubrics are step-specific, robust to design choices, and useful for diagnosing agent behavior. Codes and data are available at https://github.com/zihangtian/ARCO.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/24/2606.19632v1-formal-verification-of-learned-multi-agent-communication-policies-via-decision-tree-distillation",
+      "section": "quick",
+      "title_en": "Formal Verification of Learned Multi-Agent Communication Policies via Decision Tree Distillation",
+      "authors": "Ahmad Farooq, Kamran Iqbal",
+      "date": "2026-06-17",
+      "pdf": "https://arxiv.org/pdf/2606.19632v1",
+      "score": "6.0",
+      "evidence": "验证无人机群安全关键应用中的学习通信策略，保障DRL部署安全",
+      "tldr": "多智能体强化学习的神经通信策略缺乏安全关键部署所需的形式化保证。本文提出首个端到端框架，通过决策树蒸馏将神经策略抽象为可解释模型，再经PRISM概率模型检测器进行组合验证。在5-7个无人机协作任务中验证18条时序逻辑属性，88.9%属性满足，所有安全阈值均达标，碰撞概率仅0.3%。经验证实验证属性可高保真转移至原始网络，偏差≤0.6个百分点，为深度多智能体学习与形式化安全流程架起实践桥梁。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Multi-agent reinforcement learning (MARL) enables agents to develop coordination strategies through emergent communication, but neural policies lack the formal safety guarantees required for safety-critical robotic deployment in drone swarms and autonomous vehicle fleets. We present the first end-to-end framework for safety verification of learned multi-agent communication policies through policy abstraction: neural policies are distilled into interpretable decision trees, then formally verified, with empirical validation confirming that verified safety properties transfer to original networks. Our four-stage pipeline consists of domain-specific feature extraction from agent observations, decision tree distillation achieving 97.9% +/- 1.2% fidelity to neural policies, automated translation to PRISM probabilistic model checker specifications with complete feature-to-state-variable correspondence, and compositional verification of Probabilistic Computation Tree Logic (PCTL) properties via pairwise decomposition with union-bound aggregation and empirical neighbor modeling. Evaluating Vector-Quantized Variational Information Bottleneck (VQ-VIB) policies for multi-drone coordination with 5-7 agents, we verify 18 temporal logic properties across safety, liveness, and cooperation, achieving 88.9% property satisfaction with all five safety thresholds satisfied (0.3% collision probability vs. 1% threshold). Monte Carlo validation of original neural policies confirms that verified safety properties transfer with <=0.6 percentage-point deviation (95% CI). Discrete VQ-VIB messages provide +11.6 to +13.6 percentage-point fidelity advantages over continuous methods, enabling 3-4x faster verification. Our framework provides empirically validated safety verification for distilled policy abstractions, serving as a practical bridge between deep MARL and formal safety workflows for multi-robot deployment.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
