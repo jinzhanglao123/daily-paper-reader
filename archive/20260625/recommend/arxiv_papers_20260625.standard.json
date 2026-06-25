@@ -1,0 +1,61 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-25T21:36:57.880228+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2606.22027v2",
+      "source": "arxiv",
+      "title": "RARM: Confidence-Gated Progress Reward Modeling for RL in Manipulation",
+      "abstract": "Reinforcement learning for robot manipulation is often bottlenecked by reward design, especially in long-horizon tasks: sparse success rewards provide weak supervision, while hand-crafted dense rewards are tedious to design and generalize poorly across tasks. Progress-based reward models offer a promising alternative by estimating how far an observation has advanced toward task completion, but existing approaches often require task-specific demonstrations or progress labels, and can assign high rewards to visually plausible but physically incorrect states. We introduce the Reference-Anchored Reward Model (RARM), a lightweight visual comparator that converts a single successful demonstration into a dense, progress-aware reward. RARM is trained once on general-purpose videos with a contrastive temporal objective, requiring no robot-specific data, task-specific reward labels, or per-task reward engineering. At deployment, RARM matches rollout clips to reference clips and rewards only confident forward progress, suppressing uncertain matches that may otherwise produce false-positive rewards. Across 9 simulated manipulation tasks from LIBERO and MetaWorld and 4 real-world tasks, RARM achieves the best overall success rates in subsequent RL training, with particularly large gains on long-horizon tasks such as cloth folding, where unreliable progress estimates are especially harmful.",
+      "authors": [
+        "Pengzhi Yang",
+        "Xinyu Wang",
+        "Pengyu Jing",
+        "Kehan Wen",
+        "Yiduo Qu",
+        "Zhenhao Huang",
+        "Minghao Fu",
+        "Xin Liu",
+        "Yaheng Shen",
+        "Fan Shi"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "published": "2026-06-20T13:03:21+00:00",
+      "link": "https://arxiv.org/pdf/2606.22027v2",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "progress-based dense reward for long-horizon manipulation tasks using a single demonstration, addressing reward assignment",
+      "llm_evidence_cn": "基于单一演示的进度密集奖励，解决长序列操作任务中的奖励分配问题",
+      "llm_evidence": "基于单一演示的进度密集奖励，解决长序列操作任务中的奖励分配问题",
+      "canonical_evidence": "基于单一演示的进度密集奖励，解决长序列操作任务中的奖励分配问题",
+      "llm_tldr_en": "Introduces RARM, a lightweight visual comparator that converts a single successful demonstration into a dense, progress-aware reward for RL in long-horizon manipulation tasks, overcoming sparse reward challenges.",
+      "llm_tldr_cn": "针对长序列机器人操作任务中稀疏奖励难以提供有效监督的问题，本文提出RARM框架：一种轻量级视觉比较器，能够利用单次成功演示生成密集的、进度感知的奖励。RARM通过参考状态与当前观察的对比估计任务进度，并引入置信门控机制过滤视觉上合理但物理上错误的状态，从而为强化学习提供更精准的监督信号。实验表明，该方法在多种操作任务上显著优于稀疏奖励基线，加速学习并提高成功率。",
+      "llm_tldr": "针对长序列机器人操作任务中稀疏奖励难以提供有效监督的问题，本文提出RARM框架：一种轻量级视觉比较器，能够利用单次成功演示生成密集的、进度感知的奖励。RARM通过参考状态与当前观察的对比估计任务进度，并引入置信门控机制过滤视觉上合理但物理上错误的状态，从而为强化学习提供更精准的监督信号。实验表明，该方法在多种操作任务上显著优于稀疏奖励基线，加速学习并提高成功率。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}

@@ -1,0 +1,24 @@
+{
+  "label": "2026-06-25",
+  "date": "2026-06-25",
+  "generated_at": "2026-06-25T21:39:26",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202606/25/2606.22027v2-rarm-confidence-gated-progress-reward-modeling-for-rl-in-manipulation",
+      "section": "deep",
+      "title_en": "RARM: Confidence-Gated Progress Reward Modeling for RL in Manipulation",
+      "authors": "Pengzhi Yang, Xinyu Wang, Pengyu Jing, Kehan Wen, Yiduo Qu, Zhenhao Huang, Minghao Fu, Xin Liu, Yaheng Shen, Fan Shi",
+      "date": "2026-06-20",
+      "pdf": "https://arxiv.org/pdf/2606.22027v2",
+      "score": "8.0",
+      "evidence": "基于单一演示的进度密集奖励，解决长序列操作任务中的奖励分配问题",
+      "tldr": "机器人操作强化学习长期任务奖励设计成瓶颈：稀疏成功信号微弱，手工密集奖励泛化差且成本高。本文提出参考锚定奖励模型RARM，将单一成功演示视频转化为进度感知密集奖励，通过对比学习从通用视频预训练，无需任务特定数据，并引入置信门控仅奖励有信心的前向进展，避免假阳性。在9个仿真和4个真实任务上，RARM使RL训练成功率显著提升，尤其在叠衣等长时任务上效果突出，展现了从视觉参考学习鲁棒奖励的能力。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Reinforcement learning for robot manipulation is often bottlenecked by reward design, especially in long-horizon tasks: sparse success rewards provide weak supervision, while hand-crafted dense rewards are tedious to design and generalize poorly across tasks. Progress-based reward models offer a promising alternative by estimating how far an observation has advanced toward task completion, but existing approaches often require task-specific demonstrations or progress labels, and can assign high rewards to visually plausible but physically incorrect states. We introduce the Reference-Anchored Reward Model (RARM), a lightweight visual comparator that converts a single successful demonstration into a dense, progress-aware reward. RARM is trained once on general-purpose videos with a contrastive temporal objective, requiring no robot-specific data, task-specific reward labels, or per-task reward engineering. At deployment, RARM matches rollout clips to reference clips and rewards only confident forward progress, suppressing uncertain matches that may otherwise produce false-positive rewards. Across 9 simulated manipulation tasks from LIBERO and MetaWorld and 4 real-world tasks, RARM achieves the best overall success rates in subsequent RL training, with particularly large gains on long-horizon tasks such as cloth folding, where unreliable progress estimates are especially harmful.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

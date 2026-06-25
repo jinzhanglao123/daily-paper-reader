@@ -6,29 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-24
-- 运行时间：2026-06-24 20:35:43 UTC
+- 最新运行日期：2026-06-25
+- 运行时间：2026-06-25 21:39:18 UTC
 - 运行状态：成功
-- 本次总论文数：2
-- 精读区：0
-- 速读区：2
+- 本次总论文数：1
+- 精读区：1
+- 速读区：0
 
 ### 今日简报（AI）
-速读两篇LLM智能体新研究，既有评估标准的“自适应进化”，也有通信策略的“形式验证蒸馏”。  
-ARCO用与智能体协同进化的评分框架让多步任务评估更客观，决策树蒸馏则为多智能体通信提供了可解释的安全保障。  
-下一步可对比体验LLM智能体的动态评估方法，并将可验证的通信机制引入自己的多智能体项目。
-- 详情：[/202606/24/README](/202606/24/README)
+今日精读了一篇机器人操作强化学习新作：用置信度门控的进度奖励模型（RARM）提升策略学习效率。  
+核心结论：通过置信度筛选中间步骤的进度信号，RARM 能在高噪声仿真训练中稳定加速复杂操作任务学习。  
+推荐动手试试论文的奖励设计思路，尤其适合想改进稀疏奖励问题的读者。
+- 详情：[/202606/25/README](/202606/25/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [RARM: Confidence-Gated Progress Reward Modeling for RL in Manipulation](/202606/25/2606.22027v2-rarm-confidence-gated-progress-reward-modeling-for-rl-in-manipulation)  
+   标签：评分：8.0/10、query:uav-drl
+   evidence：基于单一演示的进度密集奖励，解决长序列操作任务中的奖励分配问题
 
 ### 速读区论文标签
-1. [ARCO: Adaptive Rubric with Co-Evolution for Multi-Step LLM-Based Agents](/202606/24/2606.21262v1-arco-adaptive-rubric-with-co-evolution-for-multi-step-llm-based-agents)  
-   标签：评分：7.0/10、query:uav-drl
-   evidence：提出基于自适应评分细则的步级奖励分配方法用于强化学习智能体
-2. [Formal Verification of Learned Multi-Agent Communication Policies via Decision Tree Distillation](/202606/24/2606.19632v1-formal-verification-of-learned-multi-agent-communication-policies-via-decision-tree-distillation)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：验证无人机群安全关键应用中的学习通信策略，保障DRL部署安全
+- 本次无速读推荐。
 
 
 <div class="dpr-home-promo-card">
