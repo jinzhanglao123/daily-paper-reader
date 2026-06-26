@@ -1,0 +1,69 @@
+{
+  "label": "2026-06-26",
+  "date": "2026-06-26",
+  "generated_at": "2026-06-26T21:48:38",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202606/26/2606.26175v1-rmtl-reinforced-micro-task-learning-for-long-horizon-manipulation-with-vlm-rewards",
+      "section": "deep",
+      "title_en": "RMTL: Reinforced Micro-task Learning for Long-Horizon Manipulation with VLM Rewards",
+      "authors": "Anıl Can Ateş, Orhan Kahraman, Cihan Topal",
+      "date": "2026-06-24",
+      "pdf": "https://arxiv.org/pdf/2606.26175v1",
+      "score": "9.0",
+      "evidence": "通过微任务分解和VLM奖励实现长时域奖励分配",
+      "tldr": "针对基于预训练视觉语言模型(VLM)的零样本奖励在长时程机器人操纵任务中单一全局提示奖励稀疏、代理难以检测早期进展的问题，提出强化微任务学习(RMTL)，将任务分解为语言描述的微任务，采用多视图VLM奖励和分层管理器动态切换微任务，配合反向课程训练。在Fetch环境中仅用三个简短提示，RMTL提供了更密集的奖励信号，实现了更快速的学习收敛。该方法表明微任务奖励分解能显著提升语言引导强化学习在机器人操纵上的可扩展性。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Reinforcement learning (RL) for robotic manipulation often requires manually designing a dense reward function, which is difficult to tune and often fragile, or learning a reward from human demonstrations or preferences, which can be expensive. A recent line of work uses pretrained vision-language models (VLMs) as zero-shot reward models, replacing these costs with a single text prompt. However, we argue that a single global prompt is too coarse for long-horizon manipulation tasks with randomized initial conditions. The single-prompt VLM reward is near-flat for much of the trajectory, making early progress hard for the agent to detect. We propose Reinforced Micro-Task Learning (RMTL), an approach that decomposes a manipulation task into a small set of language-described micro-tasks and trains the agent to switch between them. At each step, the agent receives a multi-view VLM reward computed using the prompt of the currently active micro-task and averaged across multiple camera views to reduce the effect of view-specific occlusions. A reverse curriculum gradually exposes the agent to harder initial conditions, while a PPO worker is first trained with a fixed distance-based rule that selects the active micro-task. We then replace this rule with a learned hierarchical manager, turning rule-based phase selection into a fully learned hierarchical policy. We instantiate RMTL on the Fetch manipulation environment using three short stage-specific prompts and without additional prompt tuning. Experiments show that RMTL provides more informative reward signals than single-prompt VLM rewards, enabling faster learning. These results suggest that decomposing VLM rewards into micro-task-specific language prompts can substantially improve the scalability of language-guided reinforcement learning for robotic manipulation.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/26/2606.25852v1-semantic-consistency-policy-optimization-for-reinforcement-learning-of-llm-agents",
+      "section": "quick",
+      "title_en": "Semantic Consistency Policy Optimization for Reinforcement Learning of LLM Agents",
+      "authors": "Peng Xu, Sijia Chen, Junzhuo Li, Xuming Hu",
+      "date": "2026-06-24",
+      "pdf": "https://arxiv.org/pdf/2606.25852v1",
+      "score": "7.0",
+      "evidence": "通过语义一致性进行长时序稀疏奖励任务的信用分配",
+      "tldr": "基于组的强化学习训练LLM智能体时，语义相似的中间步骤因轨迹最终成败而获得相反的步骤级信用，导致梯度冲突并浪费部分正确进展。本文提出语义一致性策略优化(SCPO)，从同组成功轨迹中为失败步骤恢复信用，对新进展给予正奖励。在ALFWorld和WebShop上，1.5B参数模型成功率分别达93.7%和74.8%，超越强基线，增益集中于多步困难任务。该方法为稀疏奖励环境下的LLM智能体训练提供了无值函数的奖励塑形思路。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Group-based reinforcement learning effectively post-trains LLM agents for long-horizon, sparse-reward tasks by deriving step-level credit from trajectory outcomes. However, this ties a step's credit to its rollout's final outcome: semantically near-identical intermediate steps receive opposite credit depending on whether their trajectory eventually succeeded or failed. Such semantic credit inconsistency sends conflicting gradients to similar actions and wastes the partially-correct progress inside failed rollouts. Motivated by this, we propose Semantic Consistency Policy Optimization (SCPO), a value-free reward-shaping method that mitigates this inconsistency by recovering step-level credit from successful siblings in the same rollout group. Concretely, SCPO scores each failed step against a successful sibling and adds positive step-level credit for new progress along that sibling. On ALFWorld and WebShop, SCPO matches or exceeds strong group-based baselines, reaching 93.7+/-4.1 percent success on ALFWorld and 74.8+/-2.0 percent on WebShop at 1.5B parameters, with gains concentrated on the hardest multi-step tasks.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/26/2606.26333v1-mesh-rl-coupled-subgrid-reinforcement-learning",
+      "section": "quick",
+      "title_en": "Mesh-RL: Coupled subgrid reinforcement learning",
+      "authors": "Behnam Gheshlaghi, Bahador Rashidi, Shahin Atakishiyev",
+      "date": "2026-06-24",
+      "pdf": "https://arxiv.org/pdf/2606.26333v1",
+      "score": "7.0",
+      "evidence": "空间分解加速RL中的长程信用分配",
+      "tldr": "在大状态空间或稀疏奖励的强化学习中，时差法因值信息仅局部传播而收敛缓慢，长程信用分配困难。Mesh-RL借鉴有限元法与域分解，将环境重叠剖分为子网格，并强制执行边界一致的时间差分更新，实现局部独立学习与全局协调值传播的耦合。在多种危险网格世界任务上，Mesh-RL显著提升了Q-learning、SARSA和Dyna-Q的收敛速度、累积奖励和稳定性；更高网格分辨率能维持探索、避免过早收敛，并大幅加快远距离状态的值传播。该方法未修改奖励或算子，引入原则性的空间分解机制，将科学计算中的边界一致性技术引入强化学习，有效提升稀疏奖励环境的样本效率。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Reinforcement learning in large or sparse-reward environments suffers from slow temporal-difference reward propagation, as value information spreads only locally across the state space. We propose Mesh-RL, a spatial domain-decomposition framework inspired by the finite element method and domain decomposition theory, which partitions the environment into overlapping subgrids and enforces boundary-consistent temporal-difference updates. Such an approach enables localized learning while ensuring globally coherent value propagation. Unlike hierarchical or model-based approaches, Mesh-RL accelerates long-range credit assignment without modifying the reward function, Bellman operator, or introducing explicit planning mechanisms. We evaluate Mesh-RL on hazard-dense grid-world environments with varying geometries and mesh resolutions. Across Q-learning, SARSA, and Dyna-Q, Mesh-RL consistently improves convergence speed, cumulative reward, and learning stability. Higher mesh resolutions sustain exploration, prevent premature convergence, and substantially accelerate value propagation to distant states. While Dyna-Q already benefits from internal planning, it still achieves additional gains under structured decomposition. Overall, Mesh-RL introduces a principled spatial domain-decomposition mechanism for accelerating temporal-difference learning. Our framework bridges finite element method-inspired boundary-consistency techniques from scientific computing with reinforcement learning to improve sample efficiency in sparse-reward environments. We will release source code of the study.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/26/2606.27180v1-automating-potential-based-reward-shaping-with-vision-language-model-guidance",
+      "section": "quick",
+      "title_en": "Automating Potential-based Reward Shaping with Vision Language Model Guidance",
+      "authors": "Henrik Müller, Daniel Kudenko",
+      "date": "2026-06-25",
+      "pdf": "https://arxiv.org/pdf/2606.27180v1",
+      "score": "7.0",
+      "evidence": "自动化势基奖励塑造解决稀疏奖励信用分配",
+      "tldr": "稀疏奖励强化学习缺乏中间反馈，朴素奖励塑形易导致奖励破解。本文提出VLM-PBRS框架，利用轻量视觉语言模型(VLM)从图像对偏好中学习势函数，实现基于势能的奖励塑形(PBRS)，无需专家设计且保持最优策略。实验在Meta-World和Franka Kitchen环境中小VLM虽准确度有限但仍显著加速学习。该方法首次将VLM偏好学习用于合成PBRS势函数，提供低成本、原则性方案，提升样本效率和抗破解能力。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Sparse rewards are inherently challenging for reinforcement learning agents as they lack intermediate feedback to guide exploration and to correctly attribute the sparse success rewards to relevant parts of the trajectory. Naive reward shaping can induce reward hacking, yielding policies that exploit auxiliary signals instead of solving the intended task. Potential-based reward shaping (PBRS) guarantees preservation of the optimal policy set, but requires the definition of a heuristic potential function over the state space. In this work, we introduce the VLM-guided PBRS framework VLM-PBRS that learns the potential function directly from vision language model (VLM) feedback. We query a lightweight VLM to obtain preferences over image pairs and train a model of the potential function using these preferences. As this approach is based on potential-based reward shaping, it preserves the original optimal policies, and removes the need for expert-designed reward shaping terms. Because large VLMs are prohibitively expensive to invoke repeatedly during policy learning, we employ smaller, more computationally efficient VLMs. Although the resulting preference labels are less accurate, empirical evidence shows that the preference labels can still be used to accelerate learning. We validate our method empirically in the Meta-World and Franka Kitchen environments and highlight the connection between VLM preference label accuracy and sample efficiency improvements. Our contributions are threefold: (1) the first application of VLM preference-based learning to synthesize a potential function for PBRS, (2) a principled, low-cost solution that leverages small VLMs, and (3) extensive empirical demonstration of improved sample efficiency and robustness to reward hacking.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
