@@ -6,34 +6,31 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-26
-- 运行时间：2026-06-26 21:48:30 UTC
+- 最新运行日期：2026-06-27
+- 运行时间：2026-06-27 21:25:37 UTC
 - 运行状态：成功
-- 本次总论文数：4
-- 精读区：1
-- 速读区：3
+- 本次总论文数：3
+- 精读区：2
+- 速读区：1
 
 ### 今日简报（AI）
-今日精读一篇9分论文《RMTL》，探索如何用视觉语言模型奖励驱动微任务强化学习，实现长时序操作；速读中强化学习与LLM智能体的语义策略优化、以及基于VLM的自动势能奖励塑形也值得关注。  
-最亮眼的结论是：用VLM自动生成中间微任务和奖励，可大幅提升机械臂长时间任务的效率；另一方向则展示用语义一致性约束能让LLM智能体策略更稳定。  
-建议读者顺着“VLM+RL”这个交叉点，留意如何用现成多模态模型简化复杂奖励工程，不妨从今天精读的《RMTL》代码复现入手。
-- 详情：[/202606/26/README](/202606/26/README)
+1) 今日聚焦模型预测控制与视觉评估，精读了两篇高分论文，涉及无人机零样本跨域迁移和 GUI 智能体的过程奖励设计。
+2) 最值得关注：SkyJEPA 展示了无需真实数据的长视界世界模型也能实现四旋翼 Sim-to-Real 控制，VisCritic 则提出用视觉状态对比生成密集过程奖励，显著提升 GUI 任务成功率。
+3) 建议普通读者重点关注“世界模型+具身智能”与“过程监督+视觉评估”这两个交叉方向，它们正从仿真走向真实应用。
+- 详情：[/202606/27/README](/202606/27/README)
 
 ### 精读区论文标签
-1. [RMTL: Reinforced Micro-task Learning for Long-Horizon Manipulation with VLM Rewards](/202606/26/2606.26175v1-rmtl-reinforced-micro-task-learning-for-long-horizon-manipulation-with-vlm-rewards)  
+1. [SkyJEPA: Learning Long-Horizon World Models for Zero-Shot Sim-to-Real Control of Quadrotors](/202606/27/2606.23444v1-skyjepa-learning-long-horizon-world-models-for-zero-shot-sim-to-real-control-of-quadrotors)  
    标签：评分：9.0/10、query:uav-drl
-   evidence：通过微任务分解和VLM奖励实现长时域奖励分配
+   evidence：使用JEPA学习四旋翼控制的长时域世界模型
+2. [VisCritic: Visual State Comparison as Process Reward for GUI Agents](/202606/27/2606.24525v1-viscritic-visual-state-comparison-as-process-reward-for-gui-agents)  
+   标签：评分：8.0/10、query:uav-drl
+   evidence：引入通过截图比对验证长程GUI代理动作的视觉过程奖励框架
 
 ### 速读区论文标签
-1. [Semantic Consistency Policy Optimization for Reinforcement Learning of LLM Agents](/202606/26/2606.25852v1-semantic-consistency-policy-optimization-for-reinforcement-learning-of-llm-agents)  
+1. [SkyJEPA: Learning Long-Horizon World Models for Zero-Shot Sim-to-Real Control of Quadrotors](/202606/27/2606.23444v2-skyjepa-learning-long-horizon-world-models-for-zero-shot-sim-to-real-control-of-quadrotors)  
    标签：评分：7.0/10、query:uav-drl
-   evidence：通过语义一致性进行长时序稀疏奖励任务的信用分配
-2. [Mesh-RL: Coupled subgrid reinforcement learning](/202606/26/2606.26333v1-mesh-rl-coupled-subgrid-reinforcement-learning)  
-   标签：评分：7.0/10、query:uav-drl
-   evidence：空间分解加速RL中的长程信用分配
-3. [Automating Potential-based Reward Shaping with Vision Language Model Guidance](/202606/26/2606.27180v1-automating-potential-based-reward-shaping-with-vision-language-model-guidance)  
-   标签：评分：7.0/10、query:uav-drl
-   evidence：自动化势基奖励塑造解决稀疏奖励信用分配
+   evidence：学习长程世界模型用于四旋翼零样本仿真到真实控制，可为巡检任务提供更好的无人机仿真
 
 
 <div class="dpr-home-promo-card">

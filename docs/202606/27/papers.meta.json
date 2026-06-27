@@ -1,0 +1,54 @@
+{
+  "label": "2026-06-27",
+  "date": "2026-06-27",
+  "generated_at": "2026-06-27T21:25:44",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202606/27/2606.23444v1-skyjepa-learning-long-horizon-world-models-for-zero-shot-sim-to-real-control-of-quadrotors",
+      "section": "deep",
+      "title_en": "SkyJEPA: Learning Long-Horizon World Models for Zero-Shot Sim-to-Real Control of Quadrotors",
+      "authors": "Pratyaksh Rao, Wancong Zhang, Randall Balestriero, Yann LeCun, Giuseppe Loianno",
+      "date": "2026-06-22",
+      "pdf": "https://arxiv.org/pdf/2606.23444v1",
+      "score": "9.0",
+      "evidence": "使用JEPA学习四旋翼控制的长时域世界模型",
+      "tldr": "四旋翼飞行器需精确动力学模型以实现自主控制，但现有自回归预测网络在长时域因误差累积而失效，JEPA潜空间建模为高频控制提供新思路。本文提出SkyJEPA，结合潜动力学模型与物理启发探针，实现物理有据的长时域预测，并集成采样最优控制在嵌入式硬件实时控制。通过自动化数据管线减少真实世界数据依赖，实验表明模型预测准确且零样本迁移至真实四旋翼，泛化性强。该工作首次将JEPA应用于四旋翼高频实时控制，推动仿真到真实的无缝部署。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Accurate dynamics models are critical for informed decision-making in robotic systems, particularly for agile aerial vehicles operating under uncertainty. Neural network dynamics models are attractive for capturing complex nonlinear effects, but existing predictive approaches struggle with long-horizon forecasting because their autoregressive rollout mechanism amplifies errors over time. Joint Embedding Predictive Architectures (JEPAs) offer a compelling alternative by modeling dynamics in latent space, yet prior JEPA-style methods for robot navigation have been studied primarily for kinematic-level planning, with limited investigation in high-frequency control. In this work, we introduce the JEPA-style model for real-time quadrotor control. The proposed approach combines a latent dynamics model with a novel physics-inspired prober that maps frozen latents to interpretable state, enabling physically grounded long-horizon prediction. Additionally, we combine the learned model with a sampling-based optimal control solution to take advantage of its predictive capabilities for real-time control on embedded hardware. Finally, to reduce the dependence on expensive and unsafe real-world data collection, we develop a structured pipeline for automated dataset generation. Extensive open-loop and outdoor closed-loop experiments demonstrate accurate prediction, robust zero-shot sim-to-real transfer, and strong generalization across diverse operating conditions.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/27/2606.24525v1-viscritic-visual-state-comparison-as-process-reward-for-gui-agents",
+      "section": "deep",
+      "title_en": "VisCritic: Visual State Comparison as Process Reward for GUI Agents",
+      "authors": "Jiachen Qian",
+      "date": "2026-06-23",
+      "pdf": "https://arxiv.org/pdf/2606.24525v1",
+      "score": "8.0",
+      "evidence": "引入通过截图比对验证长程GUI代理动作的视觉过程奖励框架",
+      "tldr": "GUI智能体因缺乏步骤级验证在长程任务中易失败，现有方法仅通过文本推理忽略视觉状态变化。我们提出VisCritic，直接比较动作前后截图的视觉过程奖励框架，采用孪生视觉Transformer和动作感知评价头。在五个基准上，VisCritic作为即插即用模块普遍提升各种GUI智能体的表现，并提供视觉诊断线索。",
+      "tags": "query:uav-drl",
+      "abstract_en": "GUI agents powered by vision-language models show strong potential for automating digital tasks, yet frequently fail in long-horizon scenarios due to the absence of step-level verification. Existing process reward models verify actions through textual reasoning alone, missing the visual nature of GUI state changes. We introduce VisCritic, a visual process reward framework that verifies agent actions by directly comparing pre-action and post-action screenshots in visual feature space. VisCritic employs a Siamese vision transformer to extract change-aware representations, coupled with an Action-Aware Critic Head that jointly evaluates action success, task progress, and error type. A critic-training data construction pipeline generates weakly supervised samples from existing trajectories without additional human labels for critic training. Experiments and offline analyses across five benchmarks demonstrate that VisCritic serves as a plug-and-play enhancement for diverse GUI agents, generally improving benchmark metrics while providing visual diagnostic cues.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202606/27/2606.23444v2-skyjepa-learning-long-horizon-world-models-for-zero-shot-sim-to-real-control-of-quadrotors",
+      "section": "quick",
+      "title_en": "SkyJEPA: Learning Long-Horizon World Models for Zero-Shot Sim-to-Real Control of Quadrotors",
+      "authors": "Pratyaksh Rao, Wancong Zhang, Randall Balestriero, Yann LeCun, Giuseppe Loianno",
+      "date": "2026-06-22",
+      "pdf": "https://arxiv.org/pdf/2606.23444v2",
+      "score": "7.0",
+      "evidence": "学习长程世界模型用于四旋翼零样本仿真到真实控制，可为巡检任务提供更好的无人机仿真",
+      "tldr": "在自主飞行中，长时域动力学预测对敏捷四旋翼的实时控制至关重要，但现有学习模型因自回归误差累积而受限。SkyJEPA 结合潜在动力学建模与物理启发的探针，将潜在表示映射为可解释状态，支持长时域预测，并通过采样最优控制实现嵌入式实时控制。该系统利用自动化数据生成管道，显著减少对昂贵真实飞行数据的需求；开放集与室外闭环实验验证了其准确预测、零样本 sim-to-real 迁移及多种条件泛化能力。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Accurate dynamics models are critical for informed decision-making in robotic systems, particularly for agile aerial vehicles operating under uncertainty. Neural network dynamics models are attractive for capturing complex nonlinear effects, but existing predictive approaches struggle with long-horizon forecasting because their autoregressive rollout mechanism amplifies errors over time. Joint Embedding Predictive Architectures (JEPAs) offer a compelling alternative by modeling dynamics in latent space, yet prior JEPA-style methods for robot navigation have been studied primarily for kinematic-level planning, with limited investigation in high-frequency control. In this work, we introduce the JEPA-style model for real-time quadrotor control. The proposed approach combines a latent dynamics model with a novel physics-inspired prober that maps frozen latents to interpretable state, enabling physically grounded long-horizon prediction. Additionally, we combine the learned model with a sampling-based optimal control solution to take advantage of its predictive capabilities for real-time control on embedded hardware. Finally, to reduce the dependence on expensive and unsafe real-world data collection, we develop a structured pipeline for automated dataset generation. Extensive open-loop and outdoor closed-loop experiments demonstrate accurate prediction, robust zero-shot sim-to-real transfer, and strong generalization across diverse operating conditions.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
