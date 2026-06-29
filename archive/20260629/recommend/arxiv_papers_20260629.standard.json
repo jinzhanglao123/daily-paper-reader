@@ -1,0 +1,53 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-29T21:39:08.118574+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2606.24515v1",
+      "source": "arxiv",
+      "title": "Reinforcement Learning for Computer-Use Agents with Autonomous Evaluation",
+      "abstract": "Computer-Use Agents (CUAs) execute high-level user goals by perceiving and acting directly within graphical user interfaces. However, reinforcement learning for CUAs remains difficult because open-ended desktop environments rarely provide scalable, machine-readable reward signals: task success is often visually grounded and hard to specify with handcrafted reward functions or dense manual labels.   We propose an RL fine-tuning framework that uses autonomous vision-language evaluation as a scalable supervision signal for GUI agents. Given a final screenshot and the original instruction, a Vision-Language Model judges task completion and provides terminal feedback without task-specific heuristics or manual labels during policy optimization.   Because autonomous evaluators are imperfect, we model their feedback as a noisy binary reward channel and derive a noise-corrected reward estimator for Proximal Policy Optimization. Experiments across macOSWorld, Windows Agent Arena, and OSWorld show that corrected evaluator rewards outperform both zero-shot baselines and raw evaluator rewards, improving success rates by an average of 12.6 percentage points over zero-shot performance and 5.1 points over raw evaluator fine-tuning. These results suggest that autonomous evaluation can serve as a practical reward signal for RL in GUI environments when evaluator noise is explicitly modeled and corrected.",
+      "authors": [
+        "Marta Sumyk",
+        "Oleksandr Kosovan"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.HC"
+      ],
+      "published": "2026-06-23T12:46:29+00:00",
+      "link": "https://arxiv.org/pdf/2606.24515v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "RL fine-tuning with VLM autonomous evaluation provides scalable terminal reward for sparse long-horizon tasks",
+      "llm_evidence_cn": "利用视觉语言模型自主评估为稀疏长时程任务提供可扩展的终端奖励，用于强化学习微调",
+      "llm_evidence": "利用视觉语言模型自主评估为稀疏长时程任务提供可扩展的终端奖励，用于强化学习微调",
+      "canonical_evidence": "利用视觉语言模型自主评估为稀疏长时程任务提供可扩展的终端奖励，用于强化学习微调",
+      "llm_tldr_en": "Addresses sparse reward in GUI agents by using a Vision-Language Model to judge task completion from screenshots, providing terminal feedback as a scalable RL reward signal, enabling fine-tuning without manual labels.",
+      "llm_tldr_cn": "针对GUI智能体在开放桌面环境中奖励信号稀疏、难以手工设计的问题，本文提出利用视觉语言模型自动评估任务完成情况，从最终截图判断成败并反馈终局奖励。该框架无需任务特定启发式或人工标签即可微调策略，为解决长时程强化学习中的奖励分配问题提供了一种可扩展的监督方式，并有望推广至其他视觉条件、长轨迹的决策任务。",
+      "llm_tldr": "针对GUI智能体在开放桌面环境中奖励信号稀疏、难以手工设计的问题，本文提出利用视觉语言模型自动评估任务完成情况，从最终截图判断成败并反馈终局奖励。该框架无需任务特定启发式或人工标签即可微调策略，为解决长时程强化学习中的奖励分配问题提供了一种可扩展的监督方式，并有望推广至其他视觉条件、长轨迹的决策任务。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}
