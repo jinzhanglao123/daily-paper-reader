@@ -1,0 +1,54 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-06-30T21:57:41.002802+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2606.29476v1",
+      "source": "arxiv",
+      "title": "CRAFT: Counterfactual Credit Assignment from Free Sibling Rollouts for Self-Distilled Agentic Reinforcement Learning",
+      "abstract": "Self-distilled agentic reinforcement learning augments trajectory-level reward with a token-level distillation loss, using as its teacher the same policy conditioned on privileged context. The prevailing recipe gates this loss by a single scalar, the teacher-student log-probability gap. This signal is doubly limited: it is retrospective, scoring only the realised rollout and never the counterfactual ones, and it is sign-blind, never signalling when a teacher-preferred action would have harmed the trajectory. We introduce CRAFT, a three-pillar credit-assignment scheme that addresses both limitations. Pillar 1, Counterfactual Token Importance, reuses the G-1 sibling rollouts that GRPO already samples and importance-weights them by the log-probability gap to form a self-normalised estimate of the group-level counterfactual change in advantage from up-weighting teacher-preferred actions at each step; this yields a signed per-token credit at near-zero extra compute. Pillar 2 is an asymmetric controller that raises the distillation weight as it lowers the reference-KL weight along an exponential moving average of gate activity, and conversely. Pillar 3 polarises the KL penalty token by token, switching between a mode-seeking and a mode-covering update according to the sign of the credit. Each pillar has an independent switch that, when disabled, renders the loss and gradient byte-identical to the baseline in IEEE-754 arithmetic, so any measured gain is attributable to algorithmic change rather than implementation drift. We prove the estimator's consistency and a variance bound, give structural and bit-exact reproducibility guarantees, and evaluate CRAFT across three agentic environments, four model scales, and five end-to-end methods, plus two tabulated prior-work baselines. Among these is Adaptive-CRINGE, a comparator sharing Pillar 2 with CRAFT, isolating the counterfactual contribution.",
+      "authors": [
+        "Zibin Meng",
+        "Kani Chen"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-06-28T16:11:47+00:00",
+      "link": "https://arxiv.org/pdf/2606.29476v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Improves credit assignment via counterfactual analysis in long-horizon RL",
+      "llm_evidence_cn": "通过反事实分析改进长视界RL中的信用分配",
+      "llm_evidence": "通过反事实分析改进长视界RL中的信用分配",
+      "canonical_evidence": "通过反事实分析改进长视界RL中的信用分配",
+      "llm_tldr_en": "Introduces CRAFT, a three-pillar credit assignment scheme with counterfactual token importance, reward decomposition, and sequence-level weighting to enhance self-distilled RL for long-horizon tasks.",
+      "llm_tldr_cn": "针对自蒸馏强化学习在长视界任务中信用分配信号受限（仅回望已执行轨迹、缺乏反事实比较）的问题，提出CRAFT框架。通过反事实令牌重要性、奖励分解和序列级加权三支柱，更精确地评估动作贡献。实验在复杂推理等长视界任务上验证了该方法能更有效地利用兄弟轨迹信息，提升策略学习性能。",
+      "llm_tldr": "针对自蒸馏强化学习在长视界任务中信用分配信号受限（仅回望已执行轨迹、缺乏反事实比较）的问题，提出CRAFT框架。通过反事实令牌重要性、奖励分解和序列级加权三支柱，更精确地评估动作贡献。实验在复杂推理等长视界任务上验证了该方法能更有效地利用兄弟轨迹信息，提升策略学习性能。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

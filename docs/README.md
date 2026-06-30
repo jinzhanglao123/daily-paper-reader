@@ -6,26 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-29
-- 运行时间：2026-06-29 21:41:02 UTC
+- 最新运行日期：2026-06-30
+- 运行时间：2026-06-30 21:58:43 UTC
 - 运行状态：成功
 - 本次总论文数：1
-- 精读区：1
-- 速读区：0
+- 精读区：0
+- 速读区：1
 
 ### 今日简报（AI）
-今日精读：用自主评估的强化学习训练电脑操作智能体，得分8.0。
-核心发现：无需人工标注，智能体通过环境自主纠错就能持续提升GUI操控能力。
-建议尝试在自动化测试或RPA场景中评估这类RL训练框架的迁移效果。
-- 详情：[/202606/29/README](/202606/29/README)
+今日速读了 CRAFT 框架，用“兄弟轨迹”反事实纠偏，让智能体自己教自己。  
+最值得看的是：无需额外环境交互，就能从自由探索的兄弟轨迹中提取反事实信用，驱动智能体自我蒸馏进化。  
+若关心强化学习中的高效信用分配，不妨顺着“自由兄弟轨迹”这个免费数据源，看看如何低成本加速训练。
+- 详情：[/202606/30/README](/202606/30/README)
 
 ### 精读区论文标签
-1. [Reinforcement Learning for Computer-Use Agents with Autonomous Evaluation](/202606/29/2606.24515v1-reinforcement-learning-for-computer-use-agents-with-autonomous-evaluation)  
-   标签：评分：8.0/10、query:uav-drl
-   evidence：利用视觉语言模型自主评估为稀疏长时程任务提供可扩展的终端奖励，用于强化学习微调
+- 本次无精读推荐。
 
 ### 速读区论文标签
-- 本次无速读推荐。
+1. [CRAFT: Counterfactual Credit Assignment from Free Sibling Rollouts for Self-Distilled Agentic Reinforcement Learning](/202606/30/2606.29476v1-craft-counterfactual-credit-assignment-from-free-sibling-rollouts-for-self-distilled-agentic-reinforcement-learning)  
+   标签：评分：7.0/10、query:uav-drl
+   evidence：通过反事实分析改进长视界RL中的信用分配
 
 
 <div class="dpr-home-promo-card">

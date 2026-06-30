@@ -1,0 +1,24 @@
+{
+  "label": "2026-06-30",
+  "date": "2026-06-30",
+  "generated_at": "2026-06-30T21:58:50",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202606/30/2606.29476v1-craft-counterfactual-credit-assignment-from-free-sibling-rollouts-for-self-distilled-agentic-reinforcement-learning",
+      "section": "quick",
+      "title_en": "CRAFT: Counterfactual Credit Assignment from Free Sibling Rollouts for Self-Distilled Agentic Reinforcement Learning",
+      "authors": "Zibin Meng, Kani Chen",
+      "date": "2026-06-28",
+      "pdf": "https://arxiv.org/pdf/2606.29476v1",
+      "score": "7.0",
+      "evidence": "通过反事实分析改进长视界RL中的信用分配",
+      "tldr": "自蒸馏智能体强化学习使用标量对数概率差距门控蒸馏损失，但该信号仅能回顾实际轨迹且缺乏方向信息。CRAFT提出三项信用分配方案：利用GRPO的兄弟轨迹进行反事实重要性加权，得到有符号逐令牌信用；通过不对称控制器平衡蒸馏与KL权重；根据信用符号进行令牌级KL惩罚极化。在多个环境、模型规模和端到端方法上评估，与Adaptive-CRINGE对比，证明反事实贡献带来性能提升。该方法以接近零的额外计算，提供可归因的算法增益。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Self-distilled agentic reinforcement learning augments trajectory-level reward with a token-level distillation loss, using as its teacher the same policy conditioned on privileged context. The prevailing recipe gates this loss by a single scalar, the teacher-student log-probability gap. This signal is doubly limited: it is retrospective, scoring only the realised rollout and never the counterfactual ones, and it is sign-blind, never signalling when a teacher-preferred action would have harmed the trajectory. We introduce CRAFT, a three-pillar credit-assignment scheme that addresses both limitations. Pillar 1, Counterfactual Token Importance, reuses the G-1 sibling rollouts that GRPO already samples and importance-weights them by the log-probability gap to form a self-normalised estimate of the group-level counterfactual change in advantage from up-weighting teacher-preferred actions at each step; this yields a signed per-token credit at near-zero extra compute. Pillar 2 is an asymmetric controller that raises the distillation weight as it lowers the reference-KL weight along an exponential moving average of gate activity, and conversely. Pillar 3 polarises the KL penalty token by token, switching between a mode-seeking and a mode-covering update according to the sign of the credit. Each pillar has an independent switch that, when disabled, renders the loss and gradient byte-identical to the baseline in IEEE-754 arithmetic, so any measured gain is attributable to algorithmic change rather than implementation drift. We prove the estimator's consistency and a variance bound, give structural and bit-exact reproducibility guarantees, and evaluate CRAFT across three agentic environments, four model scales, and five end-to-end methods, plus two tabulated prior-work baselines. Among these is Adaptive-CRINGE, a comparator sharing Pillar 2 with CRAFT, isolating the counterfactual contribution.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
