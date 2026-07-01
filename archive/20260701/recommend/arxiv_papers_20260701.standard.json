@@ -1,0 +1,184 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-01T22:05:47.924246+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 3,
+    "quick_skim_target": 11,
+    "quick_selected": 3
+  },
+  "deep_dive": [
+    {
+      "id": "2606.31613v1",
+      "source": "arxiv",
+      "title": "Robust Autonomous UAV Landing on Maritime Platforms via Multimodal Agentic AI and Active Wave Compensation",
+      "abstract": "Autonomous aerial inspection of marine infrastructure is frequently compromised by stochastic sea states, introducing risks of high-kinetic impacts, post-landing toppling, and sensory occlusion. This paper proposes a decoupled, multi-vehicle landing framework synchronizing an Unmanned Surface Vehicle (USV) equipped with a 3-RPU stabilized platform with a robust Unmanned Aerial Vehicle (UAV). The architecture utilizes two independent Deep Reinforcement Learning (DRL) agents: a Soft Actor-Critic (SAC) agent providing high-frequency wave-motion compensation for the landing deck, and a multimodal RL agent for the UAVs final approach. Evaluated in high-fidelity maritime simulations, the system achieved a 100% landing success rate across 15 trials in wave states varying from calm to rough. Results show a mean stabilization efficacy of 87.8%, maintaining the landing surface within 1 degree of the horizontal plane for 96% of the mission duration in rough conditions, effectively contributing to safer landings.",
+      "authors": [
+        "Francisco S. Neves",
+        "Pedro N. Pereira",
+        "Raul D. S. G. Campilho",
+        "Andry M. Pinto"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.RO"
+      ],
+      "published": "2026-06-30T13:03:45+00:00",
+      "link": "https://arxiv.org/pdf/2606.31613v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Uses two DRL agents for UAV inspection landing on maritime platforms, demonstrating DRL for UAV inspection tasks",
+      "llm_evidence_cn": "使用两个深度强化学习智能体实现无人机海上平台巡检着陆，展示DRL用于无人机检测任务",
+      "llm_evidence": "使用两个深度强化学习智能体实现无人机海上平台巡检着陆，展示DRL用于无人机检测任务",
+      "canonical_evidence": "使用两个深度强化学习智能体实现无人机海上平台巡检着陆，展示DRL用于无人机检测任务",
+      "llm_tldr_en": "Proposes a multi-vehicle framework using two DRL agents for UAV landing on maritime platforms during inspection, achieving 100% success in simulation, demonstrating DRL's potential for robust UAV inspection tasks.",
+      "llm_tldr_cn": "针对海上基础设施巡检中着陆受波浪影响的难题，提出解耦多载具着陆框架，使用两个独立深度强化学习智能体：SAC用于登陆平台波浪运动补偿，多模态RL用于无人机最终进近。在高保真海事仿真中实现100%着陆成功率，证明DRL可有效解决无人机巡检中的着陆控制问题，为将DRL应用于其他巡检任务提供了参考。",
+      "llm_tldr": "针对海上基础设施巡检中着陆受波浪影响的难题，提出解耦多载具着陆框架，使用两个独立深度强化学习智能体：SAC用于登陆平台波浪运动补偿，多模态RL用于无人机最终进近。在高保真海事仿真中实现100%着陆成功率，证明DRL可有效解决无人机巡检中的着陆控制问题，为将DRL应用于其他巡检任务提供了参考。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "deep reinforcement learning for UAV inspection tasks",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2606.24633v1",
+      "source": "arxiv",
+      "title": "Beyond Monotonic Progress: Retry-Supervised Value Learning for Robot Imitation",
+      "abstract": "Human demonstrations for robot imitation learning often contain mistakes and corrective behaviors, such as imprecise grasps, object misalignment, unstable contact, and repeated attempts. While these segments are commonly treated as noisy or suboptimal data, they provide valuable evidence about when execution deviates from a desirable path and how task feasibility can be restored. However, existing reward and value models often rely on monotonic progress assumptions, which capture coarse task advancement but may overlook local execution errors and corrective behaviors in imperfect demonstrations. In this work, we propose ReTVL (ReTry-Supervised Value Learning), a framework for learning mistake-sensitive value functions from mixed-quality robot demonstrations by leveraging retry events as sparse supervision. ReTVL captures the local degradation-and-recovery structure around mistakes by combining global progress calibration with local pairwise preference learning induced by sparsely annotated retry keypoints. The learned value model is then used to reweight demonstration chunks for downstream behavior cloning, reducing the influence of harmful execution errors while preserving useful corrective behaviors. Experiments on real-robot manipulation tasks show that ReTVL produces more fine-grained value estimates than progress-based baselines and improves imitation learning from imperfect demonstrations.",
+      "authors": [
+        "Xinyao Qin",
+        "Junjie Lu",
+        "Kaixin Wang",
+        "Chuheng Zhang",
+        "Sinjae Kang",
+        "Kimin Lee",
+        "Min Xu",
+        "Bin Liang",
+        "Jun Yang",
+        "Li Zhao"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-06-23T14:27:10+00:00",
+      "link": "https://arxiv.org/pdf/2606.24633v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "learns mistake-sensitive value functions from non-monotonic progress in demonstrations, improving long-horizon credit assignment",
+      "llm_evidence_cn": "从演示中的非单调进展学习错误敏感价值函数，改善长时域信用分配",
+      "llm_evidence": "从演示中的非单调进展学习错误敏感价值函数，改善长时域信用分配",
+      "canonical_evidence": "从演示中的非单调进展学习错误敏感价值函数，改善长时域信用分配",
+      "llm_tldr_en": "Proposes ReTVL, a framework that learns value functions sensitive to mistakes and corrective behaviors from mixed-quality robot demonstrations, addressing non-monotonic progress and enhancing credit assignment in long-horizon tasks.",
+      "llm_tldr_cn": "针对机器人模仿学习中演示常包含错误与纠正行为而现有价值模型依赖单调进展假设的局限，提出重试监督价值学习框架ReTVL，通过利用不完美演示中的重试信息学习错误感知的价值函数，从而更好地捕捉非单调任务进展。实验表明该方法能有效识别纠正性片段，提升长时域任务的信用分配能力，为复杂操作提供更稳健的模仿学习方案。",
+      "llm_tldr": "针对机器人模仿学习中演示常包含错误与纠正行为而现有价值模型依赖单调进展假设的局限，提出重试监督价值学习框架ReTVL，通过利用不完美演示中的重试信息学习错误感知的价值函数，从而更好地捕捉非单调任务进展。实验表明该方法能有效识别纠正性片段，提升长时域任务的信用分配能力，为复杂操作提供更稳健的模仿学习方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.25277v1",
+      "source": "arxiv",
+      "title": "An Integrated Hardware-Software Design for Low-Data Spatial Defect Detection in Robotic Visual Inspection with Hybrid Optoelectronic Neural Networks",
+      "abstract": "To address data overload and inefficient shape-level annotation in robotic visual inspection, this paper proposes a hardware-software integrated optoelectronic architecture. A non-imaging, low-data paradigm is established to minimize annotation dependency. First, a sensor-in-the-loop strategy reconfigures a Digital Micromirror Device (DMD) as a physical optical convolutional layer, enabling photonic-domain feature extraction that unifies sensing hardware and processing software. To suppress data volume at the source, a block-based compressed sensing strategy encodes spatial information into low-dimensional temporal signals, drastically reducing redundancy. Subsequently, to bypass laborious manual defect shape annotation, natural language descriptions guide the network to align with highly generalizable features from Contrastive Language-Image Pre-training (CLIP), steering the attention maps of the optoelectronic neural network toward defect shapes. Furthermore, a Localization Accuracy for Attention (LAA) metric is proposed to quantify shape-level defect localization performance. Experiments on transparent material defect detection validate the system's effectiveness. Parametric analysis reveals how measurement matrices, compression ratios, and block sizes affect accuracy. Results show that, compared to traditional imaging, the proposed architecture maintains equivalent accuracy while reducing data volume by 90% for Vision Transformers and computational workload by 60% for Convolutional Neural Networks. This low-data paradigm offers an efficient solution for industrial automation scenarios involving massive data streams, high acquisition costs, or constrained edge resources.",
+      "authors": [
+        "Chaoqing Tang",
+        "Jiaxuan Li",
+        "Huanze Zhuang",
+        "Guiyun Tian",
+        "Chao Wang",
+        "Yihao Ouyang",
+        "Wenzhong Liu"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.CV"
+      ],
+      "published": "2026-06-24T01:28:31+00:00",
+      "link": "https://arxiv.org/pdf/2606.25277v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "low-data spatial defect detection for robotic visual inspection",
+      "llm_evidence_cn": "机器人视觉检测中的低数据空间缺陷检测",
+      "llm_evidence": "机器人视觉检测中的低数据空间缺陷检测",
+      "canonical_evidence": "机器人视觉检测中的低数据空间缺陷检测",
+      "llm_tldr_en": "This paper proposes a hardware-software integrated optoelectronic architecture for low-data spatial defect detection in robotic visual inspection, minimizing annotation dependency.",
+      "llm_tldr_cn": "本文提出一种软硬件集成光电架构，用于机器人视觉检测中的低数据空间缺陷检测，大幅减少对标注的依赖。通过将DMD重构为光学卷积层并结合压缩感知，实现光子域特征提取和数据压缩。实验表明该方法在低数据量下仍能有效检测形状级缺陷，为视觉检测提供了高效的解决方案。",
+      "llm_tldr": "本文提出一种软硬件集成光电架构，用于机器人视觉检测中的低数据空间缺陷检测，大幅减少对标注的依赖。通过将DMD重构为光学卷积层并结合压缩感知，实现光子域特征提取和数据压缩。实验表明该方法在低数据量下仍能有效检测形状级缺陷，为视觉检测提供了高效的解决方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "transmission line defect detection from UAV imagery",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2606.31377v1",
+      "source": "arxiv",
+      "title": "Stage-Transition Dense Reward Modeling for Reinforcement Learning",
+      "abstract": "Reinforcement learning for long-horizon robotic manipulation is often limited by sparse and delayed rewards, while manually designing dense shaping signals is costly and brittle to changes in environments and object configurations. This work proposes Stage-Transition Dense Reward (STDR), a visual reward-learning framework that converts unstructured expert videos into logically grounded dense rewards for training RL agents from scratch. STDR leverages semantic understanding to infer a task's stage structure from demonstrations, and delivers two complementary learning signals during online training: (i) stage-transition feedback that provides goal-directed reward, and (ii) within-stage progress feedback that supplies fine-grained guidance toward completing each stage. Furthermore, an out-of-distribution (OOD) detection mechanism and a grasping regulation module are integrated to enhance robustness and prevent reward hacking. Experiments on 14 manipulation tasks across MetaWorld, ManiSkill, and Franka Kitchen show that STDR consistently improves sample efficiency and success rates over multiple baselines, and matches or surpasses handcrafted dense rewards on several challenging tasks. Real-robot evaluations further indicate that STDR assigns stable, progress-aligned rewards on successful executions while producing appropriately low rewards for failures, suggesting robustness to visual noise and better-calibrated reward assignment across settings.",
+      "authors": [
+        "Yang Yang",
+        "Bingjie Chen",
+        "Zihan Wang",
+        "Yizhe Li",
+        "Guoping Pan",
+        "Yi Cheng",
+        "Houde Liu"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "published": "2026-06-30T09:07:19+00:00",
+      "link": "https://arxiv.org/pdf/2606.31377v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "dense reward modeling for long-horizon RL",
+      "llm_evidence_cn": "为长周期强化学习建模密集奖励",
+      "llm_evidence": "为长周期强化学习建模密集奖励",
+      "canonical_evidence": "为长周期强化学习建模密集奖励",
+      "llm_tldr_en": "Stage-Transition Dense Reward (STDR) automatically extracts stage structures from expert videos to provide two learning signals: stage-transition and within-stage progress feedback, enabling training RL agents from scratch for long-horizon robotic manipulation.",
+      "llm_tldr_cn": "阶段转换密集奖励（STDR）从专家视频中自动推断任务阶段结构，为长周期机器人操作提供两种学习信号：阶段转换反馈和阶段内进展反馈，使强化学习智能体从零开始训练。该方法解决了稀疏和延迟奖励问题，无需手工设计密集奖励。实验表明STDR能有效训练智能体完成复杂多阶段任务。",
+      "llm_tldr": "阶段转换密集奖励（STDR）从专家视频中自动推断任务阶段结构，为长周期机器人操作提供两种学习信号：阶段转换反馈和阶段内进展反馈，使强化学习智能体从零开始训练。该方法解决了稀疏和延迟奖励问题，无需手工设计密集奖励。实验表明STDR能有效训练智能体完成复杂多阶段任务。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

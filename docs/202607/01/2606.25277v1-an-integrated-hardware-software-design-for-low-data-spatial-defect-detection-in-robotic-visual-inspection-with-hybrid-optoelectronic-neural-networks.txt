@@ -1,0 +1,300 @@
+Title: An Integrated Hardware-Software Design for Low-Data Spatial Defect Detection in Robotic Visual Inspection with Hybrid Optoelectronic Neural Networks
+
+URL Source: https://arxiv.org/pdf/2606.25277v1
+
+Published Time: Thu, 25 Jun 2026 00:21:41 GMT
+
+Number of Pages: 8
+
+Markdown Content:
+> 1
+
+# An Integrated Hardware-Software Design for Low-Data Spatial Defect Detection in Robotic Visual Inspection with Hybrid Optoelectronic Neural Networks 
+
+Chaoqing Tang, Jiaxuan Li, Huanze Zhuang, Guiyun Tian, Chao Wang, Yihao Ouyang, and Wenzhong Liu 
+
+Abstract —To address the challenges of data bandwidth over-load and inefficient shape-level annotation in robotic visual inspection systems, this paper proposes an optoelectronic ar-chitecture that integrates hardware and software. This non-imaging, low-data paradigm drastically reduces annotation re-quirements. First, adopting a sensor-in-the-loop strategy, a Dig-ital Micromirror Device (DMD) is reconfigured as a physical optical convolutional layer, enabling feature extraction directly in the photonic domain to unify sensing hardware with feature extraction software. To control data volume at the source, a block-based compressed sensing strategy is designed, encoding spatial information into low-dimensional temporal signals, thereby sig-nificantly reducing data redundancy. Subsequently, to circumvent inefficient manual defect shape annotation, natural language descriptions of defect shapes are utilized to guide the neural network in aligning with highly generalizable features from Con-trastive Language-Image Pre-training (CLIP). This successfully steers the attention maps of the optoelectronic neural network to approximate defect shapes. Finally, we propose the Localization Accuracy for Attention (LAA) metric to quantify the shape-level defect localization capability of attention heatmaps. Validation ex-periments on transparent material defect detection demonstrate the system’s effectiveness. Parametric analysis reveals the impact of measurement matrices, compression ratios, and block sizes on accuracy. Results show that compared to traditional imaging methods, the proposed architecture maintains parity in accuracy while reducing data volume by 90% for Vision Transformers and computational workload by 60% for Convolutional Neural Networks. This low-data paradigm provides an effective solution for industrial automation scenarios characterized by massive data streams, high acquisition costs, or constrained edge resources. 
+
+Index Terms —attention map, compressive measurement, visual inspection, hardware-software co-design, optoelectronics neural network 
+
+I. I NTRODUCTION 
+
+# SPATIL image-based defect detection has been extensively deployed in various automated industrial robot systems [1]–[3], encompassing fields such as machining [4] and aerospace [5]. In these applications, inspection workflows predominantly rely on high-definition (HD) images. While HD          
+
+> Chaoqing Tang, Jiaxuan Li, Huanze Zhuang, Yihao Ouyang and Wenzhong Liu are with School of Artificial Intelligence and Automation, Huazhong University of Science and Technology, Wuhan, 430074, China (e-mail: bill-tang@hust.edu.cn) Chaoqing Tang and Wenzhong Liu are also with China Belt and Road Joint Lab on Measurement and Control, Wuhan, 430074, China. Guiyun Tian is with School of Electric and Electrical Engineering, Chongqing University of Technology, Chongqing, 400054, China Chao Wang is with Department of Precision Instrument, Tsinghua Univer-sity, Beijing, 100084, China
+
+imaging enables precise capture of minute defect features, it inevitably induces exponential growth in data volume. For instance, high-resolution images used in large liquid crystal panel inspections can generate datasets exceeding several giga-bytes [6]. Such massive data scales pose significant challenges to storage efficiency and computational processing capabili-ties, particularly for industrial edge computing environments. Moreover, certain industrial defect detection applications, such as laser/infrared scanning imaging, incuring excessive time consumption during image acquisition. At the algorithmic level, deep learning-based object detection frameworks (e.g., You Only Look Once (YOLO) [7], [8]) dominate spatial image defect detection. However, these methods heavily depend on extensive labeling efforts for target localization and classifi-cation [9], demanding substantial time and labor costs. Fur-thermore, ensuring the accuracy and consistency of labeling results remains a persistent challenge. To address the challenge of massive data volumes, both industry and academia have proposed various processing meth-ods. Image resizing techniques reduce data size by lowering image resolution; while straightforward to implement, this approach sacrifices fine-grained details. In the context of tiny defect detection, low-resolution images may fail to clearly exhibit defect characteristics, leading to frequent missed or false detections that undermine high-precision requirements. When applying YOLO for object detection, inputting high-resolution images (e.g., 4K or 8K) typically triggers model-driven downsampling prior to processing, which significantly increases the missed detection rate. For instance, if retaining subtle defect features necessitates a 4K resolution, resizing such an image to 320 ×320 pixels would render YOLO inca-pable of detecting targets occupying less than 2% of the total image area [10]. The emergence of Compressed Sensing (CS) [11] offers a novel sensor-in-loop and hardware-level approach to ad-dress the challenge of high data volume. By transcending the limitations of the traditional Nyquist sampling theorem, this technique enables signal acquisition at sampling rates significantly lower than the Nyquist rate and reconstructs im-ages through specific algorithms. Theoretically, it reduces data volume by orders of magnitude while preserving resolution. This allows spatial image signals to be converted into time-domain sequences [12] with substantially reduced data size, demonstrating potential value across diverse fields such as single-pixel imaging [13], [14], stochastic optical reconstruc-tion microscopy [15], and action inference [16]. However, 
+
+> arXiv:2606.25277v1 [cs.RO] 24 Jun 2026 2
+
+practical applications of CS still encounter bottlenecks. Con-ventional CS methods require complex reconstruction pro-cesses that are computationally expensive and time-consuming [17]. Some studies have attempted direct target classification using CS data [18], [19]; while these bypass the reconstruction step, they remain heavily dependent on labeled data and suffer from low accuracy and an inability to localize defects. Furthermore, separate networks must be trained for different sampling rates or matrices, limiting model generalization and increasing training costs. Although some reconstruction-free classification methods that embed sampling information have improved accuracy to a certain extent, they still fail to achieve defect localization [20]. Another category of CS-based detec-tion methods involves first reconstructing the spatial image and then employing models like YOLO for classification and localization [21]. These approaches not only require positional and categorical labels for training but also suffer from error accumulation during reconstruction, which degrades detection accuracy. Simultaneously, the data volume input to neural networks remains largely unoptimized. In the software side, training-free large models based on vision-language cross-modal alignment have garnered signif-icant attention to mitigate the heavy reliance on extensive annotated data [22]–[24]. Methods such as CLIP [25] map image regions and textual semantics into a unified embedding space, enabling direct matching between visual features and novel categories without additional training, thereby maintain-ing robust accuracy for unknown targets. Representative works include: YOLO-World [23], which dynamically converts text embeddings via the RepVL-PAN module and achieves 35.4 mAP on LVIS zero-shot detection, balancing open-world gen-eralization and real-time efficiency; UniDetector [24], which integrates multi-source heterogeneous label spaces and de-couples detection stages, capable of detecting over 7000 categories; and the Agentic Object Detection framework [26] open-sourced by Andrew Ng’s team, which accomplishes pre-cise defect identification and localization without annotations through iterative agent optimization. However, since these models are trained on generic object names, their accuracy drops significantly in specialized industrial scenarios involving professional defect terminologies, such as impact damage on transparent materials. Moreover, they still rely on high-resolution inputs and fail to address the fundamental data volume challenge posed by high-definition imaging. In summary, due to the decoupling between data acquisition and processing workflows, as well as between hardware and software, current image-based spatial defect detection sys-tems fail to simultaneously achieve label-free operation and low-data-volume requirements. Regarding data-task coupling, C. Tang et al. [27] proposed an integrated data acquisition framework. This framework aligns specific task processing demands with data collection to balance volume against de-tection objectives. In terms of hardware-software collabora-tive detection, Lin et al. introduced the all-optical diffractive deep neural network in 2018 [28]. This method utilizes pro-grammable multilayer diffractive surfaces to construct “op-tical neurons.” It enables light-speed inference and energy-efficient computation in the terahertz regime using light-based hardware for processing. To adapt to mature silicon-based electronic semiconductor technologies, opto-electronic hybrid neural networks have emerged. These networks seamlessly integrate with mainstream architectures (e.g., CNNs, Trans-formers) while leveraging light-speed latency and ultra-low energy consumption. For instance, Zhou et al. [29] proposed a reconfigurable diffractive processing unit. This unit merges the high-throughput computing capability of optical diffraction with electronic programmability. Consequently, inspired by opto-electronic hybrid neural networks, this paper aims for hardware-software co-design. Therefore, to address the challenges of high data volume for current image-based methods and the need for extensive shape-level annotations in industrial defect detection robotic systems, inspired by opto-electronic hybrid networks, compressive sens-ing, and training-free large models, the key innovations are as follows: 1) This paper proposes an integrated hardware-software op-toelectronic architecture with unified data acquisition and processing, aiming to significantly reduce both data vol-ume and end-to-end processing time in spatial defect de-tection. Compared to current image-based architectures, the proposed method achieves a 90% reduction in data redundancy while maintaining accuracy and efficiency. 2) The proposed method integrates pre-trained vision-language models with a novel defect localization strat-egy, reducing the requirement for both categorical and morphological-level annotations in traditional morpho-logical defect detection to merely the preparation of defect category image datasets. Specifically, if data are ac-quired via factory-provided defect samples, no annotation is required, whereas if utilizing existing image datasets, only categorical labels are necessary. To accommodate this new localization approach, a novel evaluation metric termed Localization LAA is proposed to quantify this capability. 3) We analyzed key parameters in this method through experiments on tiny spot and scratch defects detection in transparent materials, such as measurement matrix type, popular classification neural networks, compression rate and block size. II. T HE PROPOSED METHODS 
+
+A. Overall Diagram 
+
+The core concept of this work is, first, to establish sensing-computing integration at the hardware physical layer. Specifi-cally, a DMD is reconfigured as the first optical convolutional kernel, deeply merging the CS measurement process with feature extraction. This enables partial signal feature extraction and dimensionality reduction to occur directly within the optical signal domain. Consequently, data volume is reduced greatly, and the time-consuming image reconstruction process inherent in traditional CS is completely eliminated. Second, at the software algorithm level, natural language descriptions of defect shapes are utilized with the pre-trained vision-language (e.g., CLIP) model to generate robust shape features. These features guide the neural network to automatically achieve 3Spatial Defect Detection by Compressive Temporal Measurements with Semi-physical Classification Neural Networks and Attention Map 
+
+> Activation function
+> …
+> n b 
+
+X  
+
+> mb
+
+Y            
+
+> m
+> Classification neural network
+> Block Compressed
+> Sensing
+> mn
+> Optical Layer Electronic Layers
+> 优势是数据量少
+> 无需位置标记，在 CLIP 的指导下无需标记
+> 预训练大模型无需标记和训练
+> …
+> …
+> …
+> …
+> …
+> …
+> …
+> …
+> …
+> •Text description for Class 1
+> •Text description for Class 2
+> •Text description for Class …
+> CLIP feature classification head
+> Defect
+> class
+> Defect
+> class
+> Bounding
+> box for
+> location
+> Detection neural network Location
+> label
+> Class
+> label
+> vCLIP vnet
+> Pattern control
+> Light source
+> Focus lens Zoom lens
+> grating
+> lens
+> Polarizer
+> Test sample
+> DMD
+> The proposed method:
+> üLabeling-free
+> üDefect shape-level localization
+> üGreatly reduced data volume
+> üReconstruction-free
+> classification for compressed
+> sensing
+> collimating and
+> beam
+> expanding lens
+> n b 
+
+X   
+
+> mb
+> Y
+> …
+> m
+> Light sensor
+> Test sample
+> Reflection surface
+> Light source
+> lens
+> lens
+> …
+> m
+> Pattern control
+> Mechanical DMD
+> Build
+> attention
+> map for
+> location
+> [LAA]
+> 0.9919
+> 0.8079
+
+Fig. 1. The overall diagram of the proposed optoelectronics architecture for robotic visual defect inspection. Traditional and the proposed method are highlighted in green and blue boxes, respectively. The implementation of optical layer is designed for double transmission-based detection materials like transparent materials, it works for reflection model too. 
+
+precise alignment between the feature space and defect shapes during training, allowing attention maps (e.g., via CAM) to accurately depict defect shapes. Therefore, compared to de-coupled frameworks like YOLO that require extensive precise bounding boxes and categorical labels, the proposed method enables annotation-free operation in scenarios where factories provide defective samples, while simultaneously achieving shape-level defect localization. Based on the core concepts, the architecture proposed in this paper consists of the following three main components, as illustrated in Fig. 1: 1) Compressed Physical Encoding: Target field-of-view (FOV) compression is performed based on the structure of the first layer of artificial neural networks, such as CNNs, Recurrent Neural Networks, and Transformers. This paper focuses on convolution operations for spatial defect detection. 2) Annotation-free Shape Feature Learning: The pre-trained vision-language model is employed to map natural lan-guage descriptions into visual defect shape features, which supervises the backbone network. 3) Attention Map for Shape-level Localization: High-resolution attention maps are generated based on the trained neural network to achieve border-free, shape-level defect localization. Detailed implementations of each component will be intro-duced in the subsequent subsections. 
+
+B. Compressed Physical Encoding with Block Compressed Sensing 
+
+For a signal x ∈ Rn×1, CS measurement process can be represented as: 
+
+y = Φx + ξ (1) where Φ ∈ Rm×n, y ∈ Rm×1 are the measurement matrix and measured data, respectively. ξ ∈ Rm×1 is the sampling noise. The original signal x is compressed from n to m
+
+due to m ≪ n. As is shown in Fig.1, an image is evenly represented as b blocks, and each block has n pixels. If the image size is unable to evenly devided, perform zero-padding. m measurement matrices are used to slidely get the CS measurement with dot product, so each block will get m
+
+values, obtaining a compressed matrix with size m×b from the original image size of n×b. This sliding measurement process can be regarded as a convolution layer in neural networks, where Y is the output feature map of convolution. One physical implementation for the above measurement process for transparent materials is given in the bottom box in Fig.1. The light source is projected through the test sample, then focused onto a DMD. The DMD can independently control each micromirror at a flipping frequency of up to 200 kHz, with the number of mirrors reaching 4K resolution (4096 ×2176). A pre-prepared measurement matrix is loaded by the computer to control the ON/OFF state of each pixel on the DMD. Finally, the light that carries defect information are focused on to photoelectric sensor via a lens to obtain Y.The sliding window process is implemented by sequentially activate a window on DMD. Since the photoelectric sensor measures the total light intensity of each projected frame, a spatial image is converted into a continuous time-domain mea-surement sequence. For reflective detection scenarios involving opaque materials, this method also works. In terms of Φ, random Gaussian matrices and 0/1 Bernoulli matrices are commonly used. In this paper, considering phys-ical implementation constraints, we employ the first-layer convolutional kernels from the trained neural network as Φ.
+
+C. Annotation-free Shape Feature Learning with Pre-trained Vision-language Model 
+
+The raw physical measurements Y are first sum up along the m-dimension, generating b features per image. After activation, this feature map is functionally equivalent to the output of a single convolutional layer. To capture spatial dependencies, we utilize mainstream backbone networks, i.e., CNNs or Vision Transformers (ViTs), to encode these features into an output vector vnet .Instead of relying on laborious manual annotations for diverse defect shapes, this work exploits the rich cross-modal knowledge embedded in pre-trained models like CLIP. We use the feature embeddings of morphological descriptions as supervisory signals, thereby eliminating the need for explicit defect labels. In the case study application of this paper, i.e. tiny defect detection on transparent plates, three classification texts are designed to effectively distinguish the class of spot defect, scratch, and health, i.e. “a photo with large circular 4[0.8 9, 0.0 2, 0. 09]  [0. 05 , 0. 89 , 0. 06]  [0. 96 , 0. 01 , 0. 03]  [0. 28 , 0. 55 , 0. 17 ] [0. 29, 0. 08 , 0. 63 ]     
+
+> (a) (b) (c) (d) (e)
+> Fig. 2. The classification probability for some examples with the designed class description texts in CLIP. The number in “[ ]” indicates the probability for spot defect, scratch and health, sequentially.
+
+speckle shape”, “a photo with slim long line shape scratch”, “a photo without obvious speckle or long line shape”. Fig. 2 demonstrates that the classification probabilities align with human intuition, where the ground-truth class receives the highest score. To implement shape feature learning, the output feature vnet 
+
+should be the same size with CLIP feature vCLIP , normally 512 for most pre-trained models. So, the training loss function can be simply: 
+
+L = mse (vnet , v CLIP ) (2) where mse (·) is the the mean square error. 
+
+D. Attention Map for Shape-level Localization 
+
+Since deep features inherently align with defect shape during training, this study employs attention maps for precise defect localization. A heatmap, originally a neural network visualization technique, essentially represents the weights in-dicating the specific regions of the input data that the network focuses on. In our detection framework, by upsampling the feature layer weights to match the FOV, we can highlight regions critical for classification, thereby achieving shape-level defect localization. This approach is particularly effective for sparsely distributed defects, such as those encountered in in-dustrial inspection scenarios with good yield rates. Conversely, attention maps tend to disperse when defects are densely clustered within the FOV. Furthermore, as these maps are derived directly from pre-trained network weights and current inputs, the method eliminates the need for additional positional annotations, significantly reducing the labor cost associated with shape-level labeling required by traditional algorithms like YOLO. Commonly utilized heatmap generation techniques include Grad-CAM, Score-CAM, and EigenCAM. Given that shallow neural network layers often introduce excessive nuisance de-tails whereas deeper layers capture more generalized semantic features, we select the final feature extraction layer for anal-ysis. Specifically, we utilize the last convolutional layer for CNNs and the final attention module layer for ViTs. Through comparative experiments, we observe that EigenCAM out-performs alternative methods in precisely localizing sparsely distributed defects (e.g., subtle cracks or small speckles in industrial inspection). It achieves superior focus on defect regions while effectively suppressing background noise. Cd
+
+(a) (b) (c) (d) (e)        
+
+> img Himg W
+> Cd
+> >τCE >τFO
+> >τCO
+> (a) (b) (c) (d)
+> Center score=0.92 Focus score=0.50 Coverage score=0.94 LAA=0.71
+
+τ 
+
+> Fig. 3. Explanation for how (a) LAA is calculated with the process of (b) center score, (c) focus score, and (d) coverage score using a demo image in Fig. 2(b). The blue section in (b-d) are the location label, and the heatmap within the green edges are the key attention part under their threshold values.
+
+E. Metric of Localization Accuracy for Attention (LAA) 
+
+Traditional bounding box-based localization methods use Intersection over Union (IoU) as a metric, but IoU cannot cap-ture the morphological and attentional properties of heatmaps. Therefore, this paper proposes a metric called LAA. LAA evaluates localization precision via the center score ( SCE ), attention focus via the focus score ( SF O ), and ground truth coverage via the coverage score ( SCO ). The overall calculation for LAA is given in Eq.(3), and explanations are provided in Fig. 3. All scores range from 0 to 1. 
+
+LAA = ( SCE + SF O + SCO )/3 (3) As is shown in Fig. 3, the center score is defined in Eq.(4), 
+
+SCE = 1 − dC /max ( Himg , W img ) (4) where dC is the distance for weighted center. The weighted center for the ground truth label and attention map are denoted as blue solid circle and green cross in Fig.3(b), respectively. 
+
+Himg and Wimg are the height and width of the original image, respectively. The weighted center coordinate ( Cx,y ) for heatmap is defined as Eq.(5), 
+
+Cx,y = X
+
+> i
+
+wi · ℏi = X
+
+> i
+
+e10 IA|ℏi /X e10 IA|ℏ · ℏ (5) where IA is the attention image, ℏi is the i-th coordinate in X or Y axis for IA where the value is greater than a threshold 
+
+τCE . Since the label image has only binary value, the center coordinates for the ground truth label can be calculated by simply apply average for all coordinates for the label. The focus score is defined in Eq.(6). Firstly, accumulating the attention values that greater than a threshold τF O while intersecting with the ground truth, IG is a binary label image which has ‘1’ for the ground truth. Next, focus score is cal-culating the ratio of the accumulated value to the summation of all attention values that greater than the τF O . This score represents the percentage of significant attention region in the ground truth label area. 
+
+SF O = X IG · IA|IA>τ F O /X IA|IA>τ F O (6) The coverage score is defined as Eq.(7), which calculates the number of intersection pixels between the ground truth label and the attention map where the values are greater than a threshold τCO first, and divided by the total number of ‘1’ in IG. So, coverage score evaluates the percentage of ground truth labels in the the attention region. Users can define their 5
+
+own threshold values for τCE , τF O , τCO , we recommend setting them as 0.3, 0.8 and 0.2 respectively and empirically for general purpose. The Python code to calculate LAA will be available here 1 soon. 
+
+SCO = X IG · BA/X IG (7) III. EXPERIMENTAL SETTINGS 
+
+A. Tiny Defect Detection Systems for Transparent Materials 
+
+This study was validated using a tiny defect detection system for transparent materials. As shown in Fig. 4(a), the system employs sinusoidal structured light illumination to enhance imaging contrast of tiny defects in transparent materials, thereby improving detection capability. The core detection optical path aligns with the transmission-reflection configuration illustrated in Fig. 1. For non-transparent ma-terials, this optical path remains applicable and does not necessarily require structured light illumination (e.g., coaxial illumination can be used instead). Specifically, the structured light illumination in this experiment was generated by aChanghong Q2 Pro projector with a resolution of 1920 ×1080. The structured light patterns were pre-generated on a computer and fed into the projector. The DMD (Vialux 9501) comprises a 1920 ×1080 micromirror array and operates at a binary mode frequency of 17,857 Hz. The photodetector (PDA100A2) has a spectral response range of 320 to 1100 nm and a maximum frequency response of 11 MHz. As shown in Fig. 4(b), experimental validation utilized transparent polyvinyl chloride (PVC) plates (300 mm ×200 
+
+mm ) with eight thickness gradients (i.e., 1, 2, 3, 4, 5, 6, 8, and 10 mm ). Each plate was divided into 2 ×3 regions, where spot and scratch defects were prefabricated alongside defect-free controls. Defects were realistically simulated: spots via random falling objects and scratches via controlled tooling. This resulted in 2 ×3×8=48 independent regions per defect type, yielding approximately 200 samples per category. 
+
+B. Experimental Settings 
+
+In the proposed optoelectronic architecture, the DMD phys-ically implements convolutional kernels. As shown in Fig. 1, the binary nature of micromirrors necessitates specific mech-anisms for four parameter types: Signed (-1 to 1), Unsigned (0 to 1), Bool (0 or 1), and Sign (1 or -1). For Unsigned types, the photodetector operates in integration mode, where grayscale control is achieved by duty-cycle modulation, which will limit the sampling speed. For example, the DMD used in this experiment operates at only 266 Hz in grayscale mode. For Bool types, the photodetector works in instantaneous mode, where the DMD directly outputs 1 or 0 via micromirror switch-ing. For Signed types, parameters can be decomposed into positive+zero and negative+zero components, both treated as Unsigned cases. The negative+zero component is then inverted and summed with the positive+zero result. Similarly, Sign parameters are processed by separating 1 and -1 components.    
+
+> 1www.LAAtestwebsite.com DMD
+> Transparent material
+> for testing
+> lens
+> Projector as
+> light source
+> lens
+> To computer Reflection
+> background
+> photoelectric
+> sensor
+> Spot
+> Scratch
+> Spot Scratch
+> Health Health
+> (a)
+> (b)
+> Fig. 4. The (a) experimental setups and (b) specimens for tiny defect detection on transparent materials.
+
+This study experimentally analyzes key factors governing classification and localization accuracy: convolutional param-eter types, CS sampling rates ( Sr ), and block sizes within the FOV. System parameters, including sinusoidal structured light patterns and component distances, are calibrated according to [30], as this work prioritizes computational methods over optical mechanism optimization. Training data consist of full-field images captured under structured light illumination across varying thicknesses and defect types. During this phase, the DMD is set to an all-ON state and the photodetector is replaced by an industrial camera. Thanks to the spatially distinct fabrication and imaging of defect samples, the dataset is pre-classified upon acquisition, eliminating manual labeling. The final dataset comprises 1,618 impact damage images, 1593 scratch images, and 1637 defect-free images. For applications with existed image datasets, simple categorical partitioning suffices, incurring workload comparable to class-only an-notation. To validate performance, 20% of the dataset was randomly selected and manually annotated with defect shapes via LabelMe. During deployment, the camera is replaced by the photodetector, and synchronization is initiated using short, periodic full ON-OFF-ON DMD sequences. Model training employs the Adam optimizer, with learning rates iteratively tuned to maximize accuracy. IV. R ESULTS AND DISCUSSIONS 
+
+A. Classification Accuracy under Different Compression Rates 
+
+This section evaluates the relationship between classifi-cation accuracy, sampling rate, and sampling matrix types. The comprehensive average classification accuracies for spot defects, scratches, and healthy samples under both ViT and 6(a) (b) 
+
+> Fig. 5. Average classification accuracy of (a) ViT and (b) CNN vs. sampling rate under different types of measurement matrix, where block size is set as 16. No compression refers to image-based method.
+
+CNN architectures are illustrated in Fig. 5, the image-based method is denoted as ‘No compression’. Given the simplicity of this proof-of-concept scenario, the ViT architecture em-ploys only three attention layers, while the CNN consists of four convolutional feature extraction layers followed by three fully connected classification layers, augmented with batch normalization and dropout for enhanced performance. The first convolutional layer in both networks is implemented opti-cally. Overall, classification accuracy improves with increasing sampling rates for both CNN and ViT, with ViT achieving superior performance due to its inherent alignment with the image-blocking strategy proposed in this work. At a sampling rate of Sr = 0.1, ViT attains classification accuracies of approximately 0.95 across all matrix types, only 3 percentage points lower than the uncompressed case, which reduces 90% of data). In the CNN backbone, Signed and Sign measurement matrix types exhibit significantly higher accuracy, whereas ViT shows negligible differences among matrix types. This suggests that ViT can leverage Bool-type matrices (physically faster to implement), drastically accelerating computation in the optical neural network layer. 
+
+B. Classification Accuracy under Different Block Sizes 
+
+Block size is another critical factor influencing data com-pression rates. While ViT typically employs a block size of 16 ×16, this section explores sizes ranging from 8×8to 64 ×64. When the block size is 8 ×8 with Sr = 0.01 ,the parameter m reaches its minimum value of 1. Fig. 6 illustrates classification accuracy versus block size under a fixed sampling rate of 0.2. The results first show that larger blocks degrade accuracy for both ViT and CNN. This degradation occurs because feature maps derived from the physical layer scale to R1×b after summation along the m-dimension. Increased block size reduces b, creating an in-formation transmission bottleneck. Secondly, ViT consistently outperforms CNN under identical conditions, maintaining an accuracy of approximately 0.9 at a block size of 32. Thirdly, in CNNs, signed kernels exhibit superior performance, whereas ViT shows no significant difference except at a block size of 64. At this scale, binary matrices (Bool/Sign) achieve markedly higher accuracy than multi-value types. The first potential reason is that increased spatial complexity within larger blocks (e.g., 64 ×64) enhances the sparse filtering of key (a) (b)   
+
+> Fig. 6. Average classification accuracy of (a) ViT and (b) CNN vs. block size under different types of measurement matrix, where Sris set as 0.2. No compression refers to image-based method.
+
+features by binary matrices, suppressing redundant noise. In contrast, multi-value matrices introduce high-frequency noise or interference via continuous values. The second reason is that ViT’s self-attention mechanism prioritizes global semantic relationships over local details. This mechanism synergizes with coarse-grained binary features but conflicts with fine-grained multi-value details. Consequently, multi-value details disperse attention weights and reduce robustness. 
+
+C. Localization Accuracy 
+
+The localization performance of representative attention maps for both defect types is illustrated in Fig. 7 and Fig. 8. Overall, increasing the sampling rate enhances both classification and localization accuracy. On the other hand, under identical sampling rates, spot defects achieve higher localization accuracy than scratches, which is consistent with the trend observed in classification accuracy. Given that the best LAA value for scratches in Fig. 8 does not exceed 0.9, the default LAA threshold may be overly stringent for scratches, and users may adjust it as needed. These results confirm a strong correlation between the proposed LAA metric and visual localization quality. High LAA values (e.g., exceeding 0.9 in Fig. 7) occur only when the center distance, attention focus, and ground truth coverage are simultaneously optimized. As shown in the latter two subfigures of the Unsigned-M.2 row in Fig. 7, although the center distances are nearly identical, the LAA value drops to 0.7137 due to excessive dispersion of the key regions. Furthermore, a comparison of the first row in Fig. 8 (LAA = 0.7446 vs. LAA = 0.8090) demonstrates that, given similar center distances and dispersion levels, more comprehensive coverage of the ground truth labels by key regions leads to higher LAA scores. Fig. 9(a) illustrates the average localization accuracy versus sampling rate. The results reveal a general trend: localization accuracy improves with increasing sampling rates. This im-provement is more stable in ViT, whereas CNN exhibits an oscillatory upward pattern. Consistent with the classification accuracy observations, ViT achieves superior localization per-formance, particularly when employing binary measurement matrices (i.e., Bool/Sign). Notably, at an extremely low sam-pling rate ( Sr =0.01), CNN outperforms ViT. However, ViT rapidly surpasses CNN as the sampling rate increases. 7[LAA ]                           
+
+> Unsigned -M.2 Bool -M.1 Sign -M.1  Signed -M.1
+> [0.9919] [0.9919] [0.9919] [0.9919]
+> [0.7277] [0.6292] [0.8539] [0.7137]
+> [0.8911] [0.9919] [0.9919] [0.9919]
+> [0.9944] [0.9919] [0.9919] [0.8788]
+> [0.9919] [0.7613] [0.9919] [0.8591]
+> Sr = 0.01 Sr = 0.1 Sr = 0.05 Sr = 0.2
+> Sr = 0.5, M.1 Sr = 1, M.1 Sr = 0.5, M.2 Sr = 1, M.2
+> Sign
+
+Fig. 7. Examples for localization with attention map for ViT on two spot defects (M.1 and M.2), where block size is 16. 
+
+Fig. 9(b) illustrates the relationship between average local-ization accuracy and block size. The results demonstrate an overall decline in localization accuracy as block size increases. This degradation occurs primarily because the optical neural network layer computes weighted sums over image blocks, causing larger blocks to lose finer intra-block positional infor-mation. Additionally, the reduction in classification accuracy at larger block sizes further impairs localization performance. Consistent with the classification trends, ViT achieves superior localization accuracy, particularly when utilizing binary mea-surement matrices (Bool/Sign), which yield higher precision. 
+
+D. Efficiency Analysis 
+
+The response time of photoelectric sensors is negligible relative to that of DMD, hence, the sampling time of the proposed method yields Ts = b · m · TDM D . Adopting typical parameters b = 256 , m = 64 alongside a 200 kHz working frequency, the corresponding temporal sampling period is merely 82 ms. When an area-scan industrial camera substitutes the discrete photoelectric sensor, FOV parallel projection can replace sliding-window triggering, whereby the total sampling duration is dominated by the sensor’s inherent response time 
+
+TSensor , and the resultant measurement time is simplified to 
+
+m · TSensor . Given m = 64 and a typical sensor response time of 100 μs , the measurement latency is confined to the ms [0.2767]  [0.5455]  [0.4230]  [0.6832]                         
+
+> [0.2453] [0.8382] [0.7878] [0.7876]
+> [0.4959] [0.6972] [0.7695] [0.8079]
+> [0.7750] [0.6582] [0.8134] [0.6561]
+> Sr = 0.01 Sr = 0.1 Sr = 0.05 Sr = 0.2
+> Unsigned -S.2 Bool -S.1 Sign -S.1
+> Sr = 0.5, S.1 Sr = 1, S.1 Sr = 0.5, S.2 Sr = 1, S.2
+> [0.7446] [0.7510] [0.7963] [0.8090]
+> Signed -S.1
+> [LAA ]
+> Sign
+
+Fig. 8. Examples for localization with attention map for ViT on two scratches (S.1 and S.2), where block size is 16. (a) (b)
+
+Fig. 9. Average localization accuracy vs. (a) sampling rate with block size as 16 and (b) block size with sampling rate as 0.2 under various cases. 
+
+scale, comparable to or superior to conventional industrial-camera-based visual inspection approaches. Table I summarizes the efficiency comparisons in various stages. In terms of optical sampling data volume, the proposed method reduces raw data size by 90% leveraging CS. Compu-tational complexity is quantified via floating-point operations (FLOPs), computed using the Python toolkit thop . Partial neural-network computation is physically realized via an op-tical computing architecture, drastically cutting the overall computational burden, i.e., CNN is reduced by approximately 60%. Restricted to a single optical convolution layer, the total parameter count remains comparable to baseline schemes. Regarding labeling efficiency, the proposed framework elimi-8
+
+TABLE I EFFICIENCY TEST IN VARIOUS STAGES                                 
+
+> Methods Optical part Electronic part Dataset annotation Data volume Time FLOPs Parameters ViT: image 1048K points ms level 5.26G 0.99M Category and defect CNN: image 1048K points ms level 4.04G 135.24M contour (in days) ViT: Sr=0.1 105K points ms level 4.85G 0.89M No or only CNN: Sr=0.1 105K points ms level 1.59G 134.64M category
+
+nates the time-consuming manual annotation of defect contour required in current image-based methods. V. C ONCLUSIONS 
+
+To address the challenges of data bandwidth overload and inefficient shape-level annotation in robotic visual inspection systems, this paper proposes an optoelectronic architecture solution. This architecture integrates the physical sampling of compressive sensing with optical convolutional layers, unify-ing data acquisition and feature extraction while circumventing complex reconstruction processes. By leveraging the cross-modal alignment capabilities of the CLIP model, the method utilizes semantic text to replace labor-intensive defect shape-level annotation, guiding attention maps to achieve shape-level defect localization. In experiments on tiny detection in trans-parent materials, the framework achieves a 90% data reduction when using ViT as the backbone and reduces computational cost by approximately 60% with CNN as the backbone. In terms of limitations, it still requires re-collection of data and retraining of models for different industrial inspection sce-narios. Future work could enhance the model’s generalization across defect shapes by incorporating multi-defect geometries through additional simulation data. Furthermore, the optical path setup in this method is more complex than traditional camera operations. Instrument packaging presents a viable solution to streamline the optical path deployment. REFERENCES [1] R. Khanam, M. Hussain, R. Hill, and P. Allen, “A comprehensive review of convolutional neural networks for defect detection in industrial applications,” IEEE Access , vol. 12, pp. 94 250 – 94 295, 2024. [2] R. Rayhana, H. Yun, Z. Liu, and X. Kong, “Automated defect-detection system for water pipelines based on cctv inspection videos of au-tonomous robotic platforms,” IEEE/ASME Trans. Mechatron. , vol. 29, no. 3, pp. 2021–2031, 2024. [3] X. Wang, W. Bian, and X. Zhao, “Robust unsupervised anomaly detection for surface defects based on stacked broad learning system,” 
+
+IEEE/ASME Trans. Mechatron. , DOI 10.1109/TMECH.2024.3465563, pp. 1–11, 2024. [4] J. Sun, C. Li, X. J. Wu, V. Palade, and W. Fang, “An effective method of weld defect detection and classification based on machine vision,” 
+
+IEEE Trans. Industr. Inform. , vol. 15, no. 12, pp. 6322–6333, 2019. [5] Y. Abdulrahman, M. A. M. Eltoum, A. Ayyad, B. Moyo, and Y. Zweiri, “Aero-engine blade defect detection: A systematic review of deep learning models,” IEEE Access , vol. 11, pp. 53 048–53 061, 2023. [6] S. Wang, H. Sun, X. Hu, S. Zou, S. Guo, H. Wang, F. Sun, X. Cheng, J. Zhang, and D. Liu, “Scanning strategy for surface defects evaluation of large fine optical components,” Opt. Laser Technol. , vol. 156, p. 108473, 2022. [7] J. Redmon, S. Divvala, R. Girshick, and A. Farhadi, “You only look once: Unified, real-time object detection,” in 2016 IEEE Conference on Computer Vision and Pattern Recognition (CVPR) , Conference Proceedings, pp. 779–788. [8] X. Huang, Z. Hu, Y. Qiao, and S. Sukkarieh, “Deep learning-based cow tail detection and tracking for precision livestock farming,” IEEE/ASME Trans. Mechatron. , vol. 28, no. 3, pp. 1213–1221, 2023. [9] C. You and H. Kong, “Improved steel surface defect detection algorithm based on YOLOv8,” IEEE Access , vol. 12, pp. 99 570–99 577, 2024. [10] D. Minami and K. Nishikawa, “Yolo for high resolution images without retraining,” in 2024 Asia Pacific Signal and Information Processing Association Annual Summit and Conference (APSIPA ASC) , Conference Proceedings, pp. 1–6. [11] E. J. Candes, J. Romberg, and T. Tao, “Robust uncertainty principles: exact signal reconstruction from highly incomplete frequency informa-tion,” IEEE Trans. Inf. Theory , vol. 52, no. 2, pp. 489–509, 2006. [12] D. Zhang, H. Sun, W. Yu, Q. Xu, and T. Chai, “A coattention enhanced multimodal feature fusion with inner feature for anomaly detection,” 
+
+IEEE/ASME Trans. Mechatron. , DOI 10.1109/TMECH.2024.3491172, pp. 1–11, 2024. [13] L. Gao, J. Liang, C. Li, and L. V. Wang, “Single-shot compressed ultrafast photography at one hundred billion frames per second,” Nature ,vol. 516, no. 7529, pp. 74–77, 2014. [14] Y. Xu, L. Lu, V. Saragadam, and K. F. Kelly, “A compressive hyperspec-tral video imaging system using a single-pixel detector,” Nat. Commun. ,vol. 15, no. 1, p. 1456, 2024. [15] L. Zhu, W. Zhang, D. Elnatan, and B. Huang, “Faster STORM using compressed sensing,” Nat. Methods , vol. 9, no. 7, pp. 721–723, 2012. [16] K. Kulkarni and P. Turaga, “Reconstruction-free action inference from compressive imagers,” IEEE Trans. Pattern Anal. Mach. Intell. , vol. 38, no. 4, pp. 772–784, 2016. [17] L. Li, Y. Fang, L. Liu, H. Peng, J. Kurths, and Y. Yang, “Overview of compressed sensing: Sensing model, reconstruction algorithm, and its applications,” Appl. Sci. , vol. 10, no. 17, p. 5909, 2020. [18] L. Peng, S. Xie, T. Qin, L. Cao, and L. Bian, “Image-free single-pixel object detection,” Opt. Lett. , vol. 48, no. 10, pp. 2527–2530, 2023. [19] C. J. D. Porta, A. A. Bekit, B. H. Lampe, and C. I. Chang, “Hyperspec-tral image classification via compressive sensing,” IEEE Trans. Geosci. Remote Sens. , vol. 57, no. 10, pp. 8290–8303, 2019. [20] A. L. Machidon and V. Pejovi´ c, “Deep learning for compressive sensing: a ubiquitous systems perspective,” Artif. Intell. Rev. , vol. 56, no. 4, pp. 3619–3658, 2023. [21] G. Xu, B. Zhang, H. Yu, J. Chen, M. Xing, and W. Hong, “Sparse synthetic aperture radar imaging from compressed sensing and machine learning: Theories, applications, and trends,” IEEE Geosci. Remote Sens. Mag. , vol. 10, no. 4, pp. 32–69, 2022. [22] H. Zhao, H. Chen, F. Yang, N. Liu, H. Deng, H. Cai, S. Wang, D. Yin, and M. Du, “Explainability for large language models: A survey,” ACM Trans. Intell. Syst. Technol. , vol. 15, no. 2, pp. 1–38, 2024. [23] T. Cheng, L. Song, Y. Ge, W. Liu, X. Wang, and Y. Shan, “YOLO-World: Real-time open-vocabulary object detection,” in 2024 IEEE/CVF Confer-ence on Computer Vision and Pattern Recognition (CVPR) , Conference Proceedings, pp. 16 901–16 911. [24] Z. Wang, Y. Li, X. Chen, S. N. Lim, A. Torralba, H. Zhao, and S. Wang, “Detecting everything in the open world: Towards universal object detection,” in 2023 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , Conference Proceedings, pp. 11 433– 11 443. [25] M. Hafner, M. Katsantoni, T. K¨ oster, J. Marks, J. Mukherjee, D. Staiger, J. Ule, and M. Zavolan, “CLIP and complementary methods,” Nat. Rev. Methods Primers , vol. 1, no. 1, p. 20, 2021. [26] D. Laird, S. Jagadeesan, Y. Cao, and A. Ng. Vision agent. (2025). [Online]. Available: https://github.com/landing-ai/vision-agent [27] C. Tang, G. Y. Tian, and J. Wu, “Segmentation-oriented compressed sensing for efficient impact damage detection on CFRP materials,” 
+
+IEEE/ASME Trans. Mechatron. , vol. 26, no. 5, pp. 2528–2537, 2021. [28] X. Lin, Y. Rivenson, N. T. Yardimci, M. Veli, Y. Luo, M. Jarrahi, and A. Ozcan, “All-optical machine learning using diffractive deep neural networks,” Science , vol. 361, no. 6406, pp. 1004–1008, 2018. [29] T. Zhou, X. Lin, J. Wu, Y. Chen, H. Xie, Y. Li, J. Fan, H. Wu, L. Fang, and Q. Dai, “Large-scale neuromorphic optoelectronic computing with a reconfigurable diffractive processing unit,” Nat. Photonics , vol. 15, no. 5, pp. 367–373, 2021. [30] H. Qiu, A. Liu, and C. Tang, “Automatic defects detection method for transparent materials based on sinusoidal structured light,” Chin. J. Sci. Instrum. , vol. 44, no. 08, pp. 173–180, 2023.

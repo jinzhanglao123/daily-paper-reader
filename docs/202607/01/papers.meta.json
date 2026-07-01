@@ -1,0 +1,69 @@
+{
+  "label": "2026-07-01",
+  "date": "2026-07-01",
+  "generated_at": "2026-07-01T22:10:26",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202607/01/2606.31613v1-robust-autonomous-uav-landing-on-maritime-platforms-via-multimodal-agentic-ai-and-active-wave-compensation",
+      "section": "deep",
+      "title_en": "Robust Autonomous UAV Landing on Maritime Platforms via Multimodal Agentic AI and Active Wave Compensation",
+      "authors": "Francisco S. Neves, Pedro N. Pereira, Raul D. S. G. Campilho, Andry M. Pinto",
+      "date": "2026-06-30",
+      "pdf": "https://arxiv.org/pdf/2606.31613v1",
+      "score": "8.0",
+      "evidence": "使用两个深度强化学习智能体实现无人机海上平台巡检着陆，展示DRL用于无人机检测任务",
+      "tldr": "针对海上基础设施巡检中着陆受波浪影响的难题，提出解耦多载具着陆框架，使用两个独立深度强化学习智能体：SAC用于登陆平台波浪运动补偿，多模态RL用于无人机最终进近。在高保真海事仿真中实现100%着陆成功率，证明DRL可有效解决无人机巡检中的着陆控制问题，为将DRL应用于其他巡检任务提供了参考。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Autonomous aerial inspection of marine infrastructure is frequently compromised by stochastic sea states, introducing risks of high-kinetic impacts, post-landing toppling, and sensory occlusion. This paper proposes a decoupled, multi-vehicle landing framework synchronizing an Unmanned Surface Vehicle (USV) equipped with a 3-RPU stabilized platform with a robust Unmanned Aerial Vehicle (UAV). The architecture utilizes two independent Deep Reinforcement Learning (DRL) agents: a Soft Actor-Critic (SAC) agent providing high-frequency wave-motion compensation for the landing deck, and a multimodal RL agent for the UAVs final approach. Evaluated in high-fidelity maritime simulations, the system achieved a 100% landing success rate across 15 trials in wave states varying from calm to rough. Results show a mean stabilization efficacy of 87.8%, maintaining the landing surface within 1 degree of the horizontal plane for 96% of the mission duration in rough conditions, effectively contributing to safer landings.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/01/2606.24633v1-beyond-monotonic-progress-retry-supervised-value-learning-for-robot-imitation",
+      "section": "quick",
+      "title_en": "Beyond Monotonic Progress: Retry-Supervised Value Learning for Robot Imitation",
+      "authors": "Xinyao Qin, Junjie Lu, Kaixin Wang, Chuheng Zhang, Sinjae Kang, Kimin Lee, Min Xu, Bin Liang, Jun Yang, Li Zhao",
+      "date": "2026-06-23",
+      "pdf": "https://arxiv.org/pdf/2606.24633v1",
+      "score": "7.0",
+      "evidence": "从演示中的非单调进展学习错误敏感价值函数，改善长时域信用分配",
+      "tldr": "机器人模仿学习中的人类演示常包含错误和纠正行为，但现有方法基于单调进度假设，忽略局部执行错误。本文提出ReTVL框架，利用重试事件作为稀疏监督，学习对错误敏感的价值函数，结合全局进度校准与局部成对偏好学习。实验表明，ReTVL能产生更细粒度的价值估计，并提升从有缺陷演示中的模仿学习效果，为利用非理想数据提供新途径。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Human demonstrations for robot imitation learning often contain mistakes and corrective behaviors, such as imprecise grasps, object misalignment, unstable contact, and repeated attempts. While these segments are commonly treated as noisy or suboptimal data, they provide valuable evidence about when execution deviates from a desirable path and how task feasibility can be restored. However, existing reward and value models often rely on monotonic progress assumptions, which capture coarse task advancement but may overlook local execution errors and corrective behaviors in imperfect demonstrations. In this work, we propose ReTVL (ReTry-Supervised Value Learning), a framework for learning mistake-sensitive value functions from mixed-quality robot demonstrations by leveraging retry events as sparse supervision. ReTVL captures the local degradation-and-recovery structure around mistakes by combining global progress calibration with local pairwise preference learning induced by sparsely annotated retry keypoints. The learned value model is then used to reweight demonstration chunks for downstream behavior cloning, reducing the influence of harmful execution errors while preserving useful corrective behaviors. Experiments on real-robot manipulation tasks show that ReTVL produces more fine-grained value estimates than progress-based baselines and improves imitation learning from imperfect demonstrations.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/01/2606.25277v1-an-integrated-hardware-software-design-for-low-data-spatial-defect-detection-in-robotic-visual-inspection-with-hybrid-optoelectronic-neural-networks",
+      "section": "quick",
+      "title_en": "An Integrated Hardware-Software Design for Low-Data Spatial Defect Detection in Robotic Visual Inspection with Hybrid Optoelectronic Neural Networks",
+      "authors": "Chaoqing Tang, Jiaxuan Li, Huanze Zhuang, Guiyun Tian, Chao Wang, Yihao Ouyang, Wenzhong Liu",
+      "date": "2026-06-24",
+      "pdf": "https://arxiv.org/pdf/2606.25277v1",
+      "score": "7.0",
+      "evidence": "机器人视觉检测中的低数据空间缺陷检测",
+      "tldr": "针对机器人视觉检测中数据过载和形状级标注成本高的问题，本文提出一种硬件-软件一体的光电架构，通过DMD光卷积和分块压缩感知在光子域提取特征并大幅压缩数据量，同时利用自然语言引导网络对齐CLIP特征来定位缺陷形状，无需人工标注；透明材料缺陷检测实验表明，与传统成像相比，所提方法可将数据量减少90%、计算量降低60%，且保持同等精度；该方案为海量数据流、高采集成本或边缘计算受限的工业场景提供了有效途径。",
+      "tags": "query:uav-drl",
+      "abstract_en": "To address data overload and inefficient shape-level annotation in robotic visual inspection, this paper proposes a hardware-software integrated optoelectronic architecture. A non-imaging, low-data paradigm is established to minimize annotation dependency. First, a sensor-in-the-loop strategy reconfigures a Digital Micromirror Device (DMD) as a physical optical convolutional layer, enabling photonic-domain feature extraction that unifies sensing hardware and processing software. To suppress data volume at the source, a block-based compressed sensing strategy encodes spatial information into low-dimensional temporal signals, drastically reducing redundancy. Subsequently, to bypass laborious manual defect shape annotation, natural language descriptions guide the network to align with highly generalizable features from Contrastive Language-Image Pre-training (CLIP), steering the attention maps of the optoelectronic neural network toward defect shapes. Furthermore, a Localization Accuracy for Attention (LAA) metric is proposed to quantify shape-level defect localization performance. Experiments on transparent material defect detection validate the system's effectiveness. Parametric analysis reveals how measurement matrices, compression ratios, and block sizes affect accuracy. Results show that, compared to traditional imaging, the proposed architecture maintains equivalent accuracy while reducing data volume by 90% for Vision Transformers and computational workload by 60% for Convolutional Neural Networks. This low-data paradigm offers an efficient solution for industrial automation scenarios involving massive data streams, high acquisition costs, or constrained edge resources.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/01/2606.31377v1-stage-transition-dense-reward-modeling-for-reinforcement-learning",
+      "section": "quick",
+      "title_en": "Stage-Transition Dense Reward Modeling for Reinforcement Learning",
+      "authors": "Yang Yang, Bingjie Chen, Zihan Wang, Yizhe Li, Guoping Pan, Yi Cheng, Houde Liu",
+      "date": "2026-06-30",
+      "pdf": "https://arxiv.org/pdf/2606.31377v1",
+      "score": "7.0",
+      "evidence": "为长周期强化学习建模密集奖励",
+      "tldr": "长程机器人操作中强化学习常因奖励稀疏和延迟而训练困难，手工设计密集奖励成本高且泛化性差。本文提出阶段转换密集奖励框架STDR，从专家视频中推断任务阶段结构，提供阶段转换和阶段内进度两种奖励信号。在14个仿真任务和真实机器人上，STDR显著提升样本效率和成功率，匹配甚至超越手工奖励，并展现抗噪声能力与奖励校准优势。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Reinforcement learning for long-horizon robotic manipulation is often limited by sparse and delayed rewards, while manually designing dense shaping signals is costly and brittle to changes in environments and object configurations. This work proposes Stage-Transition Dense Reward (STDR), a visual reward-learning framework that converts unstructured expert videos into logically grounded dense rewards for training RL agents from scratch. STDR leverages semantic understanding to infer a task's stage structure from demonstrations, and delivers two complementary learning signals during online training: (i) stage-transition feedback that provides goal-directed reward, and (ii) within-stage progress feedback that supplies fine-grained guidance toward completing each stage. Furthermore, an out-of-distribution (OOD) detection mechanism and a grasping regulation module are integrated to enhance robustness and prevent reward hacking. Experiments on 14 manipulation tasks across MetaWorld, ManiSkill, and Franka Kitchen show that STDR consistently improves sample efficiency and success rates over multiple baselines, and matches or surpasses handcrafted dense rewards on several challenging tasks. Real-robot evaluations further indicate that STDR assigns stable, progress-aligned rewards on successful executions while producing appropriately low rewards for failures, suggesting robustness to visual noise and better-calibrated reward assignment across settings.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

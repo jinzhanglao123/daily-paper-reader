@@ -6,26 +6,34 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-06-30
-- 运行时间：2026-06-30 21:58:43 UTC
+- 最新运行日期：2026-07-01
+- 运行时间：2026-07-01 22:10:13 UTC
 - 运行状态：成功
-- 本次总论文数：1
-- 精读区：0
-- 速读区：1
+- 本次总论文数：4
+- 精读区：1
+- 速读区：3
 
 ### 今日简报（AI）
-今日速读了 CRAFT 框架，用“兄弟轨迹”反事实纠偏，让智能体自己教自己。  
-最值得看的是：无需额外环境交互，就能从自由探索的兄弟轨迹中提取反事实信用，驱动智能体自我蒸馏进化。  
-若关心强化学习中的高效信用分配，不妨顺着“自由兄弟轨迹”这个免费数据源，看看如何低成本加速训练。
-- 详情：[/202606/30/README](/202606/30/README)
+今日精读一篇海上无人机鲁棒着陆研究，并速览了模仿学习、缺陷检测和强化学习奖励建模三项进展。  
+最值得关注：多模态智能体结合主动波浪补偿实现动态舰船着陆，以及“重试监督”让机器人从失败中学会非单调进步。  
+如果想跟上机器人如何变得更“抗造”，不妨从海上着陆这篇高评分论文开始深入。
+- 详情：[/202607/01/README](/202607/01/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [Robust Autonomous UAV Landing on Maritime Platforms via Multimodal Agentic AI and Active Wave Compensation](/202607/01/2606.31613v1-robust-autonomous-uav-landing-on-maritime-platforms-via-multimodal-agentic-ai-and-active-wave-compensation)  
+   标签：评分：8.0/10、query:uav-drl
+   evidence：使用两个深度强化学习智能体实现无人机海上平台巡检着陆，展示DRL用于无人机检测任务
 
 ### 速读区论文标签
-1. [CRAFT: Counterfactual Credit Assignment from Free Sibling Rollouts for Self-Distilled Agentic Reinforcement Learning](/202606/30/2606.29476v1-craft-counterfactual-credit-assignment-from-free-sibling-rollouts-for-self-distilled-agentic-reinforcement-learning)  
+1. [Beyond Monotonic Progress: Retry-Supervised Value Learning for Robot Imitation](/202607/01/2606.24633v1-beyond-monotonic-progress-retry-supervised-value-learning-for-robot-imitation)  
    标签：评分：7.0/10、query:uav-drl
-   evidence：通过反事实分析改进长视界RL中的信用分配
+   evidence：从演示中的非单调进展学习错误敏感价值函数，改善长时域信用分配
+2. [An Integrated Hardware-Software Design for Low-Data Spatial Defect Detection in Robotic Visual Inspection with Hybrid Optoelectronic Neural Networks](/202607/01/2606.25277v1-an-integrated-hardware-software-design-for-low-data-spatial-defect-detection-in-robotic-visual-inspection-with-hybrid-optoelectronic-neural-networks)  
+   标签：评分：7.0/10、query:uav-drl
+   evidence：机器人视觉检测中的低数据空间缺陷检测
+3. [Stage-Transition Dense Reward Modeling for Reinforcement Learning](/202607/01/2606.31377v1-stage-transition-dense-reward-modeling-for-reinforcement-learning)  
+   标签：评分：7.0/10、query:uav-drl
+   evidence：为长周期强化学习建模密集奖励
 
 
 <div class="dpr-home-promo-card">
