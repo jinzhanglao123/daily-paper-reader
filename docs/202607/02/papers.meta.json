@@ -1,0 +1,54 @@
+{
+  "label": "2026-07-02",
+  "date": "2026-07-02",
+  "generated_at": "2026-07-02T20:54:51",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202607/02/2606.26002v1-hierarchical-reinforcement-learning-for-neural-network-compression-hirelc-pruning-and-quantization",
+      "section": "deep",
+      "title_en": "Hierarchical Reinforcement Learning for Neural Network Compression (HiReLC): Pruning and Quantization",
+      "authors": "Kamar Hibatallah Baghdadi, Kawther Guoual Belhamidi, Sara Belhadj, Aissa Boulmerka, Nadir Farhi",
+      "date": "2026-06-24",
+      "pdf": "https://arxiv.org/pdf/2606.26002v1",
+      "score": "9.0",
+      "evidence": "多离散动作空间，涵盖位宽、剪枝比例、量化类型和粒度",
+      "tldr": "深度神经网络压缩中，联合结构化剪枝与量化的搜索空间巨大且配置复杂。HiReLC提出分层强化学习框架，低层代理独立为每个块选择每核的位宽与剪枝率等配置，高层代理通过集成投票及Fisher信息敏感度引导全局预算分配。实验在ViT和CNN上实现5.99–6.72倍压缩比，部分设置准确率提升3.83%。该工作验证了分层策略分解与敏感度引导是有效的联合压缩设计选择。",
+      "tags": "query:uav-drl",
+      "abstract_en": "We present HiReLC, a hierarchical ensemble-reinforcement learning framework for automated joint quantization and structured pruning of deep neural networks. The framework decomposes the compression search across two levels of abstraction: low-level agents (LLAs) operate independently per block, selecting per-kernel configurations over a multi-discrete action space spanning bitwidth, pruning keep-ratio, quantization type, and granularity, while high-level agents (HLAs) coordinate global budget allocation via ensemble voting guided by Fisher Information-based sensitivity estimates. To mitigate the computational cost of policy evaluation, an iterative active learning loop interleaves surrogate-guided RL optimization with post-compression fine-tuning, using a lightweight MLP surrogate to amortize expensive evaluations and a logit-MSE proxy during cold-start. The surrogate is used for reward shaping rather than as a replacement for final post-compression evaluation. The controller is architecture-agnostic by design, with a modular layer abstraction decoupling the RL environment from the underlying network topology. Experiments across Vision Transformer and CNN benchmarks demonstrate effective parameter-storage compression ratios of 5.99 - 6.72$\\times$ with a 3.83 % gain in one setting and 0.55 - 5.62 % accuracy drops elsewhere, supporting hierarchical policy decomposition and sensitivity-aware guidance as practical design choices for joint neural network compression.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/02/2607.00324v1-queue-aware-graph-reinforcement-learning-for-uav-isac-assisted-maritime-data-collection",
+      "section": "deep",
+      "title_en": "Queue-Aware Graph Reinforcement Learning for UAV-ISAC-Assisted Maritime Data Collection",
+      "authors": "Bohan Li, Min Ye, Haochen Liu, Yongkang Gong, Ning Gao, Jie Nie, Pei Xiao, Xiuzhen Cheng",
+      "date": "2026-07-01",
+      "pdf": "https://arxiv.org/pdf/2607.00324v1",
+      "score": "8.0",
+      "evidence": "使用队列感知图强化学习处理无人机数据收集中的长时域目标",
+      "tldr": "针对无人机辅助海洋监测中传感、通信与机动性耦合优化难题，将长期目标建模为队列加权缓冲收集马尔可夫决策过程，提出一种结构化可行关联图多智能体强化学习框架。通过异构图编码生成关联边logits，并设计掩码顺序b-匹配策略保证合法关联与约束满足，结合MAPPO训练和独立队列价值批评家。仿真表明，所提策略累积队列加权收集效用比速率驱动方法提升约106%，在不同海况和负载下保持优势并可迁移至更大网络。为队列感知的图强化学习在UAV-ISAC海事数据收集中的应用提供了新方案。",
+      "tags": "query:uav-drl",
+      "abstract_en": "This paper studies high-altitude platform (HAP)-assisted sparse cooperative integrated sensing and communication (ISAC) for UAV-enabled ocean monitoring. A fleet of rotary-wing UAVs senses drifting buoys, collects their monitoring data, and reports local posterior estimates to a HAP that performs fusion and sparse cooperation control. The model explicitly accounts for a spatially correlated sea-patch field, patch-aware buoy dynamics, RCS- and clutter-aware echo sensing, fused posterior Cramér-Rao bounds (PCRBs), and propulsion-energy-limited UAV mobility. The long-horizon objective is cast as a queue-weighted buffered-collection Markov decision process rather than instantaneous throughput, where each buoy maintains a backlog of buffered observations. The resulting long-horizon design is formulated as a mixed discrete-continuous problem with sensing, communication, mobility, safety, buffered-collection, and onboard-energy constraints. To address the combinatorial association component without replacing learning by a deterministic optimizer, we propose a structured feasible-association graph-MARL framework. A heterogeneous graph encoder produces candidate-edge logits, and a masked sequential b-matching policy samples legal UAV-buoy associations while exactly satisfying UAV-load and buoy-cluster constraints. A MAPPO-style training procedure, an independent queue-state value critic, and a consistency-verification protocol are then specified to support reproducible training. Simulation results on congested maritime scenarios show that the proposed policy improves the cumulative queue-weighted collection utility by about 106\\% over the rate-driven deterministic decoder, maintains a large margin across sea-state sweeps and medium-to-heavy traffic loads, and transfers to larger networks without fine-tuning.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/02/2607.00483v1-vlm-ar3l-vision-language-models-for-absolute-and-relative-rewards-in-reinforcement-learning",
+      "section": "quick",
+      "title_en": "VLM-AR3L: Vision-Language Models for Absolute and Relative Rewards in Reinforcement Learning",
+      "authors": "Kuan-Chen Chen, Winston Chen, Wei-Fang Sun, Min-Chun Hu",
+      "date": "2026-07-01",
+      "pdf": "https://arxiv.org/pdf/2607.00483v1",
+      "score": "6.0",
+      "evidence": "利用视觉语言模型为强化学习提供绝对和相对奖励",
+      "tldr": "强化学习在开放环境（如Minecraft）中因任务目标抽象、难以量化，奖励函数设计成为显著瓶颈。VLM-AR3L框架利用视觉-语言模型理解视觉观察与自然语言目标，生成偏好标签，进而学习两个互补的奖励模型：绝对奖励模型为单状态提供标量评价，相对奖励模型比较连续帧以推断进展或退步，两者集成结合了状态评估的稳定性与比较监督的鲁棒性。在经典控制、操作及Minecraft等基准上，VLM-AR3L持续优于现有VLM-based方法，证明其在视觉复杂、长周期决策任务中的优势。该研究为利用VLM进行自动奖励塑形提供了有力方案。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Designing effective reward functions remains a major challenge in reinforcement learning (RL), particularly in open-ended environments where task goals are abstract and difficult to quantify. In this work, we present VLM-AR3L, a framework that leverages Vision-Language Models (VLMs) to provide both absolute and relative rewards for RL. VLM-AR3L interprets an agent's visual observations in the context of a natural language task goal, and learns both absolute and relative rewards from VLM-generated preference labels. The absolute reward model predicts scalar evaluations for individual states, while the relative reward model compares consecutive observations to infer progress or regression toward the task goal. Their integration combines the stability of state-based evaluation with the robustness of comparative supervision. We evaluate VLM-AR3L across benchmarks spanning classic control, manipulation, and open-world embodied tasks, with a particular focus on Minecraft given its visual complexity and long-horizon decision-making requirements. Experimental results show that VLM-AR3L consistently outperforms prior VLM-based reward learning methods.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,137 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-02T20:49:28.907332+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2606.26002v1",
+      "source": "arxiv",
+      "title": "Hierarchical Reinforcement Learning for Neural Network Compression (HiReLC): Pruning and Quantization",
+      "abstract": "We present HiReLC, a hierarchical ensemble-reinforcement learning framework for automated joint quantization and structured pruning of deep neural networks. The framework decomposes the compression search across two levels of abstraction: low-level agents (LLAs) operate independently per block, selecting per-kernel configurations over a multi-discrete action space spanning bitwidth, pruning keep-ratio, quantization type, and granularity, while high-level agents (HLAs) coordinate global budget allocation via ensemble voting guided by Fisher Information-based sensitivity estimates. To mitigate the computational cost of policy evaluation, an iterative active learning loop interleaves surrogate-guided RL optimization with post-compression fine-tuning, using a lightweight MLP surrogate to amortize expensive evaluations and a logit-MSE proxy during cold-start. The surrogate is used for reward shaping rather than as a replacement for final post-compression evaluation. The controller is architecture-agnostic by design, with a modular layer abstraction decoupling the RL environment from the underlying network topology. Experiments across Vision Transformer and CNN benchmarks demonstrate effective parameter-storage compression ratios of 5.99 - 6.72$\\times$ with a 3.83 % gain in one setting and 0.55 - 5.62 % accuracy drops elsewhere, supporting hierarchical policy decomposition and sensitivity-aware guidance as practical design choices for joint neural network compression.",
+      "authors": [
+        "Kamar Hibatallah Baghdadi",
+        "Kawther Guoual Belhamidi",
+        "Sara Belhadj",
+        "Aissa Boulmerka",
+        "Nadir Farhi"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "math.OC"
+      ],
+      "published": "2026-06-24T16:19:29+00:00",
+      "link": "https://arxiv.org/pdf/2606.26002v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "multi-discrete action space spanning bitwidth, pruning keep-ratio, quantization type, and granularity",
+      "llm_evidence_cn": "多离散动作空间，涵盖位宽、剪枝比例、量化类型和粒度",
+      "llm_evidence": "多离散动作空间，涵盖位宽、剪枝比例、量化类型和粒度",
+      "canonical_evidence": "多离散动作空间，涵盖位宽、剪枝比例、量化类型和粒度",
+      "llm_tldr_en": "Proposes HiReLC, a hierarchical ensemble RL framework for joint structured pruning and quantization of DNNs, using a multi-discrete action space and ensemble voting with Fisher sensitivity.",
+      "llm_tldr_cn": "为自动寻找深度神经网络的最佳剪枝和量化策略，提出HiReLC分层集成强化学习框架。该方法将搜索分解为两个层级：低层代理在包含位宽、剪枝保持比例、量化类型和粒度的多离散动作空间中进行独立搜索；高层代理基于费舍尔信息灵敏度通过集成投票协调全局预算。通过迭代主动学习循环优化策略，在多种网络上实现了高效的压缩。",
+      "llm_tldr": "为自动寻找深度神经网络的最佳剪枝和量化策略，提出HiReLC分层集成强化学习框架。该方法将搜索分解为两个层级：低层代理在包含位宽、剪枝保持比例、量化类型和粒度的多离散动作空间中进行独立搜索；高层代理基于费舍尔信息灵敏度通过集成投票协调全局预算。通过迭代主动学习循环优化策略，在多种网络上实现了高效的压缩。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "reinforcement learning with hybrid action space",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.00324v1",
+      "source": "arxiv",
+      "title": "Queue-Aware Graph Reinforcement Learning for UAV-ISAC-Assisted Maritime Data Collection",
+      "abstract": "This paper studies high-altitude platform (HAP)-assisted sparse cooperative integrated sensing and communication (ISAC) for UAV-enabled ocean monitoring. A fleet of rotary-wing UAVs senses drifting buoys, collects their monitoring data, and reports local posterior estimates to a HAP that performs fusion and sparse cooperation control. The model explicitly accounts for a spatially correlated sea-patch field, patch-aware buoy dynamics, RCS- and clutter-aware echo sensing, fused posterior Cramér-Rao bounds (PCRBs), and propulsion-energy-limited UAV mobility. The long-horizon objective is cast as a queue-weighted buffered-collection Markov decision process rather than instantaneous throughput, where each buoy maintains a backlog of buffered observations. The resulting long-horizon design is formulated as a mixed discrete-continuous problem with sensing, communication, mobility, safety, buffered-collection, and onboard-energy constraints. To address the combinatorial association component without replacing learning by a deterministic optimizer, we propose a structured feasible-association graph-MARL framework. A heterogeneous graph encoder produces candidate-edge logits, and a masked sequential b-matching policy samples legal UAV-buoy associations while exactly satisfying UAV-load and buoy-cluster constraints. A MAPPO-style training procedure, an independent queue-state value critic, and a consistency-verification protocol are then specified to support reproducible training. Simulation results on congested maritime scenarios show that the proposed policy improves the cumulative queue-weighted collection utility by about 106\\% over the rate-driven deterministic decoder, maintains a large margin across sea-state sweeps and medium-to-heavy traffic loads, and transfers to larger networks without fine-tuning.",
+      "authors": [
+        "Bohan Li",
+        "Min Ye",
+        "Haochen Liu",
+        "Yongkang Gong",
+        "Ning Gao",
+        "Jie Nie",
+        "Pei Xiao",
+        "Xiuzhen Cheng"
+      ],
+      "primary_category": "eess.SY",
+      "categories": [
+        "eess.SY"
+      ],
+      "published": "2026-07-01T01:50:04+00:00",
+      "link": "https://arxiv.org/pdf/2607.00324v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Uses queue-aware graph RL with long-horizon objective for UAV data collection",
+      "llm_evidence_cn": "使用队列感知图强化学习处理无人机数据收集中的长时域目标",
+      "llm_evidence": "使用队列感知图强化学习处理无人机数据收集中的长时域目标",
+      "canonical_evidence": "使用队列感知图强化学习处理无人机数据收集中的长时域目标",
+      "llm_tldr_en": "Proposes queue-aware graph reinforcement learning for UAV maritime data collection, modeling long-horizon objectives as a queue-weighted buffered-collection MDP.",
+      "llm_tldr_cn": "针对无人机海洋监测中长时域数据收集问题，提出队列感知图强化学习方法，将长期目标建模为队列加权缓存收集马尔可夫决策过程，实现了高效的数据采集策略，为强化学习中的长时域奖励分配提供了有效方案。",
+      "llm_tldr": "针对无人机海洋监测中长时域数据收集问题，提出队列感知图强化学习方法，将长期目标建模为队列加权缓存收集马尔可夫决策过程，实现了高效的数据采集策略，为强化学习中的长时域奖励分配提供了有效方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.00483v1",
+      "source": "arxiv",
+      "title": "VLM-AR3L: Vision-Language Models for Absolute and Relative Rewards in Reinforcement Learning",
+      "abstract": "Designing effective reward functions remains a major challenge in reinforcement learning (RL), particularly in open-ended environments where task goals are abstract and difficult to quantify. In this work, we present VLM-AR3L, a framework that leverages Vision-Language Models (VLMs) to provide both absolute and relative rewards for RL. VLM-AR3L interprets an agent's visual observations in the context of a natural language task goal, and learns both absolute and relative rewards from VLM-generated preference labels. The absolute reward model predicts scalar evaluations for individual states, while the relative reward model compares consecutive observations to infer progress or regression toward the task goal. Their integration combines the stability of state-based evaluation with the robustness of comparative supervision. We evaluate VLM-AR3L across benchmarks spanning classic control, manipulation, and open-world embodied tasks, with a particular focus on Minecraft given its visual complexity and long-horizon decision-making requirements. Experimental results show that VLM-AR3L consistently outperforms prior VLM-based reward learning methods.",
+      "authors": [
+        "Kuan-Chen Chen",
+        "Winston Chen",
+        "Wei-Fang Sun",
+        "Min-Chun Hu"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-07-01T06:11:59+00:00",
+      "link": "https://arxiv.org/pdf/2607.00483v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "provides absolute and relative rewards for RL using VLMs",
+      "llm_evidence_cn": "利用视觉语言模型为强化学习提供绝对和相对奖励",
+      "llm_evidence": "利用视觉语言模型为强化学习提供绝对和相对奖励",
+      "canonical_evidence": "利用视觉语言模型为强化学习提供绝对和相对奖励",
+      "llm_tldr_en": "VLM-AR3L framework uses Vision-Language Models to learn absolute and relative reward models from preference labels, combining them to provide more informative feedback for RL agents in tasks with abstract goals.",
+      "llm_tldr_cn": "针对强化学习中奖励函数设计困难的问题，提出VLM-AR3L框架，利用视觉语言模型从偏好标签中学习绝对和相对奖励模型。绝对奖励评估单一状态，相对奖励通过比较连续观测推断任务进展。两者结合为智能体提供更丰富的反馈，改善了抽象目标下的强化学习效率。实验表明该方法能有效引导智能体学习，特别适用于开放式中奖励信号稀疏的场景。",
+      "llm_tldr": "针对强化学习中奖励函数设计困难的问题，提出VLM-AR3L框架，利用视觉语言模型从偏好标签中学习绝对和相对奖励模型。绝对奖励评估单一状态，相对奖励通过比较连续观测推断任务进展。两者结合为智能体提供更丰富的反馈，改善了抽象目标下的强化学习效率。实验表明该方法能有效引导智能体学习，特别适用于开放式中奖励信号稀疏的场景。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
