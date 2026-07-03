@@ -6,31 +6,37 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-02
-- 运行时间：2026-07-02 20:54:40 UTC
+- 最新运行日期：2026-07-03
+- 运行时间：2026-07-03 21:24:33 UTC
 - 运行状态：成功
-- 本次总论文数：3
-- 精读区：2
-- 速读区：1
+- 本次总论文数：5
+- 精读区：1
+- 速读区：4
 
 ### 今日简报（AI）
-1) 今日精读两篇高分强化学习论文，并速览一篇视觉语言模型探索。
-2) 最值得看分层强化学习如何同时搞定神经网络剪枝与量化（HiReLC），以及图强化学习在海事无人机数据采集中的创新应用。
-3) 建议重点跟进模型压缩的自动化方向，同时可浅尝视觉语言模型为强化学习生成奖励的潜力。
-- 详情：[/202607/02/README](/202607/02/README)
+今日聚焦自主系统智能决策，从多目标风险感知无人机巡检到用视觉语言模型重塑强化学习奖励。  
+精读论文《MOAR Planner》实现了无人机在基础设施巡检中自适应风险的多目标路径规划，速读中VLM-AR3L则展示了用视觉语言模型设计绝对与相对奖励的潜力。  
+建议读者关注将大模型语义理解融入移动机器人奖惩机制这一趋势，尝试在自己的仿真环境中验证此类奖励函数的效果。
+- 详情：[/202607/03/README](/202607/03/README)
 
 ### 精读区论文标签
-1. [Hierarchical Reinforcement Learning for Neural Network Compression (HiReLC): Pruning and Quantization](/202607/02/2606.26002v1-hierarchical-reinforcement-learning-for-neural-network-compression-hirelc-pruning-and-quantization)  
-   标签：评分：9.0/10、query:uav-drl
-   evidence：多离散动作空间，涵盖位宽、剪枝比例、量化类型和粒度
-2. [Queue-Aware Graph Reinforcement Learning for UAV-ISAC-Assisted Maritime Data Collection](/202607/02/2607.00324v1-queue-aware-graph-reinforcement-learning-for-uav-isac-assisted-maritime-data-collection)  
+1. [MOAR Planner: Multi-Objective and Adaptive Risk-Aware Path Planning for Infrastructure Inspection with a UAV](/202607/03/2606.30575v1-moar-planner-multi-objective-and-adaptive-risk-aware-path-planning-for-infrastructure-inspection-with-a-uav)  
    标签：评分：8.0/10、query:uav-drl
-   evidence：使用队列感知图强化学习处理无人机数据收集中的长时域目标
+   evidence：针对基础设施巡检的无人机自主路径规划，优化安全、时间和能耗
 
 ### 速读区论文标签
-1. [VLM-AR3L: Vision-Language Models for Absolute and Relative Rewards in Reinforcement Learning](/202607/02/2607.00483v1-vlm-ar3l-vision-language-models-for-absolute-and-relative-rewards-in-reinforcement-learning)  
+1. [VLM-AR3L: Vision-Language Models for Absolute and Relative Rewards in Reinforcement Learning](/202607/03/2607.00483v2-vlm-ar3l-vision-language-models-for-absolute-and-relative-rewards-in-reinforcement-learning)  
+   标签：评分：7.0/10、query:uav-drl
+   evidence：利用视觉语言模型为强化学习提供绝对和相对奖励，解决长时程奖励分配问题
+2. [Simulation Based Reward Function Validation for Multi-Agent On Orbit Inspection](/202607/03/2607.01367v1-simulation-based-reward-function-validation-for-multi-agent-on-orbit-inspection)  
    标签：评分：6.0/10、query:uav-drl
-   evidence：利用视觉语言模型为强化学习提供绝对和相对奖励
+   evidence：为检测任务开发通用奖励函数，允许对任意图像采集决策进行奖励
+3. [CoRe: Combined Rewards with Vision-Language Model Feedback for Preference-Aligned Reinforcement Learning](/202607/03/2607.01721v1-core-combined-rewards-with-vision-language-model-feedback-for-preference-aligned-reinforcement-learning)  
+   标签：评分：6.0/10、query:uav-drl
+   evidence：奖励分解与视觉语言反馈用于强化学习，与奖励分配相关
+4. [Lightweight Safe Reinforcement Learning for End-to-End UAV Navigation](/202607/03/2607.01794v1-lightweight-safe-reinforcement-learning-for-end-to-end-uav-navigation)  
+   标签：评分：6.0/10、query:uav-drl
+   evidence：无人机导航的安全强化学习，可直接应用于需要自主飞行的检测任务
 
 
 <div class="dpr-home-promo-card">

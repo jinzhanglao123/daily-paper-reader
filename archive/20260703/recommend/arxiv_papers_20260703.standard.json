@@ -1,0 +1,208 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-03T21:19:31.272114+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 4,
+    "quick_skim_target": 11,
+    "quick_selected": 4
+  },
+  "deep_dive": [
+    {
+      "id": "2606.30575v1",
+      "source": "arxiv",
+      "title": "MOAR Planner: Multi-Objective and Adaptive Risk-Aware Path Planning for Infrastructure Inspection with a UAV",
+      "abstract": "The problem of autonomous navigation for UAV inspection remains challenging as it requires effectively navigating in close proximity to obstacles, while accounting for dynamic risk factors such as weather conditions, communication reliability, and battery autonomy. This paper introduces the MOAR path planner which addresses the complexities of evolving risks during missions. It offers real-time trajectory adaptation while concurrently optimizing safety, time, and energy. The planner employs a risk-aware cost function that integrates pre-computed cost maps, the new concepts of damage and insertion costs, and an adaptive speed planning framework. With that, the optimal path is searched in a graph using a discrete representation of the state and action spaces. The method is evaluated through simulations and real-world flight tests. The results show the capability to generate real-time trajectories spanning a broad range of evaluation metrics: around 90% of the range occupied by popular algorithms. The proposed framework contributes by enabling UAVs to navigate more autonomously and reliably in critical missions.",
+      "authors": [
+        "Louis Petit",
+        "Alexis Lussier Desbiens"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-06-29T17:18:02+00:00",
+      "link": "https://arxiv.org/pdf/2606.30575v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Addresses autonomous UAV path planning for infrastructure inspection, optimizing safety, time, and energy",
+      "llm_evidence_cn": "针对基础设施巡检的无人机自主路径规划，优化安全、时间和能耗",
+      "llm_evidence": "针对基础设施巡检的无人机自主路径规划，优化安全、时间和能耗",
+      "canonical_evidence": "针对基础设施巡检的无人机自主路径规划，优化安全、时间和能耗",
+      "llm_tldr_en": "MOAR Planner introduces adaptive risk-aware path planning for UAV infrastructure inspection, balancing safety, time, and energy through a multi-objective graph-based approach.",
+      "llm_tldr_cn": "针对无人机基础设施巡检中动态风险（如天气、通信、电量）导致导航难题，该工作提出MOAR路径规划器，采用风险感知代价函数融合损伤/插入代价，并自适应调整速度，在图搜索中多目标优化安全、时间和能耗。实验表明该规划器能实时适应风险变化，为电力线路等基础设施巡检提供了高效安全的飞行路径。",
+      "llm_tldr": "针对无人机基础设施巡检中动态风险（如天气、通信、电量）导致导航难题，该工作提出MOAR路径规划器，采用风险感知代价函数融合损伤/插入代价，并自适应调整速度，在图搜索中多目标优化安全、时间和能耗。实验表明该规划器能实时适应风险变化，为电力线路等基础设施巡检提供了高效安全的飞行路径。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "UAV inspection of power transmission lines",
+      "matched_requirement_id": "req-2",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.00483v2",
+      "source": "arxiv",
+      "title": "VLM-AR3L: Vision-Language Models for Absolute and Relative Rewards in Reinforcement Learning",
+      "abstract": "Designing effective reward functions remains a major challenge in reinforcement learning (RL), particularly in open-ended environments where task goals are abstract and difficult to quantify. In this work, we present VLM-AR3L, a framework that leverages Vision-Language Models (VLMs) to provide both absolute and relative rewards for RL. VLM-AR3L interprets an agent's visual observations in the context of a natural language task goal, and learns both absolute and relative rewards from VLM-generated preference labels. The absolute reward model predicts scalar evaluations for individual states, while the relative reward model compares consecutive observations to infer progress or regression toward the task goal. Their integration combines the stability of state-based evaluation with the robustness of comparative supervision. We evaluate VLM-AR3L across benchmarks spanning classic control, manipulation, and open-world embodied tasks, with a particular focus on Minecraft given its visual complexity and long-horizon decision-making requirements. Experimental results show that VLM-AR3L consistently outperforms prior VLM-based reward learning methods.",
+      "authors": [
+        "Kuan-Chen Chen",
+        "Winston Chen",
+        "Wei-Fang Sun",
+        "Min-Chun Hu"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-07-01T06:11:59+00:00",
+      "link": "https://arxiv.org/pdf/2607.00483v2",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Leverages VLMs to provide absolute and relative rewards for RL, addressing reward assignment",
+      "llm_evidence_cn": "利用视觉语言模型为强化学习提供绝对和相对奖励，解决长时程奖励分配问题",
+      "llm_evidence": "利用视觉语言模型为强化学习提供绝对和相对奖励，解决长时程奖励分配问题",
+      "canonical_evidence": "利用视觉语言模型为强化学习提供绝对和相对奖励，解决长时程奖励分配问题",
+      "llm_tldr_en": "VLM-AR3L uses vision-language models to learn absolute and relative rewards from preference labels, improving RL in open-ended tasks where reward design is challenging.",
+      "llm_tldr_cn": "针对开放环境中强化学习奖励函数设计困难的问题，该工作利用视觉语言模型解释智能体的视觉观测，从偏好标签中学习绝对和相对奖励模型，结合两类奖励指导策略学习。实验表明该方法在抽象任务目标下能有效提升强化学习性能，不依赖人工设计，可泛化至多种长时程任务，为通用奖励分配提供了新思路。",
+      "llm_tldr": "针对开放环境中强化学习奖励函数设计困难的问题，该工作利用视觉语言模型解释智能体的视觉观测，从偏好标签中学习绝对和相对奖励模型，结合两类奖励指导策略学习。实验表明该方法在抽象任务目标下能有效提升强化学习性能，不依赖人工设计，可泛化至多种长时程任务，为通用奖励分配提供了新思路。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.01367v1",
+      "source": "arxiv",
+      "title": "Simulation Based Reward Function Validation for Multi-Agent On Orbit Inspection",
+      "abstract": "A proposed method for the control of groups of inspection spacecraft is Multi-Agent Reinforcement Learning (MARL). While MARL has already been employed for this purpose in previous work, the reward functions used focus on reaching a finite set of predetermined inspection points around the target. In this work, we study and develop a generalized reward function for the MARL inspection task informed by the analysis of 3D reconstructions of inspected objects in orbit. Because the reward function is generalized such that any number of images at arbitrary locations may evaluated, we also allow trained agents to have complete control over when images are collected. With this approach, we gather insights into best practices for not only the specific MARL inspection task, but also gain key takeaways informative to the broader inspection task outside of a MARL context.",
+      "authors": [
+        "Patrick Quinn",
+        "Bala Prenith Reddy Gopu",
+        "George M. Nehma",
+        "Madhur Tiwari"
+      ],
+      "primary_category": "cs.MA",
+      "categories": [
+        "cs.MA",
+        "cs.RO"
+      ],
+      "published": "2026-07-01T18:32:13+00:00",
+      "link": "https://arxiv.org/pdf/2607.01367v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Develops generalized reward function for inspection tasks, enabling rewarding arbitrary image collection decisions",
+      "llm_evidence_cn": "为检测任务开发通用奖励函数，允许对任意图像采集决策进行奖励",
+      "llm_evidence": "为检测任务开发通用奖励函数，允许对任意图像采集决策进行奖励",
+      "canonical_evidence": "为检测任务开发通用奖励函数，允许对任意图像采集决策进行奖励",
+      "llm_tldr_en": "Proposes a generalized reward function for multi-agent reinforcement learning inspection based on 3D reconstruction analysis, allowing agents to decide when to capture images, improving inspection coverage and reconstruction quality over fixed-point methods.",
+      "llm_tldr_cn": "面向在轨检测任务的多智能体强化学习，研究通用奖励函数设计，基于3D重建分析评估图像价值，允许智能体自主决定拍摄时机。仿真验证表明，该奖励函数优于固定检测点方法，能提升检测覆盖率与重建质量，为自主检测奖励设计提供指导，并解决了固定检测点奖励的局限性，使多智能体协同检测更高效，未来可推广至其他检测领域。",
+      "llm_tldr": "面向在轨检测任务的多智能体强化学习，研究通用奖励函数设计，基于3D重建分析评估图像价值，允许智能体自主决定拍摄时机。仿真验证表明，该奖励函数优于固定检测点方法，能提升检测覆盖率与重建质量，为自主检测奖励设计提供指导，并解决了固定检测点奖励的局限性，使多智能体协同检测更高效，未来可推广至其他检测领域。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.01721v1",
+      "source": "arxiv",
+      "title": "CoRe: Combined Rewards with Vision-Language Model Feedback for Preference-Aligned Reinforcement Learning",
+      "abstract": "Reward design remains a central challenge in reinforcement learning (RL). Hand-crafted rewards are often difficult to specify and may lead to suboptimal policies, while learned rewards from preferences can suffer from inefficiency and unstable training. Inspired by the dual nature of human learning explored in cognitive science, we decompose rewards into two complementary components: Formal Rewards (FR), explicitly designed based on task knowledge, and Residual Rewards (RR), learned from observations to capture implicit and nuanced preferences. Based on this decomposition, we propose CoRe, a hybrid framework that integrates FR and RR with vision-language models (VLMs) feedback to achieve preference-aligned policies without human involvement. Our contributions are twofold: (1) We propose a Formal Reward Module (FRM) that leverages VLMs to iteratively design and optimize FR based on task knowledge and preference feedback, enabling the continual improvement of policy during training; (2) We introduce a Residual Reward Module (RRM) that learns RR from video-level preference by employing VLMs to generate preference labels and capturing nuanced rewards that complement FR, ensuring alignment with human intent. Through the synergy of FRM and RRM, CoRe enables the automatic construction of reliable rewards that are efficient and preference-aligned. Extensive experiments demonstrate that CoRe outperforms existing approaches in terms of policy learning effectiveness and efficiency on ten robotic manipulation tasks in simulation and five real-worlds. Videos can be found on our project website: https://core-2026.github.io/",
+      "authors": [
+        "Hexian Ni",
+        "Tao Lu",
+        "Yinghao Cai"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-07-02T05:20:47+00:00",
+      "link": "https://arxiv.org/pdf/2607.01721v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "rewards decomposition with vision-language feedback for RL, relevant to reward assignment",
+      "llm_evidence_cn": "奖励分解与视觉语言反馈用于强化学习，与奖励分配相关",
+      "llm_evidence": "奖励分解与视觉语言反馈用于强化学习，与奖励分配相关",
+      "canonical_evidence": "奖励分解与视觉语言反馈用于强化学习，与奖励分配相关",
+      "llm_tldr_en": "Proposes CoRe, a hybrid framework that uses formal and residual rewards with VLM feedback to learn preference-aligned policies more efficiently.",
+      "llm_tldr_cn": "针对强化学习中奖励设计困难，提出CoRe框架，将奖励分解为形式化奖励和残差奖励，并利用视觉语言模型反馈实现偏好对齐。实验表明该方法能更稳定有效地学习符合人类偏好的策略，为复杂任务的奖励分配提供了新思路。",
+      "llm_tldr": "针对强化学习中奖励设计困难，提出CoRe框架，将奖励分解为形式化奖励和残差奖励，并利用视觉语言模型反馈实现偏好对齐。实验表明该方法能更稳定有效地学习符合人类偏好的策略，为复杂任务的奖励分配提供了新思路。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.01794v1",
+      "source": "arxiv",
+      "title": "Lightweight Safe Reinforcement Learning for End-to-End UAV Navigation",
+      "abstract": "With the rapid development of autonomous aerial systems, Unmanned Aerial Vehicles (UAVs) are increasingly deployed in applications such as inspection, environmental monitoring, and rescue, creating growing demand for reliable autonomous navigation. However, autonomous UAV navigation in dense environments remains challenging under sparse perception and dynamic constraints. Most reinforcement learning (RL) methods lack explicit safety mechanisms, leading to unsafe exploration, unstable training, and risky behaviors, especially during high-speed flight. Even in safe RL approaches, safety is often enforced by projecting policy outputs onto a safe action set, which may introduce instability. Meanwhile, many learning-based methods rely on dense inputs or large networks, increasing computational burden and limiting lightweight onboard deployment. Facing the above challenges, we propose a safety-constrained perception-control integrated framework for UAV navigation. A lightweight network encodes sparse observations into collision-risk-aware features using asymmetric and depthwise separable convolutions. We formulate the task as a constrained Markov decision process within a hierarchical control architecture and solve it using a Lagrangian-based safe PPO algorithm. Curriculum learning further improves training stability. Experiments with varying obstacle densities and flight speeds demonstrate higher success rates, improved safety, and better efficiency than existing reinforcement learning baselines.",
+      "authors": [
+        "Shenghui Zhang",
+        "YuXuan Gao",
+        "Songwei Zhao",
+        "Jifeng Hu",
+        "Zijing Zhang",
+        "Hechang Chen"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "published": "2026-07-02T07:12:24+00:00",
+      "link": "https://arxiv.org/pdf/2607.01794v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Safe RL for UAV navigation, directly applicable to inspection tasks requiring autonomous flight",
+      "llm_evidence_cn": "无人机导航的安全强化学习，可直接应用于需要自主飞行的检测任务",
+      "llm_evidence": "无人机导航的安全强化学习，可直接应用于需要自主飞行的检测任务",
+      "canonical_evidence": "无人机导航的安全强化学习，可直接应用于需要自主飞行的检测任务",
+      "llm_tldr_en": "Proposes a lightweight safe reinforcement learning approach for end-to-end UAV navigation that enforces safety constraints without dense inputs, achieving low collision rates and high success rates in high-speed flights, relevant for inspection missions.",
+      "llm_tldr_cn": "针对无人机在密集环境中自主导航缺乏安全机制的问题，提出轻量化安全强化学习方法，结合端到端学习与安全约束，实现高效探索与稳定飞行。仿真及实物实验表明，方法在高速飞行下保持低碰撞率与高成功率，为无人机检测、救援等应用提供可靠导航基础。",
+      "llm_tldr": "针对无人机在密集环境中自主导航缺乏安全机制的问题，提出轻量化安全强化学习方法，结合端到端学习与安全约束，实现高效探索与稳定飞行。仿真及实物实验表明，方法在高速飞行下保持低碰撞率与高成功率，为无人机检测、救援等应用提供可靠导航基础。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "deep reinforcement learning for UAV inspection tasks",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
