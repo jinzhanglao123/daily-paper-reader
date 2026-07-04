@@ -6,37 +6,31 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-03
-- 运行时间：2026-07-03 21:24:33 UTC
+- 最新运行日期：2026-07-04
+- 运行时间：2026-07-04 21:21:15 UTC
 - 运行状态：成功
-- 本次总论文数：5
-- 精读区：1
-- 速读区：4
+- 本次总论文数：2
+- 精读区：0
+- 速读区：2
 
 ### 今日简报（AI）
-今日聚焦自主系统智能决策，从多目标风险感知无人机巡检到用视觉语言模型重塑强化学习奖励。  
-精读论文《MOAR Planner》实现了无人机在基础设施巡检中自适应风险的多目标路径规划，速读中VLM-AR3L则展示了用视觉语言模型设计绝对与相对奖励的潜力。  
-建议读者关注将大模型语义理解融入移动机器人奖惩机制这一趋势，尝试在自己的仿真环境中验证此类奖励函数的效果。
-- 详情：[/202607/03/README](/202607/03/README)
+今日速读两篇关于具身智能的新工作，关注视觉语言动作模型的置信度驱动测试时强化学习与帧顺序奖励控制。
+
+一篇提出用模型自身的不确定性指导测试时优化，另一篇展示了无需奖励函数、仅通过观察帧顺序即可学习任务进度。
+
+建议关注如何将这两种思路结合，或许能进一步提升机器人策略的鲁棒性与样本效率。
+- 详情：[/202607/04/README](/202607/04/README)
 
 ### 精读区论文标签
-1. [MOAR Planner: Multi-Objective and Adaptive Risk-Aware Path Planning for Infrastructure Inspection with a UAV](/202607/03/2606.30575v1-moar-planner-multi-objective-and-adaptive-risk-aware-path-planning-for-infrastructure-inspection-with-a-uav)  
-   标签：评分：8.0/10、query:uav-drl
-   evidence：针对基础设施巡检的无人机自主路径规划，优化安全、时间和能耗
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [VLM-AR3L: Vision-Language Models for Absolute and Relative Rewards in Reinforcement Learning](/202607/03/2607.00483v2-vlm-ar3l-vision-language-models-for-absolute-and-relative-rewards-in-reinforcement-learning)  
+1. [Trust Your Instincts: Confidence-Driven Test-Time RL for Vision-Language-Action Models](/202607/04/2606.29892v1-trust-your-instincts-confidence-driven-test-time-rl-for-vision-language-action-models)  
    标签：评分：7.0/10、query:uav-drl
-   evidence：利用视觉语言模型为强化学习提供绝对和相对奖励，解决长时程奖励分配问题
-2. [Simulation Based Reward Function Validation for Multi-Agent On Orbit Inspection](/202607/03/2607.01367v1-simulation-based-reward-function-validation-for-multi-agent-on-orbit-inspection)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：为检测任务开发通用奖励函数，允许对任意图像采集决策进行奖励
-3. [CoRe: Combined Rewards with Vision-Language Model Feedback for Preference-Aligned Reinforcement Learning](/202607/03/2607.01721v1-core-combined-rewards-with-vision-language-model-feedback-for-preference-aligned-reinforcement-learning)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：奖励分解与视觉语言反馈用于强化学习，与奖励分配相关
-4. [Lightweight Safe Reinforcement Learning for End-to-End UAV Navigation](/202607/03/2607.01794v1-lightweight-safe-reinforcement-learning-for-end-to-end-uav-navigation)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：无人机导航的安全强化学习，可直接应用于需要自主飞行的检测任务
+   evidence：将轨迹级相似性作为长时程任务的奖励信号
+2. [Rank-Then-Act: Reward-Free Control from Frame-Order Progress](/202607/04/2607.01897v1-rank-then-act-reward-free-control-from-frame-order-progress)  
+   标签：评分：7.0/10、query:uav-drl
+   evidence：通过基于VLM的帧序进展排序和相关性奖励，无需显式奖励即可学习控制策略，实现长期奖励分配
 
 
 <div class="dpr-home-promo-card">
