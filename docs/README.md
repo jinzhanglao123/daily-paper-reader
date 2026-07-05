@@ -6,31 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-04
-- 运行时间：2026-07-04 21:21:15 UTC
+- 最新运行日期：2026-07-05
+- 运行时间：2026-07-05 20:21:49 UTC
 - 运行状态：成功
-- 本次总论文数：2
+- 本次总论文数：1
 - 精读区：0
-- 速读区：2
+- 速读区：1
 
 ### 今日简报（AI）
-今日速读两篇关于具身智能的新工作，关注视觉语言动作模型的置信度驱动测试时强化学习与帧顺序奖励控制。
-
-一篇提出用模型自身的不确定性指导测试时优化，另一篇展示了无需奖励函数、仅通过观察帧顺序即可学习任务进度。
-
-建议关注如何将这两种思路结合，或许能进一步提升机器人策略的鲁棒性与样本效率。
-- 详情：[/202607/04/README](/202607/04/README)
+今日速读了一篇关于偏好奖励学习的论文，关注部分可观测性和不精确动态下的建模。
+该研究指出，在机器人等现实应用中，结合不精确动态模型与偏好反馈可有效学习奖励函数，提升策略鲁棒性。
+若感兴趣，可进一步关注该领域如何处理模型误差与观测噪声的实用方法。
+- 详情：[/202607/05/README](/202607/05/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Trust Your Instincts: Confidence-Driven Test-Time RL for Vision-Language-Action Models](/202607/04/2606.29892v1-trust-your-instincts-confidence-driven-test-time-rl-for-vision-language-action-models)  
-   标签：评分：7.0/10、query:uav-drl
-   evidence：将轨迹级相似性作为长时程任务的奖励信号
-2. [Rank-Then-Act: Reward-Free Control from Frame-Order Progress](/202607/04/2607.01897v1-rank-then-act-reward-free-control-from-frame-order-progress)  
-   标签：评分：7.0/10、query:uav-drl
-   evidence：通过基于VLM的帧序进展排序和相关性奖励，无需显式奖励即可学习控制策略，实现长期奖励分配
+1. [Preference-Based Reward Learning under Partial Observability with Inexact Dynamics](/202607/05/2606.30271v1-preference-based-reward-learning-under-partial-observability-with-inexact-dynamics)  
+   标签：评分：6.0/10、query:uav-drl
+   evidence：研究部分可观测下基于偏好的奖励学习，应对长时域奖励分配问题
 
 
 <div class="dpr-home-promo-card">

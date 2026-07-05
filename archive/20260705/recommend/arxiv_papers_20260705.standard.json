@@ -1,0 +1,53 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-05T20:19:54.226492+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2606.30271v1",
+      "source": "arxiv",
+      "title": "Preference-Based Reward Learning under Partial Observability with Inexact Dynamics",
+      "abstract": "In this paper, we study how partial observability and inexact latent-state inference affect reward learning from preferences. To that end, we study preference-based reward learning under partial observability, where the learner forms latent-state estimates using an inexact learned POMDP model, so model error can accumulate over time. For finite log-linear POMDPs, we characterize this error term by establishing the stability of the belief filter to parametric model error under certain mixing conditions, yielding bounds on the belief mismatch in expectation and in high probability. We further extend this stability mechanism beyond the log-linear setting to neural-softmax POMDP models with overparameterized neural networks. We then propagate these errors into trajectory-level feature perturbations and derive finite-sample guarantees for constrained Bradley--Terry reward estimation from preferences. Our results decouple statistical error from an irreducible model-mismatch bias, and clarify when preference-based reward learning remains feasible under partial observability with imperfect dynamics.",
+      "authors": [
+        "Reza Zolnouri",
+        "Semih Cayci"
+      ],
+      "primary_category": "math.OC",
+      "categories": [
+        "math.OC"
+      ],
+      "published": "2026-06-29T13:18:42+00:00",
+      "link": "https://arxiv.org/pdf/2606.30271v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "studies reward learning from preferences under partial observability, addressing long-horizon reward assignment challenges",
+      "llm_evidence_cn": "研究部分可观测下基于偏好的奖励学习，应对长时域奖励分配问题",
+      "llm_evidence": "研究部分可观测下基于偏好的奖励学习，应对长时域奖励分配问题",
+      "canonical_evidence": "研究部分可观测下基于偏好的奖励学习，应对长时域奖励分配问题",
+      "llm_tldr_en": "Investigates preference-based reward learning under partial observability with model error; provides bounds on belief mismatch and propagates to reward learning, useful for long-horizon RL reward assignment.",
+      "llm_tldr_cn": "针对部分可观测和模型误差下的偏好奖励学习问题，建立信念滤波器稳定性以量化失配，并将误差传播分析扩展到神经网络POMDP模型。为长时域强化学习的奖励分配提供理论保障。",
+      "llm_tldr": "针对部分可观测和模型误差下的偏好奖励学习问题，建立信念滤波器稳定性以量化失配，并将误差传播分析扩展到神经网络POMDP模型。为长时域强化学习的奖励分配提供理论保障。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "label": "2026-07-05",
+  "date": "2026-07-05",
+  "generated_at": "2026-07-05T20:21:59",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202607/05/2606.30271v1-preference-based-reward-learning-under-partial-observability-with-inexact-dynamics",
+      "section": "quick",
+      "title_en": "Preference-Based Reward Learning under Partial Observability with Inexact Dynamics",
+      "authors": "Reza Zolnouri, Semih Cayci",
+      "date": "2026-06-29",
+      "pdf": "https://arxiv.org/pdf/2606.30271v1",
+      "score": "6.0",
+      "evidence": "研究部分可观测下基于偏好的奖励学习，应对长时域奖励分配问题",
+      "tldr": "在部分可观测环境中，基于偏好的奖励学习因使用不精确的POMDP模型推断潜在状态，导致模型误差随时间累积，可能影响学习效果。本文通过对数线性POMDP信念滤波稳定性分析，在混合条件下给出信念不匹配的期望与高概率界限，并扩展到过参数化神经softmax模型。将误差传播至轨迹级特征扰动，推导出约束Bradley-Terry奖励估计的有限样本保证，分离统计误差与模型不匹配偏差。这些结果明确了在不完美动态下偏好学习可行的条件，为部分可观测场景的奖励建模提供理论支撑。",
+      "tags": "query:uav-drl",
+      "abstract_en": "In this paper, we study how partial observability and inexact latent-state inference affect reward learning from preferences. To that end, we study preference-based reward learning under partial observability, where the learner forms latent-state estimates using an inexact learned POMDP model, so model error can accumulate over time. For finite log-linear POMDPs, we characterize this error term by establishing the stability of the belief filter to parametric model error under certain mixing conditions, yielding bounds on the belief mismatch in expectation and in high probability. We further extend this stability mechanism beyond the log-linear setting to neural-softmax POMDP models with overparameterized neural networks. We then propagate these errors into trajectory-level feature perturbations and derive finite-sample guarantees for constrained Bradley--Terry reward estimation from preferences. Our results decouple statistical error from an irreducible model-mismatch bias, and clarify when preference-based reward learning remains feasible under partial observability with imperfect dynamics.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

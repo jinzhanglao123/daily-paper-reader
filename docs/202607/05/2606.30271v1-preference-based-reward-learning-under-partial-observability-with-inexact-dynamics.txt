@@ -1,0 +1,6610 @@
+Title: Preference-Based Reward Learning under Partial Observability with Inexact Dynamics
+
+URL Source: https://arxiv.org/pdf/2606.30271v1
+
+Published Time: Tue, 30 Jun 2026 02:17:15 GMT
+
+Number of Pages: 45
+
+Markdown Content:
+# Preference-Based Reward Learning under Partial Observabil-ity with Inexact Dynamics 
+
+Reza Zolnouri zolnouri@mathc.rwth-aachen.de Department of Mathematics RWTH Aachen University 
+
+Semih Cayci cayci@mathc.rwth-aachen.de Department of Mathematics RWTH Aachen University 
+
+## Abstract 
+
+Existing theory for preference-based reward learning is largely developed under full observ-ability. In this paper, we study how partial observability and inexact latent-state inference affect reward learning from preferences. To that end, we study preference-based reward learning under partial observability, where the learner forms latent-state estimates using an inexact learned POMDP model, so model error can accumulate over time. For finite log-linear POMDPs, we characterize this error term by establishing the stability of the belief filter to parametric model error under certain mixing conditions, yielding bounds on the belief mismatch in expectation and in high probability. We further extend this stability mechanism beyond the log-linear setting to neural-softmax POMDP models with overparameterized neural networks. We then propagate these errors into trajectory-level feature perturbations and derive finite-sample guarantees for constrained Bradley–Terry re-ward estimation from preferences. Our results decouple statistical error from an irreducible model-mismatch bias, and clarify when preference-based reward learning remains feasible under partial observability with imperfect dynamics. 
+
+## 1 Introduction 
+
+Reinforcement Learning from Human Feedback (RLHF) combines preference-based reward learning and pol-icy optimization . A common pipeline collects pairwise (or K-wise) comparisons between trajectory segments, fits a parametric preference model, e.g., Bradley–Terry model (Bradley & Terry, 1952), to cumulative tra-jectory features, and then optimizes a policy using the learned reward (Christiano et al., 2017; Wirth et al., 2017; Kaufmann et al., 2025). Recent theory for this mechanism in fully observed MDPs analyzes regu-larized preference MLE under self-normalized concentration (Zhu et al., 2023; Du et al., 2024). Consider an interactive agent such as an LLM: the user-facing observations are text, clicks, or other surface signals, while the real state includes latent human factors (e.g., beliefs, goals, interpretations, accuracy and affective state) that are not accessible to the system. The learner must act through an inferred posterior belief rather than the true environment state. In particular, we argue that RLHF must recover an unknown reward from preference feedback while simultaneously operating under latent-state uncertainty. This motivates modeling RLHF interaction as a Partially Observable Markov Decision Process (POMDP), where an unobserved latent state evolves Markovianly and the agent receives noisy observations. A standard way to obtain a Markovian control representation is via the induced belief-state process (the belief-MDP) (Åström, 1965; Kaelbling et al., 1998; Uesato et al., 2022). Accordingly, we lift the preference dataset (trajectory pairs with preference labels) into the belief-MDP representation by constructing beliefs along each recorded trajectory under the learned model and forming belief-based comparison features. However, this reduction introduces an additional, orthogonal difficulty: belief states are not directly observed and must be computed via Bayesian filtering. In practice, filtering uses an inexact learned POMDP model estimated from 1
+
+> arXiv:2606.30271v1 [math.OC] 29 Jun 2026
+
+data, so preference features are evaluated on approximate belief trajectories, creating a structured, history-dependent model-mismatch channel. Therefore, approximation error propagates from learned dynamics to belief error, then to trajectory-feature perturbations, and finally to bias in the preference MLE (Figure 1). 
+
+## POMDP model estimation 
+
+## belief error 
+
+## feature perturbation 
+
+## preference MLE bias 
+
+Figure 1: Error-propagation pipeline The central technical obstacle is that Bayesian filtering is generally not contractive in total variation and may amplify errors over time; stability requires conditions that jointly control transition mixing and infor-mativeness of the observation channel. Building on a recent stochastic filter stability theorem Mcdonald & Yüksel (2024), we establish expectation-level stability and quantify the bias introduced by parametric model mismatch at each filtering step. This analysis yields an explicit Lipschitz stability bound for the parameter-to-belief mapping, along with high-probability control over the time-averaged belief error using a martingale argument. We first develop this mechanism for finite log-linear POMDPs and then extend it to neural-softmax POMDP models in the kernel regime, where finite-width linearization errors enter additively into the belief perturbation bound. These results can then be extended to define a uniform belief-accuracy event applicable across all comparisons within an RLHF dataset. We position our analysis at the interface of controlled filter stability and preference-based reward estimation, to quantify how learned-dynamics error in a POMDP propagates through belief updates into reward learning in the belief-MDP. This belief mismatch perturbs the trajectory-level feature differences used in preference comparisons and the associated empirical feature covariance. We propagate these perturbations through a Bradley–Terry MLE analysis, obtaining a finite-sample reward recovery bound that separates (i) a statistical term vanishing with the number of human comparisons NHF , (ii) an irreducible model-mismatch bias con-trolled by filtering stability, and (iii) the regularization bias introduced to ensure well-posedness when the feature covariance is ill-conditioned or singular. This decomposition clarifies when preference-based RLHF remains statistically feasible under partial observability with an inexact learned POMDP model, and which stability and modeling choices govern the achievable accuracy. 
+
+Contributions. 
+
+• A theoretical framework for preference-based reward learning under partial observabil-ity. We establish, to the best of our knowledge, the first finite-sample reward-learning guarantees for preference-based RLHF in POMDPs with inexact learned dynamics. We lift the preference dataset into the belief-MDP representation and provide an explicit error-propagation analysis from POMDP model mismatch to reward-estimation bias. This setting is not covered by existing fully observed RLHF theory, where trajectory features are assumed to be directly observed or exactly specified. 
+
+• Belief stability under learned log-linear and neural-softmax dynamics. We prove that the Bayesian belief filter is Lipschitz-stable in expectation under parametric model error and a Dobrushin-type mixing condition (Theorem 4.1). Unlike classical initialization-stability results, model mismatch injects fresh error at every filtering step, requiring a stronger sufficient contraction condition. We extend this mechanism to neural-softmax models under a local NTK-style linearization event, where finite-width errors enter additively. We then use martingale concentration to establish a uniform, high-probability bound on time-averaged belief error across the dataset, yielding a reusable belief-accuracy event. 
+
+• Robust Bradley–Terry reward learning from approximate beliefs. We derive a finite-sample guarantee for the constrained Bradley–Terry MLE (Theorem 5.8) that decomposes into a statistical error decaying as O(N −1/2HF ), an irreducible model-mismatch bias controlled by belief error, and a regularization bias. A key consequence is that, unlike in the fully observed setting, more human feedback cannot reduce the estimation error below the bias floor induced by imperfect dynamics, clarifying when and why reward learning degrades under partial observability. 2Organization. Section 3 introduces the POMDP model, log-linear dynamics, Bayesian filtering, and the induced belief-MDP representation. Section 4 derives expectation-level and high-probability stability guaran-tees for Bayesian filtering under learned log-linear dynamics. Appendix C extends the belief-stability mech-anism to neural-softmax models through an NTK-style linearization. Section 5 formalizes the preference-learning setup and establishes our main reward estimation guarantee under belief approximation error. Section 6 discusses implications, limitations, and future directions. Technical proofs are deferred to the appendix. 
+
+## 2 Related Work 
+
+Our setting draws on three adjacent literatures: learning under partial observability, stability of Bayesian filtering, and preference-based RLHF. POMDPs formalize decision-making with latent states and noisy observations (Åström, 1965), but are statistically hard to learn in full generality (Krishnamurthy et al., 2016; Jin et al., 2020), motivating work under structural assumptions and algorithmic frameworks for planning and learning under partial observability (Kaelbling et al., 1998; Du et al., 2019; Liu et al., 2022; Uehara et al., 2022; Guo et al., 2023; Cayci & Eryilmaz, 2025). A closely related technical thread studies filter stability under initialization error or model mismatch: classical analyses typically require strong mixing assumptions (Van Handel, 2009), while recent results provide explicit exponential stability via Dobrushin-type contractions that account for both transitions and observations (Mcdonald & Yüksel, 2024). RLHF learns rewards from human feedback and then optimizes policies using standard RL machinery (Chris-tiano et al., 2017; Wirth et al., 2017; Ji et al., 2023). Reward learning is often instantiated via Bradley–Terry model (Bradley & Terry, 1952; Plackett, 1975) and combined with policy optimization methods such as PPO (Schulman et al., 2017), underpinning successes in robotics and interactive systems (Brown et al., 2020) and LLM alignment (Ziegler et al., 2019; Stiennon et al., 2020; Bai et al., 2022; Ouyang et al., 2022; Achiam et al., 2023). Recent theory analyzes preference-based MLE and RLHF-style learning in fully observed MDPs, from tabular regimes to function approximation and exploration-driven policy optimization (Novoseller et al., 2020; Chen et al., 2022b; Zhu et al., 2023; Du et al., 2024; Kaufmann et al., 2025; Pacchiano et al., 2021). A smaller line of work connects RLHF to latent-state structure and non-Markovian rewards. Most closely, Kausik et al. (2024) model RLHF via partially-observed reward-states (PORRL/PORMDP), where the envi-ronment state is observed but feedback depends on an additional latent “internal” reward-state. In contrast, we consider latent environment states with no access to rewards, and the agent interacts only through noisy observations and preference feedback. We quantify how belief computation under an inexact learned dynam-ics model perturbs trajectory features and induces a principled bias in Bradley–Terry reward estimation. 
+
+## 3 Setup and Preliminaries 
+
+3.1 POMDP model and trajectories 
+
+We work with a finite POMDP (S, A, ˆS, P θ , Φw, r, ν 0
+
+), where S is the finite latent state space, ˆS is the finite observation space, A is the finite action set, Pθ (· | s, a ) ∈ ∆S is the transition kernel, and Φw(· | s) ∈ ∆ˆS
+
+is the observation model. The reward function is r : S × A → R, and the initial state distribution ν0 ∈ ∆S
+
+is assumed known. The stability analysis below depends on the transition and observation channels only through their Dobrushin coefficients and the resulting explicit cardinality-dependent constants. 
+
+Assumption 3.1 (Model structure and bounded features) . Model dynamics admit the following log-linear structure 
+
+Pθ (s′|s, a ) = exp {θ⊤ϕp(s, a, s ′)}
+
+∑ 
+
+> ¯s∈S
+
+exp {θ⊤ϕp(s, a, ¯s)} , Φw(ˆ s | s) = exp {w⊤ϕΦ(s, ˆs)}
+
+∑ 
+
+> ¯s∈ˆS
+
+exp {w⊤ϕΦ(s, ¯s)} .
+
+Here ϕp is a feature map for the transition kernel and ϕΦ is a feature map for the observation model, and 3we assume 
+
+sup 
+
+> s,a,s ′
+
+∥ϕp(s, a, s ′)∥2 ≤ B, sup 
+
+> s, ˆs
+
+∥ϕΦ(s, ˆs)∥2 ≤ B. 
+
+For some B < ∞. The initialization also satisfies 
+
+1 > ν max ≥ ν0(s) ≥ νmin > 0, ∀s ∈ S. (1) 
+
+Remark 3.2 (Exponential-family modeling and model-based RL) . The log-linear parametrizations in As-sumption 3.1 are finite exponential-family models, standard in statistical modeling (e.g., Bishop (2007); Wainwright & Jordan (2008); van Handel (2008)). As a consequence, our framework falls under model-based RL . One can use the assumed learned models for belief filtering and downstream policy optimization. In this work we focus on the preference-based reward learning guarantees, treating the policy-optimization stage as modular and leaving its integration to future work. 
+
+Assumption 3.3 (Realizability and local parameter error) . There exists a true parameter Θ⋆ = ( θ⋆, w ⋆) ∈
+
+Rdθ +dw such that the data-generating POMDP has transition kernel Pθ⋆ and observation model Φw⋆ .Fix rΘ > 0, and suppose the learned parameter Θ = ( θ, w ) satisfies 
+
+Θ ∈ B2(Θ ⋆, r Θ) := {Θ′ ∈ Rdθ +dw : ∥Θ′ − Θ⋆∥2 ≤ rΘ}.
+
+Equivalently, 
+
+∥Θ − Θ⋆∥22 = ∥θ − θ⋆∥22 + ∥w − w⋆∥22 ≤ r2Θ.
+
+We write 
+
+δ(θ) := ∥θ − θ⋆∥2, δ(w) := ∥w − w⋆∥2,
+
+so that δ(θ)2 + δ(w)2 ≤ r2Θ.Given trajectories of observations and actions, a natural way to estimate the model parameter Θ = ( θ, w )
+
+in this class is via maximum-likelihood or an EM-type procedure. Fix a horizon T ∈ N. For a single trajectory, let the latent state sequence be Z := ( s0: T ) ∈ ST +1 and let the observation sequence be Y := (ˆ s1: T , a 0: T −1) ∈ ˆST × AT . We treat the action sequence a0: T −1 as observed and work with the likelihood conditional on actions. Under Θ = ( θ, w ), the joint conditional trajectory likelihood factorizes as 
+
+PΘ(Y, Z ) = ν0(s0) 
+
+> T−1
+
+∏
+
+> k=0
+
+Pθ (sk+1 | sk, a k)
+
+> T
+
+∏
+
+> k=1
+
+Φw(ˆ sk | sk). (2) Given a collection of trajectories, one may estimate Θ by maximizing the marginal likelihood PΘ(Y ) = ∑ 
+
+> Z
+
+PΘ(Y, Z ), for example, via EM. Under standard local identifiability and regularity conditions (e.g., strong concavity/smoothness of the standard EM auxiliary objective, i.e., the expected complete-data log-likelihood in a neighborhood of Θ⋆), EM-type procedures admit local linear convergence to Θ⋆ at the population level, with corresponding finite-sample perturbation bounds (Cappé et al., 2005; Wang & Zhao, 2006; van Handel, 2008; Balakrishnan et al., 2017). Given the observation–action history up to time t, Yt := (ˆ s1: t, a 0: t−1), the corresponding belief is defined as 
+
+bΘ 
+
+> t
+
+(s) := PΘ(st = s | Yt) ∈ ∆S, bΘ0 (s) = ν0(s).
+
+For parameters Θ = ( θ, w ), the Bayesian filter update is 
+
+bΘ
+
+> t+1
+
+(s′) := Φw(ˆ st+1 | s′) ∑ 
+
+> s∈S
+
+Pθ (s′ | s, a t) bΘ 
+
+> t
+
+(s)
+
+∑ 
+
+> ¯s∈S
+
+Φw(ˆ st+1 | ¯s) ∑ 
+
+> s∈S
+
+Pθ (¯ s | s, a t) bΘ 
+
+> t
+
+(s) . (3) Moreover, the induced belief-MDP reward can be written as 
+
+rb(bΘ 
+
+> t
+
+, a t) := Est∼bΘ
+
+> t
+
+[r(st, a t)] = ∑
+
+> s∈S
+
+bΘ 
+
+> t
+
+(s) r(s, a t).
+
+4The recursion Eq. 3 defines a nonlinear operator on ∆S obtained by composing a prediction step (via Pθ )with a Bayes reweighting step (via Φw). In general, this operator can amplify small perturbations in the model parameters or in the current belief over time. To obtain quantitative stability guarantees for the belief process, we impose an explicit mixing criterion that controls how strongly transitions forget the previous latent states. This is captured by the following Dobrushin coefficients, which will serve as the key constants governing one-step contraction and the resulting stability rate. 
+
+Definition 3.4 (Dobrushin coefficient) . Let Pθ (· | s, a ) ∈ ∆S be the transition kernel and Φw ∈ ∆ˆS
+
+the observation model. Define the uniform Dobrushin coefficient of the models over the feasible choice of parameter set by 
+
+κP := inf  
+
+> θ
+
+inf 
+
+> s,s ′,a
+
+∑
+
+> x∈S
+
+min {Pθ (x | s, a ), P θ (x | s′, a )}, κΦ := inf  
+
+> w
+
+inf 
+
+> s,s ′∈S
+
+∑
+
+> ˆs∈ˆS
+
+min {Φw(ˆ s | s), Φw(ˆ s | s′)}.
+
+Equivalently, 
+
+κP = 1 − sup 
+
+> θ
+
+sup 
+
+> a,s,s ′
+
+12 ∥Pθ (· | s, a ) − Pθ (· | s′, a )∥1.
+
+Assumption 3.5 (Dobrushin stability) . Let κP , κ Φ ∈ (0 , 1] be the uniform Dobrushin coefficients in Defi-nition 3.4. Assume that 
+
+α := (1 − κP )(4 − 3κΦ) < 1.
+
+Remark 3.6 (Role of α). In the log-linear model, Lemma A.2 yields the explicit lower bounds 
+
+κP ≥ |S|
+
+1 + ( |S| − 1) exp (2B(∥θ⋆∥2 + rΘ)) , κΦ ≥ |ˆS|
+
+1 + ( |ˆS| − 1) exp (2B(∥w⋆∥2 + rΘ)) .
+
+Therefore, α can be controlled by the feature bound B and the feasible radii; for example, by introducing temperature parameters to control the magnitude of B, one can effectively reduce α. This condition is a non-trivial stability requirement since the Bayesian filtering update need not be a contraction in general (see Example 3.3, Mcdonald & Yüksel (2024)). 
+
+Practical note. Although κP and κΦ are worst-case quantities, in practice rather than plugging in analytic lower bounds Eq. 31 and Eq. 32 that must hold uniformly over all (s, s ′, a ) in the feasible parameter set, we can estimate κP and κΦ directly from the realized transition and observation kernels. This yields a substantially less pessimistic stability certificate and better matches the observed contraction. To show exponential filter stability in expectation for an incorrectly initialized POMDP, Mcdonald & Yüksel (2024) assumed (1 − κP )(2 − κΦ) < 1. Building on this result, we show filter stability in expectation under POMDP model parameter perturbation. We set the assumption (1 − κP )(4 − 3κΦ) < 1 in Theorem 4.1. The stronger (4 − 3κΦ) factor arises because model mismatch injects fresh error at every step, as shown by terms (I)-(II) in Appendix B, and not just an initial discrepancy. This assumption is a sufficient technical bridge from POMDP model-mismatch to robust preference-based reward learning, as formalized in Theorem 5.8. We emphasize that this assumption is not claimed to be a necessary condition for the relation to hold; empirical performance may remain robust even when these worst-case mixing bounds are not strictly satisfied. The next section quantifies this effect by proving that, under α < 1, the belief mapping Θ 7 → bΘ 
+
+> t
+
+is Lipschitz in expectation around Θ⋆ (Theorem 4.1). This stability bound is the key technical input for transferring POMDP parameter error into controlled feature perturbations in the downstream RLHF analysis (Theo-rem 5.8). 
+
+## 4 Belief Stability Under Model Mismatch 
+
+Let the true parameters be Θ⋆ = ( θ⋆, w ⋆) and the estimate Θ = ( θ, w ), living in a compact feasible parameter set as in Assumption 3.3. 5Theorem 4.1. Consider the POMDP with log-linear dynamics, under Assumptions 3.1, 3.3, 3.5. Fix an action sequence (a0, . . . , a t−1), estimated model parameters Θ = ( θ, w ), true parameters Θ⋆ = ( θ⋆, w ⋆) and corresponding belief processes (bΘ 
+
+> k
+
+)tk=0 and (bΘ⋆ 
+
+> k
+
+)tk=0 with priors bΘ0 = bΘ⋆ 
+
+> 0
+
+= ν0 ∈ ∆S. Then, the mapping from parameters Θ = ( θ, w ) → bΘ 
+
+> t
+
+is Lipschitz at Θ⋆ in expectation. In particular, for every t ≥ 1,
+
+E
+
+[
+
+∥bΘ 
+
+> t
+
+− bΘ⋆ 
+
+> t
+
+∥TV 
+
+]
+
+≤ (1 − αt)1 − α cb (δ(θ), δ (w)) , (4) 
+
+where cb (δ(θ), δ (w)) := B( δ(w) + (3 −2κΦ)2 δ(θ)), and the expectation is over ˆs1: t ∼ PΘ⋆ ( · | a0: t−1).
+
+Proof sketch. The proof decomposes one-step belief error into (I) observation-model perturbation, (II) transition-model perturbation, and (III) propagation under filter mixing, then unrolls the resulting recursion. The detailed proof is provided in Appendix B. 
+
+Proof. The full proof is given in Appendix B. 
+
+Remark 4.2 (Error in belief stability) . The bound in Eq. 4 splits into a time-propagation factor and a one-step mismatch term: 
+
+E
+
+[
+
+∥bΘ 
+
+> t
+
+− bΘ⋆ 
+
+> t
+
+∥TV 
+
+]
+
+≤ 1 − αt
+
+1 − α
+
+︸ ︷︷ ︸ 
+
+> propagation over time
+
+×
+
+(
+
+B δ (w) + B 
+
+> 2
+
+(3 − 2κΦ) δ(θ)
+
+)︸ ︷︷ ︸
+
+> model mismatch
+
+.
+
+When α < 1, the propagation factor is uniformly bounded by (1 − α)−1, so the belief error scales linearly with the parameter deviations δ(w) and δ(θ).
+
+Remark 4.3 (Filter stability challenges) . Analyzing filter stability over long horizons is notoriously difficult because the Bayesian update operator ψ is generally not a contraction and can expand the total variation distance between beliefs (see Mcdonald & Yüksel (2024), Example 3.3). Standard results often impose restrictive strong mixing conditions on the transition kernel P (·|· , ·) and assume that it is sufficiently ergodic Van Handel (2009). Using the Dobrushin coefficient κΦ of the observation model can account for the 
+
+joint contraction properties of the transition and measurement steps, allowing for stability even when the transition kernel alone is not sufficiently mixing. The price for this generality is that the contraction holds in expectation rather than almost surely. Moreover, while Mcdonald & Yüksel (2024) establishes stability with respect to incorrect initialization , our Theorem 4.1 extends this machinery to the learning setting. We establish stability with respect to parametric model mismatch (Θ vs. Θ⋆), deriving explicit perturbation bounds specific to the log-linear family. This quantifies how parameter error injects bias at every step (terms (I) and (II) in Eq. 46 in Appendix B), a distinct challenge from the pure initialization decay studied in classical filtering literature. Theorem 4.1 controls the belief error in expectation at a fixed time t under model mismatch. For the RLHF reduction we will need a uniform-in-time control along a trajectory, since downstream feature and preference observations depend on the entire history. We therefore convert the per-step expected contraction into a 
+
+high-probability bound on the time-average belief error. 
+
+Definition 4.4 (Neural-softmax transition and observation models) . Let the transition and observation kernels be parameterized by neural-network scores 
+
+PWp (s′ | s, a ) = exp {Fp(s, a, s ′; Wp)}
+
+∑ 
+
+> ¯s∈S
+
+exp {Fp(s, a, ¯s; Wp)} , ΦWΦ (ˆ s | s) = exp {FΦ(s, ˆs; WΦ)}
+
+∑ 
+
+> ¯s∈ˆS
+
+exp {FΦ(s, ¯s; WΦ)} (5) We take both score functions to be two-layer ReLU networks with width m.
+
+Corollary 4.5 (Belief perturbation bound for neural-softmax models) . Consider the POMDP introduced earlier with neural-softmax transition and observation models in Definition 4.4, under Assumption C.3. Let 
+
+W = ( Wp, W Φ) ∈ D be an estimated neural parameter and let W ⋆ = ( W ⋆p , W ⋆
+
+> Φ
+
+) ∈ D be the true parameter generating the POMDP. Consider an action sequence (a0, . . . , a t−1) and the corresponding belief processes 
+
+6(bWk )tk=0 and (bW ⋆ 
+
+> k
+
+)tk=0 , initialized from the same prior bW 
+
+> 0
+
+= bW ⋆ 
+
+> 0
+
+= ν0 ∈ ∆S. Let κNN  
+
+> P
+
+and κNN Φ be the uniform neural Dobrushin coefficients from Lemma C.6, and assume αNN := (1 − κNN  
+
+> P
+
+)(4 − 3κNN Φ ) < 1. For any δNN ∈ (0 , 1) , on the event ENN lin (δNN ), and for every t ≥ 1 it holds 
+
+E
+
+[
+
+∥bWt − bW ⋆ 
+
+> t
+
+∥TV 
+
+]
+
+≤ 1 − αt
+
+> NN
+
+1 − αNN 
+
+cNN  
+
+> b
+
+(W, W ⋆; δNN ), (6) 
+
+where the expectation is taken with respect to ˆs1: t ∼ PW ⋆ ( · | a0: t−1), and 
+
+cNN  
+
+> b
+
+(W, W ⋆; δNN ) := BNN ∥WΦ − W ⋆
+
+> Φ
+
+∥F + 2 εNN Φ (m, δ NN ) (7) 
+
++ (3 − 2κNN Φ )
+
+( BNN 
+
+2 ∥Wp − W ⋆p ∥F + εNN  
+
+> p
+
+(m, δ NN )
+
+)
+
+. (8) 
+
+In particular, as m → ∞ , this recovers a Lipschitz-type belief perturbation bound in the neural parameters. Proof. The full proof is given in Appendix D. 
+
+Proof sketch. The proof follows the same one-step decomposition as Theorem 4.1. The only changes are that the log-linear row-wise kernel perturbation bounds are replaced by Lemma C.5, and the Dobrushin constants are replaced by the neural constants κNN  
+
+> P
+
+and κNN Φ from Lemma C.6. The resulting recursion has additive term cNN  
+
+> b
+
+(W, W ⋆; δNN ) and contraction coefficient αNN .
+
+4.1 High-probability time-average belief error 
+
+The expectation bounds in Theorems 4.1 and Corollary 4.5 control the belief mismatch at each fixed time. For preference-based reward learning, however, the relevant objects are trajectory-level feature sums, and hence the error depends on the accumulated belief mismatch along the whole rollout. Therefore, it suffices to control the time-average belief error. The following corollary converts the one-step stability recursion into a high-probability time-average bound via a martingale argument. This bound will later be union-bounded over all trajectory pairs in the preference dataset to define a belief-accuracy event for the reward learning analysis. 
+
+Corollary 4.6. Consider the setting of Theorem 4.1 and fix Θ = ( θ, w ) ∈ B2(Θ ⋆, r Θ) such that ∥θ − θ⋆∥2 ≤
+
+δ(θ) and ∥w − w⋆∥2 ≤ δ(w). For t = 0 , 1, . . . , T − 1 consider the random variables Xt := ∥∥bΘ 
+
+> t
+
+− bΘ⋆
+
+> t
+
+∥∥TV . For the filtrations {F − 
+
+> t
+
+}t≥0 and {F t}t≥0 defined by F− 
+
+> t
+
+:= σ(ˆ s1: t, a 0: t−1), Ft := σ(ˆ s1: t, a 0: t), with F−−1 := σ(∅, Ω) ,the random variable Xt is F− 
+
+> t
+
+-measurable. For any δb ∈ (0 , 1) , with probability at least 1 − δb,
+
+1
+
+T 
+
+> T−1
+
+∑
+
+> t=0
+
+Xt ≤ 2cb (δ(θ), δ (w)) 1 − α + 21 − α
+
+√ 2cb (δ(θ), δ (w)) log(1 /δ b)
+
+T
+
++ log(1 /δ b)
+
+T (1 − α)
+
+( 43 + 2α
+
+1 − α
+
+)
+
+(9) 
+
+=: ϵb(δb). (10) 
+
+Moreover, the same statement holds for the neural-softmax model of Theorem 4.5. In particular, for any 
+
+δNN ∈ (0 , 1) , on the linearization event ENN lin (δNN ) from Definition C.2, if XNN  
+
+> t
+
+:= ∥∥bWt − bW ⋆
+
+> t
+
+∥∥TV , and if αNN < 1, then with conditional probability at least 1 − δb, equivalently with joint probability at least 
+
+1 − (δb + δNN ),
+
+71
+
+T 
+
+> T−1
+
+∑
+
+> t=0
+
+XNN  
+
+> t
+
+≤ 2cNN  
+
+> b
+
+(W, W ⋆; δNN )1 − αNN 
+
++ 21 − αNN 
+
+√ 2cNN  
+
+> b
+
+(W, W ⋆; δNN ) log(1 /δ b)
+
+T
+
++ log(1 /δ b)
+
+T (1 − αNN )
+
+( 43 + 2αNN 
+
+1 − αNN 
+
+)
+
+(11) 
+
+=: ϵNN  
+
+> b
+
+(δb, δ NN ), (12) 
+
+where cNN  
+
+> b
+
+(W, W ⋆; δNN ) is defined in Eq. 7. 
+
+Proof sketch. Starting from a one-step conditional drift inequality for Xt, define a martingale difference sequence and apply Freedman’s inequality to control deviations of ∑ 
+
+> t
+
+Xt from its conditional expectation, yielding the stated time-average bound. 
+
+Remark 4.7 (Learning Beliefs Directly) . Our analysis is modular with respect to the source of the approximate beliefs. Although Sections 3–4 instantiate ˜bt = bΘ 
+
+> t
+
+through Bayesian filtering under a learned POMDP model, one may instead use a direct belief-inference module that maps histories (ˆ s1: t, a 0: t−1) to approximate beliefs. Recent examples include Deep Belief Markov Models Arcieri et al. (2026), which learn belief-transition and belief-inference operators via variational inference, and flow-based recurrent belief models, which use normalizing flows to represent flexible belief distributions (Chen et al., 2022a). This provides an alternative approach to bypass explicit POMDP model estimation when convenient. In our reward-learning analysis in the following section, such a module can be substituted for the Bayesian filter whenever it provides a belief-accuracy guarantee of the form 
+
+1
+
+T 
+
+> T−1
+
+∑
+
+> t=0
+
+∥˜bt − bΘ⋆ 
+
+> t
+
+∥TV ≤ ϵapprox  
+
+> b
+
+.
+
+for some approximation error ϵapprox  
+
+> b
+
+. Then the belief-approximation error enters the next section only through the trajectory-feature perturbation term, and we can replace ϵb(δb, 2NHF ) by ϵapprox  
+
+> b
+
+to obtain the same bound on accumulated feature difference ∥ ˜ϕi − ϕi∥2, and the subsequent Bradley–Terry estimation analysis proceeds unchanged with this substituted error level. 
+
+## 5 Preference-Based Reward Learning Under Belief Error 
+
+Having established quantitative belief stability under model mismatch, we turn to learning a reward model from pairwise preferences when trajectories are represented in the belief-MDP. Note that the model mismatch affects reward learning through the induced belief features, since preference labels come from rollouts, but the learner’s feature construction relies on bΘ 
+
+> t
+
+rather than the oracle beliefs bΘ⋆ 
+
+> t
+
+. Accordingly, this section formalizes the Bradley–Terry preference model (Bradley & Terry, 1952; Wirth et al., 2017) over belief-based trajectory features, and quantifies how the belief error bounds from Section 4 translate into an explicit perturbation (bias) term in reward estimation, alongside the usual finite-sample statistical error. 
+
+5.1 Reward model and preference data 
+
+Assumption 5.1 (Reward model structure and preference data for belief-MDP) .
+
+1. Linear latent reward. For all (s, a ) ∈ S × A, the reward is linear: r(s, a ) = ϕr (s, a )⊤μ⋆ with the corresponding feature map satisfying ∥ϕr (s, a )∥2 ≤ Br < ∞, and the unknown reward parameter 
+
+μ⋆ ∈ B2(rμ) ⊂ Rd.2. Belief feature map. Define ϕb(b, a ) := ∑ 
+
+> s∈S
+
+b(s) ϕr (s, a ) for (b, a ) ∈ ∆S × A. Then rb(b, a ) := 
+
+Es∼b
+
+[r(s, a )] = ∑ 
+
+> s∈S
+
+b(s) ϕr (s, a )⊤μ⋆ = ϕb(b, a )⊤μ⋆.
+
+83. Preference realizability. Let {(τ (1)  
+
+> i
+
+, τ (2)  
+
+> i
+
+, y i)}NHF  
+
+> i=1
+
+be NHF independent preference comparisons with fixed trajectory horizon T ∈ N. Here yi ∈ { 0, 1} and σ(z) = 1 /(1 + e−z ). Let ϕi ∈ Rd be the clean trajectory-level feature difference defined in Eq. 14. Then, for every i, P(yi = 1 | ϕi) = 
+
+σ(ϕ⊤ 
+
+> i
+
+μ⋆).
+
+Remark 5.2 . Since ϕb is linear in b, it inherits boundedness: 
+
+∥ϕb(b, a )∥2 ≤ ∑
+
+> s∈S
+
+b(s) ∥ϕr (s, a )∥2 ≤ Br , ∀(b, a ) ∈ ∆S × A.
+
+Moreover, for any b, b ′ ∈ ∆S and all a ∈ A,
+
+∥ϕb(b, a ) − ϕb(b′, a )∥2 =
+
+∥∥∥∑
+
+> s∈S
+
+(b(s) − b′(s))ϕr (s, a )
+
+∥∥∥2
+
+≤ Br ∥b − b′∥1 = 2 Br ∥b − b′∥TV . (13) 
+
+Remark 5.3 (Generalization to non-linear rewards) . Linear reward parameterizations are standard in preference-based RLHF and are widely used as a tractable baseline (see, e.g., Zhu et al. (2023); Du et al. (2024); Cen et al. (2025)). Our analysis isolates how model-mismatch propagates through belief errors into perturbed trajectory features, which in turn affects reward learning in Theorem 5.8. More general reward function classes can be accommodated by introducing an approximation error term (relative to the linear class) and carrying it through the final bound. In particular, over-parameterized neural networks are a plausible choice as discussed in Appendix C for POMDP model approximation. 
+
+5.2 Clean vs. perturbed trajectory features and MLE 
+
+Throughout the following, we work on the belief state space ∆S and use the belief feature map ϕb. Let 
+
+NHF denote the number of independent preference comparisons, and consider a dataset {(τ (1)  
+
+> i
+
+, τ (2)  
+
+> i
+
+, y i)}NHF  
+
+> i=1
+
+,where yi ∈ { 0, 1} is the observed preference label and yi = 1 indicates a preference for τ (1)  
+
+> i
+
+over τ (2)  
+
+> i
+
+. For each i ∈ { 1, . . . , N HF } and j ∈ { 1, 2}, let the observed history be Y (j) 
+
+> i
+
+:= (ˆs(j) 
+
+> i, 1: T
+
+, a (j) 
+
+> i, 0: T−1
+
+). and define the corresponding belief sequences (b(j),Θ 
+
+> i,h
+
+)T −1 
+
+> h=0
+
+and (b(j),Θ⋆ 
+
+> i,h
+
+)T −1 
+
+> h=0
+
+as the filtering distributions computed under Θ
+
+and Θ⋆, respectively, on the same history Y (j) 
+
+> i
+
+via the Bayesian update Eq. 3. We then write the history-indexed belief trajectories as τ (j),Θ 
+
+> i
+
+:= (b(j),Θ 
+
+> i,h
+
+, a (j)
+
+> i,h
+
+)T −1 
+
+> h=0
+
+, τ (j),Θ⋆ 
+
+> i
+
+:= (b(j),Θ⋆ 
+
+> i,h
+
+, a (j)
+
+> i,h
+
+)T −1 
+
+> h=0
+
+, and the action sequence 
+
+(a(j)
+
+> i,h
+
+)T −1 
+
+> h=0
+
+is treated as observed. Throughout this work, we assume that all trajectories have a fixed horizon 
+
+T < ∞.
+
+Remark 5.4 (Single realized action sequence vs. fixed-history analysis) . In an RLHF interaction there is only one physically realized history (ˆ s1: T , a 0: T −1). Our stability guarantees compare bΘ 
+
+> t
+
+and bΘ⋆ 
+
+> t
+
+computed on this same realized history (i.e., conditioning on the realized action sequence and coupling on the realized observations). This fixed-history coupling is exactly what controls feature perturbations in Eq. 14–Eq. 15. Analyzing additional divergence caused by two models inducing different closed-loop action sequences is beyond scope. 
+
+Reward parameter learning from human preferences. We consider the estimation of the reward parameter μ⋆ ∈ Rd from human preference data under a trajectory-level Bradley–Terry model Bradley & Terry (1952). Human feedback is provided as pairwise trajectory comparisons {(τ (1)  
+
+> i
+
+, τ (2)  
+
+> i
+
+, y i)}NHF  
+
+> i=1
+
+. For each comparison, we define the trajectory-level exact and perturbed accumulated feature differences as 
+
+ϕi :=  
+
+> T−1
+
+∑
+
+> h=0
+
+ϕb
+
+(b(1) ,Θ⋆ 
+
+> i,h
+
+, a (1) 
+
+> i,h
+
+) − 
+
+> T−1
+
+∑
+
+> h=0
+
+ϕb
+
+(b(2) ,Θ⋆ 
+
+> i,h
+
+, a (2) 
+
+> i,h
+
+), (14) 
+
+˜ϕi :=  
+
+> T−1
+
+∑
+
+> h=0
+
+ϕb
+
+(b(1) ,Θ 
+
+> i,h
+
+, a (1) 
+
+> i,h
+
+) − 
+
+> T−1
+
+∑
+
+> h=0
+
+ϕb
+
+(b(2) ,Θ 
+
+> i,h
+
+, a (2) 
+
+> i,h
+
+). (15) 9Algorithm 1 Preference-Based Reward Learning via Learned Beliefs  
+
+> 1:
+
+Input: Horizon T ; preference data D = {(Y (1)  
+
+> i
+
+, Y (2)  
+
+> i
+
+, y i)}NHF  
+
+> i=1
+
+with Y (j) 
+
+> i
+
+= (ˆ s(j) 
+
+> i, 1: T
+
+, a (j) 
+
+> i, 0: T−1
+
+); labels yi ∈{0, 1}; learned POMDP model Θ = ( θ, w ); belief feature map ϕb; constraint radius rμ. 
+
+> 2:
+
+Phase 1: Reconstruct Beliefs and Features  
+
+> 3:
+
+for i = 1 , . . . , N HF do  
+
+> 4:
+
+for j ∈ { 1, 2} do  
+
+> 5:
+
+b(j),Θ 
+
+> i, 0
+
+← ν0 
+
+> 6:
+
+for h = 0 , . . . , T − 1 do  
+
+> 7:
+
+b(j),Θ 
+
+> i,h +1
+
+← BeliefUpdate 
+
+(
+
+b(j),Θ 
+
+> i,h
+
+, a (j)
+
+> i,h
+
+, ˆs(j)
+
+> i,h +1
+
+; Θ 
+
+)
+
+(Eq. 3)  
+
+> 8:
+
+end for  
+
+> 9:
+
+end for  
+
+> 10:
+
+Compute perturbed feature difference ˜ϕi (Eq. 15):  
+
+> 11:
+
+˜ϕi ← ∑T −1 
+
+> h=0
+
+ϕb
+
+(
+
+b(1) ,Θ 
+
+> i,h
+
+, a (1) 
+
+> i,h
+
+)
+
+− ∑T −1 
+
+> h=0
+
+ϕb
+
+(
+
+b(2) ,Θ 
+
+> i,h
+
+, a (2) 
+
+> i,h
+
+) 
+
+> 12:
+
+end for  
+
+> 13:
+
+Phase 2: Maximum Likelihood Estimation  
+
+> 14:
+
+Solve for ˜μ (Eq. 16):  
+
+> 15:
+
+˜μ ← arg min ∥μ∥2≤rμ − ∑NHF 
+
+> i=1
+
+[
+
+yi log σ( ˜ϕ⊤ 
+
+> i
+
+μ) + (1 − yi) log (1 − σ( ˜ϕ⊤ 
+
+> i
+
+μ))] 
+
+> 16:
+
+Output: Estimated reward parameter ˜μ
+
+The feature vector ϕi corresponds to the trajectory-level reward feature difference evaluated along the true belief process (b(j),Θ⋆ 
+
+> i,h
+
+)h. The perturbed feature ˜ϕi is computed using approximate beliefs (b(j),Θ 
+
+> i,h
+
+)h, where the differences arise from model mismatch. Lemma E.2 bounds ∥ϕi − ˜ϕi∥2 on the event ERLHF  
+
+> b
+
+(δb) in the Appendix. These two features induce conditional preference models; for example, ˜ϕi induces P(yi =1 | ˜ϕi, μ ) = σ( ˜ϕ⊤ 
+
+> i
+
+μ), with σ(z) = 1 /(1 + e−z ). We estimate the reward parameter using the constrained maximum likelihood estimator 
+
+˜μ := arg min 
+
+> ∥μ∥2≤rμ
+
+{
+
+−
+
+> NHF
+
+∑
+
+> i=1
+
+[
+
+yi log σ( ˜ϕ⊤ 
+
+> i
+
+μ) + (1 − yi) log (1 − σ( ˜ϕ⊤ 
+
+> i
+
+μ))]}
+
+. (16) In the following analysis, we study the statistical behavior of ˜μ and its robustness to trajectory-level pertur-bations arising from belief approximation. For clarity, the complete computational pipeline from recursive belief filtering to the optimization of the regularized estimator in Eq. 16 is summarized in Algorithm 1. 
+
+Remark 5.5 (Belief-based features) . Classical Bradley–Terry reward learning typically assumes access to true states and uses state-based trajectory features (Wirth et al., 2017; Zhu et al., 2023; Du et al., 2019; Cen et al., 2025). Under partial observability, we instead construct ϕi and ˜ϕi from belief–action pairs; hence model mismatch affects reward learning through belief-induced feature perturbations. 
+
+5.3 Belief accuracy event for preference learning 
+
+In this subsection we lift the time-average belief error guarantee from Corollary 4.6 to the full preference dataset. Note that we do not need a uniform-in-time control such as sup 0≤h≤T −1 ∥bΘ 
+
+> h
+
+− bΘ⋆ 
+
+> h
+
+∥TV . Since Bradley–Terry comparisons are driven by accumulated trajectory-level feature differences (14 and 15), the relevant quantity is the per-trajectory time-average belief mismatch, which then translates into a bound on the induced feature perturbation. We therefore define a high-probability event on which every rollout used to form the comparisons satisfies a small average belief error. 
+
+Belief accuracy event. Consider preference comparisons {(τ (1)  
+
+> i
+
+, τ (2)  
+
+> i
+
+, y i)}NHF  
+
+> i=1
+
+. For any confidence level 
+
+δb ∈ (0 , 1) , define the belief-accuracy events for i ∈ { 1, . . . , N HF }, j ∈ { 1, 2} as 
+
+E(j) 
+
+> b,i
+
+(δb) := 
+
+{
+
+1
+
+T 
+
+> T−1
+
+∑
+
+> h=0
+
+∥∥b(j),Θ 
+
+> i,h
+
+− b(j),Θ⋆
+
+> i,h
+
+∥∥TV ≤ ϵb(δb)
+
+}
+
+, ERLHF  
+
+> b
+
+(δb) := 
+
+> NHF
+
+⋂
+
+> i=1
+
+⋂
+
+> j∈{ 1,2}
+
+E(j)
+
+> b,i
+
+( δb
+
+2NHF 
+
+)
+
+. (17) 10 By Corollary 4.6 and a union bound, P(ERLHF  
+
+> b
+
+(δb)) ≥ 1 − δb. Throughout the following analysis, we work on the event ERLHF  
+
+> b
+
+(δb) for log-linear POMDP model and use the shorthand 
+
+ϵb(δb, 2NHF ) := ϵb
+
+( δb
+
+2NHF 
+
+)
+
+= 2cb (δ(θ), δ (w)) 1 − α + 21 − α
+
+√ 2cb (δ(θ), δ (w)) log(2 NHF /δ b)
+
+T
+
++ log(2 NHF /δ b)
+
+T (1 − α)
+
+( 43 + 2α
+
+1 − α
+
+)
+
+. (18) That is, ϵb(δb, 2NHF ) is given by Eq. 9 with the substitution log (2NHF /δ b
+
+). Analogously, for the neural-softmax POMDP model under the setting of Theorem 4.5, fix δNN ∈ (0 , 1) . On the event ENN lin (δNN ), define 
+
+ERLHF ,NN  
+
+> b
+
+(δb, δ NN ) similarly to Eq. 17, with b(j),Θ 
+
+> i,h
+
+and b(j),Θ⋆ 
+
+> i,h
+
+replaced by b(j),W i,h and b(j),W ⋆ 
+
+> i,h
+
+, respectively, and with ϵb replaced by the neural bound ϵNN  
+
+> b
+
+. More explicitly, we use the shorthand 
+
+ϵNN  
+
+> b
+
+(δb, 2NHF , δ NN ) := ϵNN 
+
+> b
+
+( δb
+
+2NHF 
+
+, δ NN 
+
+)
+
+,
+
+where ϵNN  
+
+> b
+
+(·, δ NN ) is defined in Eq. 11 using the linearization-error levels εNN  
+
+> p
+
+(m, δ NN ) and εNN Φ (m, δ NN ).By the neural high-probability belief bound and a union bound over the 2NHF trajectories, together with 
+
+ENN lin (δNN ), we have 
+
+P
+
+(
+
+ERLHF ,NN  
+
+> b
+
+(δb, δ NN )
+
+)
+
+≥ 1 − (δb + δNN ).
+
+Remark 5.6 (Preference realizability and conditional independence) . Assumption 5.1 (item 3) assumes a correctly specified Bradley–Terry preference model, where each label yi is generated from an independent trajectory pair and is conditionally independent given the corresponding clean feature difference ϕi, with 
+
+P(yi = 1 | ϕi) = σ(ϕ⊤ 
+
+> i
+
+μ⋆). This provides the link from trajectory-level features to observable preference feedback. (See, also Proof E.1) 
+
+5.4 Reward estimation guarantee 
+
+We now state our main theorem for estimating the Bradley–Terry reward parameter μ⋆. Our analysis is carried out in the local geometry induced by the empirical design covariance, which captures the curvature of the empirical MLE objective. Accordingly, we measure error in the covariance-weighted norm ∥ · ∥ ˜Σ+ ζI , (See Definition 5.7), which is a natural scale for evaluating the parameter optimality gap. However, our learner features are perturbed through belief mismatch, so the usual self-normalized arguments Zhu et al. (2023); Abbasi-yadkori et al. (2011) cannot be applied directly to the gradient formed with ˜ϕi. This introduces an additional technical difficulty; see Remark F.1. 
+
+Definition 5.7 (Clean and perturbed empirical covariances) . Given trajectory-level feature differences 
+
+{ϕi}NHF  
+
+> i=1
+
+and their perturbed counterparts { ˜ϕi}NHF  
+
+> i=1
+
+, define the corresponding empirical covariance matri-ces by 
+
+Σ := 1
+
+NHF 
+
+> NHF
+
+∑
+
+> i=1
+
+ϕiϕ⊤ 
+
+> i
+
+, ˜Σ := 1
+
+NHF 
+
+> NHF
+
+∑
+
+> i=1
+
+˜ϕi ˜ϕ⊤ 
+
+> i
+
+. (19) 
+
+Theorem 5.8 (Reward parameter estimation under belief error) . Assume the conditions of Theorem 4.1 and Assumption 5.1. Let Θ = ( θ, w ) ∈ B2(Θ ⋆, r Θ) and let {(Y (1)  
+
+> i
+
+, Y (2)  
+
+> i
+
+, y i)}NHF  
+
+> i=1
+
+be NHF independent prefer-ence comparisons. Form perturbed trajectory feature differences { ˜ϕi}NHF  
+
+> i=1
+
+via Eq. 15 using beliefs (b(j),Θ 
+
+> i,h
+
+)Th=0 
+
+computed from Eq. 3, and let ˜μ be the constrained Bradley–Terry MLE in Eq. 16. Fix δb, δ c ∈ (0 , 1) . Then, for any factor cζ > 1, with probability at least 1 − (δb + δc), the estimation error satisfies 
+
+11 ∥˜μ − μ⋆∥˜Σ+ ζI ≤ 2√cζ
+
+ρ√NHF (cζ − 1) 
+
+√
+
+d log 
+
+(
+
+1 + 4T 2B2
+
+> r
+
+ζd 
+
+)
+
++ 2 log 
+
+( 1
+
+δc
+
+)
+
++ 8T B r ϵb(δb, 2NHF )
+
+ρ√ζ
+
+(
+
+1 + 12 T B r rμ
+
+)
+
++ 2 rμ
+
+√ζ (20) 
+
+:= ϵ(δb, δ c, ζ ), (21) 
+
+where ρ = 1 /(2 + exp(2 T B r rμ) + exp( −2T B r rμ)), and ζ := cζ 16 T 2B2 
+
+> r
+
+ϵb(δb, 2NHF )(1 + ϵb(δb, 2NHF )) .The same conclusion holds for the neural-softmax POMDP model of Theorem 4.5. In that case, additionally fix δNN ∈ (0 , 1) . With probability at least 1−(δb+δc+δNN ), the bound Eq. 21 holds after replacing b(j),Θ 
+
+> i,h
+
+, b (j),Θ⋆
+
+> i,h
+
+by b(j),W i,h , b (j),W ⋆ 
+
+> i,h
+
+, respectively, and replacing ϵb(δb, 2NHF ) everywhere, including in the definition of ζ, by 
+
+ϵNN  
+
+> b
+
+(δb, 2NHF , δ NN ).
+
+Proof sketch. We show ˜L is ρ-strongly convex on B2(rμ) in the ( ˜Σ + ζI )-geometry, and then control the estimation error by bounding the gradient at μ⋆ ∥˜μ − μ⋆∥˜Σ+ ζI ≤ 2 
+
+> ρ
+
+∥∇ ˜L(μ⋆)∥( ˜Σ+ ζI )−1 + 2 rμ
+
+√ζ. Then, we decompose ∇ ˜L(μ⋆) into (i) a clean term handled by an elliptical-potential bound, and (ii) a perturbation term controlled on ERLHF  
+
+> b
+
+(δb). Finally, we transfer the bound from the clean norm (Σ + ζI ) to the perturbed norm ( ˜Σ + ζI ) by an inverse-comparison argument. More details on ζ is provided in Remarks F.3-F.4. The proof for neural-softmax POMDP is similar. 
+
+Proof. The full proof is given in Appendix F. 
+
+Remark 5.9 (The cost of partial observability and error decomposition) . Compare Theorem 5.8 to the oracle fully observed setting, where the learner observes the true state and thus eliminats the belief-induced model-mismatch bias terms. In that case one recovers the standard ˜O
+
+(√ dρ2NHF 
+
+)
+
+decay rate (e.g., Lemma 5.1. Zhu et al. (2023)). In contrast, under partial observability with a fixed learned dynamics model, the bound contains additional terms that do not decay with NHF ; hence letting NHF → ∞ cannot reduce the reward-estimation error upper bound below this bias floor. This separates the benefit of more feedback from the price of operating with approximate beliefs. More precisely, the bound in Theorem 5.8 separates three contributions to the parameter error. Up to logarithmic factors, 
+
+∥˜μ − μ⋆∥˜Σ+ ζI ≲ O
+
+( 1
+
+√NHF 
+
+)︸ ︷︷ ︸
+
+> Statistical Noise
+
++ O
+
+( T B r
+
+√ζ ϵb(δb, 2NHF )
+
+)︸ ︷︷ ︸
+
+> Model-Mismatch Bias
+
++ O(rμ
+
+√ζ)
+
+︸ ︷︷ ︸
+
+> Regularization Bias
+
+.
+
+## 6 Conclusion 
+
+We analyzed preference-based reward learning in belief-MDPs under partial observability, where the true environment state is latent, and the agent instead acts on belief states obtained by Bayesian filtering from observation histories under an inexact learned POMDP. For finite log-linear POMDPs, we proved explicit stability of the filtering recursion to parametric model mismatch under a Dobrushin-type mixing condition, yielding bounds on E[∥bΘ 
+
+> t
+
+−bΘ⋆ 
+
+> t
+
+∥TV ] and high-probability time-average control. We further extended the same belief-stability mechanism to neural-softmax POMDP models through an NTK-style linearization, where finite-width linearization errors enter additively into the belief perturbation bound. We then propagated belief mismatch into trajectory-level feature perturbations and derived finite-sample guarantees for Bradley– Terry reward estimation from preferences, decomposing the error upper bound into an N −1/2HF statistical term, an irreducible model-mismatch bias controlled by the belief error level, and a regularization bias governed by ζ.A limitation is that our filter comparison treats the action sequence as given and studies stability under a common logged action–observation history, which is the relevant regime for offline RLHF on a fixed dataset 12 Kaufmann et al. (2025). Also, the Dobrushin contraction assumption can be conservative in weakly mixing or nearly deterministic regimes and may only be valid in a local neighborhood of the true parameters. For the neural-softmax extension, the guarantee additionally relies on a lazy-training regime, so the resulting constants depend on the width-dependent approximation errors. As future directions, one can consider end-to-end closed-loop guarantees that couple belief-filter error with policy-induced trajectory drift, develop weaker stability notions beyond uniform Dobrushin contraction, and extend the analysis to broader learned-dynamics function classes with explicit approximation terms. A natural complementary module is a POMDP parameter-estimation stage, for either log-linear or neural transition and observation models, with finite-sample error control, enabling a fully modular pipeline in which estimation, filtering stability, preference-based reward learning, and policy optimization in the continuous belief-MDP are analyzed and improved componentwise. 13 References 
+
+Yasin Abbasi-yadkori, Dávid Pál, and Csaba Szepesvári. Improved algorithms for linear stochastic bandits. In J. Shawe-Taylor, R. Zemel, P. Bartlett, F. Pereira, and K.Q. Weinberger (eds.), Advances in Neural Information Processing Systems , volume 24. Curran Associates, Inc., 2011. URL https://proceedings. neurips.cc/paper_files/paper/2011/file/e1d5be1c7f2f456670de3d53c7b54f4a-Paper.pdf .Josh Achiam, Steven Adler, Sandhini Agarwal, Lama Ahmad, Ilge Akkaya, Florencia Leoni Aleman, Diogo Almeida, Janko Altenschmidt, Sam Altman, Shyamal Anadkat, et al. Gpt-4 technical report. arXiv preprint arXiv:2303.08774 , 2023. Alekh Agarwal, Sham Kakade, Mikael Henaff, and Wen Sun. Pc-pg: policy cover directed exploration for provable policy gradient learning. In Proceedings of the 34th International Conference on Neural Information Processing Systems , NIPS ’20, Red Hook, NY, USA, 2020. Curran Associates Inc. ISBN 9781713829546. Giacomo Arcieri, Konstantinos G. Papakonstantinou, Daniel Straub, and Eleni Chatzi. Deep belief markov models for pomdp inference. Neural Networks , 196:108386, 2026. ISSN 0893-6080. doi: https:// doi.org/10.1016/j.neunet.2025.108386. URL https://www.sciencedirect.com/science/article/pii/ S0893608025012675 .K. J. Åström. Optimal control of markov processes with incomplete state information. Journal of Mathematical Analysis and Applications , 10(1):174–205, 1965. ISSN 0022-247X. doi: https://doi. org/10.1016/0022-247X(65)90154-X. URL https://www.sciencedirect.com/science/article/pii/ 0022247X6590154X .Yuntao Bai, Andy Jones, Kamal Ndousse, Amanda Askell, Anna Chen, Nova DasSarma, Dawn Drain, Stanislav Fort, Deep Ganguli, Tom Henighan, et al. Training a helpful and harmless assistant with reinforcement learning from human feedback. arXiv preprint arXiv:2204.05862 , 2022. Sivaraman Balakrishnan, Martin J. Wainwright, and Bin Yu. Statistical guarantees for the EM algorithm: From population to sample-based analysis. The Annals of Statistics , 45(1):77 – 120, 2017. doi: 10.1214/ 16-AOS1435. URL https://doi.org/10.1214/16-AOS1435 .Peter L. Bartlett, Philip M. Long, Gábor Lugosi, and Alexander Tsigler. Benign overfitting in lin-ear regression. Proceedings of the National Academy of Sciences , 117:30063 – 30070, 2019. URL 
+
+https://api.semanticscholar.org/CorpusID:195700154 .Mikhail Belkin, Daniel J. Hsu, Siyuan Ma, and Soumik Mandal. Reconciling modern machine-learning practice and the classical bias–variance trade-off. Proceedings of the National Academy of Sciences , 116: 15849 – 15854, 2018. URL https://api.semanticscholar.org/CorpusID:198496504 .Christopher M. Bishop. Pattern Recognition and Machine Learning (Information Science and Statistics) .Springer, 1 edition, 2007. ISBN 0387310738. Ralph Allan Bradley and Milton E Terry. Rank analysis of incomplete block designs: I. the method of paired comparisons. Biometrika , 39(3/4):324–345, 1952. Daniel S Brown, Wonjoon Goo, and Scott Niekum. Better-than-demonstrator imitation learning via automatically-ranked demonstrations. In Conference on robot learning , pp. 330–359. PMLR, 2020. O. Cappé, E. Moulines, and Tobias Rydén. Inference in Hidden Markov Models . Springer, Germany, 2005. Semih Cayci and Atilla Eryilmaz. Recurrent natural policy gradient for POMDPs. Transactions on Machine Learning Research , 2025. ISSN 2835-8856. URL https://openreview.net/forum?id=6G01e0vgIf .Semih Cayci, Niao He, and R. Srikant. Finite-time analysis of entropy-regularized neural natural actor-critic algorithm. Transactions on Machine Learning Research , 2024. ISSN 2835-8856. URL https: //openreview.net/forum?id=BkEqk7pS1I .14 Shicong Cen, Jincheng Mei, Katayoon Goshvadi, Hanjun Dai, Tong Yang, Sherry Yang, Dale Schuurmans, Yuejie Chi, and Bo Dai. Value-incentivized preference optimization: A unified approach to online and offline RLHF. In The Thirteenth International Conference on Learning Representations , 2025. URL 
+
+https://openreview.net/forum?id=SQnitDuow6 .Xiaoyu Chen, Yao Mark Mu, Ping Luo, Shengbo Li, and Jianyu Chen. Flow-based recurrent belief state learning for POMDPs. In Kamalika Chaudhuri, Stefanie Jegelka, Le Song, Csaba Szepesvari, Gang Niu, and Sivan Sabato (eds.), Proceedings of the 39th International Conference on Machine Learning ,volume 162 of Proceedings of Machine Learning Research , pp. 3444–3468. PMLR, 17–23 Jul 2022a. URL 
+
+https://proceedings.mlr.press/v162/chen22q.html .Xiaoyu Chen, Han Zhong, Zhuoran Yang, Zhaoran Wang, and Liwei Wang. Human-in-the-loop: Provably efficient preference-based reinforcement learning with general function approximation. In International Conference on Machine Learning , pp. 3773–3793. PMLR, 2022b. Lénaïc Chizat, Edouard Oyallon, and Francis Bach. On lazy training in differentiable pro-gramming. In H. Wallach, H. Larochelle, A. Beygelzimer, F. d'Alché-Buc, E. Fox, and R. Garnett (eds.), Advances in Neural Information Processing Systems , volume 32. Curran As-sociates, Inc., 2019. URL https://proceedings.neurips.cc/paper_files/paper/2019/file/ ae614c557843b1df326cb29c57225459-Paper.pdf .Paul F Christiano, Jan Leike, Tom Brown, Miljan Martic, Shane Legg, and Dario Amodei. Deep reinforce-ment learning from human preferences. In I. Guyon, U. Von Luxburg, S. Bengio, H. Wallach, R. Fer-gus, S. Vishwanathan, and R. Garnett (eds.), Advances in Neural Information Processing Systems , vol-ume 30. Curran Associates, Inc., 2017. URL https://proceedings.neurips.cc/paper_files/paper/ 2017/file/d5e2c0adad503c91f91df240d0cd4e49-Paper.pdf .Simon Du, Akshay Krishnamurthy, Nan Jiang, Alekh Agarwal, Miroslav Dudik, and John Langford. Provably efficient rl with rich observations via latent state decoding. In International Conference on Machine Learning , pp. 1665–1674. PMLR, 2019. Yihan Du, Anna Winnicki, Gal Dalal, Shie Mannor, and R. Srikant. Exploration-driven policy optimization in RLHF: Theoretical insights on efficient data utilization. In Ruslan Salakhutdinov, Zico Kolter, Kather-ine Heller, Adrian Weller, Nuria Oliver, Jonathan Scarlett, and Felix Berkenkamp (eds.), Proceedings of the 41st International Conference on Machine Learning , volume 235 of Proceedings of Machine Learn-ing Research , pp. 11830–11887. PMLR, 21–27 Jul 2024. URL https://proceedings.mlr.press/v235/ du24i.html .David A. Freedman. On tail probabilities for martingales. The Annals of Probability , 3(1):100–118, 1975. ISSN 00911798, 2168894X. URL http://www.jstor.org/stable/2959268 .Jiacheng Guo, Zihao Li, Huazheng Wang, Mengdi Wang, Zhuoran Yang, and Xuezhou Zhang. Provably efficient representation learning with tractable planning in low-rank pomdp. In International Conference on Machine Learning , pp. 11967–11997. PMLR, 2023. Arthur Jacot, Franck Gabriel, and Clement Hongler. Neural tangent kernel: Convergence and gen-eralization in neural networks. In S. Bengio, H. Wallach, H. Larochelle, K. Grauman, N. Cesa-Bianchi, and R. Garnett (eds.), Advances in Neural Information Processing Systems , volume 31. Cur-ran Associates, Inc., 2018. URL https://proceedings.neurips.cc/paper_files/paper/2018/file/ 5a4be1fa34e62bb8a6ec6b91d2462f5a-Paper.pdf .Jiaming Ji, Tianyi Qiu, Boyuan Chen, Borong Zhang, Hantao Lou, Kaile Wang, Yawen Duan, Zhonghao He, Jiayi Zhou, Zhaowei Zhang, et al. Ai alignment: A comprehensive survey. arXiv preprint arXiv:2310.19852 ,2023. Ziwei Ji, Justin D. Li, and Matus Telgarsky. Early-stopped neural networks are consistent. In A. Beygelz-imer, Y. Dauphin, P. Liang, and J. Wortman Vaughan (eds.), Advances in Neural Information Processing Systems , 2021. URL https://openreview.net/forum?id=rMKTq-ca0qu .15 Chi Jin, Sham Kakade, Akshay Krishnamurthy, and Qinghua Liu. Sample-efficient reinforcement learning of undercomplete pomdps. Advances in Neural Information Processing Systems , 33:18530–18539, 2020. Leslie Pack Kaelbling, Michael L. Littman, and Anthony R. Cassandra. Planning and acting in partially observable stochastic domains. Artificial Intelligence , 101(1):99–134, 1998. ISSN 0004-3702. doi: https: //doi.org/10.1016/S0004-3702(98)00023-X. URL https://www.sciencedirect.com/science/article/ pii/S000437029800023X .Timo Kaufmann, Paul Weng, Viktor Bengs, and Eyke Hüllermeier. A survey of reinforcement learning from human feedback. Transactions on Machine Learning Research , 2025. ISSN 2835-8856. URL https: //openreview.net/forum?id=f7OkIurx4b . Survey Certification. Chinmaya Kausik, Mirco Mutti, Aldo Pacchiano, and Ambuj Tewari. A theoretical framework for partially observed reward-states in rlhf. arXiv preprint arXiv:2402.03282 , 2024. Akshay Krishnamurthy, Alekh Agarwal, and John Langford. Pac reinforcement learning with rich obser-vations. In D. Lee, M. Sugiyama, U. Luxburg, I. Guyon, and R. Garnett (eds.), Advances in Neural Information Processing Systems , volume 29. Curran Associates, Inc., 2016. URL https://proceedings. neurips.cc/paper_files/paper/2016/file/2387337ba1e0b0249ba90f55b2ba2521-Paper.pdf .Yuanzhi Li and Yingyu Liang. Learning overparameterized neural networks via stochastic gradient descent on structured data. In S. Bengio, H. Wallach, H. Larochelle, K. Grauman, N. Cesa-Bianchi, and R. Garnett (eds.), Advances in Neural Information Processing Systems , volume 31. Cur-ran Associates, Inc., 2018. URL https://proceedings.neurips.cc/paper_files/paper/2018/file/ 54fe976ba170c19ebae453679b362263-Paper.pdf .Qinghua Liu, Csaba Szepesvári, and Chi Jin. Sample-efficient reinforcement learning of partially observable markov games. Advances in Neural Information Processing Systems , 35:18296–18308, 2022. Curtis Mcdonald and Serdar Yüksel. Stochastic Observability and Filter Stability Under Several Criteria. 
+
+IEEE Transactions on Automatic Control , 69(5), 2024. doi: 10.1214/20-ECP333. Ellen Novoseller, Yibing Wei, Yanan Sui, Yisong Yue, and Joel Burdick. Dueling posterior sampling for preference-based reinforcement learning. In Jonas Peters and David Sontag (eds.), Proceedings of the 36th Conference on Uncertainty in Artificial Intelligence (UAI) , volume 124 of Proceedings of Machine Learning Research , pp. 1029–1038. PMLR, 03–06 Aug 2020. URL https://proceedings.mlr.press/ v124/novoseller20a.html .Long Ouyang, Jeffrey Wu, Xu Jiang, Diogo Almeida, Carroll Wainwright, Pamela Mishkin, Chong Zhang, Sandhini Agarwal, Katarina Slama, Alex Ray, et al. Training language models to follow instructions with human feedback. Advances in neural information processing systems , 35:27730–27744, 2022. Samet Oymak and Mahdi Soltanolkotabi. Toward moderate overparameterization: Global convergence guarantees for training shallow neural networks. IEEE Journal on Selected Areas in Information Theory ,1:84–105, 2019. URL https://api.semanticscholar.org/CorpusID:61153563 .Aldo Pacchiano, Aadirupa Saha, and Jonathan Lee. Dueling rl: reinforcement learning with trajectory preferences. arXiv preprint arXiv:2111.04850 , 2021. Robin L Plackett. The analysis of permutations. Journal of the Royal Statistical Society Series C: Applied Statistics , 24(2):193–202, 1975. Siddhartha Satpathi, Harsh Gupta, Shiyu Liang, and R. Srikant. The role of regularization in overparam-eterized neural networks. In CDC , pp. 4683–4688, 2020. URL https://doi.org/10.1109/CDC42340. 2020.9304386 .John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov. Proximal policy optimiza-tion algorithms. arXiv preprint arXiv:1707.06347 , 2017. 16 Nisan Stiennon, Long Ouyang, Jeffrey Wu, Daniel Ziegler, Ryan Lowe, Chelsea Voss, Alec Radford, Dario Amodei, and Paul F Christiano. Learning to summarize with human feedback. Advances in neural information processing systems , 33:3008–3021, 2020. Masatoshi Uehara, Ayush Sekhari, Jason D Lee, Nathan Kallus, and Wen Sun. Provably efficient rein-forcement learning in partially observable dynamical systems. Advances in Neural Information Processing Systems , 35:578–592, 2022. Jonathan Uesato, Nate Kushman, Ramana Kumar, Francis Song, Noah Siegel, Lisa Wang, Antonia Creswell, Geoffrey Irving, and Irina Higgins. Solving math word problems with process-and outcome-based feedback. 
+
+arXiv preprint arXiv:2211.14275 , 2022. Ramon van Handel. Hidden markov models. Unpublished lecture notes , 2008. Ramon Van Handel. Observability and nonlinear filtering. Probability theory and related fields , 145(1):35–74, 2009. Martin J. Wainwright and Michael I. Jordan. Graphical models, exponential families, and variational in-ference. Foundations and Trends ® in Machine Learning , 1(1–2):1–305, 2008. ISSN 1935-8237. doi: 10.1561/2200000001. URL http://dx.doi.org/10.1561/2200000001 .Shaojun Wang and Yunxin Zhao. Almost sure convergence of titterington’s recursive estimator for mixture models. Statistics and Probability Letters , 76(18):2001–2006, 2006. ISSN 0167-7152. doi: https://doi.org/10.1016/j.spl.2006.05.017. URL https://www.sciencedirect.com/science/article/ pii/S0167715206001842 .Christian Wirth, Riad Akrour, Gerhard Neumann, and Johannes Fürnkranz. A survey of preference-based reinforcement learning methods. Journal of Machine Learning Research , 18(136):1–46, 2017. Chiyuan Zhang, Samy Bengio, Moritz Hardt, Benjamin Recht, and Oriol Vinyals. Understanding deep learning requires rethinking generalization. Communications of the ACM , 64, 11 2016. doi: 10.1145/ 3446776. Banghua Zhu, Michael Jordan, and Jiantao Jiao. Principled reinforcement learning with human feedback from pairwise or k-wise comparisons. In Andreas Krause, Emma Brunskill, Kyunghyun Cho, Barbara Engelhardt, Sivan Sabato, and Jonathan Scarlett (eds.), Proceedings of the 40th International Conference on Machine Learning , volume 202 of Proceedings of Machine Learning Research , pp. 43037–43067. PMLR, 23–29 Jul 2023. URL https://proceedings.mlr.press/v202/zhu23f.html .Daniel M Ziegler, Nisan Stiennon, Jeffrey Wu, Tom B Brown, Alec Radford, Dario Amodei, Paul Chris-tiano, and Geoffrey Irving. Fine-tuning language models from human preferences. arXiv preprint arXiv:1909.08593 , 2019. 
+
+## A Appendix 
+
+Lemma A.1. Given model dynamic assumption as in 3.1, and finite feature bounds B < ∞, for all feasible parameter pairs (θ, w ), (θ′, w ′) with ∥θ − θ′∥2 ≤ δ(θ), ∥w − w′∥2 ≤ δ(w):
+
+∥Pθ (·| s, a ) − Pθ′ (·| s, a )∥1 ≤ Bδ (θ), ∀(s, a ) ∈ S × A, (22) 
+
+∥Φw(· | s) − Φw′ (· | s)∥1 ≤ Bδ (w), ∀s ∈ S, (23) 
+
+∥Pθ (s′|· , a ) − Pθ′ (s′|· , a )∥1 ≤ 2B |S|
+
+1 + ( |S| − 1) exp (−2B(∥θ⋆∥2 + rΘ)) δ(θ), ∀(a, s ′) ∈ A × S, (24) 
+
+∥∥Φw(ˆ s | · ) − Φw′ (ˆ s | · )∥∥1 ≤ 2B |S|
+
+1 + ( |ˆS| − 1) exp (−2B(∥w⋆∥2 + rΘ)) δ(w), ∀ˆs ∈ ˆS. (25) 17 Proof. Fix (s, a ) ∈ S × A and consider the probability vector Pθ (· | s, a ) ∈ ∆S. Denote the Jacobian of 
+
+θ → Pθ (·| s, a ) by Ja,s (θ) ∈ R|S|× dθ where dθ is the dimension of θ, and the s′-th row is ∇θ Pθ (s′|s, a )⊤. We first establish the row-wise operator bound in 22. For v ∈ Rdθ with ∥v∥2 = 1 , we have 
+
+∥Ja,s (θ)v∥1 = ∑
+
+> s′∈S
+
+∣∣∣ (Ja,s (θ)v)
+
+> s′
+
+∣∣
+
+= ∑
+
+> s′∈S
+
+∣∣∣∣∣Pθ (s′ | s, a )
+
+(
+
+ϕp(s, a, s ′)⊤v − ∑
+
+> s′′ ∈S
+
+Pθ (s′′ | s, a )ϕp(s, a, s ′′ )⊤v
+
+)∣ ∣∣∣∣
+
+= ∑
+
+> s′∈S
+
+Pθ (s′ | s, a )
+
+∣∣∣∣∣ϕp(s, a, s ′)⊤v − ∑
+
+> s′′ ∈S
+
+Pθ (s′′ | s, a )ϕp(s, a, s ′′ )⊤v
+
+∣∣∣∣∣
+
+= ES′∼Pθ (·| s,a )
+
+[∣ ∣∣ϕp(s, a, S ′)⊤v − E ¯S∼Pθ (·| s,a )
+
+[ϕp(s, a, ¯S)⊤v]∣∣∣]
+
+≤ B, 
+
+where the last inequality follows from Cauchy–Schwarz and the fact that 
+
+E
+
+[∣∣ϕp(s, a, S ′)⊤v − E[ϕp(s, a, S ′)⊤v]∣∣]
+
+≤
+
+√
+
+Var( ϕp(s, a, S ′)⊤v) ≤ B. 
+
+Therefore 
+
+∥Ja,s (θ)∥2→1 = sup 
+
+> ∥v∥2=1
+
+∥Ja,s (θ)v∥1 ≤ B, 
+
+and by the mean-value theorem, we have 
+
+∥∥Pθ (· | s, a ) − Pθ′ (· | s, a )∥∥1 ≤ sup     
+
+> ˆθbetween θand θ′
+
+∥Ja,s (ˆθ)∥2→1 ∥θ − θ′∥2
+
+≤ Bδ (θ).
+
+The proof for Φw(· | s) is identical, yielding ∥Φw(· | s) − Φw′ (· | s)∥1 ≤ Bδ (w).We next compute the coordinate-wise gradient bound needed for the column-wise estimates. For s′ ∈ S,
+
+∥∥∥∇θ Pθ (s′ | s, a )
+
+∥∥∥2
+
+=
+
+∥∥∥∑
+
+> s′′ ∈S
+
+∂ P θ (s′ | s, a )
+
+∂(θ⊤ϕp(s, a, s ′′ )) ∇θ θ⊤ϕp(s, a, s ′′ )
+
+∥∥∥2
+
+=
+
+∥∥∥∑
+
+> s′′ ∈S
+
+(Diag( Pθ (· | s, a )) − Pθ (· | s, a )Pθ (· | s, a )⊤) 
+
+> s′s′′
+
+ϕp(s, a, s ′′ )
+
+∥∥∥2
+
+=
+
+∥∥∥Pθ (s′ | s, a )
+
+(
+
+ϕp(s, a, s ′) − ∑
+
+> s′′ ∈S
+
+Pθ (s′′ | s, a ) ϕp(s, a, s ′′ )
+
+)∥ ∥∥2
+
+≤ Pθ (s′ | s, a )
+
+(
+
+∥ϕp(s, a, s ′)∥2 + ∑
+
+> s′′
+
+Pθ (s′′ | s, a ) ∥ϕp(s, a, s ′′ )∥2
+
+)
+
+≤ Pθ (s′ | s, a ) ( B + B)= 2 B P θ (s′ | s, a ). (26) where the first inequality follows by the triangle inequality and Jensen’s inequality. Then, we establish a column–wise Lipschitz bound for the transition kernel (24). Assume θ, θ ′ ∈ B2(rΘ; θ⋆)
+
+and fix a ∈ A, s′ ∈ S. Let Ja,s ′ (θ) ∈ R|S|× dθ denote the Jacobian of θ 7 → Pθ (s′ | · , a ), whose s–th row is 
+
+∇θ Pθ (s′ | s, a )⊤. By 26, for every s ∈ S,
+
+∥∥∇θ Pθ (s′ | s, a )∥∥2 ≤ 2B P θ (s′ | s, a ).
+
+18 Therefore, 
+
+∥Ja,s ′ (θ)∥2→1 = sup 
+
+> ∥v∥2=1
+
+∑
+
+> s∈S
+
+∣∣⟨∇ θ Pθ (s′ | s, a ), v ⟩∣∣
+
+≤ ∑
+
+> s∈S
+
+∥∥∇θ Pθ (s′ | s, a )∥∥2
+
+≤ 2B ∑
+
+> s∈S
+
+Pθ (s′ | s, a ).
+
+By Lemma A.2, the column–sum is uniformly bounded on B2(rΘ; θ⋆), hence 
+
+∑
+
+> s∈S
+
+Pθ (s′ | s, a ) ≤ |S|
+
+1 + ( |S| − 1) exp (−2B(∥θ⋆∥2 + rΘ)) ,
+
+and thus 
+
+∥Ja,s ′ (θ)∥2→1 ≤ 2B |S|
+
+1 + ( |S| − 1) exp (−2B(∥θ⋆∥2 + rΘ)) .
+
+Applying the mean–value theorem gives 
+
+∑
+
+> s∈S
+
+∣∣Pθ (s′ | s, a ) − Pθ′ (s′ | s, a )∣∣ =
+
+∥∥∥(Pθ (s′ | s, a )) 
+
+> s∈S
+
+− (Pθ′ (s′ | s, a ))
+
+> s∈S
+
+∥∥∥1
+
+≤ sup   
+
+> ˆθbetween θ,θ ′
+
+∥Ja,s ′ (ˆθ)∥2→1 ∥θ − θ′∥2
+
+≤ 2B |S|
+
+1 + ( |S| − 1) exp (−2B(∥θ⋆∥2 + rΘ)) ∥θ − θ′∥2.
+
+If, in addition, ∥θ − θ′∥2 ≤ δ(θ), this yields 
+
+∑
+
+> s∈S
+
+∣∣Pθ (s′ | s, a ) − Pθ′ (s′ | s, a )∣∣ ≤ 2B |S|
+
+1 + ( |S| − 1) exp (−2B(∥θ⋆∥2 + rΘ)) δ(θ), ∀ s′ ∈ S.
+
+To show the claim in 25, fix ˆs ∈ ˆS and consider w → Φw(ˆ s|· ) from Rdw . Following a similar argument, we apply the mean-value theorem to the aforementioned map and bound the operator norm ∥Jˆs(w)∥2→1 of its Jacobian Jˆs(w) ∈ R|S|× dw . First, we bound the ℓ2-norm of ∇wΦw(ˆ s | s)⊤ which is the s-th row of Jˆs(w),
+
+∥∥∇wΦw(ˆ s | s)∥∥2 = ∥Φw(ˆ s | s)
+
+(
+
+ϕΦ(s, ˆs) − ∑
+
+> y∈ˆS
+
+Φw(y | s) ϕΦ(s, y )
+
+)
+
+∥2
+
+≤ Φw(ˆ s | s)
+
+(
+
+∥ϕΦ(s, ˆs)∥2 + ∑
+
+> y∈ˆS
+
+Φw(y | s) ∥ϕΦ(s, y )∥2
+
+)
+
+≤ Φw(ˆ s | s) ( B + B) = 2 B Φw(ˆ s | s).
+
+Then, by Lemma A.2, inequality 29, 
+
+∥Jˆs(w)∥2→1 = sup 
+
+> ∥v∥2=1
+
+∑
+
+> s∈S
+
+∣∣⟨∇ wΦw(ˆ s | s), v ⟩∣∣ ≤ ∑
+
+> s∈S
+
+∥∥∇wΦw(ˆ s | s)∥∥2
+
+≤ 2B ∑
+
+> s∈S
+
+Φw(ˆ s | s)
+
+≤ 2B |S|
+
+1 + ( |ˆS| − 1) exp (−2B(∥w⋆∥2 + rΘ)) .
+
+19 Now applying the mean-value theorem, for some ˜w on the line segment between w and w′,
+
+∥∥Φw(ˆ s | · ) − Φw′ (ˆ s | · )∥∥1 ≤ ∥ Jˆs( ˜ w)∥2→1 ∥w − w′∥2
+
+≤ 2B |S|
+
+1 + ( |ˆS| − 1) exp (−2B(∥w⋆∥2 + rΘ)) δ(w),
+
+and the result follows. In the following lemma, for simplicity, we consider the parameter set to be B2(θ⋆, r Θ) × B2(w⋆, r Θ). This result also holds for the feasible parameter set, B2(Θ ⋆, r Θ), assumed in Assumption 3.3. 
+
+Lemma A.2. Under Assumption 3.1, in the neighborhoods θ ∈ B2(rΘ; θ⋆), w ∈ B2(rΘ; w⋆), the following properties hold: 
+
+sup 
+
+> θ∈B2(rΘ;θ⋆)
+
+sup 
+
+> a∈A
+
+sup 
+
+> s′∈S
+
+∑
+
+> s∈S
+
+Pθ (s′ | s, a ) ≤ |S|
+
+1 + ( |S| − 1) exp (−2B(∥θ⋆∥2 + rΘ)) , (27) 
+
+inf  
+
+> θ∈B2(rΘ;θ⋆)
+
+inf  
+
+> a∈A
+
+inf 
+
+> s′∈S
+
+∑
+
+> s∈S
+
+Pθ (s′ | s, a ) ≥ |S|
+
+1 + ( |S| − 1) exp (2B(∥θ⋆∥2 + rΘ)) . (28) 
+
+sup 
+
+> w∈B2(rΘ;w⋆)
+
+sup 
+
+> ˆs∈ˆS
+
+∑
+
+> s∈S
+
+Φw(ˆ s | s) ≤ |S|
+
+1 + ( |ˆS| − 1) exp (−2B(∥w⋆∥2 + rΘ)) , (29) 
+
+inf  
+
+> w∈B2(rΘ;w⋆)
+
+inf 
+
+> ˆs∈ˆS
+
+∑
+
+> s∈S
+
+Φw(ˆ s | s) ≥ |S|
+
+1 + ( |ˆS| − 1) exp (2B(∥w⋆∥2 + rΘ)) . (30) 
+
+Furthermore, the uniform Dobrushin coefficients in Definition 3.4 satisfy 
+
+κP ≥ |S|
+
+1 + ( |S| − 1) exp (2B(∥θ⋆∥2 + rΘ)) , (31) 
+
+κΦ ≥ |ˆS|
+
+1 + ( |ˆS| − 1) exp (2B(∥w⋆∥2 + rΘ)) . (32) 
+
+Proof of Lemma A.2. For any (s, a, s ′) ∈ S × A × S and any θ ∈ B2(rΘ; θ⋆), we have 
+
+|θ⊤ϕp(s, a, s ′)| ≤ ∥ θ∥2 ∥ϕp(s, a, s ′)∥2 ≤ B(∥θ⋆∥2 + rΘ).
+
+Hence, 
+
+exp (−B(∥θ⋆∥2 + rΘ)) ≤ exp( θ⊤ϕp(s, a, s ′)) ≤ exp (B(∥θ⋆∥2 + rΘ)). (33) Using the fact that the numerator term also appears in the denominator, we have 
+
+Pθ (s′ | s, a ) = exp( θ⊤ϕp(s, a, s ′)) 
+
+∑ 
+
+> ¯s∈S
+
+exp( θ⊤ϕp(s, a, ¯s)) 
+
+≤ exp (B(∥θ⋆∥2 + rΘ))
+
+exp (B(∥θ⋆∥2 + rΘ)) + ( |S| − 1) exp (−B(∥θ⋆∥2 + rΘ))
+
+= 11 + ( |S| − 1) exp (−2B(∥θ⋆∥2 + rΘ)) . (34) Summing over s ∈ S for fixed (a, s ′) yields 
+
+∑
+
+> s∈S
+
+Pθ (s′ | s, a ) ≤ |S|
+
+1 + ( |S| − 1) exp (−2B(∥θ⋆∥2 + rΘ)) .
+
+20 Taking the supremum over (θ, a, s ′) proves 27. Similarly, 
+
+Pθ (s′ | s, a ) ≥ exp (−B(∥θ⋆∥2 + rΘ))
+
+exp (−B(∥θ⋆∥2 + rΘ)) + ( |S| − 1) exp (B(∥θ⋆∥2 + rΘ))
+
+= 11 + ( |S| − 1) exp (2B(∥θ⋆∥2 + rΘ)) =: Pmin . (35) Taking the infimum over (θ, a, s ′) and summing Pmin over s ∈ S proves 28. For the Dobrushin coefficient of 
+
+Pθ in 31, every entry of Pθ (· | s, a ) is bounded from below by Pmin . Hence, 
+
+∑
+
+> s′∈S
+
+min {Pθ (s′ | s, a ), P θ (s′ | s′′ , a )} ≥ | S| Pmin 
+
+= |S|
+
+1 + ( |S| − 1) exp (2B(∥θ⋆∥2 + rΘ)) . (36) Taking the infimum over θ ∈ B2(rΘ; θ⋆), a ∈ A, and s, s ′′ ∈ S yields 31. Then, we prove 30 and 29, which provide uniform column-sum bounds for the observation model Φw. The proof is similar to the derivation of 27 and 28 for Pθ . Fix (s, ˆs) ∈ S × ˆS and let w ∈ B2(rΘ; w⋆). By the feature bound ∥ϕΦ(s, y )∥2 ≤ B and the radius assumption, 
+
+|w⊤ϕΦ(s, y )| ≤ ∥ w∥2 ∥ϕΦ(s, y )∥2 ≤ B(∥w⋆∥2 + rΘ), ∀y ∈ ˆS.
+
+Hence, for all y ∈ ˆS,
+
+exp (−B(∥w⋆∥2 + rΘ)) ≤ exp (w⊤ϕΦ(s, y )) ≤ exp (B(∥w⋆∥2 + rΘ)).
+
+Recalling the log-linear observation model in Assumption 3.1, we obtain the uniform pointwise bounds 
+
+Φw(ˆ s | s) ≤ exp (B(∥w⋆∥2 + rΘ))
+
+exp (B(∥w⋆∥2 + rΘ)) + ( |ˆS| − 1) exp (−B(∥w⋆∥2 + rΘ))
+
+= 11 + ( |ˆS| − 1) exp (−2B(∥w⋆∥2 + rΘ)) =: Φ max , (37) 
+
+Φw(ˆ s | s) ≥ exp (−B(∥w⋆∥2 + rΘ))
+
+exp (−B(∥w⋆∥2 + rΘ)) + ( |ˆS| − 1) exp (B(∥w⋆∥2 + rΘ))
+
+= 11 + ( |ˆS| − 1) exp (2B(∥w⋆∥2 + rΘ)) =: Φ min . (38) Summing 37 and 38 over s ∈ S yields, for every fixed ˆs ∈ ˆS,
+
+∑
+
+> s∈S
+
+Φw(ˆ s | s) ≤ |S|
+
+1 + ( |ˆS| − 1) exp (−2B(∥w⋆∥2 + rΘ)) ,
+
+∑
+
+> s∈S
+
+Φw(ˆ s | s) ≥ |S|
+
+1 + ( |ˆS| − 1) exp (2B(∥w⋆∥2 + rΘ)) .
+
+Taking the supremum and infimum over (w, ˆs) gives 29 and 30, respectively. To obtain the Dobrushin coefficient in 32, using Φmin by the exact same argument used to obtain κP , we have 
+
+∑
+
+> ˆs∈ˆS
+
+min {Φw(ˆ s | s), Φw(ˆ s | s′′ )} ≥ | ˆS| Φmin 
+
+= |ˆS|
+
+1 + ( |ˆS| − 1) exp (2B(∥w⋆∥2 + rΘ)) . (39) Taking the infimum over w ∈ B2(rΘ; w⋆) and s, s ′′ ∈ S proves 32. 21 B Proof of Theorem 4.1 
+
+Remark B.1 . First, recall 1 where we assumed 1 > ν max ≥ ν0(s) ≥ νmin > 0. Plus, similar to the argument in Lemma A.2 that we have uniformly bounded Pθ (s′|s, a ) in Eq. 34 and 35, and given the similar log-linear structure of models Pθ and Φw assumed in 3.1 and bounded feature maps in 3.1, we can establish uniform bounds over Φw and Pθ . Denote 
+
+Pmin := 11 + ( |S| − 1) exp (2B(∥θ⋆∥2 + rΘ)) , Pmax := 11 + ( |S| − 1) exp (−2B(∥θ⋆∥2 + rΘ)) , (40) 
+
+Φmin := 11 + ( |ˆS| − 1) exp (2B(∥w⋆∥2 + rΘ)) , Φmax := 11 + ( |ˆS| − 1) exp (−2B(∥w⋆∥2 + rΘ)) . (41) where for all (s, s ′, a, ˆs) and Θ ∈ B2(Θ ⋆, r Θ) we have 
+
+0 < ν min ≤ ν0(s) ≤ νmax , 0 < P min ≤ Pθ (s′ | s, a ) ≤ Pmax , 0 < Φmin ≤ Φw(ˆ s | s) ≤ Φmax . (42) Besides, define the prediction and observation operators 
+
+(P at 
+
+> θ
+
+q)( s′) = ∑
+
+> s∈S
+
+Pθ (s′ | s, a t) q(s), ∆S → ∆S, (43) 
+
+(Qwq)(ˆ s) = ∑
+
+> s′∈S
+
+Φw(ˆ s | s′) q(s′), ∆S → ∆ˆS, (44) and the Bayesian update operator 
+
+ψΦw : ∆ S × ˆS → ∆S ∪ { 0},ψΦw (b, ˆs)( s′) = Φw(ˆ s|s′)b(s′)
+
+∑ 
+
+> ¯s∈S
+
+Φw(ˆ s|¯s)b(¯ s) = Φw(ˆ s|s′)b(s′)(Qwb)(ˆ s) .
+
+Then, the belief update 3 can be expressed as 
+
+bΘ 
+
+> t+1
+
+= ψΦw (P at 
+
+> θ
+
+bΘ 
+
+> t
+
+, ˆst+1 ).
+
+Now, we can prove Theorem 4.1. 
+
+Proof of Theorem 4.1. For two parameter sets Θ and Θ⋆, we have 
+
+bΘ 
+
+> k+1
+
+= ψΦw
+
+(P ak 
+
+> θ
+
+bΘ 
+
+> k
+
+, ˆsk+1 
+
+), bΘ⋆ 
+
+> k+1
+
+= ψΦw⋆
+
+(P ak 
+
+> θ⋆
+
+bΘ⋆ 
+
+> k
+
+, ˆsk+1 
+
+), bΘ0 = bΘ⋆ 
+
+> 0
+
+= ν0.
+
+We work under the conditional law PΘ⋆ ( · | a0: t−1), i.e., the action sequence (a0, . . . , a t−1) is treated as fixed .We use the filtrations 
+
+F− 
+
+> k
+
+:= σ(ˆ s1: k, a 0: k−1), Fk := σ(ˆ s1: k, a 0: k),
+
+so that bΘ⋆ 
+
+> k
+
+and bΘ 
+
+> k
+
+are F− 
+
+> k
+
+-measurable and ak is Fk-measurable. In particular, the conditional law of ˆsk+1 
+
+given Fk is 
+
+ˆsk+1 | F k ∼ Qw⋆
+
+(
+
+P ak 
+
+> θ⋆
+
+bΘ⋆
+
+> k
+
+)
+
+.
+
+Fix k ∈ { 0, . . . , t − 1}. Using the filter recursions bΘ 
+
+> k+1
+
+= ψΦw
+
+(P ak 
+
+> θ
+
+bΘ 
+
+> k
+
+, ˆsk+1 
+
+) and bΘ⋆ 
+
+> k+1
+
+= ψΦw⋆
+
+(P ak 
+
+> θ⋆
+
+bΘ⋆ 
+
+> k
+
+, ˆsk+1 
+
+),add and subtract the intermediate terms ψΦw⋆
+
+(P ak 
+
+> θ
+
+bΘ 
+
+> k
+
+, ˆsk+1 
+
+) and ψΦw⋆
+
+(P ak 
+
+> θ⋆
+
+bΘ 
+
+> k
+
+, ˆsk+1 
+
+):
+
+∥bΘ 
+
+> k+1
+
+− bΘ⋆
+
+> k+1
+
+∥TV = ∥∥ψΦw (P ak 
+
+> θ
+
+bΘ 
+
+> k
+
+, ˆsk+1 ) − ψΦw⋆ (P ak 
+
+> θ⋆
+
+bΘ⋆ 
+
+> k
+
+, ˆsk+1 )∥∥TV (45) 
+
+≤ ∥∥ψΦw (P ak 
+
+> θ
+
+bΘ 
+
+> k
+
+, ˆsk+1 ) − ψΦw⋆ (P ak 
+
+> θ
+
+bΘ 
+
+> k
+
+, ˆsk+1 )∥∥TV 
+
+︸ ︷︷ ︸
+
+> (I)
+
+(46) 
+
++ ∥∥ψΦw⋆ (P ak 
+
+> θ
+
+bΘ 
+
+> k
+
+, ˆsk+1 ) − ψΦw⋆ (P ak 
+
+> θ⋆
+
+bΘ 
+
+> k
+
+, ˆsk+1 )∥∥TV 
+
+︸ ︷︷ ︸
+
+> (II)
+
+(47) 
+
++ ∥∥ψΦw⋆ (P ak 
+
+> θ⋆
+
+bΘ 
+
+> k
+
+, ˆsk+1 ) − ψΦw⋆ (P ak 
+
+> θ⋆
+
+bΘ⋆ 
+
+> k
+
+, ˆsk+1 )∥∥TV 
+
+︸ ︷︷ ︸
+
+> (III)
+
+. (48) 22 Term (I). This term corresponds to the perturbation of the observation model. First, consider the following observation for any generic b ∈ ∆|S|:
+
+∥ψΦw (b, ˆs) − ψΦw⋆ (b, ˆs)∥TV = 12
+
+∑
+
+> s′∈S
+
+∣∣∣∣
+
+Φw(ˆ s | s′) b(s′)
+
+∑ 
+
+> ¯s
+
+Φw(ˆ s | ¯s) b(¯ s) − Φw⋆ (ˆ s | s′) b(s′)
+
+∑ 
+
+> ¯s
+
+Φw⋆ (ˆ s | ¯s) b(¯ s)
+
+∣∣∣∣
+
+≤ 12
+
+∑
+
+> s′∈S
+
+∣∣∣∣∣(Φw(ˆ s | s′) − Φw⋆ (ˆ s | s′)) b(s′)
+
+∑ 
+
+> ¯s
+
+Φw⋆ (ˆ s | ¯s) b(¯ s)
+
+∣∣∣∣∣
+
++ 12
+
+∑
+
+> s′∈S
+
+∣∣∣∣Φw(ˆ s | s′) b(s′)
+
+( 1
+
+∑ 
+
+> ¯s
+
+Φw(ˆ s | ¯s) b(¯ s) − 1
+
+∑ 
+
+> ¯s
+
+Φw⋆ (ˆ s | ¯s) b(¯ s)
+
+)∣∣∣∣
+
+≤ 12 ∑ 
+
+> ¯s
+
+Φw⋆ (ˆ s | ¯s) b(¯ s)
+
+∑
+
+> s′∈S
+
+b(s′) ∣∣Φw(ˆ s | s′) − Φw⋆ (ˆ s | s′)∣∣
+
++ 12
+
+( ∑ 
+
+> s′∈S
+
+Φw(ˆ s | s′) b(s′)
+
+)∣ ∣∣ 1
+
+∑ 
+
+> ¯s
+
+Φw(ˆ s | ¯s) b(¯ s) − 1
+
+∑ 
+
+> ¯s
+
+Φw⋆ (ˆ s | ¯s) b(¯ s)
+
+∣∣∣
+
+= 12 ∑ 
+
+> ¯s
+
+Φw⋆ (ˆ s | ¯s) b(¯ s)
+
+∑
+
+> s′∈S
+
+b(s′) ∣∣Φw(ˆ s | s′) − Φw⋆ (ˆ s | s′)∣∣
+
++ 12
+
+∣∣∣ ∑ 
+
+> ¯s
+
+Φw(ˆ s | ¯s) b(¯ s) − ∑ 
+
+> ¯s
+
+Φw⋆ (ˆ s | ¯s) b(¯ s)
+
+∣∣∣∑ 
+
+> ¯s
+
+Φw⋆ (ˆ s | ¯s) b(¯ s)
+
+≤ 12 ∑ 
+
+> ¯s
+
+Φw⋆ (ˆ s | ¯s) b(¯ s)
+
+∑
+
+> s′∈S
+
+b(s′) ∣∣Φw(ˆ s | s′) − Φw⋆ (ˆ s | s′)∣∣
+
++ 12 ∑ 
+
+> ¯s
+
+Φw⋆ (ˆ s | ¯s) b(¯ s)
+
+∑
+
+> s′∈S
+
+b(s′) ∣∣Φw(ˆ s | s′) − Φw⋆ (ˆ s | s′)∣∣
+
+=
+
+∑ 
+
+> s′∈S
+
+b(s′)∣∣Φw(ˆ s | s′) − Φw⋆ (ˆ s | s′)∣∣∑ 
+
+> ¯s
+
+Φw⋆ (ˆ s | ¯s) b(¯ s) . (49) Now we take the expectation under ˆs ∼ (Qw⋆ b)( ·). Since (Qw⋆ b)( ·) is a probability distribution on ˆS with non-zero support, we have 
+
+E 
+
+> ˆs∼(Qw⋆b)
+
+[ ∑  
+
+> s′∈S
+
+b(s′) ∣∣Φw(ˆ s | s′) − Φw⋆ (ˆ s | s′)∣∣
+
+(Qw⋆ b)(ˆ s)
+
+]
+
+= ∑
+
+> ˆs∈ˆS
+
+(Qw⋆ b)(ˆ s)
+
+∑ 
+
+> s′
+
+b(s′) |Φw(ˆ s | s′) − Φw⋆ (ˆ s | s′)|
+
+(Qw⋆ b)(ˆ s)= ∑
+
+> s′∈S
+
+b(s′) ∑
+
+> ˆs∈ˆS
+
+∣∣Φw(ˆ s | s′) − Φw⋆ (ˆ s | s′)∣∣
+
+= ∑
+
+> s′∈S
+
+b(s′) ∥∥Φw(· | s′) − Φw⋆ (· | s′)∥∥1
+
+≤ sup 
+
+> s′∈S
+
+∥∥Φw(· | s′) − Φw⋆ (· | s′)∥∥1
+
+≤ B δ (w), (50) where in the last step we used Lemma A.1. Now, we observe that for any measurable f : ˆS → [0 , 1] and distributions ν, ν ′ on ˆS,
+
+Eˆs∼ν [f (ˆ s)] ≤ Eˆs∼ν′ [f (ˆ s)] + ∥ν − ν′∥TV .
+
+Applying this with 
+
+f (ˆ s) = ∥ψΦw (P ak 
+
+> θ
+
+bΘ 
+
+> k
+
+, ˆs) − ψΦw⋆ (P ak 
+
+> θ
+
+bΘ 
+
+> k
+
+, ˆs)∥TV ∈ [0 , 1] ,
+
+23 ν = Qw⋆ (P ak 
+
+> θ⋆
+
+bΘ⋆ 
+
+> k
+
+), and ν′ = Qw⋆ (P ak 
+
+> θ
+
+bΘ 
+
+> k
+
+), yields 
+
+E[(I) | F k
+
+] = E    
+
+> ˆs∼Qw⋆(Pakθ⋆bΘ⋆k)
+
+[
+
+∥ψΦw (P ak 
+
+> θ
+
+bΘ 
+
+> k
+
+, ˆs) − ψΦw⋆ (P ak 
+
+> θ
+
+bΘ 
+
+> k
+
+, ˆs)∥TV 
+
+]
+
+≤ E    
+
+> ˆs∼Qw⋆(PakθbΘ
+> k)
+
+[
+
+∥ψΦw (P ak 
+
+> θ
+
+bΘ 
+
+> k
+
+, ˆs) − ψΦw⋆ (P ak 
+
+> θ
+
+bΘ 
+
+> k
+
+, ˆs)∥TV 
+
+]
+
++
+
+∥∥∥Qw⋆ (P ak 
+
+> θ⋆
+
+bΘ⋆ 
+
+> k
+
+) − Qw⋆ (P ak 
+
+> θ
+
+bΘ 
+
+> k
+
+)
+
+∥∥∥TV 
+
+. (51) The first term is controlled by Eq. 49–Eq. 50 with b = P ak 
+
+> θ
+
+bΘ 
+
+> k
+
+.For the mismatch term in Eq. 51, since Qw⋆ is a kernel, its Dobrushin contraction gives 
+
+∥∥∥Qw⋆ (P ak 
+
+> θ⋆
+
+bΘ⋆ 
+
+> k
+
+) − Qw⋆ (P ak 
+
+> θ
+
+bΘ 
+
+> k
+
+)
+
+∥∥∥TV 
+
+≤ (1 − κΦ)
+
+∥∥∥P ak 
+
+> θ⋆
+
+bΘ⋆ 
+
+> k
+
+− P ak 
+
+> θ
+
+bΘ
+
+> k
+
+∥∥∥TV 
+
+≤ (1 − κΦ)
+
+(∥ ∥∥P ak 
+
+> θ⋆
+
+bΘ⋆ 
+
+> k
+
+− P ak 
+
+> θ⋆
+
+bΘ
+
+> k
+
+∥∥∥TV 
+
++
+
+∥∥∥P ak 
+
+> θ⋆
+
+bΘ 
+
+> k
+
+− P ak 
+
+> θ
+
+bΘ
+
+> k
+
+∥∥∥TV 
+
+)
+
+≤ (1 − κΦ)
+
+(
+
+(1 − κP ) ∥bΘ⋆ 
+
+> k
+
+− bΘ 
+
+> k
+
+∥TV + B
+
+2 δ(θ)
+
+)
+
+. (52) Combining Eq. 51, Eq. 50, and Eq. 52, we obtain 
+
+E[(I) | F k
+
+] ≤ B δ (w) + B
+
+2 (1 − κΦ) δ(θ) + (1 − κP )(1 − κΦ) ∥bΘ⋆ 
+
+> k
+
+− bΘ 
+
+> k
+
+∥TV . (53) 
+
+Term (II). To control the perturbation of the transition kernel, we keep the sampling law of ˆsk+1 under the true model and add a change-of-measure step, as in Term (I): 
+
+E[(II) | F k
+
+] = Eˆs∼Qw⋆ (P akθ⋆ bΘ⋆k )
+
+[∥∥ψΦw⋆ (P ak 
+
+> θ
+
+bΘ 
+
+> k
+
+, ˆs) − ψΦw⋆ (P ak 
+
+> θ⋆
+
+bΘ 
+
+> k
+
+, ˆs)∥∥TV 
+
+]
+
+≤ Eˆs∼Qw⋆ (P akθ⋆ bΘ 
+
+> k)
+
+[∥∥ψΦw⋆ (P ak 
+
+> θ
+
+bΘ 
+
+> k
+
+, ˆs) − ψΦw⋆ (P ak 
+
+> θ⋆
+
+bΘ 
+
+> k
+
+, ˆs)∥∥TV 
+
+]
+
++
+
+∥∥∥Qw⋆
+
+(P ak 
+
+> θ⋆
+
+bΘ⋆
+
+> k
+
+) − Qw⋆
+
+(P ak 
+
+> θ⋆
+
+bΘ
+
+> k
+
+)∥∥∥TV 
+
+. (54) We now bound the first term in Eq. 54 using Lemma 3.2 Mcdonald & Yüksel (2024), which gives 
+
+Eˆs∼Qw⋆ (P akθ⋆ bΘ 
+
+> k)
+
+[∥∥ψΦw⋆ (P ak 
+
+> θ
+
+bΘ 
+
+> k
+
+, ˆs) − ψΦw⋆ (P ak 
+
+> θ⋆
+
+bΘ 
+
+> k
+
+, ˆs)∥∥TV 
+
+]
+
+≤ (2 − κΦ) ∥P ak 
+
+> θ
+
+bΘ 
+
+> k
+
+− P ak 
+
+> θ⋆
+
+bΘ 
+
+> k
+
+∥TV 
+
+= (2 − κΦ) ∥∥P ak 
+
+> θ
+
+bΘ 
+
+> k
+
+− P ak 
+
+> θ⋆
+
+bΘ
+
+> k
+
+∥∥TV 
+
+≤ B
+
+2 (2 − κΦ)δ(θ), (55) where we have used 
+
+∥∥P ak 
+
+> θ
+
+b − P ak 
+
+> θ⋆
+
+b∥∥TV = 12
+
+∑
+
+> s′∈S
+
+∣∣∣∣∣∑
+
+> s∈S
+
+b(s)
+
+(
+
+Pθ (s′ | s, a k) − Pθ⋆ (s′ | s, a k)
+
+)∣∣∣∣∣
+
+≤ 12
+
+∑
+
+> s′∈S
+
+∑
+
+> s∈S
+
+b(s)
+
+∣∣∣Pθ (s′ | s, a k) − Pθ⋆ (s′ | s, a k)
+
+∣∣∣
+
+= 12
+
+∑
+
+> s∈S
+
+b(s) ∑
+
+> s′∈S
+
+∣∣∣Pθ (s′ | s, a k) − Pθ⋆ (s′ | s, a k)
+
+∣∣∣
+
+≤ sup 
+
+> s∈S
+
+12
+
+∑
+
+> s′∈S
+
+∣∣∣Pθ (s′ | s, a k) − Pθ⋆ (s′ | s, a k)
+
+∣∣∣
+
+= sup 
+
+> s∈S
+
+12
+
+∥∥Pθ (· | s, a k) − Pθ⋆ (· | s, a k)∥∥1
+
+≤ B
+
+2 δ(θ).
+
+24 It remains to bound the second term in Eq. 54. Using the Dobrushin coefficient of Qw⋆ and then of P ak
+
+> θ⋆
+
+gives 
+
+∥∥∥Qw⋆
+
+(P ak 
+
+> θ⋆
+
+bΘ⋆
+
+> k
+
+) − Qw⋆
+
+(P ak 
+
+> θ⋆
+
+bΘ
+
+> k
+
+)∥∥∥TV 
+
+≤ (1 − κΦ) ∥∥P ak 
+
+> θ⋆
+
+bΘ⋆ 
+
+> k
+
+− P ak 
+
+> θ⋆
+
+bΘ
+
+> k
+
+∥∥TV 
+
+≤ (1 − κΦ)(1 − κP ) ∥bΘ⋆ 
+
+> k
+
+− bΘ 
+
+> k
+
+∥TV . (56) Combining Eq. 55–Eq. 56 yields 
+
+E[(II) | F k
+
+] ≤ B
+
+2 (2 − κΦ) δ(θ) + (1 − κΦ)(1 − κP ) ∥bΘ⋆ 
+
+> k
+
+− bΘ 
+
+> k
+
+∥TV . (57) 
+
+Remark B.2 (Dominance condition) . We note that the dominance condition P ak 
+
+> θ⋆
+
+bΘ 
+
+> k
+
+≪ P ak 
+
+> θ
+
+bΘ 
+
+> k
+
+required for the application of filter stability results (e.g., Lemma 3.2 in Mcdonald & Yüksel (2024)) is automatically satisfied for all k in our setting. Under the log-linear parameterization in Assumption 3.1, the transition kernel Pθ and observation model Φw, due to the softmax structure, are strictly positive everywhere, ensuring that P ak 
+
+> θ
+
+bΘ 
+
+> k
+
+and P ak 
+
+> θ⋆
+
+bΘ 
+
+> k
+
+remain mutually absolutely continuous. 
+
+Term (III). This term measures the propagation of error in belief for one time step. Under Assumption 3.5, and by Theorems 3.3 and 4.1 of Mcdonald & Yüksel (2024), for one step we have 
+
+E[ (III) | F k] ≤ (1 − κP )(2 − κΦ)∥bΘ 
+
+> k
+
+− bΘ⋆ 
+
+> k
+
+∥TV . (58) Since bΘ0 = bΘ⋆ 
+
+> 0
+
+= ν0, we have 
+
+E
+
+[
+
+∥bΘ0 − bΘ⋆ 
+
+> 0
+
+∥TV 
+
+]
+
+= ∥ν0 − ν0∥TV = 0 .
+
+Putting all together, and unrolling over time yields 
+
+E
+
+[
+
+∥bΘ 
+
+> k+1
+
+− bΘ⋆
+
+> k+1
+
+∥TV 
+
+]
+
+= E
+
+[
+
+E
+
+[
+
+∥bΘ 
+
+> k+1
+
+− bΘ⋆
+
+> k+1
+
+∥TV 
+
+∣∣∣ Fk
+
+]] 
+
+≤ E
+
+[
+
+E[(I) | F k
+
+] + E[(II) | F k
+
+] + E[(III) | F k
+
+]]
+
+≤
+
+(
+
+(1 − κP )(2 − κΦ) + 2(1 − κP )(1 − κΦ)
+
+)
+
+E
+
+[
+
+∥bΘ 
+
+> k
+
+− bΘ⋆ 
+
+> k
+
+∥TV 
+
+]
+
++ B δ (w) + B
+
+2
+
+((2 − κΦ) + (1 − κΦ))δ(θ)= α E
+
+[
+
+∥bΘ 
+
+> k
+
+− bΘ⋆ 
+
+> k
+
+∥TV 
+
+]
+
++ B δ (w) + B
+
+2 (3 − 2κΦ) δ(θ), (59) with α = (1 − κP )(4 − 3κΦ). Unrolling Eq. 59 and using E[∥bΘ0 − bΘ⋆ 
+
+> 0
+
+∥TV ] = 0 gives, for all k ≥ 1,
+
+E
+
+[
+
+∥bΘ 
+
+> k
+
+− bΘ⋆ 
+
+> k
+
+∥TV 
+
+]
+
+≤
+
+(
+
+B δ (w) + B
+
+2 (3 − 2κΦ) δ(θ)
+
+) k−1∑
+
+> j=0
+
+αj
+
+= B
+
+(
+
+δ(w) + 3 − 2κΦ
+
+2 δ(θ)
+
+) 1 − αk
+
+1 − α . (60) This concludes the proof. 
+
+## C Neural Network Extension 
+
+The linear approximation of the POMDP model studied earlier provides a setting in which the dependence of the POMDP kernels on the learned parameters can be controlled explicitly. However, log-linear scores may be too restrictive for complex models. We therefore consider a neural-softmax extension, where the scores defining P (· | s, a ) and Φ( · | s) are represented by neural networks. 25 This extension is motivated by standard results on over-parameterized neural networks. Such networks can interpolate training data under first-order optimization methods while still exhibiting strong generalization behavior (Belkin et al., 2018; Bartlett et al., 2019; Zhang et al., 2016). A central theoretical explanation is the lazy-training or neural tangent kernel (NTK) regime, where sufficiently wide networks trained near random initialization behave approximately like their first-order linearization around initialization (Jacot et al., 2018; Li & Liang, 2018; Du et al., 2019; Oymak & Soltanolkotabi, 2019; Chizat et al., 2019). In this regime, 
+
+F (x; W ) ≈ F (x; W0) + 〈∇W F (x; W0), W − W0
+
+〉,
+
+so the tangent feature map ∇W F (x; W0) plays the role of an effective feature representation. In the infinite-width limit, these tangent features induce an RKHS description, and finite-width networks approximate the corresponding kernel functions with errors of order O(m−1/2) under standard assumptions. In this section, we extend our belief-stability mechanism beyond the log-linear class. The neural-softmax model can be viewed as an approximate log-linear model in its NTK tangent features, with additional finite-width linearization errors εNN  
+
+> p
+
+(m, δ NN ) and εNN Φ (m, δ NN ). These errors additively contribute to the belief perturbation bound and vanish as the lazy-training approximation improves. 
+
+Definition C.1 (Symmetric random initialization) . Assume the fixed width m is even. For each model component g ∈ { p, Φ}, let dx,g denote the input dimension. For i = 1 , . . . , m/ 2, sample independently 
+
+cg,i ∼ Rad , ω g,i, 0 ∼ N (0 , I dx,g ), and define the second half of the initialization by 
+
+cg,i +m/ 2 := −cg,i , ωg,i +m/ 2,0 := ωg,i, 0, i = 1 , . . . , m/ 2.
+
+Then, Wg, 0 := ( ωg, 1,0, . . . , ω g,m, 0) is called a symmetric random initialization for the two-layer ReLU network. 
+
+Definition C.2 (NTK-linearized scores and tangent feature maps) . Let Wp, 0 and WΦ,0 be reference initial-ization points for the transition and observation networks with parameters Wp and WΦ, respectively. Let 
+
+xp(s, a, s ′) ∈ Rdx,p , x Φ(s, ˆs) ∈ Rdx, Φ denote fixed input encodings of the transition and observation tuples, respectively. We write the trainable first-layer weights as 
+
+Wp = ( ωp, 1, . . . , ω p,m ) ∈ Rm×dx,p , WΦ = ( ωΦ,1, . . . , ω Φ,m ) ∈ Rm×dx, Φ ,
+
+and fix coefficients cp,i , c Φ,i ∈ {− 1, +1 }. The neural scores are defined as 
+
+Fp(s, a, s ′; Wp) := 1
+
+√m
+
+> m
+
+∑
+
+> i=1
+
+cp,i ReLU (ω⊤
+
+> p,i
+
+xp(s, a, s ′)) , (61) 
+
+FΦ(s, ˆs; WΦ) := 1
+
+√m
+
+> m
+
+∑
+
+> i=1
+
+cΦ,i ReLU (ω⊤
+
+> Φ,i
+
+xΦ(s, ˆs)) , (62) Throughout this section, norms on Wp and WΦ are Frobenius norms. Equivalently, after vectorization, one may regard Wp ∈ Rdp and WΦ ∈ RdΦ , where dp = md x,p and dΦ = md x, Φ.
+
+Assumption C.3 (Over-parameterized neural-softmax model) . The neural-softmax model in Definition 4.4 satisfies the following conditions. 
+
+• Realizability. There exists W ⋆ = ( W ⋆p , W ⋆
+
+> Φ
+
+) ∈ D generating the true POMDP. 
+
+• Initialization. The reference points Wp, 0 and WΦ,0 are symmetric initializations as in Definition C.1, for the transition and observation networks, respectively. Under symmetric construction we have 
+
+Fp(s, a, s ′; Wp, 0) = 0 , FΦ(s, ˆs; WΦ,0) = 0 , (63) for all (s, a, s ′) ∈ S × A × S and (s, ˆs) ∈ S × ˆS.26 • Uniformly bounded tangent features. For some BNN < ∞, the tangent feature maps in Definition C.2 satisfy 
+
+sup 
+
+> s∈S, a ∈A, s ′∈S
+
+∥ϕNN  
+
+> p
+
+(s, a, s ′)∥F ≤ BNN , (64) 
+
+sup  
+
+> s∈S,ˆs∈ˆS
+
+∥ϕNN Φ (s, ˆs)∥F ≤ BNN . (65) 
+
+Linearization. Define the first-order NTK-linearized scores around initialization by 
+
+F lin  
+
+> p,W p
+
+(s, a, s ′) := Fp(s, a, s ′; Wp, 0) + 〈∇Wp Fp(s, a, s ′; Wp, 0), W p − Wp, 0
+
+〉 
+
+> F
+
+, (66) 
+
+F lin Φ,W Φ (s, ˆs) := FΦ(s, ˆs; WΦ,0) + 〈∇WΦ FΦ(s, ˆs; WΦ,0), W Φ − WΦ,0
+
+〉 
+
+> F
+
+. (67) The corresponding finite-width tangent feature maps are defined as 
+
+ϕNN  
+
+> p
+
+(s, a, s ′) := ∇Wp Fp(s, a, s ′; Wp, 0), (68) 
+
+ϕNN Φ (s, ˆs) := ∇WΦ FΦ(s, ˆs; WΦ,0). (69) 
+
+Linearization event. Let the bounded convex set D = Dp ×D Φ denote a local lazy-training neighborhood around initialization, chosen so that the high-probability linearization bounds below hold. For δNN ∈ (0 , 1) ,define the high-probability linearization event 
+
+ENN lin (δNN ) := 
+
+{
+
+sup 
+
+> Wp∈D p
+
+sup 
+
+> s,a,s ′
+
+∣∣∣Fp(s, a, s ′; Wp) − F lin  
+
+> p,W p
+
+(s, a, s ′)
+
+∣∣∣ ≤ εNN  
+
+> p
+
+(m, δ NN ),
+
+sup 
+
+> WΦ∈D Φ
+
+sup 
+
+> s, ˆs
+
+∣∣FΦ(s, ˆs; WΦ) − F lin Φ,W Φ (s, ˆs)∣∣ ≤ εNN Φ (m, δ NN )
+
+}
+
+, (70) where P(ENN lin (δNN )) ≥ 1 − δNN .
+
+Remark C.4 (Neural linearization event) . Under Assumption C.3, the event ENN lin (δNN ) is used to replace the neural-softmax scores in Definition 4.4 by their NTK-linearized counterparts in Definition C.2. This event follows from standard two-layer ReLU arguments around symmetric initialization (see Lemma 2 of Cayci et al. (2024)) that gives the corresponding local linearization control, while Lemma 4.1(7) of Satpathi et al. (2020) provides the required uniform control over bounded inputs. Applying these bounds separately to the transition and observation score networks, and taking a union bound over the two initializations, yields 
+
+P(ENN lin (δNN )) ≥ 1 − δNN with, for universal constants Cp, C Φ > 0,
+
+εNN  
+
+> p
+
+(mp, δ NN ) ≤ Cp
+
+Rp
+
+√mp
+
+(
+
+Rp +
+
+√
+
+log 2
+
+δNN 
+
++ √dp log mp
+
+)
+
+εNN Φ (mΦ, δ NN ) ≤ CΦ
+
+RΦ
+
+√mΦ
+
+(
+
+RΦ +
+
+√
+
+log 2
+
+δNN 
+
++ √dΦ log mΦ
+
+)
+
+,
+
+with 
+
+Rp := √mp sup 
+
+> Wp∈D p
+
+max  
+
+> i∈[mp]
+
+∥Wp,i − Wp,i, 0∥2, RΦ := √mΦ sup 
+
+> WΦ∈D Φ
+
+max  
+
+> i∈[mΦ]
+
+∥WΦ,i − WΦ,i, 0∥2.
+
+Throughout the neural-softmax analysis, all bounds involving Lemma C.5 and Corollary 4.5 are understood on this event. 
+
+Lemma C.5 (Neural-softmax kernel perturbation bounds) . Fix δNN ∈ (0 , 1) and work on the event 
+
+ENN lin (δNN ). Assume Assumption C.3. For Wp, W ′ 
+
+> p
+
+∈ D p and WΦ, W ′ 
+
+> Φ
+
+∈ D Φ, let, for W ∈ D p and W ′ ∈ D Φ,
+
+δNN (W ) := ∥W − Wp, 0∥F , δNN (W ′) := ∥W ′ − WΦ,0∥F . (71) 27 Then, 
+
+∥∥PWp (· | s, a ) − PW ′ 
+
+> p
+
+(· | s, a )∥∥TV ≤ 12 BNN ∥Wp − W ′
+
+> p
+
+∥F + εNN  
+
+> p
+
+(m, δ NN ), ∀(s, a ) ∈ S × A. (72) 
+
+∥∥ΦWΦ (· | s) − ΦW ′ 
+
+> Φ
+
+(· | s)∥∥TV ≤ 12 BNN ∥WΦ − W ′
+
+> Φ
+
+∥F + εNN Φ (m, δ NN ), ∀s ∈ S. (73) 
+
+∥∥PWp (s′ | · , a ) − PW ′ 
+
+> p
+
+(s′ | · , a )∥∥1 ≤ 2BNN cp∥Wp − W ′
+
+> p
+
+∥F + 4 cpεNN  
+
+> p
+
+(m, δ NN ), ∀(s′, a ) ∈ S × A. (74) 
+
+∥∥ΦWΦ (ˆ s | · ) − ΦW ′ 
+
+> Φ
+
+(ˆ s | · )∥∥1 ≤ 2BNN cΦ∥WΦ − W ′
+
+> Φ
+
+∥F + 4 cΦεNN Φ (m, δ NN ), ∀ˆs ∈ ˆS, (75) 
+
+where 
+
+cp := |S|
+
+1 + ( |S| − 1) exp (−2( BNN rNN  
+
+> p
+
++ εNN  
+
+> p
+
+(m, δ NN )) ) , cΦ := |S|
+
+1 + ( |ˆS| − 1) exp (−2( BNN rNN Φ + εNN Φ (m, δ NN )) ) ,
+
+and 
+
+rNN  
+
+> p
+
+:= sup 
+
+> ¯Wp∈D p
+
+∥ ¯Wp − Wp, 0∥F , rNN Φ := sup 
+
+> ¯WΦ∈D Φ
+
+∥ ¯WΦ − WΦ,0∥F . (76) 
+
+Proof. Define the linearized score mismatches 
+
+∆lin  
+
+> p
+
+(Wp, W ′
+
+> p
+
+) := sup 
+
+> s∈S, a ∈A, s ′∈S
+
+∣∣∣F lin  
+
+> p,W p
+
+(s, a, s ′) − F lin   
+
+> p,W ′
+> p
+
+(s, a, s ′)
+
+∣∣∣ , (77) 
+
+∆lin Φ (WΦ, W ′
+
+> Φ
+
+) := sup  
+
+> s∈S,ˆs∈ˆS
+
+∣∣∣F lin Φ,W Φ (s, ˆs) − F lin Φ,W ′
+
+> Φ
+
+(s, ˆs)
+
+∣∣∣ . (78) By the symmetric Xavier initialization in Assumption C.3, Eq. 66 becomes 
+
+F lin  
+
+> p,W p
+
+(s, a, s ′) = 〈ϕNN  
+
+> p
+
+(s, a, s ′), W p − Wp, 0
+
+〉 
+
+> F
+
+.
+
+Thus, given initialization, the transition kernel P lin  
+
+> Wp
+
+(· | s, a ), obtained by using F lin  
+
+> p,W p
+
+in Eq. 5, is a log-linear model with feature map ϕNN  
+
+> p
+
+and parameter Wp − Wp, 0. Since P lin  
+
+> Wp
+
+(· | s, a ) is a log-linear softmax model with feature map ϕNN  
+
+> p
+
+, parameter Wp − Wp, 0, and feature bound BNN , the row-wise part of Lemma A.1 applies with θ replaced by Wp − Wp, 0. Therefore, 
+
+∥∥P lin  
+
+> Wp
+
+(· | s, a ) − P lin   
+
+> W′
+> p
+
+(· | s, a )∥∥TV ≤ BNN 
+
+2 ∥Wp − W ′
+
+> p
+
+∥F . (79) Moreover, by the same row-wise argument used in Lemma A.1, applied directly to the score vectors, we also have 
+
+∥∥P lin  
+
+> Wp
+
+(· | s, a ) − P lin   
+
+> W′
+> p
+
+(· | s, a )∥∥TV ≤ 12 ∆lin  
+
+> p
+
+(Wp, W ′
+
+> p
+
+). (80) Moreover, the definition of F lin  
+
+> p,W p
+
+and the uniform tangent-feature bound imply 
+
+∆lin  
+
+> p
+
+(Wp, W ′
+
+> p
+
+) ≤ BNN ∥Wp − W ′
+
+> p
+
+∥F , (81) then, ∣∣∣F lin  
+
+> p,W p
+
+(s, a, s ′) − F lin   
+
+> p,W ′
+> p
+
+(s, a, s ′)
+
+∣∣∣ = ∣∣〈ϕNN  
+
+> p
+
+(s, a, s ′), W p − W ′
+
+> p
+
+〉
+
+> F
+
+∣∣ ≤ BNN ∥Wp − W ′
+
+> p
+
+∥F .
+
+Next, by the definition of the score-linearization error, 
+
+sup 
+
+> s,a,s ′
+
+∣∣∣Fp(s, a, s ′; Wp) − F lin  
+
+> p,W p
+
+(s, a, s ′)
+
+∣∣∣ ≤ εNN  
+
+> p
+
+(m, δ NN ),
+
+28 and the same bound holds with W ′ 
+
+> p
+
+in place of Wp. Applying the same row-wise score argument used in Lemma A.1 to the nonlinear and linearized score vectors gives 
+
+∥∥PWp (· | s, a ) − P lin  
+
+> Wp
+
+(· | s, a )∥∥TV ≤ 12 εNN  
+
+> p
+
+(m, δ NN ), (82) 
+
+∥∥PW ′ 
+
+> p
+
+(· | s, a ) − P lin   
+
+> W′
+> p
+
+(· | s, a )∥∥TV ≤ 12 εNN  
+
+> p
+
+(m, δ NN ). (83) Combining Eq. 80, Eq. 82, and Eq. 83 by the triangle inequality yields 
+
+∥∥PWp (· | s, a ) − PW ′ 
+
+> p
+
+(· | s, a )∥∥TV ≤ ∥∥PWp (· | s, a ) − P lin  
+
+> Wp
+
+(· | s, a )∥∥TV 
+
++ ∥∥P lin  
+
+> Wp
+
+(· | s, a ) − P lin   
+
+> W′
+> p
+
+(· | s, a )∥∥TV 
+
++ ∥∥P lin   
+
+> W′
+> p
+
+(· | s, a ) − PW ′ 
+
+> p
+
+(· | s, a )∥∥TV 
+
+≤ 12 ∆lin  
+
+> p
+
+(Wp, W ′
+
+> p
+
+) + εNN  
+
+> p
+
+(m, δ NN ).
+
+Using Eq. 81 proves the claim. It remains to prove the column-wise transition bound. For any Wp ∈ D p, the initialization condition and tangent-feature bound imply 
+
+∣∣∣F lin  
+
+> p,W p
+
+(s, a, s ′)
+
+∣∣∣ = ∣∣〈ϕNN  
+
+> p
+
+(s, a, s ′), W p − Wp, 0
+
+〉
+
+> F
+
+∣∣ ≤ BNN δNN (Wp) ≤ BNN rNN  
+
+> p
+
+.
+
+Hence, for every s, s ′ ∈ S,
+
+P lin  
+
+> Wp
+
+(s′ | s, a ) ≤ 11 + ( |S| − 1) exp (−2BNN rNN 
+
+> p
+
+) ≤ 11 + ( |S| − 1) exp (−2( BNN rNN  
+
+> p
+
++ εNN  
+
+> p
+
+(m, δ NN )) ) .
+
+Therefore, ∑
+
+> s∈S
+
+P lin  
+
+> Wp
+
+(s′ | s, a ) ≤ cp.
+
+Repeating the column-wise Jacobian argument in Lemma A.1, now applied to the linearized model and using score mismatch ∆lin  
+
+> p
+
+(Wp, W ′
+
+> p
+
+), gives 
+
+∥∥P lin  
+
+> Wp
+
+(s′ | · , a ) − P lin   
+
+> W′
+> p
+
+(s′ | · , a )∥∥1 ≤ 2cp ∆lin  
+
+> p
+
+(Wp, W ′
+
+> p
+
+).
+
+Moreover, the score-linearization error implies 
+
+sup 
+
+> s,a,s ′
+
+|Fp(s, a, s ′; Wp)| ≤ BNN δNN (Wp) + εNN  
+
+> p
+
+(m, δ NN ) ≤ BNN rNN  
+
+> p
+
++ εNN  
+
+> p
+
+(m, δ NN ).
+
+Thus, for the same coordinate-wise softmax-Jacobian estimate, 
+
+∥∥PWp (s′ | · , a ) − P lin  
+
+> Wp
+
+(s′ | · , a )∥∥1 ≤ 2cp εNN  
+
+> p
+
+(m, δ NN ),
+
+and the same bound holds with W ′ 
+
+> p
+
+in place of Wp. By the triangle inequality, 
+
+∥∥PWp (s′ | · , a ) − PW ′ 
+
+> p
+
+(s′ | · , a )∥∥1 ≤ ∥∥PWp (s′ | · , a ) − P lin  
+
+> Wp
+
+(s′ | · , a )∥∥1
+
++ ∥∥P lin  
+
+> Wp
+
+(s′ | · , a ) − P lin   
+
+> W′
+> p
+
+(s′ | · , a )∥∥1
+
++ ∥∥P lin   
+
+> W′
+> p
+
+(s′ | · , a ) − PW ′ 
+
+> p
+
+(s′ | · , a )∥∥1
+
+≤ 2cp ∆lin  
+
+> p
+
+(Wp, W ′
+
+> p
+
+) + 4 cp εNN  
+
+> p
+
+(m, δ NN ).
+
+Using Eq. 81 gives the parameter-distance version. The proof for the observation kernel is the same, replacing the transition score family Fp by FΦ, the parameter 
+
+Wp by WΦ, the tangent feature map ϕNN  
+
+> p
+
+by ϕNN Φ , and the softmax output space S by ˆS. The resulting fixed-ˆs
+
+column is summed over s ∈ S, which gives the constant cΦ. This proves Eq. 73–Eq. 75. 29 Lemma C.6 (Neural-softmax column sums and Dobrushin bounds) . Fix δNN ∈ (0 , 1) and work on the event 
+
+ENN lin (δNN ). Assume Assumption C.3. Then, the following properties hold. 
+
+sup 
+
+> Wp∈D p
+
+sup 
+
+> a∈A
+
+sup 
+
+> s′∈S
+
+∑
+
+> s∈S
+
+PWp (s′ | s, a ) ≤ |S|
+
+1 + ( |S| − 1) exp (−2( BNN rNN  
+
+> p
+
++ εNN  
+
+> p
+
+(m, δ NN )) ) . (84) 
+
+inf 
+
+> Wp∈D p
+
+inf  
+
+> a∈A
+
+inf 
+
+> s′∈S
+
+∑
+
+> s∈S
+
+PWp (s′ | s, a ) ≥ |S|
+
+1 + ( |S| − 1) exp (2( BNN rNN  
+
+> p
+
++ εNN  
+
+> p
+
+(m, δ NN )) ) . (85) 
+
+sup 
+
+> WΦ∈D Φ
+
+sup 
+
+> ˆs∈ˆS
+
+∑
+
+> s∈S
+
+ΦWΦ (ˆ s | s) ≤ |S|
+
+1 + ( |ˆS| − 1) exp (−2( BNN rNN Φ + εNN Φ (m, δ NN )) ) . (86) 
+
+inf 
+
+> WΦ∈D Φ
+
+inf 
+
+> ˆs∈ˆS
+
+∑
+
+> s∈S
+
+ΦWΦ (ˆ s | s) ≥ |S|
+
+1 + ( |ˆS| − 1) exp (2( BNN rNN Φ + εNN Φ (m, δ NN )) ) . (87) 
+
+Furthermore, the uniform neural Dobrushin coefficients defined as 
+
+κNN  
+
+> P
+
+:= inf 
+
+> Wp∈D p
+
+inf  
+
+> a∈A
+
+inf 
+
+> s,s ′′ ∈S
+
+∑
+
+> x∈S
+
+min {PWp (x | s, a ), P Wp (x | s′′ , a )},κNN Φ := inf 
+
+> WΦ∈D Φ
+
+inf 
+
+> s,s ′′ ∈S
+
+∑
+
+> ˆs∈ˆS
+
+min {ΦWΦ (ˆ s | s), ΦWΦ (ˆ s | s′′ )},
+
+satisfy 
+
+κNN  
+
+> P
+
+≥ |S|
+
+1 + ( |S| − 1) exp (2( BNN rNN  
+
+> p
+
++ εNN  
+
+> p
+
+(m, δ NN )) ) , (88) 
+
+κNN Φ ≥ |ˆS|
+
+1 + ( |ˆS| − 1) exp (2( BNN rNN Φ + εNN Φ (m, δ NN )) ) . (89) 
+
+Proof of Lemma C.6. We first prove the claims for the transition kernel. Fix (s, a, s ′) ∈ S × A × S and 
+
+Wp ∈ D p. By the symmetric initialization in Assumption C.3, 
+
+F lin  
+
+> p,W p
+
+(s, a, s ′) = 〈ϕNN  
+
+> p
+
+(s, a, s ′), W p − Wp, 0
+
+〉 
+
+> F
+
+.
+
+Hence, by the tangent-feature bound and the definition of rNN  
+
+> p
+
+,
+
+∣∣F lin  
+
+> p,W p
+
+(s, a, s ′)∣∣ ≤ ∥ ϕNN  
+
+> p
+
+(s, a, s ′)∥F ∥Wp − Wp, 0∥F ≤ BNN rNN  
+
+> p
+
+.
+
+Using the score-linearization error in Definition C.2, we obtain the full nonlinear score bound 
+
+|Fp(s, a, s ′; Wp)| ≤ ∣∣F lin  
+
+> p,W p
+
+(s, a, s ′)∣∣ + ∣∣Fp(s, a, s ′; Wp) − F lin  
+
+> p,W p
+
+(s, a, s ′)∣∣ ≤ BNN rNN  
+
+> p
+
++ εNN  
+
+> p
+
+(m, δ NN ).
+
+Thus the neural-softmax transition kernel satisfies the same uniform score bound as the log-linear kernel in Lemma A.2, with B(∥θ⋆∥2 + rΘ) replaced by BNN rNN  
+
+> p
+
++ εNN  
+
+> p
+
+(m, δ NN ). Repeating the pointwise softmax upper-bound argument in Eq. 34 gives, for all (s, a, s ′),
+
+PWp (s′ | s, a ) ≤ 11 + ( |S| − 1) exp (−2( BNN rNN  
+
+> p
+
++ εNN  
+
+> p
+
+(m, δ NN )) ) .
+
+Summing over s ∈ S and taking the supremum over (Wp, a, s ′) proves Eq. 84. Similarly, repeating the lower-bound argument in Eq. 35 gives 
+
+PWp (s′ | s, a ) ≥ 11 + ( |S| − 1) exp (2( BNN rNN  
+
+> p
+
++ εNN  
+
+> p
+
+(m, δ NN )) ) =: P NN min .
+
+30 Summing P NN min over s ∈ S and taking the infimum over (Wp, a, s ′) proves Eq. 85. Moreover, since every entry of PWp (· | s, a ) is bounded from below by P NN min , the same Dobrushin argument as in Eq. 36 yields 
+
+∑
+
+> x∈S
+
+min {PWp (x | s, a ), P Wp (x | s′′ , a )} ≥ | S|P NN min = |S|
+
+1 + ( |S| − 1) exp (2( BNN rNN  
+
+> p
+
++ εNN  
+
+> p
+
+(m, δ NN )) ) .
+
+Taking the infimum over Wp ∈ D p, a ∈ A, and s, s ′′ ∈ S proves Eq. 88. We now prove the observation bounds. Fix (s, ˆs) ∈ S × ˆS and WΦ ∈ D Φ. By the symmetric initialization, 
+
+F lin Φ,W Φ (s, ˆs) = 〈ϕNN Φ (s, ˆs), W Φ − WΦ,0
+
+〉 
+
+> F
+
+.
+
+The tangent-feature bound and the definition of rNN Φ imply 
+
+∣∣F lin Φ,W Φ (s, ˆs)∣∣ ≤ ∥ ϕNN Φ (s, ˆs)∥F ∥WΦ − WΦ,0∥F ≤ BNN rNN Φ .
+
+Together with the score-linearization error, this gives 
+
+|FΦ(s, ˆs; WΦ)| ≤ BNN rNN Φ + εNN Φ (m, δ NN ).
+
+Thus the neural-softmax observation kernel satisfies the same uniform score bound as the log-linear observa-tion kernel in Lemma A.2, with B(∥w⋆∥2 +rΘ) replaced by BNN rNN Φ +εNN Φ (m, δ NN ). Repeating the pointwise upper- and lower-bound arguments in Eq. 37–Eq. 38 gives, for all (s, ˆs),
+
+ΦWΦ (ˆ s | s) ≤ 11 + ( |ˆS| − 1) exp (−2( BNN rNN Φ + εNN Φ (m, δ NN )) ) =: Φ NN max ,
+
+and 
+
+ΦWΦ (ˆ s | s) ≥ 11 + ( |ˆS| − 1) exp (2( BNN rNN Φ + εNN Φ (m, δ NN )) ) =: Φ NN min .
+
+Summing these pointwise bounds over s ∈ S and taking the supremum and infimum over (WΦ, ˆs) proves Eq. 86 and Eq. 87, respectively. Finally, since every entry of ΦWΦ (· | s) is bounded from below by ΦNN min , the same Dobrushin argument as in Eq. 39 gives 
+
+∑
+
+> ˆs∈ˆS
+
+min {ΦWΦ (ˆ s | s), ΦWΦ (ˆ s | s′′ )} ≥ | ˆS|ΦNN min = |ˆS|
+
+1 + ( |ˆS| − 1) exp (2( BNN rNN Φ + εNN Φ (m, δ NN )) ) .
+
+Taking the infimum over WΦ ∈ D Φ and s, s ′′ ∈ S proves Eq. 89. 
+
+## D Proof of Corollary 4.5 
+
+Proof. For a ∈ A, write 
+
+(P aWp q)( s′) := ∑
+
+> s∈S
+
+PWp (s′ | s, a )q(s), (QWΦ q)(ˆ s) := ∑
+
+> s′∈S
+
+ΦWΦ (ˆ s | s′)q(s′).
+
+The belief recursions are 
+
+bWk+1 = ψΦWΦ
+
+(P ak 
+
+> Wp
+
+bWk , ˆsk+1 
+
+), bW ⋆ 
+
+> k+1
+
+= ψΦW ⋆
+
+> Φ
+
+(P ak  
+
+> W⋆p
+
+bW ⋆ 
+
+> k
+
+, ˆsk+1 
+
+), bW 
+
+> 0
+
+= bW ⋆ 
+
+> 0
+
+= ν0.
+
+We work under PW ⋆ (· | a0: t−1), with the same filtrations F− 
+
+> k
+
+and Fk as in the proof of Theorem 4.1. Thus 
+
+ˆsk+1 | F k ∼ QW ⋆
+
+> Φ
+
+(
+
+P ak  
+
+> W⋆p
+
+bW ⋆
+
+> k
+
+)
+
+.
+
+31 Define 
+
+ℓNN  
+
+> p
+
+:= BNN 
+
+2 ∥Wp − W ⋆p ∥F + εNN  
+
+> p
+
+(m, δ NN ), (90) 
+
+ℓNN Φ := BNN ∥WΦ − W ⋆
+
+> Φ
+
+∥F + 2 εNN Φ (m, δ NN ). (91) By Lemma C.5, for every b ∈ ∆S and a ∈ A,
+
+∥∥P aWp b − P aW ⋆p b∥∥TV ≤ ℓNN  
+
+> p
+
+, (92) 
+
+sup 
+
+> s∈S
+
+∥∥ΦWΦ (· | s) − ΦW ⋆ 
+
+> Φ
+
+(· | s)∥∥1 ≤ ℓNN Φ . (93) Fix k ∈ { 0, . . . , t − 1}. As in the proof of Theorem 4.1, add and subtract 
+
+ψΦW ⋆
+
+> Φ
+
+(P ak 
+
+> Wp
+
+bWk , ˆsk+1 ) and ψΦW ⋆
+
+> Φ
+
+(P ak  
+
+> W⋆p
+
+bWk , ˆsk+1 ),
+
+and denote the resulting three terms by (I) , (II) , (III) , corresponding respectively to observation-model per-turbation, transition-model perturbation, and propagation of the previous belief error. The algebraic de-composition is identical to the decomposition in the proof of Theorem 4.1. For Term (I) , the Bayes-operator perturbation argument in Eq. 49–Eq. 50, with Φw, Φw⋆ replaced by 
+
+ΦWΦ , ΦW ⋆ 
+
+> Φ
+
+, gives 
+
+Eˆs∼QW ⋆ 
+
+> Φb
+
+[
+
+∥ψΦWΦ (b, ˆs) − ψΦW ⋆
+
+> Φ
+
+(b, ˆs)∥TV 
+
+]
+
+≤ ℓNN Φ .
+
+The same change-of-measure step as in Eq. 51, together with the Dobrushin contraction of QW ⋆ 
+
+> Φ
+
+, the con-traction of P ak  
+
+> W⋆p
+
+, and Eq. 92, yields 
+
+E[(I) | F k] ≤ ℓNN Φ + (1 − κNN Φ )ℓNN  
+
+> p
+
++ (1 − κNN  
+
+> P
+
+)(1 − κNN Φ )∥bW ⋆ 
+
+> k
+
+− bWk ∥TV . (94) For Term (II) , applying Lemma 3.2 of Mcdonald & Yüksel (2024) as in Eq. 55, and using Eq. 92, gives 
+
+Eˆs∼QW ⋆   
+
+> Φ(PakW ⋆p
+> bWk)
+
+[
+
+∥ψΦW ⋆
+
+> Φ
+
+(P ak 
+
+> Wp
+
+bWk , ˆs) − ψΦW ⋆
+
+> Φ
+
+(P ak  
+
+> W⋆p
+
+bWk , ˆs)∥TV 
+
+]
+
+≤ (2 − κNN Φ )ℓNN  
+
+> p
+
+.
+
+The change-of-measure term is the same as in Eq. 56, with the neural Dobrushin coefficients: 
+
+∥∥∥QW ⋆ 
+
+> Φ
+
+(P ak  
+
+> W⋆p
+
+bW ⋆ 
+
+> k
+
+) − QW ⋆ 
+
+> Φ
+
+(P ak  
+
+> W⋆p
+
+bWk )
+
+∥∥∥TV 
+
+≤ (1 − κNN Φ )(1 − κNN  
+
+> P
+
+)∥bW ⋆ 
+
+> k
+
+− bWk ∥TV .
+
+Therefore, 
+
+E[(II) | F k] ≤ (2 − κNN Φ )ℓNN  
+
+> p
+
++ (1 − κNN Φ )(1 − κNN  
+
+> P
+
+)∥bW ⋆ 
+
+> k
+
+− bWk ∥TV . (95) For Term (III) , Theorems 3.3 and 4.1 of Mcdonald & Yüksel (2024), applied with the neural Dobrushin coefficients from Lemma C.6, give 
+
+E[(III) | F k] ≤ (1 − κNN  
+
+> P
+
+)(2 − κNN Φ )∥bWk − bW ⋆ 
+
+> k
+
+∥TV . (96) The required dominance condition clearly holds, since the neural-softmax transition and observation kernels are strictly positive on finite spaces. Combining Eq. 94–Eq. 96 and taking outer expectation yields 
+
+E
+
+[
+
+∥bWk+1 − bW ⋆
+
+> k+1
+
+∥TV 
+
+]
+
+≤ αNN E
+
+[
+
+∥bWk − bW ⋆ 
+
+> k
+
+∥TV 
+
+]
+
++ ℓNN Φ + (3 − 2κNN Φ )ℓNN  
+
+> p
+
+, (97) where αNN = (1 − κNN  
+
+> P
+
+)(4 − 3κNN Φ ). Since bW 
+
+> 0
+
+= bW ⋆ 
+
+> 0
+
+, unrolling Eq. 97 gives 
+
+E
+
+[
+
+∥bWt − bW ⋆ 
+
+> t
+
+∥TV 
+
+]
+
+≤
+
+(
+
+ℓNN Φ + (3 − 2κNN Φ )ℓNN 
+
+> p
+
+) 1 − αt
+
+> NN
+
+1 − αNN 
+
+.
+
+Substituting Eq. 90 and Eq. 91 proves Eq. 6. 32 Remark D.1 (Finite-width neural-network approximation) . The quantities εNN  
+
+> p
+
+(m, δ NN ) and εNN Φ (m, δ NN )
+
+measure the finite-width error incurred by replacing the nonlinear ReLU scores with their first-order NTK linearizations around initialization. In the NTK regime, sufficiently over-parameterized networks remain close to initialization and their outputs are well approximated by this linearized model (Jacot et al., 2018; Chizat et al., 2019; Ji et al., 2021). For two-layer ReLU networks with symmetric random initialization, high-probability local linearization bounds imply that, on a neighborhood of radius O(m−1/2) around ini-tialization, the approximation error decays as 
+
+εNN  
+
+> p
+
+(m, δ NN ) = ˜O(m−1/2), εNN Φ (m, δ NN ) = ˜O(m−1/2),
+
+Consequently, under the stated local linearization event, the additive neural approximation terms in Corol-lary 4.5 vanish as m → ∞ , recovering the same belief-stability mechanism as in the log-linear model, with the NTK tangent features playing the role of the finite-dimensional feature maps. 
+
+## E Proof of Corollary 4.6 
+
+Proof. Consider Xt := ∥bΘ 
+
+> t
+
+− bΘ⋆ 
+
+> t
+
+∥TV ∈ [0 , 1] and use the filtration {F t}t≥− 1 defined by F−1 := σ(∅, Ω) and 
+
+Ft := σ(ˆ s1: t, a 0: t) for t ≥ 0. As F− 
+
+> t
+
+⊆ F t, the random variable Xt is also Ft-measurable, and in particular, under any non-anticipative policy, at is F− 
+
+> t
+
+-measurable and Ft = σ(F− 
+
+> t
+
+, a t). From one-step conditional bound established in the proof of Theorem 4.1 (the bounds for terms (I)–(III) up to 59 without taking the outer expectation), for all t ≥ 1, we proved 
+
+E[Xt|F t−1] ≤ αX t−1 + cb (δ(θ), δ (w)) . (98) Define the martingale difference sequence Dt := Xt − E [Xt | F t−1] and the partial sums Sn := ∑n−1 
+
+> t=0
+
+Dt
+
+for n = 1 , . . . , T . Note that D0 = X0 − E[X0|F −1] = 0 since X0 = 0 as bΘ0 = bΘ⋆ 
+
+> 0
+
+= ν0. Then {Sn, Fn−1
+
+}Tn=1 
+
+is a martingale. Summing 98 over t = 1 , . . . , T − 1 yields  
+
+> T−1
+
+∑
+
+> t=1
+
+E [Xt | F t−1] ≤ α 
+
+> T−1
+
+∑
+
+> t=1
+
+Xt−1 + ( T − 1) cb (δ(θ), δ (w)) 
+
+≤ α 
+
+> T−1
+
+∑
+
+> t=0
+
+Xt + ( T − 1) cb (δ(θ), δ (w)) . (99) where the last inequality follows from adjusting the indices and knowing that Xt ∈ [0 , 1] . Moreover, observe that  
+
+> T−1
+
+∑
+
+> t=0
+
+Xt = 
+
+> T−1
+
+∑
+
+> t=0
+
+Dt + 
+
+> T−1
+
+∑
+
+> t=0
+
+E[Xt | F t−1]= ST + 
+
+> T−1
+
+∑
+
+> t=0
+
+E[Xt | F t−1]
+
+together with the fact that X0 = 0 and upper-bounding the last summation by 99  
+
+> T−1
+
+∑
+
+> t=0
+
+Xt ≤ α 
+
+> T−1
+
+∑
+
+> t=0
+
+Xt + ( T − 1) cb (δ(θ), δ (w)) + ST (100) 
+
+⇒ (1 − α) 
+
+> T−1
+
+∑
+
+> t=0
+
+Xt ≤ (T − 1) cb (δ(θ), δ (w)) + ST (101) 33 Now, for n = 1 , . . . , T define Vn := ∑n−1 
+
+> t=0
+
+E [D2 
+
+> t
+
+| F t−1]. Since Xt ∈ [0 , 1] , we have E[D2 
+
+> t
+
+| F t−1] = Var (Xt |Ft−1) ≤ E[X2 
+
+> t
+
+| F t−1] ≤ E[Xt | F t−1], then for n = T , using the drift summation bound 99 
+
+VT ≤ 
+
+> T−1
+
+∑
+
+> t=0
+
+E [Xt | F t−1]
+
+≤ α 
+
+> T−1
+
+∑
+
+> t=0
+
+Xt + ( T − 1) cb (δ(θ), δ (w)) 
+
+≤ α 
+
+> T−1
+
+∑
+
+> t=0
+
+Xt + T c b (δ(θ), δ (w)) (102) Moreover, Xt ∈ [0 , 1] yields |Dt| ≤ 1, then by Freedman’s inequality Freedman (1975), with probability at least 1 − δb,
+
+ST ≤ √2VT log(1 /δ b) + 23 log(1 /δ b). (103) Substitute 102 into 103, and then into 100: 
+
+(1 − α) 
+
+> T−1
+
+∑
+
+> t=0
+
+Xt ≤ T c b (δ(θ), δ (w)) + 
+
+√√√√2 log(1 /δ b)( α 
+
+> T−1
+
+∑
+
+> t=0
+
+Xt + T c b (δ(θ), δ (w))) + 23 log(1 /δ b)
+
+≤ T c b (δ(θ), δ (w)) + 
+
+√√√√2α log(1 /δ b) 
+
+> T−1
+
+∑
+
+> t=0
+
+Xt + √2T c b (δ(θ), δ (w)) log(1 /δ b) + 23 log(1 /δ b)
+
+where last inequality follows from √x + y ≤ √x + √y. Also, by applying the arithmetic mean-geometric mean inequality 
+
+√√√√2α log(1 /δ b) 
+
+> T−1
+
+∑
+
+> t=0
+
+Xt =
+
+(√√√√(1 − α) 
+
+> T−1
+
+∑
+
+> t=0
+
+Xt
+
+)
+
+.
+
+(√ 2α log(1 /δ b)1 − α
+
+)
+
+≤ (1 − α) ∑T −1 
+
+> t=0
+
+Xt
+
+2 + α log(1 /δ b)1 − α
+
+and rearranging terms we have 
+
+1 − α
+
+2 
+
+> T−1
+
+∑
+
+> t=0
+
+Xt ≤ T c b (δ(θ), δ (w)) + √2T c b (δ(θ), δ (w)) log(1 /δ b) + log(1 /δ b)
+
+( 23 + α
+
+1 − α
+
+)
+
+⇒ 
+
+> T−1
+
+∑
+
+> t=0
+
+Xt ≤ 2T c b (δ(θ), δ (w)) 1 − α + 2√2T c b (δ(θ), δ (w)) log(1 /δ b)1 − α + log(1 /δ b) 2α + 4 3(1 − α)2
+
+⇒ 1
+
+T 
+
+> T−1
+
+∑
+
+> t=0
+
+Xt ≤ 2cb (δ(θ), δ (w)) 1 − α + 21 − α
+
+√ 2cb (δ(θ), δ (w)) log(1 /δ b)
+
+T + log(1 /δ b)
+
+T (1 − α)
+
+( 43 + 2α
+
+1 − α
+
+)
+
+.
+
+The neural-softmax case follows by the same argument. One replaces Xt = ∥bΘ 
+
+> t
+
+− bΘ⋆ 
+
+> t
+
+∥TV by XNN  
+
+> t
+
+=
+
+∥bWt − bW ⋆ 
+
+> t
+
+∥TV , and uses the one-step recursion from Theorem 4.5, 
+
+E[XNN  
+
+> t
+
+| F t−1] ≤ αNN XNN  
+
+> t−1
+
++ cNN  
+
+> b
+
+(W, W ⋆; δNN ).
+
+Repeating the preceding Freedman argument with (α, c b) replaced by (αNN , c NN  
+
+> b
+
+) gives the identical high-probability time-average bound for the neural-softmax model. 34 Lemma E.1 (Clean negative log-likelihood gradient bound) . Consider the clean (5.2) negative log-likelihood gradient 
+
+∇L(μ⋆) = 1
+
+NHF 
+
+> NHF
+
+∑
+
+> i=1
+
+(σ(ϕ⊤ 
+
+> i
+
+μ⋆) − yi
+
+)ϕi.
+
+where σ is the sigmoid function and ϕi ∈ { ϕj }NHF  
+
+> j=1
+
+⊂ Rd is the given trajectory-level exact (clean) accumulated features differences for i − th trajectory, defined in 14. Given ζ > 0 define the clean empirical covariance 
+
+Σ := 1
+
+> NHF
+
+∑NHF  
+
+> i=1
+
+ϕiϕ⊤ 
+
+> i
+
+and regularized empirical covariance by Σ + ζI . Then, for any δc ∈ (0 , 1) with probability at least 1 − δc it holds 
+
+∥∥∇L(μ⋆)∥∥(Σ+ ζI )−1 ≤ 1
+
+√NHF 
+
+√
+
+d log 
+
+(
+
+1 + 4T 2B2
+
+> r
+
+ζd 
+
+)
+
++ 2 log 
+
+( 1
+
+δc
+
+)
+
+. (104) 
+
+Proof of lemma E.1. Define the shorthand ξi := σ(ϕ⊤ 
+
+> i
+
+μ⋆)− yi ∈ [−1, 1] , S := ∑NHF  
+
+> i=1
+
+ξiϕi, and V := NHF ζI +
+
+∑NHF  
+
+> i=1
+
+ϕiϕ⊤ 
+
+> i
+
+. By Assumption 5.1, item 3 (Preference Realizability) and Remark 5.6, for 0 ≤ i ≤ NHF − 1
+
+we have E[ξi | ϕi] = σ(ϕ⊤ 
+
+> i
+
+μ⋆) − E[yi | ϕi] = σ(ϕ⊤ 
+
+> i
+
+μ⋆) − σ(ϕ⊤ 
+
+> i
+
+μ⋆) = 0 . Also, since we have ξi ∈ [−1, 1] , by Hoeffding’s lemma ξi is conditionally 1-sub-Gaussian given ϕi, i.e., 
+
+∀t ∈ R, E[ exp( tξ i) | ϕi
+
+] ≤ exp( t2
+
+2 )
+
+Then, by Theorem 1 of Abbasi-yadkori et al. (2011) (elliptical potential), for any δc ∈ (0 , 1) , with probability at least 1 − δc
+
+∥S∥V −1 ≤
+
+√√√√2 log 
+
+(
+
+det( V )1/2
+
+det( NHF ζI )1/2 · 1
+
+δc
+
+)
+
+=
+
+√√√√log det 
+
+(
+
+1
+
+NHF ζ I ·
+
+(
+
+NHF ζI +
+
+> NHF
+
+∑
+
+> i=1
+
+ϕiϕ⊤
+
+> i
+
+) ) 
+
++ 2 log( 1
+
+δc
+
+)=
+
+√√√√log det 
+
+(
+
+I + 1
+
+NHF ζ
+
+> NHF
+
+∑
+
+> i=1
+
+ϕiϕ⊤
+
+> i
+
+)
+
++ 2 log( 1
+
+δc
+
+)
+
+≤
+
+√
+
+d log 
+
+(
+
+1 + (2 T B r )2
+
+ζd 
+
+)
+
++ 2 log 
+
+( 1
+
+δc
+
+)
+
+(105) Where the last inequality follows from Lemma 10 in Abbasi-yadkori et al. (2011) (determinant-trace inequal-ity). Finally, note that ∇L(μ⋆) = 1 
+
+> NHF
+
+S and Σ + ζI = 1
+
+> NHF
+
+∑NHF  
+
+> i=1
+
+ϕiϕ⊤ 
+
+> i
+
++ ζI = 1 
+
+> NHF
+
+V , we have 
+
+∥∥∇L(μ⋆)∥∥(Σ+ ζI )−1 =
+
+∥∥∥ 1
+
+NHF 
+
+S
+
+∥∥∥( 1  
+
+> NHF V)−1
+
+=
+
+√( 1
+
+NHF 
+
+S
+
+)⊤(NHF V −1)( 1
+
+NHF 
+
+S
+
+)
+
+= 1
+
+√NHF 
+
+∥S∥V −1 . (106) This result combined with 105 completes the proof. 
+
+Lemma E.2 (Trajectory-level feature perturbation bound) . Fix i ∈ { 1, . . . , N HF } and define the clean and perturbed trajectory-level feature differences ϕi and ˜ϕi as in 14–15. Let ∆ϕ,i := ˜ϕi − ϕi. Suppose the event 
+
+ERLHF  
+
+> b
+
+(δb) in 17 holds. Then, it holds 
+
+∥∆ϕ,i ∥2 ≤ 4T B r ϵb(δb, 2NHF ) (107) 
+
+where ϵb(δb, 2NHF ) is defined in 18. 
+
+35 Proof of lemma E.2. By the triangle inequality and 13 we have 
+
+∥∆ϕ,i ∥2 =
+
+∥∥∥∥∥ 
+
+> T−1
+
+∑
+
+> h=0
+
+[ϕb(b(1) ,Θ 
+
+> i,h
+
+, a (1)  
+
+> i,h
+
+) − ϕb(b(1) ,Θ⋆ 
+
+> i,h
+
+, a (1)  
+
+> i,h
+
+)] − 
+
+> T−1
+
+∑
+
+> h=0
+
+[ϕb(b(2) ,Θ 
+
+> i,h
+
+, a (2)  
+
+> i,h
+
+) − ϕb(b(2) ,Θ⋆ 
+
+> i,h
+
+, a (2)  
+
+> i,h
+
+)]∥∥∥∥∥2
+
+≤ 
+
+> T−1
+
+∑
+
+> h=0
+
+∥∥ϕb(b(1) ,Θ 
+
+> i,h
+
+, a (1)  
+
+> i,h
+
+) − ϕb(b(1) ,Θ⋆ 
+
+> i,h
+
+, a (1)  
+
+> i,h
+
+)∥∥2 + 
+
+> T−1
+
+∑
+
+> h=0
+
+∥∥ϕb(b(2) ,Θ 
+
+> i,h
+
+, a (2)  
+
+> i,h
+
+) − ϕb(b(2) ,Θ⋆ 
+
+> i,h
+
+, a (2)  
+
+> i,h
+
+)∥∥2
+
+≤ 
+
+> T−1
+
+∑
+
+> h=0
+
+Br ∥b(1) ,Θ 
+
+> i,h
+
+− b(1) ,Θ⋆ 
+
+> i,h
+
+∥1 + 
+
+> T−1
+
+∑
+
+> h=0
+
+Br ∥b(2) ,Θ 
+
+> i,h
+
+− b(2) ,Θ⋆ 
+
+> i,h
+
+∥1
+
+= 2 BrT −1∑
+
+> h=0
+
+∥b(1) ,Θ 
+
+> i,h
+
+− b(1) ,Θ⋆ 
+
+> i,h
+
+∥TV + 2 BrT −1∑
+
+> h=0
+
+∥b(2) ,Θ 
+
+> i,h
+
+− b(2) ,Θ⋆ 
+
+> i,h
+
+∥TV . (108) On the event ERLHF  
+
+> b
+
+(δb), for each j ∈ { 1, 2},
+
+1
+
+T 
+
+> T−1
+
+∑
+
+> h=0
+
+∥b(j),Θ 
+
+> i,h
+
+− b(j),Θ⋆ 
+
+> i,h
+
+∥TV ≤ ϵb(δb, 2NHF ),
+
+hence ∑T −1 
+
+> h=0
+
+∥b(j),Θ 
+
+> i,h
+
+− b(j),Θ⋆ 
+
+> i,h
+
+∥TV ≤ T ϵ b(δb, 2NHF ). Substituting into 108 yields 
+
+∥∆ϕ,i ∥2 ≤ 2Br · T ϵ b(δb, 2NHF ) + 2 Br · T ϵ b(δb, 2NHF ) = 4 T B r ϵb(δb, 2NHF ),
+
+which proves Eq. 107. 
+
+## F Proof of Theorem 5.8 
+
+Proof. Assume the true reward model parameter μ⋆ exists and consider the set B2(rμ) (Assumption 5.1). Define the maximum likelihood estimation objective for perturbed features (15) 
+
+˜L(μ) := − 1
+
+NHF 
+
+> NHF
+
+∑
+
+> i=1
+
+log 
+
+(
+
+1{yi = 1 }
+
+1 + exp ( − ( ˜ϕτ (1)    
+
+> i,τ (2)
+> i
+
+)⊤μ) + 1{yi = 0 }
+
+1 + exp (( ˜ϕτ (1)    
+
+> i,τ (2)
+> i
+
+)⊤μ))
+
+= − 1
+
+NHF 
+
+> NHF
+
+∑
+
+> i=1
+
+[
+
+yi ln σ(⟨ ˜ϕi, μ ⟩) + (1 − yi) ln (1 − σ(⟨ ˜ϕi, μ ⟩))]
+
+= − 1
+
+NHF 
+
+> NHF
+
+∑
+
+> i=1
+
+[
+
+yi ln σ(⟨ϕi + ∆ ϕ,i , μ ⟩) + (1 − yi) ln (1 − σ(⟨ϕi + ∆ ϕ,i , μ ⟩))]
+
+(109) where σ(·) is the sigmoid function. The gradient and Hessian of ˜L(μ) are 
+
+∇ ˜L(μ) = 1
+
+NHF 
+
+> NHF
+
+∑
+
+> i=1
+
+(σ( ˜ϕ⊤ 
+
+> i
+
+μ) − yi
+
+) ˜ϕi
+
+= 1
+
+NHF 
+
+> NHF
+
+∑
+
+> i=1
+
+(σ(( ϕi + ∆ ϕ,i )⊤μ) − yi
+
+)(ϕi + ∆ ϕ,i ) (110) 
+
+∇2 ˜L(μ) = 1
+
+NHF 
+
+> NHF
+
+∑
+
+> i=1
+
+σ( ˜ϕ⊤ 
+
+> i
+
+μ)(1 − σ( ˜ϕ⊤ 
+
+> i
+
+μ)) ˜ϕi ˜ϕ⊤ 
+
+> i
+
+. (111) 36 The function σ(z)(1 − σ(z)) is even and strictly decreasing on [0 , ∞). For any μ ∈ B2(rμ), we have | ˜ϕ⊤ 
+
+> i
+
+μ| ≤ ∥ ˜ϕi∥2∥μ∥2 ≤ 2T B r rμ, then for all i,
+
+σ( ˜ϕ⊤ 
+
+> i
+
+μ)(1 − σ( ˜ϕ⊤ 
+
+> i
+
+μ)) ≥ 12 + exp(2 T B r rμ) + exp( −2T B r rμ) = ρ
+
+substituting into 111 yields 
+
+∇2 ˜L(μ) = 1
+
+NHF 
+
+> NHF
+
+∑
+
+> i=1
+
+σ( ˜ϕ⊤ 
+
+> i
+
+μ)(1 − σ( ˜ϕ⊤ 
+
+> i
+
+μ)) ˜ϕi ˜ϕ⊤ 
+
+> i
+
+(112) 
+
+⪰ ρ( 1
+
+NHF 
+
+> NHF
+
+∑
+
+> i=1
+
+˜ϕi ˜ϕ⊤
+
+> i
+
+) = ρ ˜Σ (113) where ˜Σ is the feature covariance matrix defined in 19. Now, for any μ1 and μ2 in B2(rμ) and line segment 
+
+μλ = λμ 1 + (1 − λ)μ2 with λ ∈ [0 , 1] , we apply the second order Taylor expansion 
+
+˜L(μ1) − ˜L(μ2) − ⟨∇ ˜L(μ2), μ 1 − μ2⟩
+
+=
+
+∫ 10
+
+(1 − λ) ( μ1 − μ2)⊤∇2 ˜L(μλ) ( μ1 − μ2) dλ 
+
+≥ ρ
+
+2 (μ1 − μ2)⊤( ˜Σ)( μ1 − μ2). (114) Therefore, 
+
+˜L(μ1) − ˜L(μ2) − ⟨∇ ˜L(μ2), μ 1 − μ2⟩ ≥ ρ
+
+2 ∥μ1 − μ2∥2˜Σ. (115) This proves the ρ−strong convexity of ˜L(μ) with μ ∈ B2(rμ) with respect to the semi-norm ∥ · ∥ ˜Σ. Next, writing 114 for μ⋆ and ˜μ yields 
+
+ρ
+
+2 ∥˜μ − μ⋆∥2˜Σ ≤ ˜L(˜ μ) − ˜L(μ⋆) − ⟨∇ ˜L(μ⋆), ˜μ − μ⋆⟩
+
+> (a)
+
+≤ −⟨∇ ˜L(μ⋆), ˜μ − μ⋆⟩
+
+> (b)
+
+≤ ∥∇ ˜L(μ⋆)∥( ˜Σ+ ζI )−1 ∥˜μ − μ⋆∥( ˜Σ+ ζI ) (116) where (a) follows from the fact that ˜L(˜ μ) − ˜L(μ⋆) ≤ 0 as ˜μ ∈ arg min μ∈B2(rμ) ˜L(μ), and (b) follows from applying Cauchy–Schwarz in the dual pair of norms induced by ˜Σ + ζI . Using the identuty ∥˜μ − μ⋆∥2˜Σ =
+
+∥˜μ − μ⋆∥2( ˜Σ+ ζI ) − ζ ∥˜μ − μ⋆∥22, we have 
+
+ρ
+
+2 ∥˜μ − μ⋆∥2( ˜Σ+ ζI ) ≤ ∥∇ ˜L(μ⋆)∥( ˜Σ+ ζI )−1 ∥˜μ − μ⋆∥( ˜Σ+ ζI ) + 2 ρ ζ r 2
+
+> μ
+
+. (117) Solving this quadratic inequality and using √a + b ≤ √a + √b yields 
+
+∥˜μ − μ⋆∥( ˜Σ+ ζI ) ≤ 2
+
+ρ ∥∇ ˜L(μ⋆)∥( ˜Σ+ ζI )−1 + 2 rμ
+
+√ζ. (118) Now we proceed with bounding ∥∇ ˜L(μ⋆)∥( ˜Σ+ ζI )−1 with reference to 110. we define per-sample gradients at 
+
+μ⋆ as g⋆i := (σ(ϕ⊤ 
+
+> i
+
+μ⋆) − yi
+
+)ϕi and ˜g⋆i := (σ( ˜ϕ⊤ 
+
+> i
+
+μ⋆) − yi
+
+) ˜ϕi, with respect to exact and perturbed features. Hence, ∇ ˜L(μ⋆) = 1
+
+> NHF
+
+∑ 
+
+> i
+
+˜gi(μ⋆), and we can write 
+
+∇ ˜L(μ⋆) = ∇L(μ⋆) + 1
+
+NHF 
+
+> NHF
+
+∑
+
+> i=1
+
+(˜g⋆i − g⋆i
+
+). (119) 37 Consider the following decomposition 
+
+˜g⋆i − g⋆i =
+
+(
+
+σ(ϕ⊤ 
+
+> i
+
+μ⋆ + ∆ ⊤
+
+> ϕ,i
+
+μ⋆) − σ(ϕ⊤ 
+
+> i
+
+μ⋆)
+
+)
+
+ϕi
+
+︸ ︷︷ ︸
+
+> (I)
+
++
+
+(
+
+σ(ϕ⊤ 
+
+> i
+
+μ⋆ + ∆ ⊤
+
+> ϕ,i
+
+μ⋆) − yi
+
+)
+
+∆ϕ,i 
+
+︸ ︷︷ ︸
+
+> (II )
+
+.
+
+Since σ(·) is 14 -Lipschitz, σ(·) ∈ (0 , 1) and yi ∈ { 0, 1}, we have 
+
+∥(I)∥2 ≤ 14 |∆⊤
+
+> ϕ,i
+
+μ⋆| ∥ ϕi∥2 ≤ 2T B r
+
+4 ∥∆ϕ,i ∥2∥μ⋆∥2 ≤ T B r
+
+2 rμ∥∆ϕ,i ∥2
+
+∥(II )∥2 ≤ ∥ ∆ϕ,i ∥2.
+
+where we used μ⋆ ∈ B2(rμ), |∆⊤
+
+> ϕ,i
+
+μ⋆| ≤ ∥ ∆ϕ,i ∥2∥μ⋆∥2 ≤ rμ∥∆ϕ,i ∥2, together with ∥ϕi∥2 ≤ 2T B r . Thus, for 
+
+i = 1 , . . . , N HF , we obtain 
+
+∥˜g⋆i − g⋆i ∥2 ≤
+
+(
+
+1 + 12 T B r rμ
+
+)
+
+∥∆ϕ,i ∥2, (120) which yields 
+
+∥∥∇ ˜L(μ⋆) − ∇ L(μ⋆)∥∥2 =
+
+∥∥∥ 1
+
+NHF 
+
+> NHF
+
+∑
+
+> i=1
+
+(˜ g⋆i − g⋆i )
+
+∥∥∥2
+
+≤ 1
+
+NHF 
+
+> NHF
+
+∑
+
+> i=1
+
+∥˜g⋆i − g⋆i ∥2
+
+≤
+
+(
+
+1 + 12 T B r rμ
+
+)
+
+· 1
+
+NHF 
+
+> NHF
+
+∑
+
+> i=1
+
+∥∆ϕ,i ∥2. (121) Since ˜Σ + ζI ⪰ ζI , the inequality 
+
+∥∥∇ ˜L(μ⋆) − ∇ L(μ⋆)∥∥( ˜Σ+ ζI )−1 ≤ 1
+
+√ζ
+
+∥∥∇ ˜L(μ⋆) − ∇ L(μ⋆)∥∥2
+
+≤ 1
+
+√ζ
+
+(
+
+1 + 12 T B r rμ
+
+)
+
+· 1
+
+NHF 
+
+> NHF
+
+∑
+
+> i=1
+
+∥∆ϕ,i ∥2 (122) on the event ERLHF  
+
+> b
+
+(δb) Eq. 17 where ∥∆ϕ,i ∥2 ≤ 4T B r ϵb(δb, 2NHF ) for all i with the probability at least 
+
+1 − δb, implies 
+
+∥∥∇ ˜L(μ⋆)∥∥( ˜Σ+ ζI )−1 ≤ ∥∥∇L(μ⋆)∥∥( ˜Σ+ ζI )−1 + 1
+
+√ζ
+
+(
+
+1 + 12 T B r rμ
+
+)
+
+· 1
+
+NHF 
+
+> NHF
+
+∑
+
+> i=1
+
+∥∆ϕ,i ∥2
+
+≤ ∥∥∇L(μ⋆)∥∥( ˜Σ+ ζI )−1 + 4T B r ϵb(δb, 2NHF )
+
+√ζ
+
+(
+
+1 + 12 T B r rμ
+
+)
+
+. (123) By lemma E.1, for any δc ∈ (0 , 1) with probability at least 1 − δc we have 
+
+∥∥∇L(μ⋆)∥∥(Σ+ ζI )−1 ≤ 1
+
+√NHF 
+
+√
+
+d log 
+
+(
+
+1 + 4T 2B2
+
+> r
+
+ζd 
+
+)
+
++ 2 log 
+
+( 1
+
+δc
+
+)
+
+. (124) Now, we study the covariance perturbation. Define 
+
+E := ˜Σ − Σ = 1
+
+NHF 
+
+> NHF
+
+∑
+
+> i=1
+
+(
+
+ϕi∆⊤ 
+
+> ϕ,i
+
++ ∆ ϕ,i ϕ⊤ 
+
+> i
+
++ ∆ ϕ,i ∆⊤
+
+> ϕ,i
+
+)
+
+38 which is a symmetric. On ERLHF  
+
+> b
+
+(δb), we have ∥∆ϕ,i ∥2 ≤ 4T B r ϵb(δb, 2NHF ), for all i. Moreover, we have 
+
+∥ϕi∥2 ≤ 2T B r , hence, using ∥uv ⊤∥op ≤ ∥ u∥2∥v∥2 and the triangle inequality, 
+
+∥E∥op ≤ 1
+
+NHF 
+
+> NHF
+
+∑
+
+> i=1
+
+(
+
+∥ϕi∆⊤
+
+> ϕ,i
+
+∥op + ∥∆ϕ,i ϕ⊤ 
+
+> i
+
+∥op + ∥∆ϕ,i ∆⊤
+
+> ϕ,i
+
+∥op 
+
+)
+
+≤ 1
+
+NHF 
+
+> NHF
+
+∑
+
+> i=1
+
+(
+
+2∥ϕi∥2∥∆ϕ,i ∥2 + ∥∆ϕ,i ∥22
+
+)
+
+≤ 16 T 2B2 
+
+> r
+
+ϵb(δb, 2NHF ) + (4 T B r ϵb(δb, 2NHF )) 2 (125) 
+
+= 16 T 2B2 
+
+> r
+
+ϵb(δb, 2NHF )(1 + ϵb(δb, 2NHF )) := ϵΣ (126) Therefore, a sufficient level of regularization on ERLHF  
+
+> b
+
+(δb) is ϵΣ. Then, for any 1 < c ζ , choosing ζ = cζ ϵΣ
+
+on ERLHF  
+
+> b
+
+(δb) yields 
+
+∥E∥op 
+
+ζ ≤ 1
+
+cζ
+
+< 1 =⇒ 1
+
+√1 − ∥ E∥op /ζ ≤
+
+√ cζ
+
+cζ − 1 . (127) Since E is symmetric, −∥ E∥op I ⪯ E ⪯ ∥ E∥op I, and hence 
+
+Σ + ζI − ∥ E∥op I ⪯ ˜Σ + ζI ⪯ Σ + ζI + ∥E∥op I
+
+=⇒ Σ + ζI − ∥ E∥op I ⪰
+
+(
+
+1 − ∥E∥op 
+
+ζ
+
+)
+
+(Σ + ζI )=⇒ ( ˜Σ + ζI )−1 ⪯ 11 − ∥ E∥op /ζ (Σ + ζI )−1 (128) as ∥E∥op /ζ < 1. This implies that for any v ∈ Rd,
+
+∥v∥( ˜Σ+ ζI )−1 ≤ 1
+
+√1 − ∥ E∥op /ζ ∥v∥(Σ+ ζI )−1 ≤
+
+√ cζ
+
+cζ − 1 ∥v∥(Σ+ ζI )−1 . (129) Finally, returning to Eq. 123 and combining Eq. 129 with Lemma E.1 (Eq. Eq. 124), on the event ERLHF  
+
+> b
+
+(δb)
+
+we obtain 
+
+∥∥∇ ˜L(μ⋆)∥∥( ˜Σ+ ζI )−1 ≤ ∥∥∇L(μ⋆)∥∥( ˜Σ+ ζI )−1 + 4T B r ϵb(δb, 2NHF )
+
+√ζ
+
+(
+
+1 + 12 T B r rμ
+
+)
+
+≤ 1
+
+√1 − ∥ E∥op /ζ 
+
+∥∥∇L(μ⋆)∥∥(Σ+ ζI )−1 + 4T B r ϵb(δb, 2NHF )
+
+√ζ
+
+(
+
+1 + 12 T B r rμ
+
+)
+
+≤
+
+√ cζ
+
+cζ − 1
+
+∥∥∇L(μ⋆)∥∥(Σ+ ζI )−1 + 4T B r ϵb(δb, 2NHF )
+
+√ζ
+
+(
+
+1 + 12 T B r rμ
+
+)
+
+≤
+
+√ cζ
+
+NHF (cζ − 1) 
+
+√
+
+d log 
+
+(
+
+1 + 4T 2B2
+
+> r
+
+ζd 
+
+)
+
++ 2 log 
+
+( 1
+
+δc
+
+)
+
++ 4T B r ϵb(δb, 2NHF )
+
+√ζ
+
+(
+
+1 + 12 T B r rμ
+
+)
+
+.
+
+Substituting the above bound into Eq. 118, on the event ERLHF  
+
+> b
+
+(δb) and the event of Lemma E.1 (with probability at least 1 − δc), we obtain 
+
+∥˜μ − μ⋆∥( ˜Σ+ ζI ) ≤ 2
+
+ρ
+
+∥∥∇ ˜L(μ⋆)∥∥( ˜Σ+ ζI )−1 + 2 rμ
+
+√ζ
+
+≤ 2√cζ
+
+ρ√NHF (cζ − 1) 
+
+√
+
+d log 
+
+(
+
+1 + 4T 2B2
+
+> r
+
+ζd 
+
+)
+
++ 2 log 
+
+( 1
+
+δc
+
+)
+
++ 8T B r ϵb(δb, 2NHF )
+
+ρ√ζ
+
+(
+
+1 + 12 T B r rμ
+
+)
+
++ 2 rμ
+
+√ζ. (130) 39 Therefore, taking a union bound over ERLHF  
+
+> b
+
+(δb) and the event of Lemma E.1, the claim of Theorem 5.8 holds with probability at least 1 − δb − δc.The proof for the neural-softmax model is identical. By the modular structure of the pipeline, the only POMDP model-specific input used above is the belief-accuracy event ERLHF  
+
+> b
+
+(δb), through the bound 
+
+∥∆ϕ,i ∥2 ≤ 4T B r ϵb(δb, 2NHF ). Under Theorem 4.5 and its corresponding high-probability event established in the second part of Corollary 4.6, similar event holds with b(j),Θ 
+
+> i,h
+
+, b (j),Θ⋆ 
+
+> i,h
+
+replaced by b(j),W i,h , b (j),W ⋆ 
+
+> i,h
+
+, and with ϵb(δb, 2NHF ) replaced by ϵNN  
+
+> b
+
+(δb, 2NHF , δ NN ). All subsequent steps, e.g., the feature perturbation bound, covariance perturbation bound, gradient decomposition, and strong-convexity argument are downstream and therefore remain unchanged after this replacement. 
+
+Remark F.1 . A common approach to bound ∥∇ ˜L(μ⋆)∥( ˜Σ+ ζI )−1 would be to apply an elliptical potential inequality directly to the summands ˜g⋆i = (σ( ˜ϕ⊤ 
+
+> i
+
+μ⋆) − yi
+
+) ˜ϕi, i = 1 , . . . , N HF . as in E.1, but this is not valid here because the required conditional mean-zero property fails as E[yi | ϕi] = σ(ϕ⊤ 
+
+> i
+
+μ⋆), hence in general 
+
+E[σ( ˜ϕ⊤ 
+
+> i
+
+μ⋆) − yi
+
+∣∣ ˜ϕi
+
+]̸ = 0 . Therefore, {˜g⋆i } is not a martingale-difference sequence w.r.t. ˜ϕi, and we instead perform the decompose in 123 and apply the self-normalized bound only to the clean gradient ∇L(μ⋆), for which E[σ(ϕ⊤ 
+
+> i
+
+μ⋆) − yi | ϕi] = 0 holds. 
+
+Remark F.2 . The inequality in Eq. 118 is a standard device that makes the analysis well-posed and compatible with self-normalized concentration arguments. Indeed, the strong convexity step yields control only in the semi-norm induced by ˜Σ,
+
+˜L(μ1) − ˜L(μ2) − ⟨∇ ˜L(μ2), μ 1 − μ2⟩ ≥ ρ
+
+2 ∥μ1 − μ2∥2˜Σ,
+
+where ˜Σ may be singular (see also Agarwal et al. (2020); Du et al. (2024); Zhu et al. (2023); Abbasi-yadkori et al. (2011)). Introducing the term ζI ensures invertibility and allows us to apply Cauchy–Schwarz in the dual pair ∥ · ∥ ˜Σ+ ζI and ∥ · ∥ ( ˜Σ+ ζI )−1 . This modification contributes an additive regularization bias of order 
+
+√ζ∥˜μ − μ⋆∥2 ≤ 2rμ
+
+√ζ (e.g., Theorem 5.2 in Zhu et al. (2023)). 
+
+Remark F.3 (Making ζ fully explicit) . Although we write 
+
+ζ := cζ 16 T 2B2 
+
+> r
+
+ϵb(δb, 2NHF )
+
+(
+
+1 + ϵb(δb, 2NHF )
+
+)
+
+,
+
+the quantity ϵb(δb, 2NHF ) is explicit in our analysis: it is given in Eq. 18 (see also Corollary 4.6). In particular, 
+
+ϵb depends only on (T, N HF , δ b) and the problem parameters α = (1 − κP )(4 − 3κΦ) and cb(δ(θ), δ (w)) . To obtain a deterministic bound that does not depend on the unknown perturbations, δ(θ), δ (w) (or on κP , κ Φ), one may replace them by worst-case bounds over the feasible set, e.g. δ(θ), δ (w) ≤ rΘ and lower bounds on 
+
+κP , κ Φ from Lemma A.2, thereby obtaining a closed-form upper bound ¯ϵb and the explicit choice 
+
+ζ := cζ 16 T 2B2 
+
+> r
+
+¯ϵb (1 + ¯ ϵb).
+
+This substitution only affects constants, while preserving the stated guarantees. Moreover, when ϵb = 0 , the same argument may be run with any ζ > 0.
+
+Remark F.4 (Bias scaling under the prescribed choice of ζ). The bound in Theorem 5.8 depends on ζ in all three terms; the statistical term depends on ζ only through the logarithmic factor, while the explicit belief-mismatch and regularization bias terms have the form C1ϵb/√ζ and C2
+
+√ζ. Under the prescribed tuning ζ = ¯ c ϵ b(1 + ϵb) (Theorem 5.8 and Remark F.3), the two explicit bias contributions satisfy 
+
+C1
+
+ϵb
+
+√ζ + C2
+
+√ζ = C1
+
+√¯c
+
+√ ϵb
+
+1 + ϵb
+
++ C2
+
+√¯c√ϵb(1 + ϵb) = O(√ϵb),
+
+where we used that ϵb ∈ (0 , 1] implies 1 + ϵb ∈ [1 , 2] . Thus, as the time-averaged belief error ϵb decreases, the explicit belief-mismatch/regularization bias floor does not blow up under this tuning and decays at rate 
+
+√ϵb, up to the logarithmic ζ-dependence in the statistical term. 40 Corollary F.5 (Value perturbation from reward parameter error) . Working under the setting of Theo-rem 5.8, fix the (possibly randomized) policy π : ∆ S → ∆A used in data generation and any γ ∈ (0 , 1) . For 
+
+μ ∈ Rd, define the discounted value 
+
+V πμ (b) := Eπ
+
+[ ∞∑
+
+> t=0
+
+γt rμ(bt, a t)
+
+∣∣∣∣ b0 = b
+
+]
+
+.
+
+Then with probability at least 1 − (δb + δc),
+
+sup 
+
+> b∈∆S
+
+∣∣V π 
+
+> ˜μ
+
+(b) − V πμ⋆ (b)∣∣ ≤ Br
+
+(1 − γ)√ζ ϵ(δb, δ c, ζ ),
+
+where ϵ(δb, δ c, ζ ) is as in Eq. 21. Proof of Corollary F.5. Fix any (b, a ) ∈ ∆S ×A. By boundedness of the belief feature map, ∥ϕb(b, a )∥2 ≤ Br ,hence for all μ, μ ′ ∈ Rd,
+
+|rμ(b, a ) − rμ′ (b, a )| = ∣∣ϕb(b, a )⊤(μ − μ′)∣∣
+
+≤ Br ∥μ − μ′∥2.
+
+Therefore, by linearity of expectation and ∑ 
+
+> t≥0
+
+γt = (1 − γ)−1,
+
+∣∣V πμ (b) − V πμ′ (b)∣∣ ≤ Br
+
+1 − γ ∥μ − μ′∥2.
+
+Taking μ = ˜ μ, μ′ = μ⋆, and using ˜Σ + ζI ⪰ ζI (so ∥ν∥2 ≤ ζ−1/2∥ν∥˜Σ+ ζI ), we obtain 
+
+∣∣V π 
+
+> ˜μ
+
+(b) − V πμ⋆ (b)∣∣ ≤ Br
+
+(1 − γ)√ζ ∥˜μ − μ⋆∥˜Σ+ ζI .
+
+On the event of Theorem 5.8, ∥˜μ − μ⋆∥˜Σ+ ζI ≤ ϵ(δb, δ c, ζ ). Taking the supremum over b completes the proof. 
+
+## G Experiments 
+
+G.1 Belief-stability bound 
+
+We first test the belief-stability component of Theorem 4.1. The purpose of this experiment is to verify the qualitative dependences predicted by the theorem once a controlled model perturbation is introduced. In particular, Theorem 4.1 predicts that, for histories generated from the true model, 
+
+E
+
+[
+
+∥bΘ 
+
+> t
+
+− bΘ⋆ 
+
+> t
+
+∥TV 
+
+]
+
+≤ 1 − αt
+
+1 − α cb(δ(θ), δ (w)) , cb(δ(θ), δ (w)) = B
+
+(
+
+δ(w) + 3 − 2κΦ
+
+2 δ(θ)
+
+)
+
+.
+
+Thus, for α < 1, the time-propagation factor saturates at order (1 − α)−1, while the one-step perturbation term is linear in the parameter deviations. The experiment is designed to separately demonstrates these two effects. 
+
+Setting. We generate finite log-linear POMDPs satisfying the bounded-feature condition 
+
+∥ϕp(s, a, s ′)∥2 ≤ B, ∥ϕΦ(s, ˆs)∥2 ≤ B, 
+
+with |S| = 20 , |A| = 10 , |ˆS| = 20 , dθ = dw = 10 , horizon T = 25 , and B = 0 .1. True parameters Θ⋆ = ( θ⋆, w ⋆)
+
+are sampled and retained according to the realized stability coefficient 
+
+αreal := (1 − κP )(4 − 3κΦ),
+
+41 (a) Empirical estimates of the LHS, ̂ E[∥bΘ    
+
+> t−bΘ⋆
+> t∥TV ], over time for different realized stability bands and perturbation levels.
+> (b) Final-time empirical mismatch and realized the-orem RHS as a function of the perturbation magni-tude, grouped by realized α-bands.
+> (c) Fixed-αlinearity check: both the final-time em-pirical mismatch and the realized theorem RHS scale approximately linearly with the perturbation magni-tude.
+
+Figure 2: Synthetic validation of the belief-stability mechanism in Theorem 4.1. The experiment isolates the filtering component by comparing Bayesian filters computed under the true log-linear POMDP model and a perturbed model on common histories generated from the true model. The plots are intended to test the qualitative predictions of the theorem: bounded-in-time propagation under α < 1, larger mismatch for weaker stability, and approximately linear dependence on the parameter perturbation size. so that the accepted models fall into prescribed stability bands. We then form a perturbed model Θ = ( θ, w )
+
+by moving Θ⋆ in a fixed perturbation direction with prescribed magnitude. For each accepted model, observation histories are generated from the true POMDP, and the two Bayesian filters bΘ⋆ 
+
+> t
+
+and bΘ 
+
+> t
+
+are run on the same action–observation histories. This common-history comparison matches the distributional object in Theorem 4.1 and removes policy-induced trajectory drift from the experiment. To stress the least stable case within the fixed-action-sequence setting of the theorem, the action sequence is fixed to the worst realized action for the sampled model. The plotted empirical quantity is the Monte Carlo estimate ̂
+
+E
+
+[
+
+∥bΘ 
+
+> t
+
+− bΘ⋆ 
+
+> t
+
+∥TV 
+
+]
+
+,
+
+42 where the expectation is over observation histories generated under Θ⋆. In the reported plots, curves are averaged over 5 independently accepted models in the corresponding stability regime and over 50 simulated observation histories per model. The displayed RHS is obtained by evaluating the theorem expression with the realized κP , κ Φ and the corresponding perturbation term cb(δ(θ), δ (w)) . Since this uses realized stability constants and finite Monte Carlo estimates, the figure should be interpreted as a synthetic stability diagnostic rather than a claim of tightness of the worst-case theorem constants. 
+
+Results. Figure 2a shows that the empirical belief mismatch rises quickly from zero and then remains stable over the horizon. This behavior is consistent with the structure of Theorem 4.1: the two filters start from the same prior, model mismatch injects fresh error after filtering begins, and the Dobrushin contraction prevents this error from accumulating linearly in time. The ordering across stability regimes is also consistent with the theorem. Models with larger realized αreal exhibit larger belief mismatch, while more stable models have substantially smaller plateaus. Within each stability band, increasing the perturbation magnitude increases the empirical mismatch. Figure 2b compares the final-time empirical mismatch with the realized theorem RHS. The empirical curves remain below the corresponding proof-level upper bounds and inherit the same monotone structure: larger parameter perturbations lead to larger final-time belief error, and weaker stability, i.e., larger αreal , shifts both the empirical mismatch and the bound upward. The gap between the empirical values and the RHS is expected, because the theorem uses total-variation Lipschitz bounds, Dobrushin worst-case contractions, and a uniform propagation argument; these constants are designed for robustness rather than numerical tightness. Finally, Figure 2c isolates the perturbation dependence by using a separate fixed-stability experiment with 
+
+αreal ∈ [0 .25 , 0.40] . In this setting the propagation factor (1 − αt)/(1 − α) is approximately fixed across models, so the theorem predicts that the dominant dependence on the perturbation size should enter through the linear term cb(δ(θ), δ (w)) . The observed final-time empirical mismatch and the realized RHS both grow approximately linearly with the perturbation magnitude, supporting the Lipschitz interpretation of Theorem 4.1. Overall, the experiment confirms the qualitative mechanism used later in the reward-learning analysis: under a stable filter, model mismatch induces a controlled belief-error level, but this error increases with both the learned-model perturbation and the weakness of the realized stability coefficient. 
+
+G.2 Reward-learning 
+
+We next isolate the downstream reward-estimation component of Theorem 5.8. Unlike the belief-stability experiment above, this experiment does not estimate a POMDP model and does not run Bayesian filtering. Instead, it directly generates clean belief-based trajectory features and perturbed belief-based trajectory features whose discrepancy is controlled by a prescribed belief-accuracy level ϵb. The goal is therefore to test the second part of the theory: once belief approximation induces trajectory-feature perturbations, how does this perturbation affect Bradley–Terry reward estimation? The theorem controls the perturbed-feature estimator in the adaptive covariance geometry. In particular, ignoring logarithmic factors, Theorem 5.8 has the qualitative form 
+
+∥˜μ − μ⋆∥˜Σ+ ζI ≲ N −1/2HF 
+
+︸ ︷︷ ︸ 
+
+> statistical error
+
++ T B r
+
+√ζ ϵb
+
+︸ ︷︷ ︸ 
+
+> belief-induced bias
+
++ rμ
+
+√ζ
+
+︸ ︷︷ ︸ 
+
+> regularization bias
+
+.
+
+Thus, for a fixed belief-error level ϵb and fixed regularization ζ, increasing NHF should reduce the statistical component, while the belief-induced and regularization terms determine the residual scale that cannot be removed merely by collecting more preference comparisons. 
+
+Protocol. We use a finite synthetic belief-MDP with |S| = 20 , |A| = 5 , reward-feature dimension d = 5 ,horizon T = 10 , feature bound Br = 0 .1, and parameter constraint radius rμ = 1 . The true reward parameter satisfies ∥μ⋆∥2 = 0 .8rμ. For each 
+
+NHF ∈ { 10 , 100 , 500 , 1000 , 5000 , 10000 , 20000 , 50000 } and ϵb ∈ { 0.05 , 0.10 , 0.15 , 0.20 , 0.30 },
+
+43 we generate NHF independent pairwise comparisons. Clean belief-based trajectory features are denoted by 
+
+ϕi, while perturbed features are denoted by ˜ϕi. The perturbations are constructed so that each trajectory satisfies the prescribed average total-variation belief-error level ϵb, matching the type of belief-accuracy event used in the proof of Theorem 5.8. Preference labels are sampled from the clean Bradley–Terry model 
+
+P(yi = 1 | ϕi) = σ(ϕ⊤ 
+
+> i
+
+μ⋆),
+
+whereas the estimator is fitted using the perturbed features ˜ϕi:
+
+˜μ ∈ arg min 
+
+> ∥μ∥2≤rμ
+
+−
+
+> NHF
+
+∑
+
+> i=1
+
+[
+
+yi log σ( ˜ϕ⊤ 
+
+> i
+
+μ) + (1 − yi) log (1 − σ( ˜ϕ⊤ 
+
+> i
+
+μ))]
+
+.
+
+This creates precisely the downstream misspecification studied by the theorem: the preferences are generated according to the oracle belief features, but the learner observes only perturbed belief-induced features. For each ϵb, we set the adaptive-norm regularization level according to the deterministic theorem scale 
+
+ζ = 1 .05 · 16 T 2B2 
+
+> r
+
+ϵb(1 + ϵb),
+
+up to a negligible numerical floor. Since ϵb is fixed along each curve, ζ is also fixed along that curve. Hence the experiment studies the fixed-belief-error regime in which only the statistical term changes with NHF ,while the perturbation and regularization contributions remain present.        
+
+> (a) The theorem-relevant error ∥˜μ−μ⋆∥˜Σ+ ζI and the corresponding proof-level RHS.
+> (b) Euclidean parameter error ∥˜μ−μ⋆∥2, reported only as an auxiliary diagnostic.
+
+Figure 3: Synthetic downstream reward-learning experiment. Labels are generated from clean belief-based features ϕi, while the Bradley–Terry estimator is fitted using perturbed features ˜ϕi satisfying a prescribed belief-error level ϵb. The left panel reports the adaptive covariance norm controlled by Theorem 5.8; the right panel reports the Euclidean error only for interpretability. 
+
+Results. Figure 3 reports medians over 100 independent trials. The left panel shows the theorem-relevant quantity ∥˜μ − μ⋆∥˜Σ+ ζI together with the corresponding theorem RHS. The empirical adaptive-norm error decreases as NHF increases, reflecting the reduction of the statistical component in Theorem 5.8. At the same time, for a fixed sample size, larger prescribed belief error ϵb generally leads to larger estimation error. This is consistent with the perturbation term in the theorem, where belief mismatch enters through the accumulated trajectory-feature error. The empirical curves remain below the proof-level RHS across the tested regimes. The gap is expected and should not be interpreted as a failure of the scaling law. The theorem is a high-probability guarantee and uses conservative ingredients: self-normalized concentration for the Bradley–Terry score, deterministic covariance-perturbation control, norm comparison between clean and perturbed empirical covariances, and 44 a regularization term chosen to ensure stability under feature perturbation. These steps are designed to produce a robust finite-sample upper bound rather than a numerically tight prediction of the median error. The left panel also illustrates the main qualitative implication of the theorem. More preference comparisons reduce the statistical error, but they do not remove the effect of a fixed belief approximation error. In the theorem RHS, once the statistical term becomes small, the remaining scale is governed by the belief-induced bias term and the regularization bias. This matches the conceptual message of the paper: under partial observability with imperfect belief construction, reward learning has an additional error channel that is absent from the fully observed Bradley–Terry setting. The right panel reports ∥˜μ − μ⋆∥2 as a diagnostic in the ordinary Euclidean parameter norm. This is not the norm controlled by Theorem 5.8; therefore, crossings and small non-monotonicities across ϵb-curves should not be overinterpreted. Converting the adaptive-norm bound into a Euclidean bound would require addi-tional lower-eigenvalue control of ˜Σ + ζI . Nevertheless, the Euclidean plot shows the same broad behavior: increasing NHF improves reward-parameter recovery, while larger belief perturbations tend to make esti-mation harder. Overall, the experiment supports the downstream mechanism established by Theorem 5.8: belief-induced feature perturbations produce a controlled but persistent bias in Bradley–Terry reward esti-mation, while the statistical component decreases with the number of preference comparisons. 
+
+Summary of experimental findings. Taken together, the experiments should be viewed as controlled synthetic diagnostics for the two analytical mechanisms studied in the paper, rather than as empirical validation of the full theory. The belief-stability experiment illustrates how the quantities appearing in Theorem 4.1 behave in finite synthetic instances: larger model perturbations and weaker realized stability lead to larger belief mismatch, while the error remains bounded over the tested horizon under stable filtering regimes. The reward-learning experiment then isolates the downstream effect of a prescribed belief-accuracy level and illustrates the qualitative decomposition in Theorem 5.8: increasing NHF reduces the statistical component, whereas fixed belief perturbation induces a persistent error contribution. These experiments therefore serve as sanity checks for the scaling behavior and error-propagation interpretation of the bounds, while leaving a full end-to-end empirical study of preference learning with learned POMDP models to future work. “‘ 45
