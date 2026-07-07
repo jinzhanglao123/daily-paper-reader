@@ -1,0 +1,984 @@
+Title: ACPO: Adaptive Credit Policy Optimization via Fine-Grained Surrogate Entropy
+
+URL Source: https://arxiv.org/pdf/2607.03126v1
+
+Published Time: Tue, 07 Jul 2026 00:43:24 GMT
+
+Number of Pages: 20
+
+Markdown Content:
+# ACPO: Adaptive Credit Policy Optimization via Fine-Grained Surrogate Entropy 
+
+Zijun Xie 1,2 ∗ Yuyang You 1,3 ∗† Yongzhi Li 3 Enlei Gong 2
+
+Zeyu Chen 2 Quan Chen 3 Yanhua Cheng 3 Peng Jiang 3 Yadong Mu 1‡
+
+> 1
+
+Peking University 2Baidu Inc. 3Kuaishou Inc. 
+
+Abstract 
+
+Reinforcement Learning (RL) has substantially improved the reasoning ability of large language models (LLMs), but sparse outcome rewards still make token-level credit assignment difficult. Existing scalable RL methods typically assign trajectory-level rewards uniformly across tokens, while recent entropy-aware ap-proaches either rely on coarse detached heuristics or directly optimize true entropy, which can introduce non-local gradient components misaligned with sampled-token policy updates. We propose Adaptive Credit Policy Optimization (ACPO), a token-level credit assignment framework based on a mode-local surrogate entropy. ACPO asymmetrically modulates policy updates by emphasizing uncertain decisions in successful rollouts and overconfident tokens in failed rollouts. We show that the surrogate admits deterministic entropy bounds and, under modal alignment and proximal updates, preserves the policy-gradient direction to leading order. Ex-periments on mathematical reasoning and coding benchmarks, including AIME 2025 and HumanEvalPro, show that ACPO consistently improves over strong RL baselines such as DAPO, GTPO, and SAPO. 
+
+1 Introduction 
+
+Recent advances in large language model (LLM) reasoning increasingly rely on reinforcement learning (RL) applied to supervised fine-tuned (SFT) models, particularly in domains with verifiable objectives such as mathematics and coding [DeepSeek-AI et al., 2025, Yang et al., 2024b, 2025, 2024a, Dubey et al., 2024]. While SFT primarily imitates demonstrations [Zhang et al., 2023, Ouyang et al., 2022, Dubey et al., 2024], RL enables models to improve through exploration [Zelikman et al., 2022, Shao et al., 2024, Zhang et al., 2025]. A pivotal advancement in this direction is Reinforcement Learning with Verifiable Rewards (RLVR) [Sheng et al., 2025, Yue et al., 2025, Chen et al., 2025]. Unlike traditional RLHF [Schulman et al., 2017, Ouyang et al., 2022], which depends on subjective and costly human preferences, RLVR leverages objective, deterministic signals, such as compiler outcomes or mathematical verifiers, to enable large-scale training without human-in-the-loop bottlenecks [Sheng et al., 2025, Zheng et al., 2025, Cobbe et al., 2021]. Central to this shift is Group Relative Policy Optimization (GRPO) [Shao et al., 2024]. By utiliz-ing group-wise relative rewards without a separate value network, GRPO significantly lowers the computational barrier for RL training [DeepSeek-AI et al., 2025, Bai et al., 2025]. However, despite its efficiency, GRPO and similar outcome-based methods [Zhao et al., 2025, Li et al., 2025] face a critical limitation: the sparsity of reward signals. In long Chain-of-Thought (CoT) trajectories [Wei et al., 2022], a scalar outcome is typically available only at the end. Assigning this coarse signal indiscriminately to all tokens—ignoring their individual contributions to the correct or incorrect 
+
+> ∗Equal contribution.
+> †Work done during an internship at Kuaishou Inc.
+> ‡Corresponding author. Preprint.
+> arXiv:2607.03126v1 [cs.LG] 3 Jul 2026
+
+reasoning path—can introduce substantial variance and instability during training [Guo et al., 2025b, Zhu et al., 2025]. To mitigate this credit assignment problem, two main paths have emerged. The first relies on Process Reward Models (PRMs) [Lightman et al., 2023, Cui et al., 2025] for dense, step-by-step feedback. While effective, PRMs are hindered by prohibitive annotation costs and scalability issues [Lightman et al., 2023]. The second path, which we follow, pursues implicit algorithmic credit assignment. Earlier methods such as DAPO [Yu et al., 2025] and SAPO [Gao et al., 2025] modulate policy updates using asymmetric clipping or soft gating based on outcome advantages [Wang et al., 2025a, Chen et al., 2025, Xi et al., 2025]. Recognizing that pure outcome metrics ignore internal model states, recent works explore token entropy, or predictive uncertainty, as an importance proxy, hypothesizing that high-uncertainty tokens correspond to critical reasoning “forking points” [Wang et al., 2025b, Huang et al., 2025, Tang et al., 2025]. However, existing entropy-based approaches still face two key limitations. First, some methods rely on heuristic “hard buckets”, such as uniformly treating the top 20% highest-entropy tokens, which may lack the granularity needed for complex reasoning [Hao et al., 2025, Wang et al., 2025b]. Second, directly integrating true entropy into the optimization objective can introduce an optimization mismatch. As we analyze in Section 4.3, true entropy contributes a full-distribution gradient compo-nent that is not necessarily aligned with sampled-token policy updates, and may introduce noisy or competing update signals [Liu et al., 2025]. Moreover, even when entropy is detached and used only as a scalar weight, full-vocabulary entropy remains sensitive to tail-distribution noise, motivating a more mode-local uncertainty proxy. To address these challenges, we propose Adaptive Credit Policy Optimization (ACPO) . Our contributions are as follows: • Fine-grained adaptive credit assignment. We introduce a token-level weighting scheme that dynamically modulates advantage estimates. We treat positive- and non-positive-advantage trajec-tories asymmetrically: emphasizing uncertain decisions in successful trajectories while penalizing overconfident tokens in failed ones. • Surrogate entropy formulation. We identify the optimization mismatch that arises when directly using true entropy for credit assignment. To address this issue, we propose a mode-local surrogate entropy formulation. We show that this proxy admits deterministic entropy bounds and, under the empirically observed modal-alignment and proximal-update regime, yields a leading-order modulation term that preserves the intended policy-gradient direction. • Empirical effectiveness. We validate ACPO across three base models, including Qwen2.5-Math-7B, DeepSeek-R1-Distill, and Qwen3-8B-Base, on competitive reasoning benchmarks. ACPO consistently outperforms strong RL baselines, including GRPO, DAPO, and SAPO, demonstrating the effectiveness of surrogate-entropy-based credit assignment under sparse outcome supervision. 
+
+2 Related Work 
+
+2.1 From RLHF to RLVR 
+
+Traditional RLHF typically relies on PPO [Ouyang et al., 2022, Schulman et al., 2017] or critic-free preference learning methods such as DPO [Rafailov et al., 2023]. However, aligning reasoning models increasingly favors objective, verifiable outcome supervision. Central to this shift is Group Relative Policy Optimization (GRPO) [Shao et al., 2024, Guo et al., 2025a], which replaces the critic network with the mean reward of sampled outputs and enables efficient iterative training. Recent variants further stabilize this paradigm: DAPO [Yu et al., 2025] employs decoupled clipping for large-scale updates, while SAPO [Gao et al., 2025] introduces a soft, temperature-controlled gating mechanism to handle off-policy data. Our work builds directly upon the SAPO formulation, extending its sequence-level gating with intrinsic uncertainty signals for fine-grained, token-level credit assignment. 22.2 The Credit Assignment Bottleneck 
+
+A persistent challenge in reasoning tasks is the “credit assignment” problem—determining which specific steps in a reasoning chain led to the final outcome [Guo et al., 2025b, Zhang et al., 2025]. 
+
+Explicit supervision with PRMs. Process Reward Models (PRMs) provide dense feedback by scoring individual reasoning steps and can outperform Outcome Reward Models (ORMs) in reasoning tasks [Lightman et al., 2023, Cui et al., 2025]. However, training PRMs often requires expensive dense human annotation or complex automated verifiers [Hendrycks et al., 2021, Cobbe et al., 2021]. 
+
+Implicit algorithmic supervision. To provide finer-grained supervision without prohibitive annota-tion costs, researchers have turned to implicit signals. Methods such as CISPO [Chen et al., 2025] and BAPO [Xi et al., 2025] introduce granular constraints to regulate generation at the token level. Other approaches leverage gradient norms or likelihood ratios to estimate token importance dynamically [Li et al., 2025, Zhao et al., 2025]. 
+
+2.3 Entropy-Aware Reinforcement Learning 
+
+Entropy has been widely used in RL-based language model alignment. One line of work uses entropy as an observational signal. Methods such as the “80/20 rule” [Wang et al., 2025b], Archer [Huang et al., 2025], A3PO [Tang et al., 2025], and GTPO [Simoni et al., 2025] leverage policy entropy to identify uncertain tokens, reweight advantages, or filter completions. While effective, these methods typically treat entropy as a detached heuristic rather than a differentiable optimization objective. Another line of work directly adds entropy regularization to the policy objective, as in PPO-style entropy bonuses [Schulman et al., 2017]. In autoregressive LLMs, this entropy is defined over the next-token distribution at each decoding step. However, it is typically aggregated via a global coefficient, serving as a generic exploration regularizer rather than a reward-aware, token-level credit signal. Moreover, directly optimizing true entropy can introduce non-local gradient components that are not necessarily aligned with sampled-token policy updates, as we detail in Section 4.3. ACPO combines aspects of these two directions by using token-level uncertainty for fine-grained credit assignment while replacing full-vocabulary entropy with a mode-local surrogate. This design enables asymmetric updates that emphasize uncertain tokens in positive-advantage trajectories and penalize overconfident tokens in non-positive-advantage trajectories. 
+
+3 Preliminaries 
+
+Notation. Let πθ be a stochastic policy that maps a query (prompt) q to a response y. The likelihood of generating a response y of length |y| is given by: 
+
+πθ (y|q) = 
+
+> |y|
+
+Y
+
+> t=1
+
+πθ (yt|q, y<t ). (1) Each pair (q, y) receives a scalar reward r(q, y). For each query, we generate G response samples and let Rq = {r(q, y1), . . . , r (q, yG)} denote the set of their corresponding rewards. 
+
+Entropy. For the i-th response yi, the uncertainty of the policy at each decoding step t is quantified by the Shannon entropy of the conditional distribution over the vocabulary V. Formally, the step-wise entropy Hi,t (θ) is defined as: 
+
+Hi,t (θ) = − X
+
+> v∈V
+
+πθ (v|q, yi,<t ) log πθ (v|q, yi,<t ). (2) The gradient of the entropy is: 
+
+∇θ Hi,t (θ) = − X
+
+> v∈V
+
+∇θ πθ (v|q, yi,<t ) log πθ (v|q, yi,<t ), (3) where the intermediate +1 term from the derivative of x log x vanishes because probabilities sum to one, i.e., P 
+
+> v∈V
+
+∇θ πθ (v|q, yi,<t ) = ∇θ (1) = 0 .3Soft Adaptive Policy Optimization (SAPO). SAPO refines GSPO’s [Zheng et al., 2025] sequence-level importance weights by replacing hard clipping with a smooth gating mechanism, making the objective sequence-coherent while retaining token-level adaptivity: 
+
+JSAPO (θ) = Eq∼D , {yi}Gi=1 ∼πθold (·| q)
+
+ 1
+
+G
+
+> G
+
+X
+
+> i=1
+
+1
+
+|yi|
+
+> |yi|
+
+X
+
+> t=1
+
+fi,t 
+
+ wi,t (θ) bAi,t 
+
+ , (4) where 
+
+wi,t (θ) = πθ (yi,t |q, yi,<t )
+
+πθold (yi,t |q, yi,<t ) (5) denotes the step-level importance sampling weight. Without a separate value function, the advantage estimate bAi,t is typically sequence-level, i.e., bAi,t = bAi, and standardized within the group: 
+
+bAi,t = bAi = r(q, yi) − mean( Rq)std( Rq) + ϵ , (6) where ϵ is a small constant for numerical stability. Using the standard sigmoid function σ(·), the soft gating function fi,t (·) relies on an asymmetric temperature τi,t determined by the sign of the advantage: 
+
+fi,t (x) = σ (τi,t (x − 1)) · 4
+
+τi,t 
+
+, where τi,t =
+
+(
+
+τpos , bAi,t > 0,τneg , otherwise. (7) 
+
+4 Method 
+
+4.1 Problem Formulation: Granularity Mismatch 
+
+Standard RLVR methods (e.g., GRPO) apply the trajectory-level reward R(y) uniformly to all tokens. However, this ignores the non-uniform contributions of individual reasoning steps. We posit a latent reward decomposition , R(y) = PTt=1 r∗ 
+
+> t
+
+, where r∗ 
+
+> t
+
+denotes the unobservable contribution of token 
+
+yt. To address this granularity mismatch, we seek a step-wise weight αt such that the weighted sparse signal approximates the latent dense signal by minimizing the mean squared error (MSE): 
+
+min 
+
+> αt
+
+J (αt) = Ey
+
+h
+
+∥αtR(y) − r∗ 
+
+> t
+
+∥2i
+
+. (8) The optimal solution α∗ 
+
+> t
+
+= E[r∗ 
+
+> t
+
+R(y)] /E[R(y)2] indicates that credit should be proportional to the token’s latent importance. Since r∗ 
+
+> t
+
+is unobservable, we consider predictive uncertainty a natural proxy. In reasoning tasks, while “filler” tokens (e.g., “Therefore,”) tend to exhibit high confidence (low entropy), critical logical pivots and post-error states often coincide with spikes in the step-wise conditional entropy H(πθ (· | q, yi,<t )) . As shown in Section 5.1, under the mass-concentration property of LLMs, a mode-based uncertainty proxy provides a bounded and empirically correlated approximation to the step-wise entropy signal. 
+
+4.2 Empirical Observation: Entropy Spikes at Reasoning Errors 
+
+To examine whether step-wise entropy provides an informative proxy for token-level contribution (αt), we conduct a fine-grained rollout analysis on AIME24 and AIME25. We align paired correct and incorrect trajectories by the manually identified first reasoning error in the incorrect trajectory, set this divergence point as the origin ( t = 0 ), and compare their local entropy dynamics around the aligned region. The full annotation protocol, including rollout filtering, trajectory pairing, cross-model verification, and manual review, is provided in Appendix A.1. This pattern is illustrated by the qualitative case study in Figure 1a. At the divergence point, the incorrect trajectory introduces an ungrounded variable ( a), after which the entropy rises sharply and remains elevated (visualized in red/orange). In contrast, the correct trajectory—which factors the cubic polynomial to solve for a—maintains lower entropy and a more confident profile (visualized in blue). A broader statistical pattern corroborates this observation, as shown in Figure 1b. Before the reasoning error ( t < 0), both correct and incorrect trajectories exhibit relatively low and stable 42 3 }{ b } = 2 7 \ ] ### Step 7 : Find a Relationship Between \( a \ ) and \( b \ ) Let s assume \( a = b \ ) to simplify the problem . Then : \[ a ^ 2 + \ frac { 2 3                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           
+
+> }{ a}+\frac {23}{ a}=27\]\[ a^2+\frac {46}{ a}=27\]Multiply through by \( a\): \[ a^3+46=27a\]\[ a^3-27a+46=0\]### Step 8:
+> Solve for \( a\)We can solve the cubic equation \( a^3-27a+46=0\)by testing possible rational roots .Testing \( a=2\): \[ 2^3-27(2)+
+> 46=8-54+46=0\]So ,\( a=2\)is aroot .Now ,factor the cubic polynomial using \( a=2\): \[ (a-2)( a^2+2a-23)=0\]Solve \( a^
+> 2+2a-23=0\): \[ a=\frac {-2\pm \sqrt {4+92}} {2}=\frac {-2\pm \sqrt {96}} {2}=\frac {-2\pm 4\sqrt {6}} {2}=-1\pm 2\sqrt {6}\
+> avg. entropy: 0.078
+> Correct Trajectory
+> Sub stit uting this into the surface area equation ,we get :\[ 2(ab +b\cdot \frac {23}{ ab }+a\cdot \frac {23}{ ab }) =54\]\[ 2(ab +\frac {23}{ a}+\
+> frac {23}{ b}) =54\]\[ ab +\frac {23}{ a}+\frac {23}{ b}=27\]\[ ab ^2+a^2b+23=27ab \]\[ ab ^2-26ab +a^2b+23=0\]This is aDi oph
+> antine equation in $a$, $b$, and $c$. To find integer solutions ,we need to factor ize the equation .After solving ,we get two solutions for the sides
+> of the box as $a,b,c:a\times 1.09\times 21.25$and $a,b,c:1\times 1.1\times 23$. There are only two possible sets of dimensions that are
+> given in the problem .Now ,we need to find the radius of the smallest sphere that can contains these two boxes .The diagonal of arectangular box is
+> the maximum distance between two points in the box .The maximum diagonal length is given by :\[ \sqrt {a^2+b^2+c^2}\]For the box with
+> dimensions $a\times 1.09\times 21.25$, the diagonal is :\[ \sqrt {a^2+(1.
+> avg. entropy: 0.894 Incorrect Trajectory
+> 0.0 0.2 0.4 0.6 0.8 1.0 1.2 1.4 1.6
+> Token Entropy (nats) Low entropy (confident) High entropy (uncertain)
+> First reasoning divergence region (±25 tokens)
+> Per-Token Entropy Visualization Around First Reasoning Error
+> Highlighted region: first error and its correct counterpart ( ±25 tokens) 80 60 40 20 020 40 60 80
+> Token Position Relative to First Error
+> 1
+> 0
+> 1
+> 2
+> 3
+> 4
+> Entropy (nats)
+
+Entropy Profile Around First Reasoning Error 
+
+> Correct
+> Incorrect
+> First reasoning error
+> Analysis region ( ±25)
+
+(a) (b) Figure 1: Empirical analysis of token entropy around the first reasoning error. (a) Token-level entropy visualization. At the divergence point highlighted by the boxes, the incorrect trajectory introduces an ungrounded variable ( a), after which subsequent tokens exhibit substantially higher entropy, shown in red/orange. In contrast, the correct trajectory derives the solution by factoring a cubic polynomial and maintains lower entropy, shown in blue. ( b) Aggregated entropy profile. After aligning trajectories at the manually annotated first reasoning error ( t = 0 ), incorrect trajectories exhibit a sharp and sustained entropy increase, whereas correct trajectories remain comparatively stable and low-entropy. entropy. Immediately after the error ( t ≥ 0), however, the entropy of the incorrect trajectory increases sharply and remains elevated, whereas the correct trajectory stays comparatively stable. To confirm that this phenomenon is not merely a local artifact of alignment, we provide extended visualizations of unaligned, full-trajectory entropy profiles across multiple AIME questions in Appendix A.2, which show the broader trajectory-level volatility associated with a single reasoning error. 
+
+4.3 Optimization Mismatch of True Entropy 
+
+Given its empirical usefulness as an uncertainty signal, the true entropy Hi,t (θ) in Eq. 2 appears to be a natural candidate for the credit weight αt. However, directly incorporating true entropy into the optimization objective introduces a non-local gradient component that is not necessarily aligned with the sampled-token policy update. To see this, consider the gradient of a single-step term modulated by true entropy: 
+
+∇θ
+
+
+
+fi,t (wi,t (θ)) · Hi,t (θ)
+
+
+
+= Hi,t (θ) · ∇ θ fi,t (wi,t (θ)) 
+
+| {z }
+
+Entropy-scaled policy update 
+
++ fi,t (wi,t (θ)) · ∇ θ Hi,t (θ)
+
+| {z }
+
+Full-distribution entropy update 
+
+. (9) The first term preserves the sampled-token structure of the policy update: for positive-advantage samples, it increases the probability of the sampled token through ∇θ fi,t . In contrast, the second term comes from the entropy gradient in Eq. 3, which acts on the entire next-token distribution. For positive samples, this entropy-gradient term encourages distributional flattening, whereas the policy-gradient term tends to concentrate probability mass around the sampled reasoning step. Thus, directly optimizing true entropy does not merely rescale the policy update; it also injects an additional full-vocabulary update component. This mismatch is undesirable for token-level credit assignment, whose goal is to use uncertainty to modulate the sampled-token update rather than to optimize a global exploration regularizer at every reasoning step. A natural alternative is to detach entropy and use it only as a scalar weight. While this removes the entropy-gradient term in Eq. 9, true entropy remains sensitive to how residual probability mass is distributed over the long vocabulary tail. Truncated or top-k detached variants can reduce this tail effect, but they introduce an additional hyperparameter and still aggregate uncertainty over secondary candidates. These considerations motivate a simpler mode-local proxy that focuses on the model’s confidence in its dominant prediction. 
+
+4.4 Surrogate Entropy: A Mode-Local Uncertainty Proxy 
+
+To obtain a more local uncertainty signal, we introduce surrogate entropy , denoted by δi,t (θ).5Definition. Let v∗ 
+
+> i,t
+
+= arg max v∈V πθ (v | q, yi,<t ) be the dominant mode. We define the surrogate entropy as the complementary probability of this mode: 
+
+δi,t (θ) = 1 − πθ
+
+ v∗ 
+
+> i,t
+
+| q, yi,<t 
+
+ . (10) By focusing on the dominant mode, δi,t (θ) provides a mode-local uncertainty signal. It directly measures whether the model is confident in its most likely next-token choice, which is especially relevant under the modal-alignment phenomenon analyzed in Section 5.2. Compared with full or top-k entropy variants, this proxy avoids aggregating uncertainty over secondary candidates and remains invariant to how the residual probability mass is dispersed. As analyzed in Section 5.1, 
+
+δi,t (θ) admits deterministic entropy bounds and tracks the macroscopic uncertainty trend of Shannon entropy under mass-concentrated LLM distributions. 
+
+Gradient behavior. During backpropagation, we treat the selected mode v∗ 
+
+> i,t
+
+as locally fixed, yielding ∇θ δi,t = −∇ θ πθ (v∗
+
+> i,t
+
+) almost everywhere. This gradient acts only on the dominant mode rather than the entire vocabulary distribution. As shown in Section 5.2, sampled tokens frequently coincide with the dominant mode, a phenomenon we refer to as modal alignment . Under this modal-aligned and proximal-update regime, the surrogate mainly acts as a local modulation factor. In the leading-order approximation, it changes the magnitude of the reinforcement or penalization signal without reversing its intended policy-gradient direction. 
+
+4.5 Adaptive Credit Policy Optimization (ACPO) 
+
+The final objective of Adaptive Credit Policy Optimization (ACPO) integrates surrogate entropy with an asymmetric credit assignment strategy: 
+
+JACPO (θ) = Eq∼D , {yi}Gi=1 ∼πθold (·| q)
+
+ 1
+
+G
+
+> G
+
+X
+
+> i=1
+
+1
+
+|yi|
+
+> |yi|
+
+X
+
+> t=1
+
+fi,t (wi,t (θ)) · bAACPO 
+
+> i,t
+
+ . (11) The core component is the entropy-modulated advantage bAACPO  
+
+> i,t
+
+, defined as: 
+
+bAACPO  
+
+> i,t
+
+=
+
+(
+
+(2 + δi,t (θ)) · bAi, if bAi > 0,
+
+(1 − δi,t (θ)) · bAi, otherwise. (12) 
+
+Asymmetric modulation. The functional form of bAACPO  
+
+> i,t
+
+is motivated by two complementary principles: 1. Positive-advantage trajectories. For trajectories with positive advantage, we assign larger weights to high-uncertainty tokens, encouraging the model to reinforce uncertain but successful reasoning decisions. The constant offset 2 acts as a positivity-preserving margin; under the modal-alignment and proximal-update approximation analyzed in Section 5.2, it keeps the leading-order modulation factor positive, reducing the risk of gradient-direction reversal. 2. Non-positive-advantage trajectories. For trajectories with non-positive advantage, we aim to penalize overconfident mistakes while reducing the influence of uncertain post-error tokens. As illustrated in Figure 1, incorrect trajectories often contain low-uncertainty erroneous decisions followed by high-entropy continuation noise. ACPO uses 1 − δi,t (θ) to assign larger penalties to confident tokens and smaller penalties to highly uncertain tokens. The effectiveness of this asymmetric design is examined in the ablation study in Figure 3. The default ACPO configuration, (2 + δ, 1 − δ), achieves stronger accuracy and stability than its variants, suggesting that successful uncertain steps and overconfident erroneous steps should be treated differently in token-level credit assignment. 
+
+5 Analysis of the Surrogate Entropy 
+
+5.1 Bounding the Approximation Error 
+
+For brevity, let πθ (v) := πθ (v|q, yi,<t ). We define the surrogate entropy as δi,t (θ) = 1 − πθ (v∗) ∈
+
+[0 , |V|− 1 
+
+> |V|
+
+], where v∗ is the distribution mode. We first establish that the true entropy Hi,t (θ) is bounded above and below by functions of δi,t (θ).6Entropy bounds. The true entropy Hi,t (θ) satisfies L(δi,t (θ)) ≤ Hi,t (θ) ≤ U (δi,t (θ)) , where: 
+
+L(δ) ≜ − log(1 − δ), (13) 
+
+U (δ) ≜ −(1 − δ) log(1 − δ) − δ log 
+
+ δ
+
+|V| − 1
+
+
+
+. (14) Detailed derivations are provided in Appendix B. To assess the tightness of these bounds, we analyze the envelope width g(δ) ≜ U (δ) − L(δ). While the worst-case bound scales with |V| , practical LLM distributions often exhibit strong mass concentration [Holtzman et al., 2019]. As detailed in Appendix B.4, when the effective support is restricted to typical top-k regions, this gap remains controlled, e.g., below 10% relative error for k = 10 .
+
+Remark on monotonicity. These bounds do not imply strict monotonicity under arbitrary tail perturbations. This limitation is consistent with the design goal of δi,t (θ): rather than tracking all tail-distribution variations, the surrogate focuses on the model’s confidence in its dominant choice. True entropy can be sensitive to residual probability mass dispersed over the vocabulary tail, whereas 
+
+δi,t (θ) is invariant to the tail shape and maintains strong macroscopic correlation with entropy in mass-concentrated distributions, as shown in Figure 5. 
+
+5.2 Gradient Analysis: The Hybrid Modulation Mechanism 
+
+We analyze the ACPO gradient to clarify how δi,t (θ) modulates the policy update. For positive-advantage samples ( bAi > 0), omitting the constant advantage factor, the gradient of the token-level term can be decomposed by the product rule: 
+
+∇θ
+
+h
+
+fi,t (wi,t (θ)) ·  2 + δi,t (θ)i
+
+=  2 + δi,t (θ)∇θ fi,t (wi,t (θ)) 
+
+| {z }
+
+> policy update
+
++ fi,t (wi,t (θ)) ∇θ δi,t (θ)
+
+| {z }
+
+> surrogate-entropy modulation
+
+. (15) 
+
+Justification via modal alignment. Expanding Eq. 15 requires considering the relationship between the sampled token yi,t and the dominant mode v∗. Our empirical analysis in Table 4 shows a modal-alignment phenomenon: sampled tokens coincide with the greedy mode in 83 .90% of cases. Leveraging this observation, we adopt the approximation πθ (yi,t ) ≈ πθ (v∗). Under the proximal-update regime ( wi,t ≈ 1), the ACPO gradient admits the following leading-order form, with the detailed derivation provided in Appendix C: 
+
+∇θ JACPO ∝ E
+
+h
+
+∇θ log πθ (yi,t ) · bAi · M i,t 
+
+i
+
+, (16) where the hybrid modulation factor Mi,t is: 
+
+Mi,t ≈
+
+(
+
+δi,t (θ) + 2 δi,t (θold ), if bAi > 0,
+
+3 − δi,t (θ) − 2δi,t (θold ), if bAi ≤ 0. (17) For δi,t (θ), δ i,t (θold ) ∈ [0 , 1] , Mi,t is non-negative, and it is strictly positive under the finite-vocabulary range δ ∈ [0 , (|V| − 1) /|V| ]. This indicates that, under the modal-alignment and proximal-update approximation, ACPO preserves the intended reinforcement or penalization di-rection in the leading-order gradient. 
+
+Benefits of the hybrid modulation factor. The hybrid structure in Eq. 17 combines the current policy’s proxy δi,t (θ) with a historical anchor δi,t (θold ). This provides two useful effects. First, it enables adaptive recalibration: as the model becomes more confident, the current uncertainty term decreases, reducing unnecessary learning pressure on already confident tokens. Second, it introduces a damping effect in off-policy regions: when the policy deviates substantially from the old policy, the historical term helps moderate the update, as detailed in Appendix D. Together, these terms encourage credit redistribution that adapts to the current policy while empirically improving training stability. 70.1 
+
+> 0.2
+> 0.3
+
+step    
+
+> 800 1600
+> 0.0 -1.00
+> 0.00
+> -0.25
+> -0.50
+> -0.75 0.1
+> 0.2
+> 0.3
+> 600
+> 800
+> 1000
+
+SAPO ACPO 
+
+Acc@aime24  Training Reward  Entropy  Response Length 
+
+> 2400 0
+
+step   
+
+> 800 1600 2400 0
+
+step   
+
+> 800 1600 2400 0
+
+step   
+
+> 800 1600 2400 0
+
+Figure 2: Training dynamics of SAPO and ACPO on Qwen2.5-Math-7B. ACPO shows faster early-stage improvement and maintains higher validation accuracy in later training. Table 1: Main Results. Comparison of different reinforcement learning methods across three base models on five mathematical benchmarks and one code benchmark. We evaluate performance using the mean@8 metric for mathematical benchmarks and pass@1 for code benchmark. Our method, 
+
+ACPO , consistently outperforms baselines across all tasks.                                                                                                                                       
+
+> Model Method AIME24 AIME25 MATH500 HMMT25 BeyondAIME HumanEvalPro Average
+> Qwen2.5-Math-7B GRPO [Shao et al., 2024] 26 .25 16 .71 71 .87 5.20 4.00 42 .59 27 .76
+> DAPO [Yu et al., 2025] 27 .70 19 .56 75 .00 6.67 4.50 43 .29 29 .44
+> 80/20 [Wang et al., 2025b] 29 .25 20 .50 74 .75 7.70 5.25 41 .46 29 .81
+> GTPO [Simoni et al., 2025] 33 .97 22 .77 75 .50 8.70 7.12 43 .29 31 .89
+> SAPO [Gao et al., 2025] 32 .29 21 .25 76 .40 8.64 6.75 43 .90 31 .53
+> ACPO (Ours) 36 .56 25 .69 77 .80 9.86 8.00 46 .34 34 .04
+> Qwen3-8B-Base GRPO 22 .60 16 .67 72 .80 6.67 9.50 35 .38 27 .27
+> DAPO 24 .89 22 .92 76 .80 7.12 11 .75 39 .06 30 .42
+> 80/20 26 .02 24 .50 78 .22 7.91 12 .00 37 .21 30 .97
+> GTPO 27 .21 25 .45 81 .62 8.83 12 .62 38 .49 32 .37
+> SAPO 29 .06 26 .43 82 .40 10 .00 12 .25 40 .85 33 .49
+> ACPO (Ours) 30 .31 30 .00 83 .60 11 .04 15 .50 41 .46 35 .31
+> Deepseek-R1-Distill-Qwen-7B GRPO 28 .43 24 .83 77 .95 8.75 13 .62 43 .29 32 .81
+> DAPO 29 .06 26 .67 80 .40 9.61 15 .12 42 .68 34 .32
+> 80/20 32 .16 27 .48 78 .72 10 .83 15 .75 42 .68 34 .60
+> GTPO 36 .37 28 .48 78 .85 13 .19 19 .12 41 .46 36 .24
+> SAPO 38 .54 34 .03 83 .20 12 .46 18 .62 43 .29 38 .35
+> ACPO (Ours) 39 .79 37 .04 84 .60 13 .33 21 .00 45 .51 40 .21
+
+6 Experiments 
+
+6.1 Experimental Setup 
+
+We evaluate ACPO on three base models: Qwen2.5-Math-7B [Yang et al., 2024c], Qwen3-8B-Base [Team, 2025], and DeepSeek-R1-Distill-Qwen-7B [Guo et al., 2025a]. All models are trained on the DAPO-Math-17k [Yu et al., 2025] dataset. For ACPO, we use τpos = 1 .0, τneg = 1 .05 , and an actor learning rate of 1 × 10 −6. We generate G = 8 samples per prompt, with a global batch size of 256 and a mini-batch size of 16. The maximum response length is set to 2048 for Qwen2.5-Math-7B and DeepSeek-R1-Distill-Qwen-7B, and 8192 for Qwen3-8B-Base. We compare ACPO with strong outcome-based RLVR and entropy-aware baselines, including GRPO [Shao et al., 2024], DAPO [Yu et al., 2025], SAPO [Gao et al., 2025], 80/20 [Wang et al., 2025b], and GTPO [Simoni et al., 2025]. To ensure a fair comparison, all methods are trained with the same training data, sampling configuration, and compute budget on a cluster of 8 NVIDIA H200 GPUs. Model performance is evaluated on five mathematical reasoning benchmarks: AIME24 [Zhang and Math-AI, 2024], AIME25 [Zhang and Math-AI, 2025], MATH500 [Hendrycks et al., 2021], HMMT25 [Harvard-MIT Mathematics Tournament, 2024], and BeyondAIME [ByteDance-Seed, 2025]. We further evaluate code reasoning performance on HumanEval Pro [Yu et al., 2024]. 
+
+6.2 Main Results and Training Dynamics 
+
+Table 1 presents the comparative accuracy across three base models on six benchmarks. We report the results of each method at the same number of training steps. ACPO consistently outperforms strong RL baselines across most evaluated settings, demonstrating the effectiveness of surrogate-entropy-based credit assignment under sparse outcome supervision. Figure 2 illustrates the training dynamics of ACPO compared with the strong SAPO baseline. ACPO achieves faster early-stage improvements in both training reward and validation accuracy. This 8Table 2: Ablation study of ACPO on AIME24. Let (W bAi>0, W bAi≤0) denote the adjustment terms in Eq. 12, where δ is the mode-local surrogate entropy and e is the detached true entropy.                                 
+
+> Methods δ, −δ2+ δ, 11,1−δ1+ δ, 1−δe, e e, −e2+ e, 1−eACPO ( 2+ δ, 1−δ)
+> Acc@aime24 34.00 36.37 36.84 35.65 30.85 35.83 37.58 39.28 800 1600
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0800 1600
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0
+> step step 800 1600
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0step
+> neg/pos weights weights scale detach entropy/surrogate entropy
+
+Figure 3: Ablation study. This figure shows the evolution of validation accuracy and entropy on Deepseek-R1-Distill-Qwen-7B. Let (W bAi>0, W bAi≤0) denote the adjustment terms in Eq. 12, where 
+
+δ is the surrogate entropy and e is the detached true entropy. suggests that emphasizing uncertain tokens in positive-advantage trajectories and overconfident tokens in non-positive-advantage trajectories provides a more informative credit signal. In the mid-to-late training stage, ACPO maintains stronger validation performance than SAPO, indicating improved training stability and a higher empirical performance ceiling. 
+
+6.3 Ablation Study 
+
+To empirically validate the effectiveness of our weighting design, we conduct a series of ablation studies evaluating the individual contributions of the positive- and non-positive-advantage channels, different weighting configurations, and the use of detached true entropy. Figure 3 illustrates the training trajectories of mean@8 accuracy on the AIME24 benchmark across these settings. Applying either channel alone improves over some variants but does not match the full ACPO objective, suggesting that the two asymmetric channels play complementary roles. Among the weighting configurations, the default ACPO design, (2+ δ, 1−δ), achieves the strongest late-stage performance and more stable training dynamics. We further compare surrogate entropy with detached true entropy. Although detaching true entropy removes the direct entropy-gradient term discussed in Section 4.3, it remains sensitive to tail-distribution noise in large vocabularies. This can inflate uncertainty estimates and misallocate credit to non-critical tokens. In contrast, the proposed surrogate focuses only on the model’s confidence in the dominant choice, making it more robust to tail dispersion. This trend is further supported by our top-k ablation in Figure 6: increasing k ∈ { 5, 20 , 100 } does not consistently improve performance over the top-1 signal, suggesting that dominant-mode uncertainty provides a concise and effective proxy for identifying reasoning forks in our setting. A more detailed analysis is provided in Appendix E. 
+
+7 Limitations 
+
+ACPO still has several limitations. Its empirical validation is currently limited to 7B-scale dense models and single-turn verifiable reasoning tasks, leaving larger models, MoE architectures, and multi-turn agentic settings unexplored. In addition, the theoretical analysis relies on modal align-ment, proximal updates, and a leading-order approximation, so it should be interpreted as a local characterization rather than a global guarantee. 
+
+8 Conclusion 
+
+In this work, we introduced Adaptive Credit Policy Optimization (ACPO) , an RLVR framework that addresses token-level credit assignment through a mode-local surrogate entropy and an asym-metric weighting strategy. ACPO modulates policy updates by emphasizing uncertain decisions in positive-advantage trajectories and overconfident tokens in non-positive-advantage trajectories. Our evaluations on competitive reasoning benchmarks show that ACPO improves training dynamics and 9final performance over strong RL baselines. While the proposed surrogate is theoretically analyzed and empirically effective, it represents only one design choice in the broader space of uncertainty-aware credit assignment. Future work will explore its scalability to larger model architectures and its applicability to multi-turn agentic reinforcement learning scenarios, where precise credit assignment remains a central challenge. 
+
+References 
+
+Yifan Bai, Yiping Bao, Guanduo Chen, Jiahao Chen, Ningxin Chen, Ruijue Chen, Yanru Chen, Yuankun Chen, Yutian Chen, Zhuofu Chen, Jialei Cui, Hao Ding, Mengnan Dong, Angang Du, Chenzhuang Du, Dikang Du, Yulun Du, Yu Fan, Yichen Feng, Kelin Fu, Bofei Gao, Hongcheng Gao, Peizhong Gao, Tong Gao, Xinran Gu, Longyu Guan, Haiqing Guo, Jianhang Guo, Hao Hu, Xiaoru Hao, Tianhong He, Weiran He, Wenyang He, Chao Hong, Yangyang Hu, Zhenxing Hu, Weixiao Huang, Zhiqi Huang, Zihao Huang, Tao Jiang, Zhejun Jiang, Xinyi Jin, Yongsheng Kang, Guokun Lai, Cheng Li, Fang Li, Haoyang Li, Ming Li, Wentao Li, Yanhao Li, Yiwei Li, Zhaowei Li, Zheming Li, Hongzhan Lin, Xiaohan Lin, Zongyu Lin, Chengyin Liu, Chenyu Liu, Hongzhang Liu, Jingyuan Liu, Junqi Liu, Liang Liu, Shaowei Liu, T. Y. Liu, Tianwei Liu, Weizhou Liu, Yangyang Liu, Yibo Liu, Yiping Liu, Yue Liu, Zhengying Liu, Enzhe Lu, Lijun Lu, Shengling Ma, Xinyu Ma, Yingwei Ma, Shaoguang Mao, Jie Mei, Xin Men, Yibo Miao, Siyuan Pan, Yebo Peng, Ruoyu Qin, Bowen Qu, Zeyu Shang, Lidong Shi, Shengyuan Shi, Feifan Song, Jianlin Su, Zhengyuan Su, Xinjie Sun, Flood Sung, Heyi Tang, Jiawen Tao, Qifeng Teng, Chensi Wang, Dinglu Wang, Feng Wang, and Haiming Wang. Kimi K2: open agentic intelligence. CoRR ,abs/2507.20534, 2025. ByteDance-Seed. Beyondaime: Advancing math reasoning evaluation beyond high school olympiads, 2025. Aili Chen, Aonian Li, Bangwei Gong, Binyang Jiang, Bo Fei, Bo Yang, Boji Shan, Changqing Yu, Chao Wang, Cheng Zhu, Chengjun Xiao, Chengyu Du, Chi Zhang, Chu Qiao, Chunhao Zhang, Chunhui Du, Congchao Guo, Da Chen, Deming Ding, Dianjun Sun, Dong Li, Enwei Jiao, Haigang Zhou, Haimo Zhang, Han Ding, Haohai Sun, Haoyu Feng, Huaiguang Cai, Haichao Zhu, Jian Sun, Jiaqi Zhuang, Jiaren Cai, Jiayuan Song, Jin Zhu, Jingyang Li, Jinhao Tian, Jinli Liu, Junhao Xu, Junjie Yan, Junteng Liu, Junxian He, Kaiyi Feng, Ke Yang, Kecheng Xiao, Le Han, Leyang Wang, Lianfei Yu, Liheng Feng, Lin Li, Lin Zheng, Linge Du, Lingyu Yang, Lunbin Zeng, Minghui Yu, Mingliang Tao, Mingyuan Chi, Mozhi Zhang, Mujie Lin, Nan Hu, Nongyu Di, Peng Gao, Pengfei Li, Pengyu Zhao, Qibing Ren, Qidi Xu, Qile Li, Qin Wang, Rong Tian, Ruitao Leng, Shaoxiang Chen, Shaoyu Chen, Shengmin Shi, Shitong Weng, Shuchang Guan, Shuqi Yu, Sichen Li, Songquan Zhu, Tengfei Li, Tianchi Cai, Tianrun Liang, Weiyu Cheng, Weize Kong, Wenkai Li, Xiancai Chen, Xiangjun Song, Xiao Luo, Xiao Su, Xiaobo Li, Xiaodong Han, Xinzhu Hou, Xuan Lu, Xun Zou, Xuyang Shen, Yan Gong, Yan Ma, Yang Wang, Yiqi Shi, Yiran Zhong, and Yonghong Duan. Minimax-m1: Scaling test-time compute efficiently with lightning attention. 
+
+CoRR , abs/2506.13585, 2025. Karl Cobbe, Vineet Kosaraju, Mohammad Bavarian, Mark Chen, Heewoo Jun, Lukasz Kaiser, Matthias Plappert, Jerry Tworek, Jacob Hilton, Reiichiro Nakano, et al. Training verifiers to solve math word problems. arXiv preprint arXiv:2110.14168 , 2021. Ganqu Cui, Lifan Yuan, Zefan Wang, Hanbin Wang, Wendi Li, Bingxiang He, Yuchen Fan, Tianyu Yu, Qixin Xu, Weize Chen, Jiarui Yuan, Huayu Chen, Kaiyan Zhang, Xingtai Lv, Shuo Wang, Yuan Yao, Xu Han, Hao Peng, Yu Cheng, Zhiyuan Liu, Maosong Sun, Bowen Zhou, and Ning Ding. Process reinforcement through implicit rewards. CoRR , abs/2502.01456, 2025. DeepSeek-AI, Daya Guo, Dejian Yang, Haowei Zhang, Junxiao Song, Ruoyu Zhang, Runxin Xu, Qihao Zhu, Shirong Ma, Peiyi Wang, Xiao Bi, Xiaokang Zhang, Xingkai Yu, Yu Wu, Z. F. Wu, Zhibin Gou, Zhihong Shao, Zhuoshu Li, Ziyi Gao, Aixin Liu, Bing Xue, Bingxuan Wang, Bochao Wu, Bei Feng, Chengda Lu, Chenggang Zhao, Chengqi Deng, Chenyu Zhang, Chong Ruan, Damai Dai, Deli Chen, Dongjie Ji, Erhang Li, Fangyun Lin, Fucong Dai, Fuli Luo, Guangbo Hao, Guanting Chen, Guowei Li, H. Zhang, Han Bao, Hanwei Xu, Haocheng Wang, Honghui Ding, Huajian Xin, Huazuo Gao, Hui Qu, Hui Li, Jianzhong Guo, Jiashi Li, Jiawei Wang, Jingchang Chen, Jingyang Yuan, Junjie Qiu, Junlong Li, J. L. Cai, Jiaqi Ni, Jian Liang, Jin Chen, Kai Dong, 10 Kai Hu, Kaige Gao, Kang Guan, Kexin Huang, Kuai Yu, Lean Wang, Lecong Zhang, Liang Zhao, Litong Wang, Liyue Zhang, Lei Xu, Leyi Xia, Mingchuan Zhang, Minghua Zhang, Minghui Tang, Meng Li, Miaojun Wang, Mingming Li, Ning Tian, Panpan Huang, Peng Zhang, Qiancheng Wang, Qinyu Chen, Qiushi Du, Ruiqi Ge, Ruisong Zhang, Ruizhe Pan, Runji Wang, R. J. Chen, R. L. Jin, Ruyi Chen, Shanghao Lu, Shangyan Zhou, Shanhuang Chen, Shengfeng Ye, Shiyu Wang, Shuiping Yu, Shunfeng Zhou, Shuting Pan, and S. S. Li. Deepseek-r1: Incentivizing reasoning capability in llms via reinforcement learning. CoRR , abs/2501.12948, 2025. Abhimanyu Dubey, Abhinav Jauhri, Abhinav Pandey, Abhishek Keshwam, Ahmad Al-dahle, Arun Raman, et al. The llama 3 herd of models. arXiv preprint arXiv:2407.21783 , 2024. Kawin Ethayarajh. How contextual are contextualized word representations? comparing the geometry of bert, elmo, and gpt-2 embeddings. arXiv preprint arXiv:1909.00512 , 2019. Chang Gao, Chujie Zheng, Xiong-Hui Chen, Kai Dang, Shixuan Liu, Bowen Yu, An Yang, Shuai Bai, Jingren Zhou, and Junyang Lin. Soft adaptive policy optimization. arXiv preprint arXiv:2511.20347 , 2025. Daya Guo, Dejian Yang, Haowei Zhang, Junxiao Song, Peiyi Wang, Qihao Zhu, Runxin Xu, Ruoyu Zhang, Shirong Ma, Xiao Bi, et al. Deepseek-r1: Incentivizing reasoning capability in llms via reinforcement learning. arXiv preprint arXiv:2501.12948 , 2025a. Yiran Guo, Lijie Xu, Jie Liu, Dan Ye, and Shuang Qiu. Segment policy optimization: Effective segment-level credit assignment in RL for large language models. CoRR , abs/2505.23564, 2025b. Zhezheng Hao, Hong Wang, Haoyang Liu, Jian Luo, Jiarui Yu, Hande Dong, Qiang Lin, Can Wang, and Jiawei Chen. Rethinking entropy interventions in rlvr: An entropy change perspective, 2025. URL https://arxiv.org/abs/2510.10150 .Harvard-MIT Mathematics Tournament. Harvard-MIT Mathematics Tournament (HMMT). https: //www.hmmt.org , 2024. Accessed: 2024-05-20. Dan Hendrycks, Collin Burns, Saurav Kadavath, Akul Arora, Steven Basart, Eric Tang, Dawn Song, and Jacob Steinhardt. Measuring mathematical problem solving with the MATH dataset. In 
+
+NeurIPS Datasets and Benchmarks , 2021. Ari Holtzman, Jan Buys, and Li Du. The curious case of neural text degeneration. arXiv preprint arXiv:1904.09751 , 2019. Guanhua Huang, Tingqiang Xu, Mingze Wang, Qi Yi, Xue Gong, Siheng Li, Ruibin Xiong, Kejiao Li, Yuhao Jiang, and Bo Zhou. Low-probability tokens sustain exploration in reinforcement learning with verifiable reward. CoRR , abs/2510.03222, 2025. Yizhi Li, Qingshui Gu, Zhoufutu Wen, Ziniu Li, Tianshun Xing, Shuyue Guo, Tianyu Zheng, Xin Zhou, Xingwei Qu, Wangchunshu Zhou, Zheng Zhang, Wei Shen, Qian Liu, Chenghua Lin, Jian Yang, Ge Zhang, and Wenhao Huang. Treepo: Bridging the gap of policy optimization and efficacy and inference efficiency with heuristic tree-based modeling. CoRR , abs/2508.17445, 2025. Hunter Lightman, Vineet Kosaraju, Yuri Burda, Harri Edwards, Bowen Baker, Teddy Lee, Jan Leike, John Schulman, Ilya Sutskever, and Karl Cobbe. Let’s verify step by step. arXiv preprint arXiv:2305.20050 , 2023. Mingjie Liu, Shizhe Diao, Ximing Lu, Jian Hu, Xin Dong, Yejin Choi, Jan Kautz, and Yi Dong. Prorl: Prolonged reinforcement learning expands reasoning boundaries in large language models. 
+
+CoRR , abs/2505.24864, 2025. Long Ouyang, Jeffrey Wu, Xu Jiang, Diogo Almeida, Carroll L Wainwright, Pamela Mishkin, Chong Zhang, Sandhini Agarwal, Katarina Slama, Alex Ray, et al. Training language models to follow instructions with human feedback. Advances in Neural Information Processing Systems , 35: 27730–27744, 2022. Rafael Rafailov, Archit Sharma, Eric Mitchell, Christopher D Manning, Stefano Ermon, and Chelsea Finn. Direct preference optimization: Your language model is secretly a reward model. arXiv preprint arXiv:2305.18290 , 2023. 11 John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov. Proximal policy optimization algorithms. arXiv preprint arXiv:1707.06347 , 2017. Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Xiao Bi, Haowei Zhang, Mingchuan Zhang, Y. K. Li, Y. Wu, and Daya Guo. Deepseekmath: Pushing the limits of mathematical reasoning in open language models. arXiv preprint arXiv:2402.03300 , 2024. Guangming Sheng, Chi Zhang, Zilingfeng Ye, Xibin Wu, Wang Zhang, Ru Zhang, Yanghua Peng, Haibin Lin, and Chuan Wu. Hybridflow: A flexible and efficient RLHF framework. In EuroSys ,pages 1279–1297. ACM, 2025. Marco Simoni, Aleksandar Fontana, and Giulio Rossolini. Gtpo: Stabilizing group relative policy optimization via gradient and entropy control. arXiv preprint arXiv:2508.03772 , 2025. Xinyu Tang, Yuliang Zhan, Zhixun Li, Wayne Xin Zhao, Zhenduo Zhang, Zujie Wen, Zhiqiang Zhang, and Jun Zhou. Rethinking sample polarity in reinforcement learning with verifiable rewards. 
+
+arXiv preprint arXiv:2512.21625 , 2025. Qwen Team. Qwen3 technical report, 2025. URL https://arxiv.org/abs/2505.09388 .Jiakang Wang, Runze Liu, Lei Lin, Wenping Hu, Xiu Li, Fuzheng Zhang, Guorui Zhou, and Kun Gai. Aspo: Asymmetric importance sampling policy optimization, 2025a. URL https: //arxiv.org/abs/2510.06062 .Shenzhi Wang, Le Yu, Chang Gao, Chujie Zheng, Shixuan Liu, Rui Lu, Kai Dang, Xionghui Chen, Jianxin Yang, Zhenru Zhang, Yuqiong Liu, An Yang, Andrew Zhao, Yang Yue, Shiji Song, Bowen Yu, Gao Huang, and Junyang Lin. Beyond the 80/20 rule: High-entropy minority tokens drive effective reinforcement learning for LLM reasoning. CoRR , abs/2506.01939, 2025b. Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Fei Xia, Ed Chi, Quoc V Le, Denny Zhou, et al. Chain-of-thought prompting elicits reasoning in large language models. Advances in Neural Information Processing Systems , 35:24824–24837, 2022. Zhiheng Xi, Xin Guo, Yang Nan, Enyu Zhou, Junrui Shen, Wenxiang Chen, Jiaqi Liu, Jixuan Huang, Zhihao Zhang, Honglin Guo, Xun Deng, Zhikai Lei, Miao Zheng, Guoteng Wang, Shuo Zhang, Peng Sun, Rui Zheng, Hang Yan, Tao Gui, Qi Zhang, and Xuanjing Huang. Bapo: Stabilizing off-policy reinforcement learning for llms via balanced policy optimization with adaptive clipping, 2025. URL https://arxiv.org/abs/2510.18927 .An Yang, Baosong Yang, Binyuan Hui, Bo Zheng, Bowen Yu, Chang Zhou, Chengpeng Li, Chengyuan Li, Dayiheng Liu, Fei Huang, et al. Qwen2 technical report. arXiv preprint arXiv:2407.10670 , 2024a. An Yang, Beichen Zhang, Binyuan Hui, Bofei Gao, Bowen Yu, Chengpeng Li, Dayiheng Liu, Jianhong Tu, Jingren Zhou, Junyang Lin, Keming Lu, Mingfeng Xue, Runji Lin, Tianyu Liu, Xingzhang Ren, and Zhenru Zhang. Qwen2.5-math technical report: Toward mathematical expert model via self-improvement. CoRR , abs/2409.12122, 2024b. An Yang, Beichen Zhang, Binyuan Hui, Bofei Gao, Bowen Yu, Chengpeng Li, Dayiheng Liu, Jianhong Tu, Jingren Zhou, Junyang Lin, Keming Lu, Mingfeng Xue, Runji Lin, Tianyu Liu, Xingzhang Ren, and Zhenru Zhang. Qwen2.5-math technical report: Toward mathematical expert model via self-improvement. arXiv preprint arXiv:2409.12122 , 2024c. An Yang, Anfeng Li, Baosong Yang, Beichen Zhang, Binyuan Hui, Bo Zheng, Bowen Yu, Chang Gao, Chengen Huang, Chenxu Lv, Chujie Zheng, Dayiheng Liu, Fan Zhou, Fei Huang, Feng Hu, Hao Ge, Haoran Wei, Huan Lin, Jialong Tang, Jian Yang, Jianhong Tu, Jianwei Zhang, Jian Yang, Jiaxi Yang, Jingren Zhou, Junyang Lin, Kai Dang, Keqin Bao, Kexin Yang, Le Yu, Lianghao Deng, Mei Li, Mingfeng Xue, Mingze Li, Pei Zhang, Peng Wang, Qin Zhu, Rui Men, Ruize Gao, Shixuan Liu, Shuang Luo, Tianhao Li, Tianyi Tang, Wenbiao Yin, Xingzhang Ren, Xinyu Wang, Xinyu Zhang, Xuancheng Ren, Yang Fan, Yang Su, Yichang Zhang, Yinger Zhang, Yu Wan, Yuqiong Liu, Zekun Wang, Zeyu Cui, Zhenru Zhang, Zhipeng Zhou, and Zihan Qiu. Qwen3 technical report. 
+
+CoRR , abs/2505.09388, 2025. 12 Qiying Yu, Zheng Zhang, Ruofei Zhu, Yufeng Yuan, Xiaochen Zuo, Yu Yue, Tiantian Fan, Gaohong Liu, Lingjun Liu, Xin Liu, Haibin Lin, Zhiqi Lin, Bole Ma, Guangming Sheng, Yuxuan Tong, Chi Zhang, Mofan Zhang, Wang Zhang, Hang Zhu, Jinhua Zhu, Jiaze Chen, Jiangjie Chen, Chengyi Wang, Hongli Yu, Weinan Dai, Yuxuan Song, Xiangpeng Wei, Hao Zhou, Jingjing Liu, Wei-Ying Ma, Ya-Qin Zhang, Lin Yan, Mu Qiao, Yonghui Wu, and Mingxuan Wang. DAPO: an open-source LLM reinforcement learning system at scale. CoRR , abs/2503.14476, 2025. Zhaojian Yu, Yilun Zhao, Arman Cohan, and Xiao-Ping Zhang. Humaneval pro and mbpp pro: Eval-uating large language models on self-invoking code generation. arXiv preprint arXiv:2412.21199 ,2024. Yang Yue, Zhiqi Chen, Rui Lu, Andrew Zhao, Zhaokai Wang, Yang Yue, Shiji Song, and Gao Huang. Does reinforcement learning really incentivize reasoning capacity in llms beyond the base model? 
+
+CoRR , abs/2504.13837, 2025. Eric Zelikman, Yuhuai Wu, Jesse Mu, and Noah Goodman. Star: Bootstrapping reasoning with reasoning. Advances in Neural Information Processing Systems , 35:15476–15488, 2022. Kaiyan Zhang, Yuxin Zuo, Bingxiang He, Youbang Sun, Runze Liu, Che Jiang, Yuchen Fan, Kai Tian, Guoli Jia, Pengfei Li, Yu Fu, Xingtai Lv, Yuchen Zhang, Sihang Zeng, Shang Qu, Haozhan Li, Shijie Wang, Yuru Wang, Xinwei Long, Fangfu Liu, Xiang Xu, Jiaze Ma, Xuekai Zhu, Ermo Hua, Yihao Liu, Zonglin Li, Huayu Chen, Xiaoye Qu, Yafu Li, Weize Chen, Zhenzhao Yuan, Junqi Gao, Dong Li, Zhiyuan Ma, Ganqu Cui, Zhiyuan Liu, Biqing Qi, Ning Ding, and Bowen Zhou. A survey of reinforcement learning for large reasoning models. CoRR , abs/2509.08827, 2025. Shengyu Zhang, Linfeng Dong, Xiaoya Li, Sen Zhang, Xiaofei Sun, Shuhe Wang, Jiwei Li, Runyi Hu, Tianwei Zhang, Fei Wu, and Guoyin Wang. Instruction tuning for large language models: A survey. CoRR , abs/2308.10792, 2023. Yifan Zhang and Team Math-AI. American invitational mathematics examination (aime) 2024, 2024. Yifan Zhang and Team Math-AI. American invitational mathematics examination (aime) 2025, 2025. Yuzhong Zhao, Yue Liu, Junpeng Liu, Jingye Chen, Xun Wu, Yaru Hao, Tengchao Lv, Shaohan Huang, Lei Cui, Qixiang Ye, Fang Wan, and Furu Wei. Geometric-mean policy optimization. 
+
+CoRR , abs/2507.20673, 2025. Chujie Zheng, Shixuan Liu, Mingze Li, Xiong-Hui Chen, Bowen Yu, Chang Gao, Kai Dang, Yuqiong Liu, Rui Men, An Yang, Jingren Zhou, and Junyang Lin. Group sequence policy optimization. 
+
+CoRR , abs/2507.18071, 2025. Xinyu Zhu, Mengzhou Xia, Zhepei Wei, Wei-Lin Chen, Danqi Chen, and Yu Meng. The surprising effectiveness of negative reinforcement in LLM reasoning. CoRR , abs/2506.01347, 2025. 13 A First-Error Annotation and Full-Trajectory Entropy Analysis 
+
+A.1 Annotation Protocol 
+
+To support the local entropy analysis in Section 4.2, we construct a manually verified first-error annotation set from AIME24 and AIME25. The two benchmarks contain 60 prompts in total. For each prompt, we sample N = 8 trajectories using Qwen3-8B-Base, resulting in 480 trajectories. We first remove prompts whose sampled trajectories are either all correct or all incorrect, since such cases do not provide meaningful within-prompt contrasts between successful and failed reasoning paths. We also exclude erroneous trajectories whose failures are primarily caused by exceeding the maximum generation length, rather than by an identifiable mathematical or logical mistake. After this filtering process, we retain 8 prompts and 64 trajectories for fine-grained annotation. For each retained prompt, since multiple correct and incorrect trajectories may be available, we construct all valid correct–incorrect contrastive pairs within the same prompt, yielding 91 pairs in total. For each pair, we identify the first logical error in the incorrect trajectory, defined as the earliest substantive mathematical or reasoning deviation that changes the subsequent solution path. Minor wording differences, formatting variations, or alternative but valid derivations are not considered errors. To improve annotation reliability, we use an LLM-assisted cross-validation procedure with Claude Opus 4.6 and GPT-5.5. Each model independently proposes the first logical error location in the incorrect trajectory and explains the corresponding reasoning deviation. We then manually review the proposed locations and retain only annotations judged to be correct after human verification. Finally, for each verified first-error location, we identify the semantically corresponding position in the paired correct trajectory and record the associated token interval. These paired token intervals are used to align local entropy profiles around the first-error region. 
+
+A.2 Extended Visualization of Full-Trajectory Entropy 
+
+To complement the local alignment analysis in Section 4.2, Figure 4 provides unaligned, full-trajectory entropy profiles for 8 representative AIME prompts sampled via Qwen3-8B-Base. These macro-level visualizations clearly demonstrate the “cascade of confusion” phenomenon dis-cussed in Section 4.5. While correct trajectories (green) maintain a stable, low-entropy profile throughout the generation, incorrect trajectories (red) frequently exhibit a pattern where an initial logical flaw (often committed with relatively high confidence) acts as a tipping point. This initial error inevitably destabilizes the subsequent reasoning chain, leading to prolonged phases of severe entropy volatility. This macroscopic divergence further justifies our asymmetric credit assignment strategy: penalizing the initial confident error rather than the subsequent chaotic noise. 0 500 1000 1500 2000 2500 3000 3500                                           
+
+> Token Position
+> 0
+> 1
+> 2
+> 3
+> 4
+> Entropy (smoothed)
+> counterpart error
+> Question 2
+> correct (mean=0.122)
+> incorrect (mean=2.122)
+> 0500 1000 1500 2000
+> Token Position
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> 1.2
+> 1.4
+> Entropy (smoothed)
+> counterpart error
+> Question 4
+> correct (mean=0.613)
+> incorrect (mean=0.505)
+> 0250 500 750 1000 1250 1500 1750
+> Token Position
+> 0.0
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> 0.6
+> 0.7
+> Entropy (smoothed)
+> counterpart error
+> Question 15
+> correct (mean=0.062)
+> incorrect (mean=0.382)
+> 0100 200 300 400 500 600
+> Token Position
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> Entropy (smoothed)
+> counterpart error
+> Question 17
+> correct (mean=0.149)
+> incorrect (mean=0.472)
+> 0200 400 600 800
+> Token Position
+> 0
+> 1
+> 2
+> 3
+> 4
+> Entropy (smoothed)
+> counterpart error
+> Question 19
+> correct (mean=0.598)
+> incorrect (mean=1.123)
+> 0200 400 600 800 1000
+> Token Position
+> 0
+> 1
+> 2
+> 3
+> 4
+> 5
+> 6
+> Entropy (smoothed)
+> counterpart error
+> Question 29
+> correct (mean=0.105)
+> incorrect (mean=1.577)
+> 0250 500 750 1000 1250 1500 1750
+> Token Position
+> 0.0
+> 0.2
+> 0.4
+> 0.6
+> 0.8
+> 1.0
+> 1.2
+> 1.4
+> Entropy (smoothed)
+> counterpart error
+> Question 45
+> correct (mean=0.089)
+> incorrect (mean=0.822)
+> 0500 1000 1500 2000 2500 3000
+> Token Position
+> 0
+> 1
+> 2
+> 3
+> 4
+> 5
+> 6
+> Entropy (smoothed)
+> counterpart error
+> Question 46
+> correct (mean=0.176)
+> incorrect (mean=1.014)
+> Per-Token Entropy Along Full Trajectory: Correct vs. Incorrect
+
+Figure 4: Per-token entropy along full reasoning trajectories (Correct vs. Incorrect). For each of the 8 AIME prompts, we plot the smoothed step-wise entropy of a correct CoT (green) and an incorrect CoT (red). The vertical dotted lines annotate the exact position of the first fatal reasoning error and its logical counterpart. The global profiles illustrate that a single reasoning flaw typically induces a persistent, trajectory-wide elevation in model uncertainty. 14 B Detailed Derivations for Approximation Error 
+
+In this section, we provide the detailed derivation for the bounds of the true entropy Hi,t (θ) using the surrogate entropy δi,t (θ), as discussed in Section 5.1. Recall the notation: πθ (v) := πθ (v|q, yi,<t ), v∗ = argmax v∈V πθ (v), and δi,t (θ) = 1 − πθ (v∗).
+
+B.1 Derivation of Lower and Upper Bounds Lower Bound. Since v∗ is the token with the highest probability, replacing all log( πθ (v)) terms with the larger value log( πθ (v∗)) (note the negative sign) yields: 
+
+Hi,t (θ) = − X
+
+> v∈V
+
+πθ (v) log( πθ (v)) 
+
+≥ − X
+
+> v∈V
+
+πθ (v) log( πθ (v∗)) = − log( πθ (v∗)) X
+
+> v∈V
+
+πθ (v)= − log(1 − δi,t (θ)) ≜ L(δi,t (θ)) . (18) 
+
+Upper Bound. We separate the max probability term and apply Jensen’s inequality to the remaining terms: 
+
+Hi,t (θ) = −πθ (v∗) log( πθ (v∗)) − X 
+
+> v̸=v∗
+
+πθ (v) log( πθ (v)) 
+
+≤ − πθ (v∗) log( πθ (v∗)) − (1 − πθ (v∗)) log 
+
+ 1 − πθ (v∗)
+
+|V| − 1
+
+
+
+= −(1 − δi,t (θ)) log(1 − δi,t (θ)) − δi,t (θ) log 
+
+ δi,t (θ)
+
+|V| − 1
+
+
+
+≜ U (δi,t (θ)) . (19) 
+
+B.2 Analysis of the Approximation Gap 
+
+The gap function is defined as g(δi,t (θ)) ≜ U (δ) − L(δ). Substituting the bounds: 
+
+g(δi,t (θ)) = δi,t (θ) log( |V| − 1) + δi,t (θ) log 
+
+ 1 − δi,t (θ)
+
+δi,t (θ)
+
+
+
+. (20) The first and second derivatives with respect to δi,t (θ) are: 
+
+g′(δi,t (θ)) = log( |V| − 1) + log 
+
+ 1 − δi,t (θ)
+
+δi,t (θ)
+
+
+
+− 11 − δi,t (θ) , (21) 
+
+g′′ (δi,t (θ)) = − 1
+
+δi,t (θ)(1 − δi,t (θ)) 2 < 0. (22) Since g′′ < 0, the function is concave. Boundary analysis shows: • When δ = 0 , Hi,t = 0 and g(0) = 0 (via lim δ→0 δ log δ = 0 ). • When δ = |V|− 1 
+
+> |V|
+
+, g( |V|− 1 
+
+> |V|
+
+) = |V|− 1 
+
+> |V|
+
+[log( |V| − 1) + log( 1 
+
+> |V|− 1
+
+)] = 0 .
+
+B.3 Maximum Gap Derivation 
+
+Let g′(δi,t (θ)) = 0 . From Eq. 21 and letting t = δi,t (θ)1−δi,t (θ) , we have: 
+
+log( |V| − 1) − log t = t + 1 . (23) 15 0 500 1000 1500 2000 
+
+> Generation Steps (t)
+> 0.0
+> 0.1
+> 0.2
+> 0.3
+> 0.4
+> 0.5
+> 0.6
+> 0.7
+> 0.8
+> Uncertainty Score
+> Raw Entropy
+> Raw (1 - max Prob)
+> Normalized Entropy (MA-50)
+> (1 - max Prob) (MA-50)
+
+Figure 5: Surrogate entropy tracks normalized true entropy. Along a real rollout trajectory from Qwen2.5-Math-7B on the AIME25 benchmark, the proposed surrogate entropy closely follows the macroscopic trend of normalized true entropy while remaining mode-local and invariant to tail dispersion. Substituting Eq. 23 back into the expression for g(δi,t (θ)) :
+
+max  
+
+> δ
+
+g(δ) = δi,t (θ) (log( |V| − 1) − log t)= δi,t (θ)( t + 1) = δi,t (θ)1 − δi,t (θ) = t. (24) Thus, the maximum absolute error is exactly the solution t to the characteristic equation t + log t =log( |V| − 1) − 1.
+
+B.4 Tightness in Practical LLM Scenarios 
+
+As derived in Appendix B.3, the maximum approximation gap scales with the vocabulary size |V| .However, practical LLM distributions are typically concentrated in the top-k tokens due to softmax anisotropy [Ethayarajh, 2019] and mass concentration [Holtzman et al., 2019]. By considering this truncation, which effectively replaces |V| with k, we define the Absolute Error Bound tabs as the solution to the characteristic equation derived in Eq. 23: t + log t = log( k − 1) − 1,where t = δ/ (1 − δ).As shown in Table 3, the approximation error shrinks substantially under top-k regimes. For typical reasoning steps where probability mass is concentrated in a few tokens, the relative error remains controlled, e.g., below 10% for k = 10 . This quantitative analysis suggests that δi,t (θ) can serve as a practically useful and mathematically bounded proxy for true entropy when the next-token distribution is sufficiently mass-concentrated. In addition to this bound-based analysis, Figure 5 provides an empirical trajectory-level example showing that the surrogate tracks the macroscopic trend of normalized true entropy while remaining mode-local and invariant to tail dispersion. Table 3: Quantitative analysis of approximation gaps across different Top-k regimes. All values are derived from the characteristic equation t + log t = log( k − 1) − 1.
+
+Top-k Absolute Error Bound ( tabs ) Relative Error Bound (%) 
+
+100 2.628649597020 22.02% 40 1.980308835873 16.60% 20 1.523456930333 12.77% 10 1.101002997277 9.23% 5 0.717824512495 6.02% 
+
+16 C Detailed Derivation of the Gradient Modulation Factor 
+
+In this section, we provide the step-by-step derivation for the modulation factors M+ 
+
+> i,t
+
+and M−
+
+> i,t
+
+introduced in Section 5.2. This derivation characterizes the leading-order behavior of ACPO under the empirically observed modal-alignment regime and the proximal-update condition. It is intended to explain the dominant gradient modulation effect rather than establish a global convergence guarantee. 
+
+C.1 Expansion for Positive Samples 
+
+For bAi > 0, the objective component for a single token is J + 
+
+> i,t
+
+= fi,t (wi,t (θ)) · (2 + δi,t (θ)) , where 
+
+δi,t (θ) = 1 − πθ (v∗). Expanding the gradient: 
+
+∇θ J + 
+
+> i,t
+
+= ∇θ
+
+h
+
+fi,t (wi,t (θ)) · (3 − πθ (v∗)) 
+
+i
+
+= (3 − πθ (v∗)) ∇wfi,t (w)wi,t ∇θ log πθ (yi,t ) − fi,t (w)πθ (v∗)∇θ log πθ (v∗)= ∇wfi,t (w)
+
+
+
+(3 − πθ (v∗)) wi,t ∇θ log πθ (yi,t ) − fi,t (w)
+
+∇wfi,t (w) w∗
+
+> i,t
+
+πθold (v∗)∇θ log πθ (v∗)
+
+
+
+(25) where w∗ 
+
+> i,t
+
+= πθ (v∗)/π θold (v∗).Applying the Modal Alignment approximation ( πθ (yi,t ) ≈ πθ (v∗) and ∇θ log πθ (yi,t ) ≈∇θ log πθ (v∗)), and assuming the proximal update regime wi,t ≈ 1, w ∗ 
+
+> i,t
+
+≈ 1, Eq.25 simplifies to: 
+
+∇θ J + 
+
+> i,t
+
+≈ wi,t ∇wfi,t (w)∇θ log πθ (yi,t ) [3 − πθ (yi,t ) − 2πθold (yi,t )] (26) Substituting π(y) = 1 − δ, we obtain: 
+
+M+ 
+
+> i,t
+
+= 3 − (1 − δi,t (θ)) − 2(1 − δi,t (θold )) = δi,t (θ) + 2 δi,t (θold ). (27) 
+
+C.2 Expansion for Negative Samples 
+
+For bAi ≤ 0, the objective is J − 
+
+> i,t
+
+= fi,t (wi,t (θ)) · (1 − δi,t (θ)) = fi,t (wi,t (θ)) · πθ (v∗).
+
+∇θ J − 
+
+> i,t
+
+= πθ (v∗)∇wfi,t (w)wi,t ∇θ log πθ (yi,t ) + fi,t (w)πθ (v∗)∇θ log πθ (v∗)
+
+≈ wi,t ∇wfi,t (w)∇θ log πθ (yi,t ) [ πθ (yi,t ) + 2 πθold (yi,t )] (28) Substituting the entropy proxies: 
+
+M− 
+
+> i,t
+
+= (1 − δi,t (θ)) + 2(1 − δi,t (θold )) = 3 − δi,t (θ) − 2δi,t (θold ). (29) 
+
+C.3 Error Analysis Remark 
+
+As indicated by the empirical data in Table 4, the approximation error ϵ = |π(yi,t ) − π(v∗)| is bounded by 0.1 for over 86% of samples. In the context of stochastic gradient descent, this high-probability alignment empirically supports the use of the derived modulation factors as a leading-order approximation to the dominant gradient direction. 
+
+D Theoretical Analysis of Dynamic Damping in Off-policy Scenarios 
+
+In Section 5.2, we approximated the hybrid modulation factor M+ 
+
+> i,t
+
+by assuming the proximal update regime ( wi,t ≈ 1). This analysis illustrates a damping tendency in off-policy regions, rather than a formal guarantee against all unstable updates. 
+
+D.1 Deriving the Coupling Coefficient 
+
+Let us evaluate the exact gradient expansion for a positive sample ( bAi > 0). Using the product rule on J + 
+
+> i,t
+
+= fi,t (wi,t ) · (2 + δi,t (θ)) and factoring out the scaled policy gradient 17 Table 4: Analysis of Error Cumulative Coverage and Modal Alignment. 
+
+Error Threshold ( ϵ) Cumulative Coverage Description 
+
+≤ 1 × 10 −6 83.90% Greedy Ratio 
+
+≤ 0.01 83.93% +0.03% 
+
+≤ 0.02 84.07% +0.14% 
+
+≤ 0.05 84.81% +0.74% 
+
+≤ 0.10 86.53% +1.72% 
+
+≤ 0.20 89.81% +3.28% 
+
+≤ 0.30 92.48% +2.67% 
+
+≤ 0.50 96.13% +3.65% 
+
+≤ 1.00 100.00% +3.87% 
+
+wi,t ∇wfi,t (wi,t )∇θ log πθ (yi,t ), we obtain: 
+
+∇θ J + 
+
+> i,t
+
+∝
+
+(2 + δi,t (θ)) − fi,t (wi,t )
+
+∇wfi,t (wi,t )
+
+| {z }
+
+> C(wi,t )
+
+ 1 − δi,t (θold ) . (30) Here, C(wi,t ) is the off-policy coupling coefficient, dictating the relative strength of the historical damping term (1 − δi,t (θold )) against the driving term (2 + δi,t (θ)) .Recall the SAPO soft-gating function defined in Eq. 7: f (w) = 4 
+
+> τ
+
+σ(τ (w − 1)) . Its derivative is 
+
+∇wf (w) = 4 σ(τ (w − 1)) 1 − σ(τ (w − 1)) . Substituting these into C(wi,t ), the terms cleanly cancel out, yielding the precise analytical form: 
+
+C(wi,t ) = 1
+
+τpos 
+
+
+
+1 − σ τpos (wi,t − 1)  . (31) 
+
+D.2 Quantitative Analysis of the Mathematical Brake 
+
+Eq. 31 exposes an intrinsic mathematical brake mechanism. As the active policy becomes aggressively overconfident compared to the historical policy ( wi,t → ∞ ), the sigmoid output σ(·) approaches 1.Consequently, the denominator (1 − σ) rapidly approaches 0, causing C(wi,t ) to grow exponentially. To visualize this dynamic stabilization, Table 5 calculates the damping coefficient C(w) across various off-policy divergence levels (assuming τpos = 1 ). Table 5: Quantitative evaluation of the Dynamic Damping effect under different off-policy deviations (Positive Samples, bAi > 0). The Relative Damping Multiplier indicates the strength of the historical pull-back force compared to the stable proximal baseline ( wi,t = 1 .0). 
+
+Policy Shift ( wi,t ) Gate Margin ( 1 − σ) Damping Coef. C(w) Relative Damping Multiplier 
+
+0.2 0.690 1.45 0.72 ×
+
+0.5 0.622 1.61 0.80 ×
+
+1.0 0.500 2.00 1.0× (Baseline) 
+
+1.5 0.378 2.65 1.3×
+
+2.0 0.269 3.72 1.9×
+
+3.0 0.119 8.40 4.2×
+
+5.0 0.018 55 .6 27 .8×
+
+Asymmetric Stabilizing Behavior. As illustrated in Table 5, the coupling coefficient C(wi,t )
+
+orchestrates a remarkably intelligent, asymmetric stabilization mechanism for positive reasoning steps: 18 1. Aggressive Regimes ( wi,t ≫ 1): When the policy becomes excessively overconfident compared to the historical baseline, C(w) grows exponentially (e.g., jumping to 8.40 at 
+
+w = 3 .0). The historical anchor’s penalty escalates drastically, acting as a mathematical brake to prevent the policy from collapsing into overconfident local minima. 2. Under-confident Regimes ( wi,t < 1): Conversely, if the current policy underestimates a correct step relative to the historical policy, C(w) naturally decays below the baseline 2.0.By reducing the damping force ( 0.72 × at w = 0 .2), the mechanism inherently accelerates learning, encouraging the policy to quickly recover probability mass on verified correct trajectories. Rather than relying solely on the static global clipping of f (w), ACPO utilizes this non-linear property to actively recalibrate the update magnitude. It penalizes reckless gradient steps while facilitating the recovery of lost reasoning paths, theoretically validating ACPO’s robust convergence across long, complex reasoning CoTs. 
+
+E Ablation study of Top-k approximation 800  1600 
+
+0.1 
+
+0.2 
+
+0.3 
+
+0.4 
+
+0 step 
+
+neg/pos weights 
+
+Figure 6: Impact of different k values on training dynamics. The figure illustrates the learning curves of mean@8 accuracy on the AIME24 dataset during training, comparing the effects of setting 
+
+k ∈ { 1, 5, 20 , 100 }.As theoretically derived in Appendix B.4, the approximation error of our surrogate entropy δi,t (θ)
+
+is tightly bounded when the next-token probability mass is highly concentrated. To empirically investigate how the truncation window k influences the actual policy optimization dynamics, we conduct an ablation study setting k ∈ { 1, 5, 20 , 100 }.Figure 6 illustrates the learning curves of mean@8 accuracy on the AIME24 dataset during training. Overall, the training trajectories are similar across different k values, suggesting that the dominant-mode signal captures much of the useful uncertainty information in this setting. This observation is consistent with the mass-concentration behavior discussed in Appendix B.4. Upon closer inspection, k = 1 , the default ACPO configuration, achieves a slight but consistent late-stage advantage. Larger values of k do not provide clear additional gains and may introduce noise from secondary low-probability candidates. These results suggest that the top-1 surrogate offers a concise and effective choice for scaling the advantage signals in our experiments. Upon closer inspection, k = 1 (the default configuration of our proposed ACPO) demonstrates a slight but consistent performance lead in the late stages of training. The configurations k = 5 and 
+
+k = 100 yield almost identical performance, whereas k = 20 exhibits a marginal degradation. This phenomenon can be attributed to the signal-to-noise ratio in the probability distribution. Setting k = 1 
+
+directly utilizes the maximum probability mass, providing the sharpest and most immediate signal of the model’s localized confidence. Expanding k adds minimal useful cognitive information due to the heavy-tailed nature of the distribution, and may occasionally introduce minor gradient noise from low-probability tokens. Consequently, selecting k = 1 is not only computationally the most efficient, but also empirically optimal for scaling the advantage signals in ACPO. 19 F Broader Impacts 
+
+The proposed ACPO framework may improve mathematical and logical reasoning performance by providing a lightweight mechanism for token-level credit assignment without relying on human-annotated process-level feedback. This could support beneficial applications such as AI-assisted education, automated theorem proving, and scientific discovery. By assigning larger penalties to overconfident erroneous tokens, ACPO may also contribute to more reliable reasoning behavior, although further evaluation is needed to assess calibration and safety properties directly. However, advancing the reasoning and planning abilities of LLMs also introduces potential societal risks. The dual-use nature of foundation models means that enhanced logical capabilities could be exploited by malicious actors to automate sophisticated cyberattacks, generate highly persuasive disinformation, or conduct complex social engineering campaigns. Additionally, as models become more capable in solving complex problems, there is an increased risk of “automation bias,” where users might overly trust the model’s outputs in high-stakes domains (e.g., legal or medical reasoning) without sufficient human oversight. To mitigate these risks, it is imperative that the deployment of advanced reasoning models is paired with rigorous safety alignment and red-teaming. While our current reward formulation targets mathematical correctness, future work could adapt the ACPO framework to explicitly penalize unsafe, biased, or malicious reasoning steps, thereby leveraging our dense credit assignment mechanism to improve both model capability and AI safety. 20

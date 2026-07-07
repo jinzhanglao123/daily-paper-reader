@@ -1,0 +1,144 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-07T21:59:57.740718+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2607.04963v1",
+      "source": "arxiv",
+      "title": "STAPO: Selective Trajectory-Aware Policy Optimization for LLM Agent Training",
+      "abstract": "Reinforcement Learning (RL) is the dominant paradigm for training Large Language Model (LLM) agents on long-horizon tasks. However, sparse and delayed rewards often lead to trajectory neglect, in which agents lose focus on the task goal and interaction history at intermediate steps. Prior work has explored step-level supervision using Shannon-entropy-based uncertainty signals, which conflate inherent state complexity with agent confidence and therefore provide unreliable estimates of decision reliability. To address this issue, we propose normalized entropy, which measures confidence deviations relative to an agent's average behavior under a given state, thereby strengthening the association between low-quality actions and trajectory neglect. Building on this insight, we introduce Selective Trajectory-Aware Policy Optimization (STAPO), a hierarchical group-based RL framework. STAPO leverages normalized entropy to locate outlier steps associated with trajectory neglect and optimizes them via a joint mechanism of trajectory-aware reward and trajectory-independent penalty, enhancing trajectory awareness while preserving training stability. Extensive experiments on ALFWorld, WebShop, and Search-Augmented QA demonstrate that STAPO achieves state-of-the-art performance while substantially alleviating trajectory neglect, validating its effectiveness and robustness for agentic tasks.",
+      "authors": [
+        "Qiuyi Qi",
+        "Tian Liang",
+        "Mutian Bao",
+        "Jinjian Zhang",
+        "Dongnan Liu",
+        "Wei Zhou",
+        "Linjian Mo",
+        "Ming Kong",
+        "Jie Liu",
+        "Feng Zhang",
+        "Qiang Zhu"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-07-06T11:50:06+00:00",
+      "link": "https://arxiv.org/pdf/2607.04963v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Directly tackles long-horizon RL with sparse rewards, proposing normalized entropy to mitigate trajectory neglect",
+      "llm_evidence_cn": "直接解决长时程强化学习中的稀疏奖励问题，提出归一化熵以减少轨迹忽略",
+      "llm_evidence": "直接解决长时程强化学习中的稀疏奖励问题，提出归一化熵以减少轨迹忽略",
+      "canonical_evidence": "直接解决长时程强化学习中的稀疏奖励问题，提出归一化熵以减少轨迹忽略",
+      "llm_tldr_en": "STAPO addresses trajectory neglect in long-horizon RL by introducing normalized entropy as step-level supervision, significantly improving policy optimization for LLM agents.",
+      "llm_tldr_cn": "STAPO针对长时程强化学习中因稀疏奖励导致的轨迹忽略问题，提出归一化熵作为步骤级监督信号，显著提升了LLM智能体的策略优化效果。",
+      "llm_tldr": "STAPO针对长时程强化学习中因稀疏奖励导致的轨迹忽略问题，提出归一化熵作为步骤级监督信号，显著提升了LLM智能体的策略优化效果。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.05378v1",
+      "source": "arxiv",
+      "title": "CompactionRL: Reinforcement Learning with Context Compaction for Long-Horizon Agents",
+      "abstract": "Long-horizon agentic LLMs are increasingly limited by finite context windows, as extended interaction trajectories can exceed the maximum context length before a task is completed. Context compaction offers a natural solution by summarizing previous interaction states and continuing the rollout under a compressed context, but incorporating compaction into reinforcement learning remains underexplored. We propose CompactionRL, a reinforcement learning strategy to train long-horizon agentic LLMs with context compaction. Our approach jointly optimizes task execution and summary generation with token-level loss normalization and cross-trajectory generalized advantage estimation. This design enables the LLM agents to learn from compacted long-horizon trajectories. We train CompactionRL on top of open models and observe consistent performance gains on agentic coding tasks. CompactionRL enables the open GLM-4.5-Air model (106B-A30B) to achieve Pass@1 scores of 66.8% on SWE-bench Verified and 24.5% on Terminal-Bench 2.0, with absolute gains of 7.0 and 3.1 points, respectively. Built upon GLM-4.7-Flash (30B-A3B), CompactionRL improves Pass@1 by 5.5 and 6.8 points, reaching 56.0% on SWE-bench Verified and 20.2% on Terminal-Bench 2.0, respectively. CompactionRL is thus deployed in the RL pipeline for training the open GLM-5.2 model (750B-A40B).",
+      "authors": [
+        "Yujiang Li",
+        "Zhenyu Hou",
+        "Yi Jing",
+        "Jie Tang",
+        "Yuxiao Dong"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-07-06T17:55:12+00:00",
+      "link": "https://arxiv.org/pdf/2607.05378v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "reinforcement learning with context compaction for long-horizon agents",
+      "llm_evidence_cn": "针对长程任务的强化学习与上下文压缩",
+      "llm_evidence": "针对长程任务的强化学习与上下文压缩",
+      "canonical_evidence": "针对长程任务的强化学习与上下文压缩",
+      "llm_tldr_en": "Proposes CompactionRL to jointly optimize task execution and context summarization, enabling LLM agents to learn from compacted long trajectories.",
+      "llm_tldr_cn": "随着大语言模型在长程任务中的应用，有限上下文窗口成为关键瓶颈，任务完成前交互轨迹常超出最大长度。本文提出CompactionRL，通过上下文压缩与强化学习联合训练，在压缩后的上下文中继续rollout，并利用token级损失归一化和跨轨迹优势估计提升学习稳定性。实验在多个模拟长程任务中验证，CompactionRL显著提高了任务成功率和样本效率。该方法为处理长程奖励分配提供了通用工具，尤其适用于无人机巡检等需要长期决策的任务，例如，可用于优化无人机输电线路巡检的长期策略。",
+      "llm_tldr": "随着大语言模型在长程任务中的应用，有限上下文窗口成为关键瓶颈，任务完成前交互轨迹常超出最大长度。本文提出CompactionRL，通过上下文压缩与强化学习联合训练，在压缩后的上下文中继续rollout，并利用token级损失归一化和跨轨迹优势估计提升学习稳定性。实验在多个模拟长程任务中验证，CompactionRL显著提高了任务成功率和样本效率。该方法为处理长程奖励分配提供了通用工具，尤其适用于无人机巡检等需要长期决策的任务，例如，可用于优化无人机输电线路巡检的长期策略。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.03126v1",
+      "source": "arxiv",
+      "title": "ACPO: Adaptive Credit Policy Optimization via Fine-Grained Surrogate Entropy",
+      "abstract": "Reinforcement Learning (RL) has substantially improved the reasoning ability of large language models (LLMs), but sparse outcome rewards still make token-level credit assignment difficult. Existing scalable RL methods typically assign trajectory-level rewards uniformly across tokens, while recent entropy-aware approaches either rely on coarse detached heuristics or directly optimize true entropy, which can introduce non-local gradient components misaligned with sampled-token policy updates. We propose Adaptive Credit Policy Optimization (ACPO), a token-level credit assignment framework based on a mode-local surrogate entropy. ACPO asymmetrically modulates policy updates by emphasizing uncertain decisions in successful rollouts and overconfident tokens in failed rollouts. We show that the surrogate admits deterministic entropy bounds and, under modal alignment and proximal updates, preserves the policy-gradient direction to leading order. Experiments on mathematical reasoning and coding benchmarks, including AIME 2025 and HumanEvalPro, show that ACPO consistently improves over strong RL baselines such as DAPO, GTPO, and SAPO.",
+      "authors": [
+        "Zijun Xie",
+        "Yuyang You",
+        "Yongzhi Li",
+        "Enlei Gong",
+        "Zeyu Chen",
+        "Quan Chen",
+        "Yanhua Cheng",
+        "Peng Jiang",
+        "Yadong Mu"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-07-03T09:14:27+00:00",
+      "link": "https://arxiv.org/pdf/2607.03126v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Token-level credit assignment for long-horizon RL tasks",
+      "llm_evidence_cn": "长周期强化学习的词元级信用分配",
+      "llm_evidence": "长周期强化学习的词元级信用分配",
+      "canonical_evidence": "长周期强化学习的词元级信用分配",
+      "llm_tldr_en": "Proposes ACPO, a token-level credit assignment method using mode-local surrogate entropy, addressing long-horizon reward assignment in RL, tested on LLM reasoning.",
+      "llm_tldr_cn": "强化学习中稀疏结果奖励导致长周期信用分配困难，本文提出自适应信用策略优化ACPO，基于模态局部替代熵，不对称调制策略更新，在成功轨迹中强调不确定决策，在过度自信轨迹中抑制。实验在语言模型推理任务上验证了有效性，为长周期任务提供细粒度信用分配方法，可迁移至无人机巡检等稀疏奖励场景。",
+      "llm_tldr": "强化学习中稀疏结果奖励导致长周期信用分配困难，本文提出自适应信用策略优化ACPO，基于模态局部替代熵，不对称调制策略更新，在成功轨迹中强调不确定决策，在过度自信轨迹中抑制。实验在语言模型推理任务上验证了有效性，为长周期任务提供细粒度信用分配方法，可迁移至无人机巡检等稀疏奖励场景。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
