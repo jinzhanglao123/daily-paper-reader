@@ -1,0 +1,100 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-08T20:36:26.129812+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2607.03126v2",
+      "source": "arxiv",
+      "title": "ACPO: Adaptive Credit Policy Optimization via Fine-Grained Surrogate Entropy",
+      "abstract": "Reinforcement Learning (RL) has substantially improved the reasoning ability of large language models (LLMs), but sparse outcome rewards still make token-level credit assignment difficult. Existing scalable RL methods typically assign trajectory-level rewards uniformly across tokens, while recent entropy-aware approaches either rely on coarse detached heuristics or directly optimize true entropy, which can introduce non-local gradient components misaligned with sampled-token policy updates. We propose Adaptive Credit Policy Optimization (ACPO), a token-level credit assignment framework based on a mode-local surrogate entropy. ACPO asymmetrically modulates policy updates by emphasizing uncertain decisions in successful rollouts and overconfident tokens in failed rollouts. We show that the surrogate admits deterministic entropy bounds and, under modal alignment and proximal updates, preserves the policy-gradient direction to leading order. Experiments on mathematical reasoning and coding benchmarks, including AIME 2025 and HumanEvalPro, show that ACPO consistently improves over strong RL baselines such as DAPO, GTPO, and SAPO.",
+      "authors": [
+        "Zijun Xie",
+        "Yuyang You",
+        "Yongzhi Li",
+        "Enlei Gong",
+        "Zeyu Chen",
+        "Quan Chen",
+        "Yanhua Cheng",
+        "Peng Jiang",
+        "Yadong Mu"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-07-03T09:14:27+00:00",
+      "link": "https://arxiv.org/pdf/2607.03126v2",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "token-level credit assignment in RL",
+      "llm_evidence_cn": "基于替代熵的令牌级信用分配",
+      "llm_evidence": "基于替代熵的令牌级信用分配",
+      "canonical_evidence": "基于替代熵的令牌级信用分配",
+      "llm_tldr_en": "Proposes Adaptive Credit Policy Optimization, a token-level credit assignment framework using mode-local surrogate entropy to improve long-horizon reward assignment in RL, demonstrated on LLM reasoning.",
+      "llm_tldr_cn": "为解决强化学习中稀疏奖励导致的信用分配困难，本文提出自适应信用策略优化框架，通过模态局部替代熵不对称地调制策略更新，强化成功轨迹中不确定决策的权重，有效解决长周期奖励分配问题，在LLM推理上得到验证。",
+      "llm_tldr": "为解决强化学习中稀疏奖励导致的信用分配困难，本文提出自适应信用策略优化框架，通过模态局部替代熵不对称地调制策略更新，强化成功轨迹中不确定决策的权重，有效解决长周期奖励分配问题，在LLM推理上得到验证。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.04713v1",
+      "source": "arxiv",
+      "title": "RSPO: Reward-Swap Policy Optimization for Multi-Turn LLM Agents",
+      "abstract": "Reinforcement learning holds significant potential for training large language models (LLMs) to handle multi-turn interactive tasks. However, in long-horizon, multi-turn tasks characterized by sparse outcome rewards, directly training with outcome rewards often results in slow convergence due to the sparsity of signals and the lack of fine-grained feedback. Furthermore, the model may fail to learn successful trajectories that are not sampled during training, thereby limiting its performance. Conversely, while employing customized dense process rewards provides richer signals and accelerates convergence, these surrogate rewards may exhibit potential misalignment with the ground-truth outcome rewards. This inconsistency can bias the training direction and ultimately degrade the model's final performance. In this work, we propose Reward-Swap Policy Optimization (RSPO), a method designed to leverage the rich information from dense process rewards to facilitate training with outcome rewards. By utilizing a reward-swap mechanism, RSPO ensures the diversity of sampled trajectories while guaranteeing consistency between the optimization objective and the true outcome rewards, thereby elevating the performance ceiling of the model. We conduct extensive experiments on two challenging agent benchmarks, WebShop and ALFWorld. By applying our method to various reinforcement learning algorithms, including GRPO, PPO, and GiGPO, we demonstrate that RSPO achieves consistent performance improvements across different baselines and benchmarks.",
+      "authors": [
+        "Qiang Liu",
+        "Taian Guo",
+        "Ruizhi Qiao",
+        "Xing Sun"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-07-06T06:32:39+00:00",
+      "link": "https://arxiv.org/pdf/2607.04713v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Addresses long-horizon reward assignment in RL by swapping between sparse outcome and dense process rewards",
+      "llm_evidence_cn": "解决强化学习中长时程奖励分配问题，通过稀疏结果奖励与密集过程奖励的交换机制",
+      "llm_evidence": "解决强化学习中长时程奖励分配问题，通过稀疏结果奖励与密集过程奖励的交换机制",
+      "canonical_evidence": "解决强化学习中长时程奖励分配问题，通过稀疏结果奖励与密集过程奖励的交换机制",
+      "llm_tldr_en": "Proposes Reward-Swap Policy Optimization (RSPO) to mitigate misalignment between sparse outcome and dense process rewards in long-horizon RL, improving multi-turn LLM agent performance.",
+      "llm_tldr_cn": "现有强化学习方法在长时程多轮交互中因奖励稀疏收敛缓慢，而稠密过程奖励可能与真实结果奖励不一致。本文提出奖励交换策略优化（RSPO），通过动态交换稀疏结果奖励和稠密过程奖励来缓解信号稀疏性与对齐偏差，实验表明RSPO在多轮LLM代理任务上提升了训练效率与最终性能。",
+      "llm_tldr": "现有强化学习方法在长时程多轮交互中因奖励稀疏收敛缓慢，而稠密过程奖励可能与真实结果奖励不一致。本文提出奖励交换策略优化（RSPO），通过动态交换稀疏结果奖励和稠密过程奖励来缓解信号稀疏性与对齐偏差，实验表明RSPO在多轮LLM代理任务上提升了训练效率与最终性能。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

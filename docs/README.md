@@ -6,31 +6,28 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-07
-- 运行时间：2026-07-07 22:04:31 UTC
+- 最新运行日期：2026-07-08
+- 运行时间：2026-07-08 20:40:02 UTC
 - 运行状态：成功
-- 本次总论文数：3
-- 精读区：2
+- 本次总论文数：2
+- 精读区：1
 - 速读区：1
 
 ### 今日简报（AI）
-今日精读两篇LLM Agent强化学习前沿论文，聚焦策略优化与长程上下文管理。  
-极简亮点：STAPO用选择性轨迹感知策略大幅提升训练效率，CompactionRL以上下文压缩突破长程记忆瓶颈。  
-建议立刻实测STAPO的轨迹选择机制对你的多步推理任务有无奇效，或对比CompactionRL的压缩方案优化Agent长期规划。
-- 详情：[/202607/07/README](/202607/07/README)
+今天精读了一篇关于自适应信用策略优化的高分论文，并速览了多轮智能体奖励交换方法。
+最值得关注的是ACPO用细粒度替代熵实现更精准的信用分配，以及RSPO为多轮LLM智能体设计的奖励互换训练机制。
+建议进一步追踪ACPO中熵调控技术在多步推理与长程任务上的落地可能。
+- 详情：[/202607/08/README](/202607/08/README)
 
 ### 精读区论文标签
-1. [STAPO: Selective Trajectory-Aware Policy Optimization for LLM Agent Training](/202607/07/2607.04963v1-stapo-selective-trajectory-aware-policy-optimization-for-llm-agent-training)  
+1. [ACPO: Adaptive Credit Policy Optimization via Fine-Grained Surrogate Entropy](/202607/08/2607.03126v2-acpo-adaptive-credit-policy-optimization-via-fine-grained-surrogate-entropy)  
    标签：评分：9.0/10、query:uav-drl
-   evidence：直接解决长时程强化学习中的稀疏奖励问题，提出归一化熵以减少轨迹忽略
-2. [CompactionRL: Reinforcement Learning with Context Compaction for Long-Horizon Agents](/202607/07/2607.05378v1-compactionrl-reinforcement-learning-with-context-compaction-for-long-horizon-agents)  
-   标签：评分：8.0/10、query:uav-drl
-   evidence：针对长程任务的强化学习与上下文压缩
+   evidence：基于替代熵的令牌级信用分配
 
 ### 速读区论文标签
-1. [ACPO: Adaptive Credit Policy Optimization via Fine-Grained Surrogate Entropy](/202607/07/2607.03126v1-acpo-adaptive-credit-policy-optimization-via-fine-grained-surrogate-entropy)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：长周期强化学习的词元级信用分配
+1. [RSPO: Reward-Swap Policy Optimization for Multi-Turn LLM Agents](/202607/08/2607.04713v1-rspo-reward-swap-policy-optimization-for-multi-turn-llm-agents)  
+   标签：评分：7.0/10、query:uav-drl
+   evidence：解决强化学习中长时程奖励分配问题，通过稀疏结果奖励与密集过程奖励的交换机制
 
 
 <div class="dpr-home-promo-card">

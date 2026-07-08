@@ -1,0 +1,39 @@
+{
+  "label": "2026-07-08",
+  "date": "2026-07-08",
+  "generated_at": "2026-07-08T20:40:14",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202607/08/2607.03126v2-acpo-adaptive-credit-policy-optimization-via-fine-grained-surrogate-entropy",
+      "section": "deep",
+      "title_en": "ACPO: Adaptive Credit Policy Optimization via Fine-Grained Surrogate Entropy",
+      "authors": "Zijun Xie, Yuyang You, Yongzhi Li, Enlei Gong, Zeyu Chen, Quan Chen, Yanhua Cheng, Peng Jiang, Yadong Mu",
+      "date": "2026-07-03",
+      "pdf": "https://arxiv.org/pdf/2607.03126v2",
+      "score": "9.0",
+      "evidence": "基于替代熵的令牌级信用分配",
+      "tldr": "为解决强化学习中稀疏奖励导致的信用分配困难，本文提出自适应信用策略优化框架，通过模态局部替代熵不对称地调制策略更新，强化成功轨迹中不确定决策的权重，有效解决长周期奖励分配问题，在LLM推理上得到验证。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Reinforcement Learning (RL) has substantially improved the reasoning ability of large language models (LLMs), but sparse outcome rewards still make token-level credit assignment difficult. Existing scalable RL methods typically assign trajectory-level rewards uniformly across tokens, while recent entropy-aware approaches either rely on coarse detached heuristics or directly optimize true entropy, which can introduce non-local gradient components misaligned with sampled-token policy updates. We propose Adaptive Credit Policy Optimization (ACPO), a token-level credit assignment framework based on a mode-local surrogate entropy. ACPO asymmetrically modulates policy updates by emphasizing uncertain decisions in successful rollouts and overconfident tokens in failed rollouts. We show that the surrogate admits deterministic entropy bounds and, under modal alignment and proximal updates, preserves the policy-gradient direction to leading order. Experiments on mathematical reasoning and coding benchmarks, including AIME 2025 and HumanEvalPro, show that ACPO consistently improves over strong RL baselines such as DAPO, GTPO, and SAPO.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/08/2607.04713v1-rspo-reward-swap-policy-optimization-for-multi-turn-llm-agents",
+      "section": "quick",
+      "title_en": "RSPO: Reward-Swap Policy Optimization for Multi-Turn LLM Agents",
+      "authors": "Qiang Liu, Taian Guo, Ruizhi Qiao, Xing Sun",
+      "date": "2026-07-06",
+      "pdf": "https://arxiv.org/pdf/2607.04713v1",
+      "score": "7.0",
+      "evidence": "解决强化学习中长时程奖励分配问题，通过稀疏结果奖励与密集过程奖励的交换机制",
+      "tldr": "多轮LLM智能体任务中，稀疏结果奖励收敛慢且可能错过成功轨迹，密集过程奖励虽丰富但易与真实目标不一致。RSPO提出奖励交换机制，利用过程奖励信息辅助结果奖励训练，既保证轨迹多样性又保持优化目标一致性。在WebShop和ALFWorld上，RSPO应用于GRPO、PPO、GiGPO均取得一致提升，为解决多轮交互训练提供了高效方案。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Reinforcement learning holds significant potential for training large language models (LLMs) to handle multi-turn interactive tasks. However, in long-horizon, multi-turn tasks characterized by sparse outcome rewards, directly training with outcome rewards often results in slow convergence due to the sparsity of signals and the lack of fine-grained feedback. Furthermore, the model may fail to learn successful trajectories that are not sampled during training, thereby limiting its performance. Conversely, while employing customized dense process rewards provides richer signals and accelerates convergence, these surrogate rewards may exhibit potential misalignment with the ground-truth outcome rewards. This inconsistency can bias the training direction and ultimately degrade the model's final performance. In this work, we propose Reward-Swap Policy Optimization (RSPO), a method designed to leverage the rich information from dense process rewards to facilitate training with outcome rewards. By utilizing a reward-swap mechanism, RSPO ensures the diversity of sampled trajectories while guaranteeing consistency between the optimization objective and the true outcome rewards, thereby elevating the performance ceiling of the model. We conduct extensive experiments on two challenging agent benchmarks, WebShop and ALFWorld. By applying our method to various reinforcement learning algorithms, including GRPO, PPO, and GiGPO, we demonstrate that RSPO achieves consistent performance improvements across different baselines and benchmarks.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
