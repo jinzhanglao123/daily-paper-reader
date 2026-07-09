@@ -1,0 +1,732 @@
+Title: Task-Relevant Representation Decoupling for Visual Reinforcement Learning Generalization
+
+URL Source: https://arxiv.org/pdf/2607.00796v1
+
+Published Time: Thu, 02 Jul 2026 00:55:30 GMT
+
+Number of Pages: 23
+
+Markdown Content:
+# Task-Relevant Representation Decoupling for Visual Reinforcement Learning Generalization 
+
+JINWEN WANG, YOUFANG LIN, XIAOBO HU, QIAN XU, and SHUO WANG, Beijing Key Laboratory of Traffic Data Mining and Embodied Intelligence, School of Computer Science & Technology, Beijing Jiaotong University, China 
+
+ZHUO CHEN, CSSC Intelligent Innovation Research Institute, China and Zhejiang University, China 
+
+KAI LV ∗, Beijing Key Laboratory of Traffic Data Mining and Embodied Intelligence, School of Computer Science & Technology, Beijing Jiaotong University, China Visual Reinforcement Learning (VRL) has achieved considerable success in solving control tasks. However, generalizing learned policies to new environments remains a major challenge, as agents often overfit to task-irrelevant features in the training environment. To solve this problem, we introduce the concept of decoupling observations into task-relevant and task-irrelevant representations. Building on this idea, we propose a self-supervised Task-Relevant Representation Decoupling (T2RD) algorithm for VRL. This algorithm consists of three components: task-relevant representation consistency , cross-reconstruction , and cross-dynamic prediction . The first two components achieve the decoupling of content and style features, but the resulting content representations are not necessarily task-relevant. To further refine task-relevant features from content representations, we design the third component that introduces dynamic prediction. T2RD achieves State-Of-The-Art (SOTA) generalization performance and sample efficiency in the DeepMind Control Suite and Robotic Manipulation tasks. CCS Concepts: • Computing methodologies → Image representations ; Computer vision tasks .Additional Key Words and Phrases: Visual Reinforcement Learning, Visual Generalization, Decoupling, Task-relevant, Task-irrelevant 
+
+1 Introduction 
+
+Visual Reinforcement Learning (VRL) has achieved tremendous success in various fields, including video games [ 27 , 54 ], robotic manipulation [ 2, 17 , 35 ], and autonomous navigation [ 21 , 36 ]. However, high-dimensional image observations inherently contain redundant, task-irrelevant details, which makes the agent prone to overfitting the training environment. This poses significant challenges in generalizing learned policies to new environments with visual changes. Therefore, it is crucial to improve the generalization ability of VRL. To learn policies robust to visual changes, previous methods can be broadly categorized into two types. One is data augmentation [ 7, 19 , 22 , 44 , 46 ], aiming to cover sufficient environmental changes during training that also exist in the testing environment. The other is designing self-supervised auxiliary tasks [ 10 , 14 –16 , 20 , 48 ] to assign certain properties to the representation. However, representations obtained from previous self-supervised auxiliary tasks don’t explicitly strip away task-irrelevant information. The policies based on these representations may also overfit to task-irrelevant features, thereby affecting policies’ generalization ability. To address this problem, as shown in Figure 1, we propose the idea of decoupling the observations into task-relevant and task-irrelevant representations. Then, the task-relevant representations are 
+
+> ∗
+
+Corresponding author: Kai Lv Authors’ Contact Information: Jinwen Wang, jw.wang@bjtu.edu.cn; Youfang Lin, yflin@bjtu.edu.cn; Xiaobo Hu, xiaobohu@ bjtu.edu.cn; Qian Xu, 22125241@bjtu.edu.cn; Shuo Wang, shuo.wang@bjtu.edu.cn, Beijing Key Laboratory of Traffic Data Mining and Embodied Intelligence, School of Computer Science & Technology, Beijing Jiaotong University, China; Zhuo Chen, huntercz@126.com, CSSC Intelligent Innovation Research Institute, China and Zhejiang University, China; Kai Lv, lvkai@bjtu.edu.cn, Beijing Key Laboratory of Traffic Data Mining and Embodied Intelligence, School of Computer Science & Technology, Beijing Jiaotong University, China.     
+
+> arXiv:2607.00796v1 [cs.LG] 1 Jul 2026 2Jinwen Wang et al. Task-relevant
+> Task-irrelevant
+> Various domains
+> latent space
+> Fig. 1. The core idea of our method. We decouple the visual observation into task-relevant representation and task-irrelevant representation. Task-relevant representations have domain-invariant properties, allowing them to generalize well across different domains.
+
+utilized to support learning policies. This decoupling idea has two advantages: 1) The representations supporting policy learning are expected to exclude task-irrelevant information, making policies focus more on the task-relevant parts of the observations and thus promoting policy generalization; 2) By explicitly ignoring task-irrelevant features, the burden on the agent to process unnecessary information is reduced, thereby improving sample efficiency. Based on the idea mentioned above, we introduce the Task-Relevant Representation Decoupling (T2RD) method for VRL, which is capable of zero-shot generalization to unseen visual scenarios. Specifically, to achieve the decoupling effect, T2RD consists of three components: task-relevant representation consistency , cross-reconstruction , and cross-dynamic prediction . The first two compo-nents are designed to separate content and style features visually. However, the resulting content representations may not necessarily be task-relevant. To further refine task-relevant features from the content representation, we designed the third component that integrates dynamic prediction, thereby achieving the decoupling of task-relevant and task-irrelevant features. T2RD has two principal advancements: 1) Its representation decoupling module is self-supervised. Although there are similar decoupling ideas [ 9, 26 , 30 , 33 ] in the field of Computer Vision (CV), most of them are supervised and require labeled datasets or even paired datasets. 2) It is more suitable for VRL tasks. Compared to methods that merely perform foreground-background segmentation [39 ] or content-style separation [ 45 ], our decoupling approach is more applicable to generalization tasks in VRL, achieving separation between task-relevant and task-irrelevant features. Additionally, we propose a simple yet effective combined data augmentation technique for VRL. Recent methods mostly select a single data augmentation technique [ 13 – 15 , 46 ]. However, these methods suffer from generalization bias, meaning that their generalization ability is heavily influenced by what data augmentation techniques they choose. By simply combining Random Convolution [ 14 ] and Random Overlay [ 13 ], we increase the diversity of augmentations, alleviating the generalization bias and thereby improving the algorithm’s generalization performance. We conduct extensive experiments on two benchmarks: DeepMind Control Suite Generalization Benchmark (DMControl-GB) [ 13 , 32 ] and Robotic Manipulation [ 18 ]. The agent is trained in a fixed environment and evaluated for its generalization ability to unseen environments during training. The experimental results demonstrate that our method exhibits state-of-the-art generalization performance and sample efficiency. Our main contributions are emphasized as follows: 
+
+• We introduce the concept of decoupling observations into task-relevant features and task-irrelevant features in VRL, and then use only task-relevant features for policy learning. Task-Relevant Representation Decoupling for Visual Reinforcement Learning Generalization 3
+
+• We propose a self-supervised representation decoupling framework suitable for VRL, which can effectively achieve the decoupling of task-relevant features and task-irrelevant features. 
+
+• We propose a simple yet effective combined data augmentation technique, which signifi-cantly improves the generalization performance of VRL, as evidenced by experiments. 
+
+• Extensive experiments prove that T2RD achieves state-of-the-art generalization perfor-mance and sample efficiency. 
+
+2 RELATED WORK 2.1 Data Augmentation in Visual RL 
+
+Data augmentation has been shown to improve the generalization ability of visual reinforcement learning algorithms. RAD [ 19 ] pioneers the broad application of data augmentation in RL, improving sample efficiency and generalization. DrQ [ 44 ] aggregates multiple data augmentations, regularizing learning directly from pixels by averaging across multiple image transformations for the Q-function and Q target function. SODA [ 14 ] proposes a soft data augmentation method that decouples data augmentation from policy learning and introduces a novel data augmentation approach that linearly adds observations with additional images. TLDA [ 46 ] introduces task-aware Lipschitz data augmentation, explicitly identifying task-relevant pixels with large Lipschitz constants and augmenting only task-irrelevant pixels. Compared with single data augmentations, our combined data augmentation method increases the diversity of augmentation, which can alleviate the issue of generalization bias. At the same time, using different augmentations improves the network’s robustness to visual changes. 
+
+2.2 Generalization in Visual RL 
+
+Researchers have studied how to improve the generalization ability of visual reinforcement learning from various aspects. Beyond data augmentation, existing works primarily pursue generalization by learning invariant representations, which can be broadly categorized into three main approaches. First, one category uses self-supervised objectives to learn representations. These methods impose auxiliary self-supervised tasks on visual data to encourage the model to learn general features bene-ficial for the task. Representative works include using contrastive learning (CURL [ 20 ]), consistency regularization (SODA [ 14 ]), domain-invariant representation learning [ 38 ], or foreground/saliency extraction (VAI [ 39 ], SGQN [ 1]). Second, another category leverages the intrinsic structure of the Markov Decision Process (MDP) and RL characteristics. This includes using bisimulation metrics [ 8 ]to group behaviorally similar states (DBC [ 48 ], Chen et al. [ 3 ]), achieving policy adaptation after deployment via inverse dynamics prediction (PAD [ 12 ]), stabilizing Q-learning through asymmet-ric data augmentation (SVEA [ 13 ]), bidirectionally predicting environment dynamics (BiT [ 15 ]), leveraging long-term information [ 43 ], or designing temporal contrastive losses [ 50 ]. Other strate-gies involve robustness-oriented learning and analysis [ 25 , 49 , 51 ] and designing intrinsic reward systems to achieve self-supervised domain adaptation [ 55 ]. While these methods effectively learn a single, robust representation by implicitly ignoring distractors, T2RD’s philosophy is different. We argue for explicitly decoupling an observation into task-relevant and task-irrelevant streams, then using dynamic prediction to ensure the task-relevant stream is behaviorally meaningful, which is a more direct path. Third, a powerful paradigm utilizes pre-trained Visual Foundation Models (VFMs). For instance, some works use SAM for object segmentation to remove background distractors [ 40 ], or directly employ general VFM features as input (PIE-G [ 47 ], Zhong et al. [ 52 ]). However, the features of the segmented objects themselves—their color, texture, or lighting—can still be task-irrelevant and cause overfitting. T2RD is positioned to address this problem by further decoupling an object’s task-relevant state from its superficial appearance. 4 Jinwen Wang et al. 
+
+2.3 Representation Decoupling 
+
+Human perceptual systems often distinguish between content and style to better understand observations [ 33 ], and in artificial intelligence, decomposed representations of content and style are also highly needed. In computer vision, for example, Lorenz et al. [ 24 ] separate appearance and shape by learning consistent parts across instances of the same category, while Wu et al. [ 41 ]introduce a two-branch autoencoder to disentangle objects into content and style representations. Ren et al. [ 29 ] propose a content-style disentanglement module by encoding dominant image factors. Yin et al. [45] model the content-style representation as a token-level bipartite graph. This principle of learning informative representations also extends to visual recognition and spatio-temporal modeling [ 5 , 6 ], as well as medical image analysis [ 34 ], and a related line of work leverages direct human perceptual cues to guide agents; for example, human gaze data can direct an agent’s attention for efficient imitation learning [ 31 ], and human-generated saliency has been used to guide value estimation in visual RL [ 23 ]. While these methods validate the benefit of isolating task-relevant information, they share a common limitation with most computer vision decoupling approaches: reliance on external supervision, whether paired datasets, labeled medical data, or direct human input. T2RD is distinct in that it learns this decoupling in a self-supervised manner tailored for VRL, using only the standard reward signal without external labels or human guidance. 
+
+3 Preliminaries 3.1 Visual Reinforcement Learning 
+
+Due to the partial observability of images in Visual Reinforcement Learning (VRL), the interaction between an agent and the environment is modeled as a Partially Observable Markov Decision Process (POMDP), represented by the tuple M = ⟨S , O, A, P, Z, 𝑟, 𝛾 ⟩, where S is the state space, 
+
+O is the high-dimensional observation space, A is the action space, P ( s𝑡 +1 | s𝑡 , 𝑎 𝑡 ) is the state transition function, Z( o𝑡 | s𝑡 ) is the observation-emission distribution, 𝑟 : S × A ↦ → R is the scalar reward function, and 𝛾 ∈ [ 0, 1) is the discount factor. The objective is to learn the optimal policy 𝜋 ∗ that maximizes the cumulative reward return: 
+
+𝜋 ∗ = arg max  
+
+> 𝜋
+
+E o𝑡 ∼Z (· | s𝑡 ), 𝑎 𝑡 ∼𝜋 (· | o𝑡 ), s𝑡 +1∼P (· | s𝑡 ,𝑎 𝑡 )
+
+h 𝑇 ∑︁ 
+
+> 𝑡 =1
+
+𝛾 𝑡 𝑟 (s𝑡 , 𝑎 𝑡 )
+
+i
+
+(1) starting from the initial state s0 ∈ S and taking actions 𝑎 𝑡 chosen by the observation-conditional policy 𝜋 𝜃 (· | o𝑡 ), while observations are generated via Z( o𝑡 | s𝑡 ) and the environment transitions to s𝑡 +1 according to P (· | s𝑡 , 𝑎 𝑡 ). The policy is parameterized by learnable parameters 𝜃 .
+
+3.2 Generalization in VRL 
+
+In terms of generalization of visual reinforcement learning, we consider a set of POMDPs denoted by M = {M 1, M2, . . . , M𝑛 }, where each POMDP M𝑖 has its own observation space 𝑂 𝑖 but shares a common underlying state space S and state transition function P. During training, we only have access to a specific POMDP, denoted as M𝑖 . Our goal is to train an agent on a specific scenario 
+
+M𝑖 to learn a policy 𝜋 ∗ 
+
+> 𝐺
+
+that maximizes the expected cumulative reward across the entire set of POMDPs M, in a zero-shot generalization manner. 
+
+4 METHOD 4.1 Overview 
+
+As shown in Figure 2, we propose Task-Relevant Representation Decoupling (T2RD). Our architec-ture is inspired by successful self-supervised learning methods such as BYOL [ 10 ] and adopts a dual-branch design: an online branch and a target branch. The core idea is that the online branch is Task-Relevant Representation Decoupling for Visual Reinforcement Learning Generalization 5𝒇 𝜽 (#) 𝒇 𝝋 (#) 𝒈 𝜽 (#) 𝒈 𝝋 (#) 𝐡 𝛉 (#) 
+
+> 𝜖 !
+> 𝜇 !
+> 𝑷 𝝂 (#)
+
+𝑳 𝒄𝒐𝒏𝒔𝒊𝒔 
+
+> 𝑎 !
+> 𝒅 𝝃 (#)
+> 𝑧 !̂𝑧 !
+
+𝑳 𝒓𝒆𝒄𝒐𝒏 
+
+> 𝑧 !"
+> 𝜇 !$%
+
+𝒐 𝒕 
+
+𝒐 𝒕 " Projection Encoder Predictor Decoder Dynamic      
+
+> 𝜖 !"
+> 𝜇 !"
+> Aug EMA EMA
+> =stop−gradient
+> =online branch
+> =target branch ̂𝜇 !$%
+
+𝑳 𝒅𝒚𝒏𝒂𝒎𝒊𝒄 
+
+Fig. 2. Overview of our model. Our model includes two branches: the online branch and the target branch. T2RD consists of three components: task-relevant representation consistency , cross-reconstruction , and cross-dynamic prediction . Our objective is to achieve the decoupling of task-relevant and task-irrelevant features through the above three modules. Subsequently, only the task-relevant features are used for policy learning. 
+
+trained to learn from the representations produced by the target branch, which evolves slowly and thus provides a stable regression target. This setup mitigates training instability and helps prevent collapse to trivial solutions. The online branch comprises three components, each serving a distinct purpose: an encoder 
+
+𝑓 𝜃 that extracts latent representations from pixels, a dual-head projection 𝑔 𝜃 that decouples the representation into task-relevant content and task-irrelevant style, and a predictor head ℎ𝜃 that learns to predict the target-branch representation from the online-branch representation. By requiring a non-trivial mapping between the online and target branches, this predictor helps avoid representation collapse. The target branch has a structurally identical encoder 𝑓 𝜑 and dual-head projection 𝑔 𝜑 , but no predictor. For policy learning, we adopt Soft Actor-Critic (SAC) [ 11 ]. As shown in Figure 3, the T2RD module serves as a representation learner: we first decouple visual inputs into task-relevant and task-irrelevant features, then feed only the task-relevant representations to SAC. 
+
+4.2 Self-Supervised Decoupling of Latent Representations 
+
+Our decoupling process begins with data preparation and augmentation. During training, we sample a batch of transitions {𝑜 𝑡 , 𝑎 𝑡 , 𝑟 𝑡 , 𝑜 𝑡 +1 } ∼ B from a replay buffer B. For each observation 𝑜 𝑡 ,we generate an augmented view 𝑜 ′ 
+
+> 𝑡
+
+= 𝑡 (𝑜 𝑡 ) using our combined data augmentation, which samples a transformation 𝑡 with equal probability from a set of augmentations T (containing Random Overlay and Random Convolution). As depicted in Figure 2, the augmented observation 𝑜 ′ 
+
+> 𝑡
+
+is subsequently processed by the online branch, while the original observation 𝑜 𝑡 is fed into the target branch. A crucial element of this dual-branch setup is preventing the model from collapsing. This is achieved by managing the target network’s updates. We apply a stop-gradient to the target branch’s output, preventing gradients from flowing into it. Instead of being trained via backpropagation, its parameters 𝜑 are updated as a slow-moving average of the online network’s parameters 𝜃 .This Exponential Moving Average (EMA) update ensures the target network provides a stable and 6 Jinwen Wang et al. 
+
+consistent objective, which is essential for stabilizing the entire self-supervised training process: 
+
+𝜑 𝑛 +1 ← ( 1 − 𝜌 )𝜑 𝑛 + 𝜌𝜃 𝑛 , (2) where 𝜌 is the momentum coefficient for the EMA update, with its specific value listed in the hyperparameters of Table 9. Our self-supervised representation learning process is then driven by three key objectives, which we detail below. 
+
+4.2.1 Task-Relevant Representation Consistency. The first objective ensures that the core “content” of an observation remains consistent even when its “style” is changed by data augmentation. The augmented observation 𝑜 ′ 
+
+> 𝑡
+
+and the original observation 𝑜 𝑡 share the same underlying state. Therefore, their task-relevant representations should be close. Thus, the content features 𝜇 𝑡 , 𝜇 ′
+
+> 𝑡
+
+extracted from 𝑜 𝑡 and 𝑜 ′ 
+
+> 𝑡
+
+should be consistent. The objective function of task-relevant representation consistency can be expressed as: 
+
+𝐿 consis = E𝜏 ∼𝐷 env 
+
+∥𝜇 ′ 
+
+> 𝑡
+
+− 𝜇 𝑡 ∥22
+
+ , (3) where 𝐷 env is the replay buffer. Equation 3 ensures the consistency of content features between the original and augmented images, thereby excluding style-related information from the obtained content representations 𝜇 . Such content representations possess domain-invariant properties, facilitating better generalization across different domains. 
+
+4.2.2 Cross-Reconstruction for Decoupling. To decouple content and style, we introduce a recon-struction objective. The logic is as follows: while the consistency loss in Equation 3 drives the content representation 𝜇 to become style-invariant, we must also ensure information sufficiency and separability. The reconstruction objective guarantees that the combination of 𝜇 and 𝜖 preserves the complete information of the original observation 𝑜 . Thus, as 𝜇 is purified of style, the style information is naturally compressed into 𝜖 .Building on this, we introduce a novel twist to the standard reconstruction approach: cross-reconstruction . This technique forces a cleaner and more robust separation of content and style. Specifically, we reconstruct the full latent representation 𝑧 𝑡 of the original observation by combining the content representation 𝜇 ′ 
+
+> 𝑡
+
+from the augmented view with the style representation 𝜖 𝑡 from the original view: 
+
+ˆ𝑧 𝑡 = 𝑑 𝜉 (𝜇 ′ 
+
+> 𝑡
+
+, 𝜖 𝑡 ), (4) The cross-reconstruction objective then minimizes the difference between the reconstructed ˆ𝑧 𝑡 and the original 𝑧 𝑡 :
+
+𝐿 recon = E𝜏 ∼𝐷 env 
+
+∥𝑧 𝑡 − ˆ𝑧 𝑡 ∥22
+
+ . (5) The “cross” design is critical: if the content representation 𝜇 ′ 
+
+> 𝑡
+
+still contains any style information from the augmented view, it will conflict with the style 𝜖 𝑡 from the original view, leading to a poor reconstruction and a high loss. This incentivizes the model to learn a pure, decoupled content representation. 
+
+4.2.3 Dynamic Prediction for Task-Relevance. The first two components successfully decouple observations into a style-invariant “content” stream and a “style” stream. However, the obtained content representation is not guaranteed to be task-relevant. For example, the agent’s shadow might be considered content, but it is irrelevant for controlling the agent. To solve this, we introduce a dynamic prediction module. The intuition is that a truly task-relevant representation must contain information that is predictive of future states under the agent’s actions. By enforcing this predictive constraint, we refine the content representation to be specifically task-relevant. This crucial step elevates our framework from a simple content-style separator to a true decoupler of task-relevant and task-irrelevant features. Task-Relevant Representation Decoupling for Visual Reinforcement Learning Generalization 7𝐀 𝐀  
+
+> 𝐀 𝐀 (∙) 𝐀 𝐀 (∙) 𝐀 𝐀 (∙)
+
+𝐀 𝐀 
+
+Policy 
+
+𝐀 𝐀 𝐀 𝐀 
+
+𝐀 𝐀 
+
+Encoder Projection               
+
+> Fig. 3. Policy Learner. The observation 𝑜 𝑡 is decoupled into the task-relevant representation 𝜇 𝑡 and the task-irrelevant representation 𝜖 𝑡 through an encoder 𝑓 𝜃 and a dual-head projection 𝑔 𝜃 . Then, only the task-relevant representation 𝜇 𝑡 is utilized for policy learning.
+
+We also implement a cross-domain prediction technique here. Specifically, we use the task-relevant representation ( 𝜇 ′ 
+
+> 𝑡
+
+) from the augmented view and the agent’s action ( 𝑎 𝑡 ) to predict the task-relevant representation ( 𝜇 𝑡 +1) of the original next state: 
+
+ˆ𝜇 𝑡 +1 = 𝑃 𝑣 (𝜇 ′ 
+
+> 𝑡
+
+, 𝑎 𝑡 ). (6) This cross-domain objective is a powerful regularizer for generalization. It forces the representation 
+
+𝜇 to be not only predictive but also domain-invariant, as it must bridge the visual gap between the augmented and original observation domains to succeed. The cross-dynamic prediction objective is: 
+
+𝐿 dynamic = E𝜏 ∼𝐷 env 
+
+∥ ˆ𝜇 𝑡 +1 − 𝜇 𝑡 +1 ∥22
+
+ . (7) 
+
+4.2.4 Overall Objective. We jointly optimize the three objectives. The overall objective function for our self-supervised module is: 
+
+𝐿 𝑇 2𝑅𝐷 = 𝜆 1 · 𝐿 consis + 𝜆 2 · 𝐿 recon + 𝜆 3 · 𝐿 dynamic . (8) Here, 𝜆 1, 𝜆 2, and 𝜆 3 are scalar coefficients (with 𝜆 𝑖 > 0) that balance the contribution of each loss term. The specific values used in our experiments are summarized in Table 9. 
+
+4.3 Policy Learner 
+
+T2RD, as a representation decoupling module, is independent of the policy learner and applicable to any visual reinforcement learning (RL) algorithm. We use the Soft Actor-Critic (SAC) algorithm for policy learning. SAC is an actor-critic RL approach based on the maximum entropy frame-work, concurrently learning the Q function and the policy network 𝜋 𝜃 , to maximize the expected cumulative reward. Specifically, as shown in Figure 3, the observation 𝑜 𝑡 is decoupled into the task-relevant representation 𝜇 𝑡 and task-irrelevant representation 𝜖 𝑡 through the encoder 𝑓 𝜃 and the dual-head mapping 𝑔 𝜃 . Then, the policy learner uses only the task-relevant representation 𝜇 𝑡 
+
+for policy learning. As shown in Algorithm 1, the optimization of representation learning 𝐿 𝑇 2𝑅𝐷 
+
+alternates with the optimization of reinforcement learning 𝐿 𝑅𝐿 with 𝜔 steps. The two optimization objectives jointly update the parameter 𝜃 .
+
+4.4 Discussions 
+
+1) What sets T2RD apart from other self-supervised auxiliary methods? We explicitly aim to decouple task-relevant and task-irrelevant features in the observation, where the encoding processes of task-relevant and task-irrelevant features complement each other. This deepens the understanding of visual observations, thereby obtaining more precise task-relevant representations. For instance, knowing what is wrong can lead to a clearer understanding of what is right. Furthermore, during policy learning, by explicitly discarding task-irrelevant features, we can reduce the burden of information processing on the agent, thereby improving sample efficiency. 8 Jinwen Wang et al. 
+
+Algorithm 1 T2RD  
+
+> 1:
+
+𝜃, 𝜑, 𝑣, 𝜉 : randomly initialized decoupling parameters  
+
+> 2:
+
+𝜔 : RL updates per iteration  
+
+> 3:
+
+𝜌 : momentum coefficient  
+
+> 4:
+
+for every iteration do  
+
+> 5:
+
+for update = 1, 2, ..., 𝜔 do  
+
+> 6:
+
+Sample batch of transitions {𝑜 𝑡 , 𝑎 𝑡 , 𝑟 𝑡 , 𝑜 𝑡 +1 } ∼ B  
+
+> 7:
+
+Obtain 𝜇 𝑡 by 𝑓 𝜃 and 𝑔 𝜃  
+
+> 8:
+
+Minimize 𝐿 𝑅𝐿  
+
+> 9:
+
+end for  
+
+> 10:
+
+Sample batch of transitions {𝑜 𝑡 , 𝑎 𝑡 , 𝑟 𝑡 , 𝑜 𝑡 +1 } ∼ B  
+
+> 11:
+
+Augment observations 𝑜 ′ 
+
+> 𝑡
+
+= 𝐴𝑢𝑔 (𝑜 𝑡 ) 
+
+> 12:
+
+Obtain 𝜇 ′ 
+
+> 𝑡
+
+, 𝜖 ′ 
+
+> 𝑡
+
+= ℎ𝜃 (𝑔 𝜃 (𝑓 𝜃 (𝑜 ′ 
+
+> 𝑡
+
+)))  
+
+> 13:
+
+Obtain 𝜇 𝑡 , 𝜖 𝑡 = 𝑔 𝜑 (𝑓 𝜑 (𝑜 𝑡 ))  
+
+> 14:
+
+Obtain 𝜇 𝑡 +1, 𝜖 𝑡 +1 = 𝑔 𝜑 (𝑓 𝜑 (𝑜 𝑡 +1))  
+
+> 15:
+
+Cross reconstruction ˆ𝑧 𝑡 = 𝑑 𝜉 (𝜇 ′ 
+
+> 𝑡
+
+, 𝜖 𝑡 ) 
+
+> 16:
+
+Dynamic prediction ˆ𝜇 𝑡 +1 = 𝑃 𝑣 (𝜇 ′ 
+
+> 𝑡
+
+, 𝑎 𝑡 ) 
+
+> 17:
+
+Consistency loss 𝐿 consis = E𝜏 ∼𝐷 env 
+
+∥𝜇 ′ 
+
+> 𝑡
+
+− 𝜇 𝑡 ∥22
+
+ 
+
+> 18:
+
+Reconstruction loss 𝐿 recon = E𝜏 ∼𝐷 env 
+
+∥𝑧 𝑡 − ˆ𝑧 𝑡 ∥22
+
+ 
+
+> 19:
+
+Dynamic loss 𝐿 dynamic = E𝜏 ∼𝐷 env 
+
+∥ ˆ𝜇 𝑡 +1 − 𝜇 𝑡 +1 ∥22
+
+ 
+
+> 20:
+
+Optimize 𝐿 𝑇 2𝑅𝐷 w.r.t. 𝜃, 𝑣, 𝜉  
+
+> 21:
+
+Update 𝜑 ← ( 1 − 𝜌 )𝜑 + 𝜌𝜃  
+
+> 22:
+
+end for 
+
+2) Why does T2RD greatly benefit from our combined data augmentation? As shown in the subsequent experimental section, while other algorithms also benefit from our combined data augmentation, the improvements are not as substantial as those seen with T2RD. We argue that while the combined data augmentation increases augmentation diversity, it may also lead to some interference and conflicts among them. Thanks to T2RD’s robust decoupling capabilities, it can fully exploit this increased diversity, maximizing the advantages of the combined data augmentation. 
+
+4.5 Theoretical Analysis 
+
+To ground our framework theoretically, we connect our approach to bisimulation metrics [ 8, 48 ], which quantify behavioral similarity between states in an MDP. The metric 𝑑 M (𝑠 𝑖 , 𝑠 𝑗 ) is defined as the fixed point of the following Bellman-like operator: 
+
+𝑑 M (𝑠 𝑖 , 𝑠 𝑗 ) = max 
+
+> 𝑎 ∈ A
+
+ |𝑟 (𝑠 𝑖 , 𝑎 ) − 𝑟 (𝑠 𝑗 , 𝑎 )| + 𝛾𝑊 1 (P (·| 𝑠 𝑖 , 𝑎 ), P (·| 𝑠 𝑗 , 𝑎 ); 𝑑 M ) . (9) where 𝑊 1 is the 1-Wasserstein distance measuring the difference between next-state transition dis-tributions. Crucially, this metric provides an upper bound on the optimal value function difference: 
+
+Theorem 1 (Ferns et al. [ 8 ]). For any two states 𝑠 𝑖 , 𝑠 𝑗 ∈ S , the difference in their optimal value functions is bounded by their bisimulation distance: 
+
+|𝑉 ∗ (𝑠 𝑖 ) − 𝑉 ∗ (𝑠 𝑗 )| ≤ 𝑑 M (𝑠 𝑖 , 𝑠 𝑗 ). (10) This provides a clear analytical path: if T2RD learns a representation 𝜇 where the latent distance 
+
+|| 𝜇 (𝑜 𝑖 ) − 𝜇 (𝑜 𝑗 )|| 2 approximates the bisimulation distance 𝑑 M , we can then bound the error of a value function learned upon this representation. Our complete objective is designed to provide a strong inductive bias for learning such a metric from high-dimensional observations. Task-Relevant Representation Decoupling for Visual Reinforcement Learning Generalization 9
+
+4.5.1 Connecting T2RD Losses to the Bisimulation Metric. We first map high-dimensional observa-tions to states and then establish the connection with the bisimulation metric. 
+
+State Invariance and Sufficiency ( 𝐿 consis & 𝐿 recon ). The bisimulation metric is defined over underlying states 𝑠 , while our agent sees observations 𝑜 . Therefore, the representation must be invariant to task-irrelevant visual features while remaining sufficient information for control. (1) The consistency loss ( 𝐿 consis ) enforces state invariance . Since an observation 𝑜 𝑡 and its augmentation 𝑜 ′ 
+
+> 𝑡
+
+correspond to the same underlying state 𝑠 𝑡 , their task-relevant representations should be identical. Minimizing || 𝜇 ′ 
+
+> 𝑡
+
+− 𝜇 𝑡 || 22 achieves precisely this. (2) The cross-reconstruction loss ( 𝐿 recon ) ensures information sufficiency and separation .First, reconstruction guarantees that the learned representations ( 𝜇 , 𝜖 ) retain sufficient information from the high-dimensional observations 𝑜 . Second, by forcing the decoder to reconstruct the original latent state 𝑧 𝑡 from the augmented task-relevant content 𝜇 ′ 
+
+> 𝑡
+
+and the original task-irrelevant style 
+
+𝜖 𝑡 , it ensures that the task-relevant content representation 𝜇 is purged of style information. This mechanism acts as a practical information bottleneck, ensuring that the learned distance || 𝜇 𝑖 − 𝜇 𝑗 || 2
+
+reflects differences between underlying states ( 𝑠 𝑖 , 𝑠 𝑗 ), not superficial visual distractors. 
+
+Dynamics and Rewards ( 𝐿 dynamic & 𝐿 RL ). The bisimulation metric in Equation 9 has two components: reward difference and transition dynamics difference. Our framework addresses both. (1) The cross-dynamic prediction loss ( 𝐿 dynamic ) encourages representations 𝜇 to respect the MDP’s transition dynamics, acting as a practical, sample-based proxy for minimizing the Wasserstein distance term in the bisimulation metric. (2) The reward term is implicitly modeled by the downstream policy learner ( 𝐿 RL ). As described in Algorithm 1, the encoder’s parameters 𝜃 are updated by gradients from both 𝐿 T2RD and the reward-driven SAC loss 𝐿 RL [ 11 ]. The gradients from the SAC critic, which minimizes Bellman error, force the representation 𝜇 to distinguish between states that lead to different rewards. This joint optimization ensures our learned representation 𝜇 is sensitive to both rewards and dynamics, thereby learning a functional approximation of the full bisimulation metric. 
+
+4.5.2 Bound on the Action-Value Function. Based on the argument that our learning objective guides the representation to satisfy the properties of a bisimulation metric, we can establish a bound on the action-value function’s error. 
+
+Theorem 2. Under the assumption that the learned representation 𝜇 yields a distance metric 
+
+𝑑 𝜇 (𝑠 𝑖 , 𝑠 𝑗 ) = || 𝜇 (𝑜 𝑖 ) − 𝜇 (𝑜 𝑗 )|| 2 that approximates the true bisimulation metric up to a bounded error 
+
+𝜖 T2RD + 𝜖 RL (i.e., |𝑑 𝜇 (𝑠 𝑖 , 𝑠 𝑗 ) − 𝑑 M (𝑠 𝑖 , 𝑠 𝑗 )| ≤ 𝜖 T2RD + 𝜖 RL ), let ˆ𝑄 (𝜇 (𝑜 ), 𝑎 ) be the action-value function learned on the representations produced by an encoder trained with the combined T2RD and SAC objectives, and let 𝑄 ∗ (𝑠, 𝑎 ) be the true optimal action-value function for the underlying state 𝑠 . The suboptimality is bounded as follows: 
+
+max  
+
+> 𝑠,𝑎
+
+|𝑄 ∗ (𝑠, 𝑎 ) − ˆ𝑄 (𝜇 (𝑜 ), 𝑎 )| ≤ 𝜖 T2RD + 𝜖 RL 
+
+1 − 𝛾 (11) where 𝜖 T2RD is the representation error, which our framework is designed to minimize via the 𝐿 T2RD 
+
+objective, and 𝜖 RL is the Bellman error from the policy learner, controlled by the converged 𝐿 RL loss. 
+
+5 Experiments 
+
+In this section, we conduct extensive experiments on DeepMind Control Suite Generalization Bench-mark (DMControl-GB) [ 32 ] and Robotic Manipulation tasks [ 18 ] to validate the generalization performance and sample efficiency of our method. The agent is trained in a fixed environment, and we evaluate the algorithm’s generalization ability to unseen environments with more complex backgrounds or color variations. 10 Jinwen Wang et al. Training Color Hard Video Easy Video Hard      
+
+> Observation Random Convolution Random Overlay
+> Fig. 4. Examples of data augmentation. We separately present the original observation and the results after applying two data augmentation techniques: Random Overlay and Random Convolution.
+
+Baselines. We compare our approach with other SOTA algorithms: 1) DrQ [44 ] applies data augmentation to both Q-values and target Q-values during TD updates. 2) SODA [ 14 ] proposes soft data augmentation and employs a BYOL-like architecture to learn consistent representations. 3) 
+
+SVEA [13 ] only applies data augmentation to the Q values without augmenting target Q values. 4) 
+
+TLDA [ 46 ] introduces task-aware Lipschitz data augmentation. 5) PIE-G [47 ] utilizes ImageNet [ 4 ]pre-trained encoders to provide a fairly general representation for RL. 6) SGQN [1 ] learns masks through saliency maps and consistency regularization to exclude irrelevant pixels. 7) BiT [ 15 ]introduces a bidirectional transition model. 8) TRP [ 37 ] introduces the truncated return prediction task, promoting cross-domain policy consistency. 9) Visarl [23 ] leverages human-generated saliency maps to guide visual RL, using human perceptual cues to focus learning on task-relevant regions. 
+
+Data Augmentations. Random Overlay [ 14 ] is an augmentation that performs linear inter-polation between the original observation and another image randomly sampled from Places dataset [ 53 ], a dataset containing ten million scene photographs; Random Convolution [42 ] is an augmentation method that integrates a convolutional layer with random parameters into the observation, preserving the overall shape while adding a blurring effect to the texture features. The effects of the two data augmentations are shown in Figure 4. We adopt a combination of the above two data augmentations, that is, each batch randomly selects Random Overlay and Random Convolution with equal probability. 
+
+5.1 DeepMind Control Suite 
+
+We evaluate the generalization performance and sample efficiency of T2RD across five tasks in DMControl-GB: “Walker Walk”, “Walker Stand”, “Ball in Cup Catch”, “Finger Spin”, and “Cartpole Swingup”. We conduct these assessments under three environmental settings: “Color Hard”, “Video Easy”, and “Video Hard”. In the “Color Hard” setting, the evaluation is carried out in environments where the colors of task-relevant objects (e.g., the agent’s body) and the background and ground are randomized. This setup directly tests the policy’s ability to generalize to changes in the appearance of the agent itself, not just background variations. In the “Video” setting, the evaluation is conducted in environments with various natural video backgrounds. Figure 5 provides examples of observations in both the training and three test environments. We train the agent for a total of 500,000 steps, conducting evaluations every 10,000 steps by calculating the average return over 30 episodes. We stack three frames to form an observation with dimensions of 9 × 100 × 100. We then apply the random crop to the observation, resulting in dimensions of 9 × 84 × 84. 
+
+T2RD exhibits the best generalization performance. Table 1 shows the generalization results of T2RD and other SOTA algorithms in DMControl-GB tasks. Our algorithm performs exceptionally well, achieving the best results in 9 out of 15 tasks. Particularly in the “Cartpole Swingup” task of the “Video Hard” setting, compared to the suboptimal algorithm, our method achieves a 33% improvement. Overall, T2RD demonstrates outstanding generalization performance across all tasks in various testing environments. Task-Relevant Representation Decoupling for Visual Reinforcement Learning Generalization 11 Training Color Hard Video Easy Video Hard 
+
+Observation Random Conv Random Overlay 
+
+Fig. 5. Examples of DMControl-GB. We separately present the training example observations and three test settings: “Color Hard”, “Video Easy” and “Video Hard”. Table 1. Comparison with the SOTA on DMControl-GB. We report the mean and standard deviation of episode returns for 5 different seeds. The best performance is indicated in bold. 
+
+DMControl-GB DrQ [44] SODA [14] SVEA [13] TLDA [46] PIE-G [47] SGQN [1] BiT [15] TRP [37] Visarl [23] T2RD (Color-Hard) Walker, Walk 520 ± 91 692 ± 68 749 ± 61 823 ± 58 884 ± 20 780 ± 58 662 ± 64 823 ± 28 823 ± 55 849 ± 37 Walker, Stand 770 ± 71 893 ± 12 933 ± 24 947 ± 26 960 ± 15 929 ± 12 903 ± 21 936 ± 13 - 964 ± 8
+
+Ball_in_cup, Catch 365 ± 210 949 ± 19 959 ± 5 930 ± 40 964 ± 7 864 ± 75 946 ± 25 826 ± 118 962 ± 14 965 ± 4
+
+Finger, Spin 776 ± 134 793 ± 128 972 ± 6 876 ± 45 922 ± 54 874 ± 31 889 ± 61 918 ± 34 823 ± 102 984 ± 3
+
+Cartpole, Swingup 586 ± 52 805 ± 28 832 ± 23 760 ± 60 749 ± 46 777 ± 25 802 ± 32 799 ± 40 870 ± 21 857 ± 12 DMControl-GB DrQ SODA SVEA TLDA PIE-G SGQN BiT TRP Visarl T2RD (Video-Easy) Walker, Walk 682 ± 89 768 ± 38 819 ± 71 868 ± 63 871 ± 22 865 ± 13 832 ± 42 871 ± 18 756 ± 42 821 ± 15 Walker, Stand 873 ± 83 955 ± 13 961 ± 8 946 ± 6 957 ± 12 955 ± 9 960 ± 3 965 ± 8 - 972 ± 3
+
+Ball_in_cup, Catch 318 ± 157 857 ± 56 871 ± 106 855 ± 56 922 ± 20 950 ± 24 899 ± 23 624 ± 244 802 ± 78 893 ± 43 Finger, Spin 533 ± 119 695 ± 97 808 ± 33 756 ± 87 837 ± 107 956 ± 26 835 ± 25 816 ± 26 702 ± 83 966 ± 10 
+
+Cartpole, Swingup 485 ± 105 758 ± 62 782 ± 27 671 ± 57 587 ± 61 761 ± 28 779 ± 34 733 ± 62 730 ± 32 847 ± 11 
+
+DMControl-GB DrQ SODA SVEA TLDA PIE-G SGQN BiT TRP Visarl T2RD (Video-Hard) Walker, Walk 121 ± 52 312 ± 32 385 ± 63 271 ± 55 600 ± 28 739 ± 21 325 ± 56 355 ± 69 - 444 ± 27 Walker, Stand 252 ± 57 771 ± 83 834 ± 76 769 ± 59 852 ± 56 851 ± 24 829 ± 24 824 ± 2 - 895 ± 43 
+
+Ball_in_cup, Catch 100 ± 40 327 ± 100 403 ± 174 457 ± 16 786 ± 47 782 ± 57 570 ± 71 274 ± 50 - 616 ± 38 Finger, Spin 38 ± 13 302 ± 41 335 ± 58 224 ± 56 762 ± 59 822 ± 24 400 ± 13 261 ± 4 - 833 ± 18 
+
+Cartpole, Swingup 136 ± 29 429 ± 64 393 ± 45 223 ± 62 401 ± 21 544 ± 43 526 ± 40 333 ± 27 - 725 ± 37 T2RD: SGQN: BiT: TRP: 
+
+Fig. 6. Sample efficiency. We visualize the training curves of T2RD, SGQN, BiT, and TRP. The solid line represents the mean reported, and the shading represents the standard deviation. It can be seen that T2RD has the best sample efficiency and asymptotic performance. 
+
+T2RD has the highest sample efficiency. In Figure 6, we present the training curves of our method compared to SGQN, BiT, and TRP across five different tasks, with each algorithm running 5 seeds per task. Our method exhibits superior sample efficiency and asymptotic performance. More-over, as illustrated in Figure 7, our method maintains excellent sample efficiency and asymptotic performance when generalized to previously unseen environments. 12 Jinwen Wang et al. T2RD: SGQN: BiT: TRP: 
+
+Fig. 7. Test curves on DMControl-GB. We compare the test curves of T2RD with SGQN, BiT, and TRP on three tasks in DMControl-GB: “Cartpole Swingup”, “Finger Spin”, and “Walker Stand”, across three different environmental settings: Color Hard, Video Easy, and Video Hard. T2RD (Ours) SGQN PIE-G SVEA 
+
+Fig. 8. t-SNE of representation. We visualize the representations learned from T2RD, SGQN, PIEG, SVEA. T2RD exhibits the best intra-class cohesion and inter-class separation. 
+
+T2RD successfully learns task-relevant representations. In Figure 8, we use t-SNE to visualize the features learned by our method and by SGQN, SVEA, and PIE-G. We first randomly select 10 observations originating from different states in the “Cartpole Swingup” task and then replace their backgrounds with 40 unseen images. The 400 processed images are then embedded by the learned encoder of each algorithm. Observations from the same state are represented by the same color. From Figure 8, we can observe that T2RD achieves the most effective aggregation for observations from the same state and effective separation between different states. Task-Relevant Representation Decoupling for Visual Reinforcement Learning Generalization 13 step = 0 step = 0.1M step = 0.5M 
+
+...  
+
+> : task-relevant : task-irrelevant
+
+# ··· 
+
+Fig. 9. t-SNE visualization of decoupled task-relevant and task-irrelevant features across training steps. 𝐀 𝐀 𝐀 𝐀 ’ 𝐀 𝐀 𝐀 𝐀 𝐀 𝐀 ’ 𝐀 𝐀 
+
+Fig. 10. Cross-reconstruction visualization. We use the task-relevant features (content) 𝜇 ′ 
+
+> 𝑡
+
+from the augmented observation 𝑜 ′ 
+
+> 𝑡
+
+and the task-irrelevant features (style) 𝜖 𝑡 from the original observation to perform cross-reconstruction, obtaining the reconstructed image ˆ𝑜 𝑡 . Successful reconstruction indicates that the T2RD learns truly decoupled representations. 
+
+T2RD can effectively achieve decoupling. To validate that T2RD can effectively decouple task-relevant and task-irrelevant features, we conduct both quantitative and qualitative analyses. First, we present t-SNE visualizations in Figure 9 to quantitatively analyze the learned represen-tations over time. For this experiment, we take a single observation, create 80 variants by replacing its background with unseen images, and feed them into the T2RD encoder at different training checkpoints. As the figure illustrates, the task-relevant representations (orange dots) become pro-gressively more concentrated into a cluster. This indicates that the model learns to map the same underlying state to a consistent representation, regardless of the visual background. Conversely, the task-irrelevant representations (blue dots) become more dispersed and gradually separable from the task-relevant features. This indicates that T2RD has learned the ability to decouple task-relevant and task-irrelevant features within visual observations. Second, to provide more direct, qualitative proof, we conduct a cross-reconstruction experiment, visualized in Figure 10. This involves reconstructing an original observation 𝑜 𝑡 by combining the task-relevant representation 𝜇 ′ 
+
+> 𝑡
+
+from a visually distinct augmented view 𝑜 ′ 
+
+> 𝑡
+
+with the task-irrelevant representation 𝜖 𝑡 from the original view 𝑜 𝑡 . The result is a powerful demonstration of decoupling: the reconstructed image successfully captures the agent’s posture (task-relevant) from the original observation, while completely ignoring the distracting background or color perturbation (task-irrelevant) introduced in the augmented view. Together, these visualizations provide strong evidence that T2RD effectively decouples task-relevant content from task-irrelevant style. 
+
+T2RD accurately identifies task-relevant regions. In Figure 11, we visualize the attention regions of T2RD under different backgrounds in DMControl-GB: “Training”, “Color Hard”, “Video 14 Jinwen Wang et al. Ball_in_cup      
+
+> Catch
+> Walker
+> Stand
+> Cartpole
+> Swingup
+> Finger
+> Spin
+> Walker
+> Walk
+> Training Color Hard Video Easy Video Hard
+> Fig. 11. Visualizations of attention maps. We visualize the attention areas of our algorithm under different backgrounds in DMControl-GB.
+
+Easy”, and “Video Hard”. T2RD can accurately perceive task-relevant regions in visual observations, regardless of the presence of background interference. This provides the agent with reliable task-relevant representations for learning generalizable policies. 
+
+5.2 Robotic Manipulation 
+
+In addition to DeepMind control tasks, we also conduct experiments on Robotic Manipulation tasks. We consider two goal-reaching tasks: 1) Reach , where the robotic arm attempts to reach a red mask on the tabletop; 2) Peg in box , where the objective is to control the robotic arm to insert a peg into a box. The dimensions of the observation are 3 × 100 × 100. We perform a random crop on the observation to obtain a cropped observation with dimensions of 3 × 84 × 84. The agent is trained in a fixed background and tested in environments where key information is retained while the texture or color of the background is disturbed. We train the agent for 500,000 steps, conducting tests every 10,000 steps by calculating the average episode return over 30 episodes. For each task, we employ four test environments: Test1, Test2, Test3, and Test4. Figure 12 provides examples of observations in both the training and four test environments. We compare our algorithm against SAC, SODA, SVEA, SGQN, BiT, and TRP. The results are shown in Table 2, where T2RD achieves state-of-the-art performance in 7 out of 8 test environments. In the Reach task, T2RD shows the best performance in Test1, Test3, and Test4 environments, and even in Test2, we are the second-best algorithm. Compared to the second-best algorithm, our average performance improves by 40.1%. In the Peg in box task, T2RD outperforms all other algorithms in all test environments. Compared to the second-best algorithm, our average performance improves by 57.1%. The above experimental results demonstrate the superiority of our algorithm. Additionally, T2RD proves applicable to various VRL tasks. 
+
+5.3 Ablation Study 
+
+We conduct ablation experiments on the DMControl-GB to assess the impact of each objective function proposed by T2RD. The experimental results are shown in Figure 13, where “T2RD (w/o consistency loss)” marks the absence of the task-relevant representation consistency module; Task-Relevant Representation Decoupling for Visual Reinforcement Learning Generalization 15 Reach    
+
+> Peg in box
+> Training Test4 Test1 Test2 Test3
+
+Fig. 12. Examples of Robotic Manipulation. We present training example observations and four test settings for the “Reach” and “Peg in box” tasks. Table 2. Comparison with the SOTA on Robotic Manipulation tasks. We report the mean and standard deviation of episode returns for 5 different seeds. The best performance is indicated in bold. 
+
+Task Environment SAC [11] SODA [14] SVEA [13] SGQN [1] BiT [15] TRP [37] T2RD Reach Test1 −20.9 ± 16 −30.9 ± 43 −17.6 ± 10 14.4 ± 14 −9 ± 18 18.0 ± 7 25.1 ± 8
+
+Test2 −21.9 ± 14 −20.2 ± 29 −2.1 ± 39 31.0 ± 3 −3 ± 21 −25.4 ± 19 13.2 ± 10 Test3 −43.2 ± 6 −68.4 ± 30 1.4 ± 29 29.2 ± 7 −28 ± 30 29.6 ± 2 29.8 ± 2
+
+Test4 −36.7 ± 3 −37.9 ± 26 −22.2 ± 24 −5.6 ± 20 −27 ± 34 24.1 ± 5 28.3 ± 8
+
+Avg −30.6 −39.3 −10.1 17.2 −16.7 11.5 24.1 
+
+Peg in box Test1 −59.6 ± 26 16.9 ± 44 −21.3 ± 10 −72.1 ± 14 −16 ± 57 63.5 ± 17 164.1 ± 34 
+
+Test2 −60.5 ± 12 0.7 ± 30 96.8 ± 41 110.7 ± 3 27 ± 43 55.6 ± 31 129.4 ± 91 
+
+Test3 −48.8 ± 17 73.6 ± 31 40.5 ± 28 154.6 ± 7 55 ± 52 162.5 ± 23 183.6 ± 24 
+
+Test4 −89.6 ± 31 −16 ± 83 33.2 ± 43 −70.9 ± 41 72 ± 48 117.4 ± 47 149.8 ± 82 
+
+Avg −64.6 18.8 37.3 30.5 34.5 99.7 156.7 : T2RD : T2RD (w/o consistency loss) : T2RD (w/o reconstruction)   
+
+> : T2RD (w/o dynamic prediction) : Baseline
+
+Fig. 13. Ablation Study on DMControl-GB. We conduct ablation studies on the “Cartpole Swingup” and “Finger Spin” tasks under the “Video Hard” setting. 
+
+“T2RD (w/o reconstruction)” indicates the exclusion of the cross-reconstruction module; “T2RD (w/o dynamic prediction)” denotes the omission of the cross-dynamic prediction module; “Baseline” represents the fundamental version of the T2RD algorithm, which omits these three objective functions but retains the combined data augmentation. From Figure 13, it’s clear that T2RD achieves superior sample efficiency and asymptotic per-formance. The comparison between “T2RD (w/o dynamic prediction)” and T2RD underscores the 16 Jinwen Wang et al. 
+
+Table 3. Ablation study on Robotic Manipulation tasks. In which “cons.”, “recon.”, and “dyn.” respectively represent the “task-relevant representation consistency”, “cross-reconstruction”, and “cross-dynamic predic-tion” modules. 
+
+Robotic Manipulation cons. recon. dyn. Test1 Test2 Test3 Test4 Reach 
+
+✓ ✓ 24.1 ± 12 9.5 ± 12 20.8 ± 9 24.8 ± 12 
+
+✓ ✓ 27.6 ± 6 8.3 ± 25 21.0 ± 9 27.7 ± 6.1 
+
+✓ ✓ 27.7 ± 5 10.1 ± 17.3 25.2 ± 8 27.4 ± 28 
+
+✓ ✓ ✓ 25.1 ± 8 13.2 ± 10 29.8 ± 2 28.3 ± 8
+
+Peg in box 
+
+✓ ✓ 136 ± 62 106 ± 66 164 ± 25 135 ± 45 
+
+✓ ✓ 146 ± 24 68.5 ± 115 136 ± 58 129 ± 57 
+
+✓ ✓ 151 ± 38 118 ± 36 171 ± 21 142 ± 16 
+
+✓ ✓ ✓ 164 ± 34 129 ± 91 183 ± 24 149 ± 82 
+
+Table 4. Variant experiments on DMControl-GB. We select two tasks: “Cartpole Swingup” and “Finger Spin”, to conduct variant experiments in the “Color Hard”, “Video Easy” and “Video Hard” setting.                                                                                                                                 
+
+> Task Variation Color Hard Video Easy Video Hard Finger, Spin T2RD-Alt. Branch 965 ±17 897 ±80 665 ±79 T2RD-Dual 976 ±5932 ±14 655 ±37 T2RD-NonCross-Recon. 913 ±73 920 ±39 676 ±68 T2RD-NonCross-Pred. 934 ±46 888 ±61 609 ±49 T2RD (w/o EMA) 959 ±23 922 ±67 720 ±72 T2RD-Pixel Recon. 888 ±83 803 ±76 486 ±75 T2RD 984 ±3966 ±10 833 ±18
+> Cartpole, Swingup T2RD-Alt. Branch 826 ±28 824 ±19 614 ±72 T2RD-Dual 838 ±23 831 ±37 679 ±56 T2RD-NonCross-Recon. 844 ±27 838 ±8659 ±77 T2RD-NonCross-Pred. 799 ±33 748 ±44 519 ±68 T2RD (w/o EMA) 824 ±23 828 ±13 680 ±64 T2RD-Pixel Recon. 800 ±63 786 ±70 653 ±87 T2RD 857 ±12 847 ±11 725 ±37
+
+critical role of dynamic prediction in learning task-relevant representations within our decoupling framework. Nonetheless, even without dynamic prediction, methods that separate content and style at the visual level remain effective, continuing to surpass other SOTA algorithms. Additionally, the “T2RD (w/o reconstruction)” curve shows that the decoupling of content and style facilitates the learning of representations that are robust to visual changes. Finally, “T2RD (w/o consistency loss)” also achieves excellent experimental results, but there is still a certain gap compared to T2RD. This suggests that the task-relevant representation consistency module contributes to learning domain-invariant representations, which promotes generalization. Additionally, we conduct ablation experiments on three modules in Robotic Manipulation tasks, with the results shown in Table 3. The experimental results show that removing any one of the three modules leads to a decrease in performance. In summary, these three modules are complementary and work together to achieve the decoupling of task-relevant and task-irrelevant features, thereby promoting the generalization of VRL. 
+
+5.4 Variant Experiments 
+
+To provide deeper insights into our key design choices beyond the module-level ablations in Section 5.3, we conduct a series of more fine-grained variant experiments. The results are shown in Table 4 and Table 5. We analyze structural variants, key mechanisms, and data augmentation methods. Task-Relevant Representation Decoupling for Visual Reinforcement Learning Generalization 17 
+
+5.4.1 Analysis of Structural Variants. We first explore several structural variants of T2RD. “T2RD-Alt. Branch” employs an alternative reconstruction branch using 𝜇 𝑡 and 𝜖 ′ 
+
+> 𝑡
+
+to reconstruct 𝑧 ′ 
+
+> 𝑡
+
+. In Table 4, “T2RD-Dual” indicates the simultaneous use of both the primary and alternative recon-struction branches. “T2RD-Pixel Recon.” denotes pixel-based reconstruction, meaning that instead of reconstructing back to the latent representation 𝑧 𝑡 , we reconstruct back to the observation 𝑜 𝑡 .The experimental results in Table 4 reveal that both the “T2RD-Alt. Branch” and “T2RD-Dual” are less effective than our primary T2RD design. We argue that the task-irrelevant representations of the augmented observations ( 𝜖 ′ 
+
+> 𝑡
+
+) contain too many distracting elements, leading to algorithm divergence. Furthermore, we find that reconstruction based on latent representations is more effective than pixel-based reconstruction (“T2RD-Pixel Recon.” in Table 4), a finding also supported by previous research [28]. 
+
+5.4.2 Analysis of Key Design Mechanisms. To provide a more fine-grained analysis, we evaluate the specific impact of our cross-domain strategy and the EMA update mechanism. 
+
+Cross-Domain vs. Same-Domain. To isolate the effect of our cross-domain strategy, we test two variants. “T2RD-NonCross-Recon.” performs same-domain reconstruction (using 𝜇 𝑡 and 𝜖 𝑡 to reconstruct 𝑧 𝑡 ). “T2RD-NonCross-Pred.” performs same-domain prediction (using the augmented representation 𝜇 ′ 
+
+> 𝑡
+
+to predict the next augmented representation 𝜇 ′
+
+> 𝑡 +1
+
+). As shown in Table 4, T2RD with its cross-domain objectives significantly outperforms both of these variants. This demonstrates that enforcing consistency across different visual domains (original vs. augmented) is a powerful constraint that promotes the learning of more robust and generalizable representations. 
+
+Importance of EMA. We introduce “T2RD (w/o EMA)”, where the target network parameters are updated via a direct copy from the online network instead of the EMA update. The results in Table 4 show a noticeable drop in performance compared to the standard T2RD. This empirically confirms that the EMA is a crucial component for stabilizing the self-supervised training process by providing a consistent and slowly evolving target, which helps prevent representational collapse. 
+
+5.4.3 Analysis of Data Augmentation Methods. In addition to structural variant experiments, we conduct variant experiments on data augmentation, comparing the experimental results of the T2RD algorithm using Random Overlay, Random Convolution, and combined data augmentation. The experimental results are shown in Table 5, where T2RD (conv) indicates the use of Random Convolution as a replacement for the combined data augmentation technique in the T2RD algorithm. Similarly, T2RD (overlay) refers to the use of Random Overlay data augmentation. The experimental results demonstrate that combined data augmentation significantly improves the generalization performance of the algorithm compared to single data augmentation methods. As discussed in the methods section, T2RD greatly benefits from combined data augmentation due to its strong decoupling ability. T2RD can fully exploit the advantages brought by increased augmentation diversity, alleviating the issue of generalization bias. Additionally, thanks to its strong decoupling capabilities, T2RD is less affected by conflicts between different augmentations, thus maximizing the benefits of combined data augmentation. 
+
+5.5 Analysis of Combined Data Augmentation and Generalization Bias 
+
+Many VRL algorithms exhibit generalization bias by relying on a single data augmentation, where performance becomes overly dependent on the specific transformations seen during training. For instance, an agent trained only on “color” augmentation (like Random Convolution) is good at handling color changes but poor at handling background changes, and vice versa. To empirically demonstrate this, we conduct an experiment where we train SODA [ 14 ] and SVEA [ 13 ] with each of these single augmentations separately. The results, presented in Table 6, clearly confirm the existence of this bias. In the “Color-Hard” setting, agents trained with Random 18 Jinwen Wang et al. 
+
+Table 5. Experimental results of T2RD using Random Overlay, Random Convolution, and our combined data augmentation approaches.                                                                                      
+
+> Task Data Augmentation Color Hard Video Easy Video Hard Finger, Spin T2RD (conv) 973 ±8605 ±19 227 ±35
+> T2RD (overlay) 882 ±23 866 ±8464 ±62
+> T2RD 984 ±3966 ±10 833 ±18
+> Cartpole, Swingup T2RD (conv) 854 ±11 589 ±33 213 ±36
+> T2RD (overlay) 751 ±47 749 ±52 519 ±42
+> T2RD 857 ±12 847 ±11 725 ±37
+> Walker, Stand T2RD (conv) 948 ±7709 ±21 413 ±46
+> T2RD (overlay) 902 ±29 964 ±6845 ±22
+> T2RD 964 ±8972 ±3895 ±43
+
+Table 6. SODA and SVEA with Specific Data Augmentations. Results for SODA and SVEA trained with single augmentations (Random Convolution (Conv) or Random Overlay (Overlay)) on “Color-Hard” (color perturbations) and “Video-Easy” settings (background perturbations).                                                                                                                                 
+
+> DMControl-GB SODA (Conv) SODA (Overlay) SVEA (Conv) SVEA (Overlay) (Color-Hard )Walker, Walk 697 ±66 692 ±68 760 ±145 749 ±61 Walker, Stand 930 ±12 893 ±12 942 ±26 933 ±24 Ball_in_cup, Catch 892 ±37 949 ±19 961 ±7959 ±5Finger, Spin 892 ±52 793 ±128 977 ±5972 ±6Cartpole, Swingup 831 ±21 805 ±28 837 ±23 832 ±23 DMControl-GB SODA (Conv) SODA (Overlay) SVEA (Conv) SVEA (Overlay) (Video-Easy )Walker, Walk 635 ±48 768 ±38 612 ±144 819 ±71
+> Walker, Stand 903 ±56 955 ±13 795 ±70 961 ±8
+> Ball_in_cup, Catch 539 ±111 875 ±56 659 ±110 871 ±106
+> Finger, Spin 363 ±185 695 ±97 764 ±86 808 ±33
+> Cartpole, Swingup 474 ±143 758 ±62 606 ±86 782 ±27
+
+Convolution generally outperform those trained with Random Overlay. Conversely, in the “Video-Easy” setting, agents trained with Random Overlay are significantly superior. This confirms that relying on a single augmentation leads to policies that are brittle to other forms of visual change. Our proposed combined data augmentation method effectively mitigates this bias. In Table 7, we apply the combined augmentation strategy to several baseline algorithms. As shown, the performance of baselines such as SODA [ 14 ] and SVEA [ 13 ] not only improves significantly but also becomes more balanced across the three distinct test environments (“Color Hard”, “Video Easy”, and “Video Hard”). This provides strong evidence that our combined strategy alleviates generalization bias by breaking the agent’s dependence on a single type of visual perturbation. However, this analysis also highlights the unique synergy between our architecture and the augmentation strategy. While the baselines benefit from the combined augmentation, T2RD’s performance (as shown in Table 7) remains markedly superior. We argue that although increasing augmentation diversity is beneficial, it can also introduce interference or conflicts among different transformations. Thanks to T2RD’s robust decoupling capability, it can fully exploit this increased diversity—maximizing the advantages of combined data augmentation where other methods may struggle. For example, the slight performance drop observed for SGQN [ 1] on one task suggests that, without a strong decoupling mechanism, increased augmentation diversity may sometimes interfere with methods that rely heavily on fine-grained visual cues such as saliency maps. This demonstrates that the observed gains arise not from augmentation alone, but from the powerful combination of our novel architecture and the augmentation strategy. Task-Relevant Representation Decoupling for Visual Reinforcement Learning Generalization 19 
+
+Table 7. The universal applicability of combined data augmentation. We demonstrate changes in experimental results for other algorithms after applying the same combined data augmentation as T2RD.                                                                                                                                                                                                                                         
+
+> Task Algorithm Color-Hard Video-Easy Video-Hard Finger, Spin SODA 793 ±128 →927 ±27 695 ±97 →847 ±63 302 ±41 →522 ±72
+> SVEA 972 ±6→977 ±5808 ±33 →904 ±22 335 ±58 →650 ±42
+> TLDA 876 ±45 →881 ±18 756 ±87 →860 ±26 224 ±56 →450 ±47
+> SGQN 874 ±31 →923 ±41 956 ±26 →906 ±16 822 ±24 →746 ±27
+> BiT 889 ±61 →910 ±52 835 ±25 →820 ±27 400 ±13 →507 ±47
+> T2RD 984 ±3966 ±10 833 ±18
+> Cartpole, Swingup SODA 805 ±28 →833 ±23 758 ±62 →777 ±37 429 ±64 →481 ±45
+> SVEA 832 ±23 →842 ±27 782 ±27 →828 ±32 393 ±45 →592 ±123
+> TLDA 760 ±60 →786 ±53 671 ±57 →705 ±56 223 ±62 →329 ±47
+> SGQN 777 ±25 →800 ±26 761 ±28 →758 ±35 544 ±43 →596 ±92
+> BiT 802 ±32 →838 ±24 779 ±34 →810 ±20 526 ±40 →585 ±41
+> T2RD 857 ±12 847 ±11 725 ±37
+
+Table 8. Experimental results for different data augmentation sampling probability parameter 𝑝 . We select “Finger Spin” task from DMControl-GB to conduct experiments under three environmental settings: “Color Hard”, “Video Easy”, and “Video Hard”. 
+
+Finger, 𝑝 = 0.1 𝑝 = 0.3 𝑝 = 0.5 𝑝 = 0.7 𝑝 = 0.9
+
+Spin Color Hard 968 ± 12 943 ± 11 984 ± 3 969 ± 19 975 ± 9Video Easy 719 ± 33 923 ± 18 966 ± 10 958 ± 17 961 ± 8Video Hard 459 ± 27 651 ± 49 833 ± 18 813 ± 18 703 ± 26 
+
+Finally, we explore the impact of the sampling probability 𝑝 for Random Overlay within our combined approach. The specific experimental results are shown in Table 8. The results indicate that when 𝑝 = 0.5, i.e., when Random Convolution and Random Overlay are chosen with equal probability, we observe the best experimental outcomes, reinforcing the idea that balanced diversity is key to effective data augmentation. 
+
+6 Reproducibility 
+
+Implementation Details. To ensure a fair comparison, we use the same hyperparameter settings as most methods, such as SODA and SVEA, in the DeepMind Control Suite. In Robotic Manipulation tasks, our hyperparameters follow those used in SGQN. The specific hyperparameter settings are detailed in Table 9. 
+
+Network Architecture Details. We adopt a BYOL-inspired architecture for representation learning. The observation encoder 𝑓 𝜃 is an 11-layer CNN that maps stacked observations (9 × 84 ×
+
+84) to 14112-dimensional latent vectors, which are projected to 200 dimensions and then split into task-relevant and task-irrelevant features (100 each) by a dual-head MLP 𝑔 𝜃 . A predictor network 
+
+ℎ𝜃 , consisting of a linear layer with batch normalization and ReLU, encourages consistency between augmented and original task-relevant representations. To achieve decoupling, we use two auxiliary modules: (i) a cross-reconstruction network with two linear layers and one ReLU, which combines 
+
+𝜇 ′ 
+
+> 𝑡
+
+and 𝜖 𝑡 to reconstruct 𝑧 𝑡 ; and (ii) a cross-dynamic prediction network with three linear layers and two ReLUs, which predicts the next-step task-relevant features 𝜇 𝑡 +1 from 𝜇 ′ 
+
+> 𝑡
+
+and action 𝑎 𝑡 . For policy learning, we adopt SAC, where the actor and critic are standard three-layer MLPs with ReLU activations. The policy learner shares the encoder and projection with T2RD, ensuring that only 20 Jinwen Wang et al. 
+
+Table 9. Hyperparameters adopted in DMControl-GB and Robotic Manipulation tasks.                                                                                       
+
+> Hyperparameter DMControl-GB Robotic Manipulation
+> Frame rendering 84 ×84 ×384 ×84 ×3
+> Frame stack 31Action repeat 8 ( Cartpole Swingup ), 2 ( Finger Spin ), 4 (otherwise) 1Random shift ±4pixels ±4pixels Discount factor 𝛾 0.99 0.99 Episode length 1000 50 Train steps 0.5M0.5MReplay buffer size 0.5M0.5MOptimizer ( 𝛼 )Adam(lr = 1e −4,𝛽 1= 0.5, 𝛽 2= 0.999) Adam(lr = 1e −4,𝛽 1= 0.5, 𝛽 2= 0.999) Optimizer (RL) Adam(lr = 1e −3,𝛽 1= 0.9, 𝛽 2= 0.999) Adam(lr = 1e −3,𝛽 1= 0.9, 𝛽 2= 0.999) Optimizer (T2RD) Adam(lr = 3e −4,𝛽 2= 0.999) Adam(lr = 3e −4,𝛽 2= 0.999) Batch size (RL) 128 128 Batch size (T2RD) 128 256 Actor update freq. 22Critic target update freq. 22Aux update freq. 22EMA update coef. 𝜌 0.005 0.005 Aug sampling prob. 𝑝 0.5 0.5 Loss coefficient 𝜆 111Loss coefficient 𝜆 2100 100 Loss coefficient 𝜆 30.1 0.1
+
+task-relevant features are used for control. The SAC objective 𝐿 RL and the self-supervised objective 
+
+𝐿 T2RD are jointly optimized using Adam, with alternating updates every 𝜔 steps. 
+
+7 Conclusion 
+
+We introduce the concept of decoupling observations into task-relevant and task-irrelevant features in Visual Reinforcement Learning (VRL), making the learned policy more robust to task-irrelevant visual changes. Based on this idea, we propose Task-Relevant Representation Decoupling (T2RD), a self-supervised algorithm for VRL. T2RD consists of three components: task-relevant representation consistency , cross-reconstruction , and cross-dynamic prediction . The first two components achieve decoupling of content and style features at the visual level, while the third part learns task-relevant representations through dynamic prediction. In addition, we propose a simple yet effective combined data augmentation approach. We conduct extensive experiments to verify the generalization ability and sample efficiency of T2RD across the DeepMind Control Suite and Robotic Manipulation tasks. 
+
+8 Limitations and Future Work 
+
+Despite the strong generalization performance of T2RD, we acknowledge several limitations that also point to future directions. First, T2RD assumes visual observations can be decoupled into task-relevant “content” and task-irrelevant “style” streams. While this assumption holds in many benchmarks, it may fail when task-relevant cues are intertwined with style, such as navigation relying on specific terrain textures. In such cases, the model might treat crucial information as irrelevant. Future work could explore causal inference or adaptive mechanisms to dynamically identify task-relevant features. Second, although T2RD is trained from scratch, its principle of decoupling remains highly relevant in the era of Visual Foundation Models (VFMs). Object-centric features extracted by VFMs still mix relevant states (e.g., pose) with irrelevant appearance (e.g., texture, lighting). Applying T2RD as a lightweight, self-supervised fine-tuning module to these features is a promising direction. Task-Relevant Representation Decoupling for Visual Reinforcement Learning Generalization 21 
+
+Finally, extending T2RD to real-world robotics is essential. The simulation-to-reality gap in lighting, textures, and object appearance often causes policy failures. Our decoupling approach is well-suited to mitigate this challenge, and validating T2RD on physical robots is a key future step. 
+
+Acknowledgments 
+
+This work was supported by the National Natural Science Foundation of China (No. 62576029) and the National Natural Science Foundation of China (No. 62536001). 
+
+References 
+
+[1] David Bertoin, Adil Zouitine, Mehdi Zouitine, and Emmanuel Rachelson. 2022. Look where you look! Saliency-guided Q-networks for generalization in visual Reinforcement Learning. Advances in Neural Information Processing Systems 
+
+35 (2022), 30693–30706. [2] Yevgen Chebotar, Quan Vuong, Karol Hausman, Fei Xia, Yao Lu, Alex Irpan, Aviral Kumar, Tianhe Yu, Alexander Herzog, Karl Pertsch, et al . 2023. Q-transformer: Scalable offline reinforcement learning via autoregressive q-functions. In Conference on Robot Learning . PMLR, 3909–3928. [3] Jianda Chen and Sinno Jialin Pan. 2022. Learning Representations via a Robust Behavioral Metric for Deep Reinforce-ment Learning. In Advances in Neural Information Processing Systems 35 (2022) .[4] Jia Deng, Wei Dong, Richard Socher, Li-Jia Li, Kai Li, and Li Fei-Fei. 2009. ImageNet: A large-scale hierarchical image database. In IEEE Conference on Computer Vision and Pattern Recognition, CVPR 2009 . IEEE, 248–255. [5] Hehe Fan, Yi Yang, and Mohan Kankanhalli. 2022. Point spatio-temporal transformer networks for point cloud video modeling. IEEE Transactions on Pattern Analysis and Machine Intelligence 45, 2 (2022), 2181–2192. [6] Hehe Fan, Liang Zheng, Chenggang Yan, and Yi Yang. 2018. Unsupervised person re-identification: Clustering and fine-tuning. ACM Transactions on Multimedia Computing, Communications, and Applications 14, 4 (2018), 1–18. [7] Linxi Fan, Guanzhi Wang, De-An Huang, Zhiding Yu, Li Fei-Fei, Yuke Zhu, and Animashree Anandkumar. 2021. SECANT: Self-Expert Cloning for Zero-Shot Generalization of Visual Policies. In Proceedings of the 38th International Conference on Machine Learning, ICML 2021 (Proceedings of Machine Learning Research, Vol. 139) . PMLR, 3088–3099. [8] Norm Ferns, Prakash Panangaden, and Doina Precup. 2011. Bisimulation Metrics for Continuous Markov Decision Processes. SIAM J. Comput. 40, 6 (2011), 1662–1714. [9] Abel Gonzalez-Garcia, Joost van de Weijer, and Yoshua Bengio. 2018. Image-to-image translation for cross-domain disentanglement. In Advances in Neural Information Processing Systems 31 (2018) . 1294–1305. [10] Jean-Bastien Grill, Florian Strub, Florent Altché, Corentin Tallec, Pierre H. Richemond, Elena Buchatskaya, Carl Doersch, Bernardo Ávila Pires, Zhaohan Guo, Mohammad Gheshlaghi Azar, Bilal Piot, Koray Kavukcuoglu, Rémi Munos, and Michal Valko. 2020. Bootstrap Your Own Latent - A New Approach to Self-Supervised Learning. In 
+
+Advances in Neural Information Processing Systems 33 (2020) .[11] Tuomas Haarnoja, Aurick Zhou, Pieter Abbeel, and Sergey Levine. 2018. Soft Actor-Critic: Off-Policy Maximum Entropy Deep Reinforcement Learning with a Stochastic Actor. In Proceedings of the 35th International Conference on Machine Learning, ICML 2018 (Proceedings of Machine Learning Research, Vol. 80) . PMLR, 1856–1865. [12] Nicklas Hansen, Rishabh Jangir, Yu Sun, Guillem Alenyà, Pieter Abbeel, Alexei A. Efros, Lerrel Pinto, and Xiaolong Wang. 2021. Self-Supervised Policy Adaptation during Deployment. In 9th International Conference on Learning Representations, ICLR 2021 . OpenReview.net. [13] Nicklas Hansen, Hao Su, and Xiaolong Wang. 2021. Stabilizing Deep Q-Learning with ConvNets and Vision Trans-formers under Data Augmentation. In Advances in Neural Information Processing Systems 34 (2021) . 3680–3693. [14] Nicklas Hansen and Xiaolong Wang. 2021. Generalization in Reinforcement Learning by Soft Data Augmentation. In 
+
+2021 IEEE International Conference on Robotics and Automation (ICRA) . IEEE, 13611–13617. [15] Xiaobo Hu, Youfang Lin, Yue Liu, Jinwen Wang, Shuo Wang, Hehe Fan, and Kai Lv. 2025. A Reliable Representation with Bidirectional Transition Model for Visual Reinforcement Learning Generalization. ACM Transactions on Multimedia Computing, Communications and Applications (2025). [16] Xiaobo Hu, Youfang Lin, Jinwen Wang, Yue Liu, Shuo Wang, Hehe Fan, and Kai Lv. 2025. Bidirectional transition consistency between multi-domain observations for visual reinforcement learning generalization. Neural Networks 
+
+(2025), 108265. [17] Wenlong Huang, Chen Wang, Ruohan Zhang, Yunzhu Li, Jiajun Wu, and Li Fei-Fei. 2023. VoxPoser: Composable 3D Value Maps for Robotic Manipulation with Language Models. arXiv preprint arXiv:2307.05973 (2023). [18] Rishabh Jangir, Nicklas Hansen, Sambaran Ghosal, Mohit Jain, and Xiaolong Wang. 2022. Look Closer: Bridging Egocentric and Third-Person Views With Transformers for Robotic Manipulation. IEEE Robotics Autom. Lett. 7, 2 (2022), 3046–3053. 22 Jinwen Wang et al. 
+
+[19] Michael Laskin, Kimin Lee, Adam Stooke, Lerrel Pinto, Pieter Abbeel, and Aravind Srinivas. 2020. Reinforcement Learning with Augmented Data. In Advances in Neural Information Processing Systems 33 (2020) .[20] Michael Laskin, Aravind Srinivas, and Pieter Abbeel. 2020. CURL: Contrastive Unsupervised Representations for Reinforcement Learning. In Proceedings of the 37th International Conference on Machine Learning, ICML 2020 (Proceedings of Machine Learning Research, Vol. 119) . PMLR, 5639–5650. [21] Sergey Levine, Chelsea Finn, Trevor Darrell, and Pieter Abbeel. 2016. End-to-End Training of Deep Visuomotor Policies. J. Mach. Learn. Res. 17 (2016), 39:1–39:40. [22] Lu Li, Jiafei Lyu, Guozheng Ma, Zilin Wang, Zhenjie Yang, Xiu Li, and Zhiheng Li. 2023. Normalization Enhances Generalization in Visual Reinforcement Learning. arXiv preprint arXiv:2306.00656 (2023). [23] Anthony Liang, Jesse Thomason, and Erdem Biyik. 2024. ViSaRL: Visual Reinforcement Learning Guided by Human Saliency. In IEEE/RSJ International Conference on Intelligent Robots and Systems, IROS 2024, . IEEE, 2907–2912. [24] Dominik Lorenz, Leonard Bereska, Timo Milbich, and Björn Ommer. 2019. Unsupervised Part-Based Disentangling of Object Shape and Appearance. In IEEE Conference on Computer Vision and Pattern Recognition, CVPR 2019 . Computer Vision Foundation / IEEE, 10955–10964. [25] Wenhan Luo, Peng Sun, Fangwei Zhong, Wei Liu, Tong Zhang, and Yizhou Wang. 2020. End-to-End Active Object Tracking and Its Real-World Deployment via Reinforcement Learning. IEEE Trans. Pattern Anal. Mach. Intell. 42, 6 (2020), 1317–1332. [26] Michaël Mathieu, Junbo Jake Zhao, Pablo Sprechmann, Aditya Ramesh, and Yann LeCun. 2016. Disentangling factors of variation in deep representation using adversarial training. In Advances in Neural Information Processing Systems 29 (2016) . 5041–5049. [27] Volodymyr Mnih, Koray Kavukcuoglu, David Silver, Andrei A. Rusu, Joel Veness, Marc G. Bellemare, Alex Graves, Mar-tin A. Riedmiller, Andreas Fidjeland, Georg Ostrovski, Stig Petersen, Charles Beattie, Amir Sadik, Ioannis Antonoglou, Helen King, Dharshan Kumaran, Daan Wierstra, Shane Legg, and Demis Hassabis. 2015. Human-level control through deep reinforcement learning. Nat. 518, 7540 (2015), 529–533. [28] Masashi Okada and Tadahiro Taniguchi. 2021. Dreaming: Model-based Reinforcement Learning by Latent Imagination without Reconstruction. In IEEE International Conference on Robotics and Automation, ICRA 2021 . IEEE, 4209–4215. [29] Xuanchi Ren, Tao Yang, Yuwang Wang, and Wenjun Zeng. 2021. Rethinking Content and Style: Exploring Bias for Unsupervised Disentanglement. In IEEE/CVF International Conference on Computer Vision Workshops, ICCVW 2021 .IEEE, 1823–1832. [30] Eduardo Hugo Sanchez, Mathieu Serrurier, and Mathias Ortner. 2020. Learning Disentangled Representations via Mutual Information Estimation. In Computer Vision - ECCV 2020 - 16th European Conference, Glasgow, UK, August 23-28, 2020, Proceedings, Part XXII (Lecture Notes in Computer Science, Vol. 12367) . Springer, 205–221. [31] Akanksha Saran, Ruohan Zhang, Elaine Schaertl Short, and Scott Niekum. 2021. Efficiently Guiding Imitation Learning Agents with Human Gaze. In AAMAS ’21: 20th International Conference on Autonomous Agents and Multiagent Systems, Virtual Event, United Kingdom, May 3-7, 2021 . ACM, 1109–1117. [32] Yuval Tassa, Yotam Doron, Alistair Muldal, Tom Erez, Yazhe Li, Diego de Las Casas, David Budden, Abbas Abdolmaleki, Josh Merel, Andrew Lefrancq, et al. 2018. Deepmind control suite. arXiv preprint arXiv:1801.00690 (2018). [33] Joshua B. Tenenbaum and William T. Freeman. 2000. Separating Style and Content with Bilinear Models. Neural Comput. 12, 6 (2000), 1247–1283. [34] Chu-ran Wang, Fei Gao, Fandong Zhang, Fangwei Zhong, Yizhou Yu, and Yizhou Wang. 2022. Disentangling Disease-related Representation from Obscure for Disease Prediction. In International Conference on Machine Learning, ICML 2022, 17-23 July 2022, Baltimore, Maryland, USA (Proceedings of Machine Learning Research, Vol. 162) . PMLR, 22652–22664. [35] Jinwen Wang, Youfang Lin, Xiaobo Hu, Siyu Yang, Sheng Han, Shuo Wang, and Kai Lv. 2025. From Pixels to Temporal Correlations: Learning Informative Representations for Reinforcement Learning Pre-training. In Proceedings of the 33rd ACM International Conference on Multimedia . 679–688. [36] Shuo Wang, Zhihao Wu, Xiaobo Hu, Youfang Lin, and Kai Lv. 2023. Skill-Based Hierarchical Reinforcement Learning for Target Visual Navigation. IEEE Transactions on Multimedia 25 (2023), 8920–8932. [37] Shuo Wang, Zhihao Wu, Xiaobo Hu, Jinwen Wang, Youfang Lin, and Kai Lv. 2024. What Effects the Generalization in Visual Reinforcement Learning: Policy Consistency with Truncated Return Prediction. In Thirty-Eighth AAAI Conference on Artificial Intelligence, AAAI 2024 . AAAI Press, 5590–5598. [38] Shuo Wang, Zhihao Wu, Jinwen Wang, Xiaobo Hu, Youfang Lin, and Kai Lv. 2024. How to Learn Domain-Invariant Representations for Visual Reinforcement Learning: An Information-Theoretical Perspective. In Proceedings of the Thirty-Third International Joint Conference on Artificial Intelligence, IJCAI 2024 . ijcai.org, 1389–1397. [39] Xudong Wang, Long Lian, and Stella X. Yu. 2021. Unsupervised Visual Attention and Invariance for Reinforcement Learning. In IEEE Conference on Computer Vision and Pattern Recognition, CVPR 2021 . 6677–6687. [40] Ziyu Wang, Yanjie Ze, Yifei Sun, Zhecheng Yuan, and Huazhe Xu. 2023. Generalizable Visual Reinforcement Learning with Segment Anything Model. arXiv preprint arXiv:2312.17116 (2023). Task-Relevant Representation Decoupling for Visual Reinforcement Learning Generalization 23 
+
+[41] Wayne Wu, Kaidi Cao, Cheng Li, Chen Qian, and Chen Change Loy. 2019. Disentangling Content and Style via Unsupervised Geometry Distillation. In Deep Generative Models for Highly Structured Data, ICLR 2019 Workshop .OpenReview.net. [42] Zhenlin Xu, Deyi Liu, Junlin Yang, Colin Raffel, and Marc Niethammer. 2021. Robust and Generalizable Visual Representation Learning via Random Convolutions. In 9th International Conference on Learning Representations, ICLR 2021 . OpenReview.net. [43] Rui Yang, Jie Wang, Qijie Peng, Ruibo Guo, Guoping Wu, and Bin Li. 2025. Learning Robust Representations with Long-Term Information for Generalization in Visual Reinforcement Learning. In The Thirteenth International Conference on Learning Representations, ICLR 2025 . OpenReview.net. [44] Denis Yarats, Ilya Kostrikov, and Rob Fergus. 2021. Image Augmentation Is All You Need: Regularizing Deep Reinforce-ment Learning from Pixels. In 9th International Conference on Learning Representations, ICLR 2021 . OpenReview.net. [45] Dacheng Yin, Xuanchi Ren, Chong Luo, Yuwang Wang, Zhiwei Xiong, and Wenjun Zeng. 2022. Retriever: Learning Content-Style Representation as a Token-Level Bipartite Graph. In The Tenth International Conference on Learning Representations, ICLR 2022 . OpenReview.net. [46] Zhecheng Yuan, Guozheng Ma, Yao Mu, Bo Xia, Bo Yuan, Xueqian Wang, Ping Luo, and Huazhe Xu. 2022. Don’t Touch What Matters: Task-Aware Lipschitz Data Augmentation for Visual Reinforcement Learning. In Proceedings of the Thirty-First International Joint Conference on Artificial Intelligence, IJCAI 2022 . ijcai.org, 3702–3708. [47] Zhecheng Yuan, Zhengrong Xue, Bo Yuan, Xueqian Wang, Yi Wu, Yang Gao, and Huazhe Xu. 2022. Pre-Trained Image Encoder for Generalizable Visual Reinforcement Learning. In Advances in Neural Information Processing Systems 35 (2022) .[48] Amy Zhang, Rowan Thomas McAllister, Roberto Calandra, Yarin Gal, and Sergey Levine. 2021. Learning Invariant Representations for Reinforcement Learning without Reconstruction. In 9th International Conference on Learning Representations, ICLR 2021 . OpenReview.net. [49] Ruihan Zhang and Jun Sun. 2024. Certified robust accuracy of neural networks are bounded due to Bayes errors. In 
+
+International Conference on Computer Aided Verification . Springer, 352–376. [50] Ruijie Zheng, Xiyao Wang, Yanchao Sun, Shuang Ma, Jieyu Zhao, Huazhe Xu, Hal Daumé III, and Furong Huang. 2023. TACO: Temporal Latent Action-Driven Contrastive Loss for Visual Reinforcement Learning. In Advances in Neural Information Processing Systems 36 (2023) .[51] Fangwei Zhong, Peng Sun, Wenhan Luo, Tingyun Yan, and Yizhou Wang. 2021. Towards Distraction-Robust Active Visual Tracking. In Proceedings of the 38th International Conference on Machine Learning, ICML 2021 (Proceedings of Machine Learning Research, Vol. 139) , Marina Meila and Tong Zhang (Eds.). PMLR, 12782–12792. [52] Fangwei Zhong, Kui Wu, Hai Ci, Churan Wang, and Hao Chen. 2024. Empowering Embodied Visual Tracking with Visual Foundation Models and Offline RL. In Computer Vision - ECCV 2024 - 18th European Conference, Milan, Italy, September 29-October 4, 2024, Proceedings, Part LXXIII (Lecture Notes in Computer Science, Vol. 15131) . Springer, 139–155. [53] Bolei Zhou, Àgata Lapedriza, Aditya Khosla, Aude Oliva, and Antonio Torralba. 2018. Places: A 10 Million Image Database for Scene Recognition. IEEE Trans. Pattern Anal. Mach. Intell. 40, 6 (2018), 1452–1464. [54] Bohan Zhou, Ke Li, Jiechuan Jiang, and Zongqing Lu. 2023. Learning from Visual Observation via Offline Pretrained State-to-Go Transformer. arXiv preprint arXiv:2306.12860 (2023). [55] Yiming Zuo, Weichao Qiu, Lingxi Xie, Fangwei Zhong, Yizhou Wang, and Alan L. Yuille. 2019. CRAVES: Controlling Robotic Arm With a Vision-Based Economic System. In IEEE Conference on Computer Vision and Pattern Recognition, CVPR 2019 . Computer Vision Foundation / IEEE, 4214–4223.

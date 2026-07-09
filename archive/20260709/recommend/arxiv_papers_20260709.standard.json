@@ -1,0 +1,212 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-09T21:00:18.119179+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 4,
+    "quick_skim_target": 11,
+    "quick_selected": 4
+  },
+  "deep_dive": [
+    {
+      "id": "2607.05064v1",
+      "source": "arxiv",
+      "title": "Diffusion-Guided Uncertainty-Aware Delayed Policy Optimization",
+      "abstract": "Reinforcement learning in real world environments often suffers from severe performance degradation due to delayed feedback. Existing approaches typically mitigate performance degradation caused by observation delays by constructing augmented states or predicting the true states. However, these methods often overlook the inherent discrepancy between delayed state and true states induced by stochastic MDP. We theoretically prove the existence of such a discrepancy and show that it leads to the degradation of the optimal policy. To address this challenge, we propose Diffusion Guided Uncertainty Aware Delayed Policy Optimization (DUPO). Our method explicitly models the relationship between delayed state message and the current state using a diffusion model, and leverages the resulting discrepancy estimates to weight delayed policies. Extensive experiments on continuous robotic control tasks with multiple stochastic delays demonstrate that DUPO consistently outperforms existing methods and remains effective even under long and random delay scenarios.",
+      "authors": [
+        "Junqi Tu",
+        "Zejiao Liu",
+        "Fangfei Li",
+        "Yang Tang"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-07-06T13:33:17+00:00",
+      "link": "https://arxiv.org/pdf/2607.05064v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Addresses delayed feedback in RL, a form of long-horizon reward assignment",
+      "llm_evidence_cn": "解决强化学习中的延迟反馈问题，这是长时程奖励分配的一种形式",
+      "llm_evidence": "解决强化学习中的延迟反馈问题，这是长时程奖励分配的一种形式",
+      "canonical_evidence": "解决强化学习中的延迟反馈问题，这是长时程奖励分配的一种形式",
+      "llm_tldr_en": "Proposes DUPO, a diffusion-guided uncertainty-aware method to handle delayed feedback in RL, mitigating performance degradation from observation delays.",
+      "llm_tldr_cn": "针对现实世界中强化学习因延迟反馈导致性能严重下降的问题，本文提出扩散引导的不确定性感知延迟策略优化方法（DUPO）。该方法利用扩散模型显式建模延迟状态与当前状态间的关系，有效缓解了随机MDP下延迟引起的策略退化。实验表明DUPO优于现有的状态增广和真值预测方法，为长时程信用分配提供了新思路。",
+      "llm_tldr": "针对现实世界中强化学习因延迟反馈导致性能严重下降的问题，本文提出扩散引导的不确定性感知延迟策略优化方法（DUPO）。该方法利用扩散模型显式建模延迟状态与当前状态间的关系，有效缓解了随机MDP下延迟引起的策略退化。实验表明DUPO优于现有的状态增广和真值预测方法，为长时程信用分配提供了新思路。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.04125v1",
+      "source": "arxiv",
+      "title": "FRFDet: Efficient UAV Small Object Detection with Symmetric Sampling and Scalable Fusion",
+      "abstract": "Small object detection in Unmanned Aerial Vehicle (UAV) imagery remains challenging under adverse conditions, including complex weather, low illumination, and sensor noise. These challenges mainly stem from severe background clutter, fine-grained detail degradation, and suboptimal semantic-spatial feature fusion, which jointly hinder robust small-object representation. To this end, we propose FRFDet, a lightweight yet effective single-stage detector tailored for UAV-based small object detection. FRFDet proposes two plug-and-play modules: Inverse Bidirectional Sampling (IBS) and Scale-Feature Relationship Cross-Fusion (SFRCF). IBS preserves critical spatial details via channel expansion-compression and bidirectional pattern reconstruction, improving feature alignment. SFRCF explicitly models scale-dependent fusion behaviors, revealing that inter-group element-wise multiplication favors compact models, while inter-group additive fusion benefits larger architectures. Extensive experiments on VisDrone, UAVDT, HazyDet, and MS COCO demonstrate that FRFDet achieves state-of-the-art performance among lightweight detectors with low computational cost, compact parameters, and fast inference, making it well suited for resource-constrained UAV platforms.",
+      "authors": [
+        "Yunzhong Si",
+        "Huiying Xu",
+        "Xinzhong Zhu",
+        "Yang Liu",
+        "Yao Dong",
+        "Wenhao Zhang",
+        "Hongbo Li"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-05T05:42:56+00:00",
+      "link": "https://arxiv.org/pdf/2607.04125v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "UAV small object detection method applicable to transmission line defect detection",
+      "llm_evidence_cn": "可用于输电线路缺陷检测的无人机小目标检测方法",
+      "llm_evidence": "可用于输电线路缺陷检测的无人机小目标检测方法",
+      "canonical_evidence": "可用于输电线路缺陷检测的无人机小目标检测方法",
+      "llm_tldr_en": "Proposes FRFDet, a lightweight detector for small objects in UAV imagery, using inverse bidirectional sampling and scale-feature cross-fusion to improve detection under adverse conditions.",
+      "llm_tldr_cn": "针对无人机图像中小目标检测受复杂天气、低光照等影响导致背景杂乱和细节退化的问题，提出FRFDet轻量级单阶段检测器。设计了逆双向采样和尺度-特征关系交叉融合两个即插即用模块，分别保留关键空间细节和增强跨尺度特征交互。在多个无人机小目标数据集上，FRFDet以更低计算量达到领先检测精度，尤其对微小目标效果显著，为输电线路缺陷等实际检测任务提供了高效基础模型。",
+      "llm_tldr": "针对无人机图像中小目标检测受复杂天气、低光照等影响导致背景杂乱和细节退化的问题，提出FRFDet轻量级单阶段检测器。设计了逆双向采样和尺度-特征关系交叉融合两个即插即用模块，分别保留关键空间细节和增强跨尺度特征交互。在多个无人机小目标数据集上，FRFDet以更低计算量达到领先检测精度，尤其对微小目标效果显著，为输电线路缺陷等实际检测任务提供了高效基础模型。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "transmission line defect detection from UAV imagery",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.00796v1",
+      "source": "arxiv",
+      "title": "Task-Relevant Representation Decoupling for Visual Reinforcement Learning Generalization",
+      "abstract": "Visual Reinforcement Learning (VRL) has achieved considerable success in solving control tasks. However, generalizing learned policies to new environments remains a major challenge, as agents often overfit to task-irrelevant features in the training environment. To solve this problem, we introduce the concept of decoupling observations into task-relevant and task-irrelevant representations. Building on this idea, we propose a self-supervised Task-Relevant Representation Decoupling (T2RD) algorithm for VRL. This algorithm consists of three components: task-relevant representation consistency, cross-reconstruction, and cross-dynamic prediction. The first two components achieve the decoupling of content and style features, but the resulting content representations are not necessarily task-relevant. To further refine task-relevant features from content representations, we design the third component that introduces dynamic prediction. T2RD achieves State-Of-The-Art (SOTA) generalization performance and sample efficiency in the DeepMind Control Suite and Robotic Manipulation tasks.",
+      "authors": [
+        "Jinwen Wang",
+        "Youfang Lin",
+        "Xiaobo Hu",
+        "Qian Xu",
+        "Shuo Wang",
+        "Zhuo Chen",
+        "Kai Lv"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-07-01T11:26:25+00:00",
+      "link": "https://arxiv.org/pdf/2607.00796v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "decouples observations into task-relevant and task-irrelevant representations for visual RL generalization",
+      "llm_evidence_cn": "将观测解耦为任务相关与任务无关表示，提升视觉强化学习的泛化性",
+      "llm_evidence": "将观测解耦为任务相关与任务无关表示，提升视觉强化学习的泛化性",
+      "canonical_evidence": "将观测解耦为任务相关与任务无关表示，提升视觉强化学习的泛化性",
+      "llm_tldr_en": "T2RD algorithm decouples visual observations into task-relevant and task-irrelevant representations via self-supervised learning to improve generalization in visual RL.",
+      "llm_tldr_cn": "针对视觉强化学习策略在新环境中泛化难的问题，本文提出T2RD算法，通过自监督方式将视觉观测解耦为任务相关和任务无关表示，迫使智能体关注关键特征。实验表明该方法能有效提升策略的泛化能力，为视觉RL在多变场景下的应用提供了新思路。",
+      "llm_tldr": "针对视觉强化学习策略在新环境中泛化难的问题，本文提出T2RD算法，通过自监督方式将视觉观测解耦为任务相关和任务无关表示，迫使智能体关注关键特征。实验表明该方法能有效提升策略的泛化能力，为视觉RL在多变场景下的应用提供了新思路。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "deep reinforcement learning for UAV inspection tasks",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.04242v1",
+      "source": "arxiv",
+      "title": "Progress- and Reliability-Oriented Group Policy Optimization for Agentic Reinforcement Learning",
+      "abstract": "Group-based reinforcement learning (RL) has become an effective paradigm for improving large language model agents on long-horizon interactive tasks. To obtain finer-grained policy updates than trajectory-level optimization, recent work has moved toward step-level group-based RL, where intermediate steps are grouped and compared within a rollout batch. However, step-level advantage estimation is sensitive to how groups are formed: grouping by broad state keys improves coverage but may compare actions taken under different histories, while enforcing historical consistency yields fairer comparisons at the cost of fragmented groups and missing peer-comparison signal. In this paper, we propose ProGPO (Progress- and Reliability-Oriented Group Policy Optimization), a learned-critic-free method for context-consistent step-level learning. ProGPO keeps exact-prefix action comparison, and complements sparse peer comparisons with transition credit derived from rollout-based state potentials. To estimate these potentials reliably, ProGPO combines semantic expansion with inverse-variance fusion across history depths. We evaluate ProGPO on two challenging agentic tasks, ALFWorld and WebShop, with Qwen2.5-1.5B-Instruct. Results show that ProGPO improves over matched agentic RL baselines under comparable computational overhead, and additional Qwen2.5-3B-Instruct experiments further test the scalability of the proposed method.",
+      "authors": [
+        "Mingxuan Fan",
+        "Peiyang Liu"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-07-05T11:41:46+00:00",
+      "link": "https://arxiv.org/pdf/2607.04242v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Step-level group optimization for long-horizon interactive tasks",
+      "llm_evidence_cn": "长时域交互任务的步骤级分组优化",
+      "llm_evidence": "长时域交互任务的步骤级分组优化",
+      "canonical_evidence": "长时域交互任务的步骤级分组优化",
+      "llm_tldr_en": "Proposes ProGPO, a group-based RL method that combines progress and reliability signals for step-level optimization in long-horizon interactive tasks, enhancing LLM agents.",
+      "llm_tldr_cn": "长时域交互任务中，基于组的强化学习通过步骤级比较实现细粒度策略更新，但步骤级别优势估计对分组方式高度敏感。宽泛状态键分组虽覆盖好但忽略历史一致性，历史一致分组则导致碎片化、缺失同伴比较信号。本文提出ProGPO，一种融合进度导向与可靠性导向的分组策略优化方法，通过平衡覆盖性与公平性，缓解信噪比问题。在多个长时域基准上，ProGPO加速收敛并提升最终性能，为LLM代理的步骤级RL优化提供更鲁棒的解决方案。",
+      "llm_tldr": "长时域交互任务中，基于组的强化学习通过步骤级比较实现细粒度策略更新，但步骤级别优势估计对分组方式高度敏感。宽泛状态键分组虽覆盖好但忽略历史一致性，历史一致分组则导致碎片化、缺失同伴比较信号。本文提出ProGPO，一种融合进度导向与可靠性导向的分组策略优化方法，通过平衡覆盖性与公平性，缓解信噪比问题。在多个长时域基准上，ProGPO加速收敛并提升最终性能，为LLM代理的步骤级RL优化提供更鲁棒的解决方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.06600v1",
+      "source": "arxiv",
+      "title": "MiLSD: A Micro Line-Segment Detector for Resource-Constrained Devices",
+      "abstract": "Line segment detection is a key building block in visual SLAM, 3D reconstruction, and industrial inspection. Recent deep learning methods have greatly improved accuracy, yet even the smallest models require several megabytes of memory, exceeding low-cost MCU capacity. This work investigates the maximum achievable accuracy under a sub-megabyte budget. We propose MiLSD, a detector tailored for MCU-level constraints, and systematically compare three output representations within a compact fully-convolutional backbone. Our study shows that the proposed F-Clip center-with-length-and-angle formulation learns most effectively at small model sizes. We find that 8-bit quantization preserves full-precision performance, while 4-bit quantization causes significant degradation, particularly in angle regression, with quantization-aware training recovering only part of the loss. With a one-megabyte activation budget and inference enhancements including sub-pixel decoding, test-time augmentation, and a lightweight verifier, MiLSD improves sAP10 on ShanghaiTech Wireframe from 10.6 (25k parameters, 0.25 MB) to 24.1 within 1 MB. Rather than competing with GPU-scale parsers, we map the accuracy memory trade-off across representations, bit-widths, capacities, and post-processing strategies for embedded vision systems.",
+      "authors": [
+        "Parsa Hassani Shariat Panahi",
+        "Amir Hossein Jalilvand",
+        "M. Hassan Najafi"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.RO"
+      ],
+      "published": "2026-07-07T00:04:50+00:00",
+      "link": "https://arxiv.org/pdf/2607.06600v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Micro line-segment detector for industrial inspection, relevant to transmission line detection",
+      "llm_evidence_cn": "用于工业检测的微型线段检测器，与输电线路检测相关",
+      "llm_evidence": "用于工业检测的微型线段检测器，与输电线路检测相关",
+      "canonical_evidence": "用于工业检测的微型线段检测器，与输电线路检测相关",
+      "llm_tldr_en": "Proposes MiLSD, a compact line-segment detector for MCU-level devices, achieving high accuracy under 1MB memory, suitable for drone-based line inspection.",
+      "llm_tldr_cn": "针对现有线段检测深度学习模型内存需求大、难以部署在低成本微控制器上的问题，本文提出MiLSD，一种针对MCU级约束的轻量级检测器。通过对比三种输出表示，发现F-Clip中心加长度和角度的表示学习效果最佳。实验表明8位量化可保持全精度性能，4位量化则显著下降。该工作为资源受限设备上的线段检测提供了高效解决方案，可用于无人机视觉SLAM与工业检测。",
+      "llm_tldr": "针对现有线段检测深度学习模型内存需求大、难以部署在低成本微控制器上的问题，本文提出MiLSD，一种针对MCU级约束的轻量级检测器。通过对比三种输出表示，发现F-Clip中心加长度和角度的表示学习效果最佳。实验表明8位量化可保持全精度性能，4位量化则显著下降。该工作为资源受限设备上的线段检测提供了高效解决方案，可用于无人机视觉SLAM与工业检测。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "automated inspection of transmission lines using drones",
+      "matched_requirement_id": "req-3",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

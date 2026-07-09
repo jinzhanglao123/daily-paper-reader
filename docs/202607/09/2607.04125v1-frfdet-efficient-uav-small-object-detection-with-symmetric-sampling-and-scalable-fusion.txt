@@ -1,0 +1,1031 @@
+Title: FRFDet: Efficient UAV Small Object Detection with Symmetric Sampling and Scalable Fusion
+
+URL Source: https://arxiv.org/pdf/2607.04125v1
+
+Published Time: Tue, 07 Jul 2026 01:58:39 GMT
+
+Number of Pages: 12
+
+Markdown Content:
+# FRFDet: Efficient UAV Small Object Detection with Symmetric Sampling and Scalable Fusion 
+
+Yunzhong Si 1, Huiying Xu 1, Xinzhong Zhu 1, Yang Liu 2, Yao Dong 1, Wenhao Zhang 1, Hongbo Li 3
+
+> 1
+
+College of Computer Science and Technology, Zhejiang Normal University, Jinhua, China 
+
+> 2
+
+Hangzhou School of Automation, Zhejiang Normal University, Hangzhou, China 
+
+> 3
+
+Beijing Geekplus Technology Co., Ltd, Beijing, China 
+
+{siyunzhong, xhy, zxz, liuyang, dongyao, zwh2012918201 }@zjnu.edu.cn, jason.li@geekplus.com 
+
+Abstract —Small object detection in Unmanned Aerial Vehicle (UAV) imagery remains challenging under adverse conditions, including complex weather, low illumination, and sensor noise. These challenges mainly stem from severe background clutter, fine-grained detail degradation, and suboptimal semantic–spatial feature fusion, which jointly hinder robust small-object repre-sentation. To this end, we propose FRFDet, a lightweight yet effective single-stage detector tailored for UAV-based small object detection. FRFDet proposes two plug-and-play modules: Inverse Bidirectional Sampling (IBS) and Scale-Feature Relationship Cross-Fusion (SFRCF). IBS preserves critical spatial details via channel expansion–compression and bidirectional pattern reconstruction, improving feature alignment. SFRCF explicitly models scale-dependent fusion behaviors, revealing that inter-group element-wise multiplication favors compact models, while inter-group additive fusion benefits larger architectures. Exten-sive experiments on VisDrone, UAVDT, HazyDet, and MS COCO demonstrate that FRFDet achieves state-of-the-art performance among lightweight detectors with low computational cost, com-pact parameters, and fast inference, making it well suited for resource-constrained UAV platforms. The source code is available at: https://github.com/HZAI-ZJNU/FRFDet 
+
+Index Terms —Small Object Detection, Feature Retention and Fusion, Bidirectional Sampling, Scale-Aware Fusion 
+
+I. I NTRODUCTION 
+
+With the rapid evolution of deep detection paradigms, in-cluding DCNN-based frameworks [1], [2], Vision Transform-ers [3]–[5], and recent sequence models such as Mamba [6], generic object detection has achieved remarkable performance on benchmarks such as MS COCO [7]. Nevertheless, small object detection in Unmanned Aerial Vehicle (UAV) imagery remains an open problem. This difficulty mainly arises from two intrinsic factors: (1) information sparsity, where objects smaller than 32 × 32 pixels are progressively degraded by downsampling operations [8], causing low-frequency back-ground features to dominate; and (2) semantic misalign-ment, where dense multi-scale object distributions intensify occlusion and hinder effective cross-level feature fusion. As illustrated in fig. 1, conventional sampling strategies introduce substantial background and similarity redundancy, overwhelm-ing discriminative small-object cues and reducing sensitivity to fine-grained structures. Existing efforts attempt to alleviate these challenges through architectural redesign [9]–[11], region-level cropping [12], [13], or resolution enhancement [14], [15]. However, they Background R edundancy     
+
+> Si milarity Redundancy
+> Redundancy
+> Reduction
+> Informative
+> Feature Details
+> Target
+> Emphasis
+> Semantic
+> Alignment
+> Ours
+> Limitations of UAV Feature Maps
+> 1
+> 12
+> 2
+> 2
+> 1
+> 12
+> 1
+> 1
+> 2
+> 2
+
+Fig. 1: Feature map comparison. Standard sampling shows strong redundancy, while our method enhances small-object saliency and semantic consistency. often neglect two critical aspects: preserving informative fea-tures under extreme redundancy and adapting feature fusion strategies to different model scales (e.g., width and depth). In UAV scenarios, valid object regions typically occupy less than 8% of the image area [16], making redundancy suppression and spatially aligned small-object representation particularly crucial. To address these issues, we propose FRFDet (shown in fig. 2), a lightweight and efficient detector tailored for UAV-based small object detection. FRFDet proposes two plug-and-play modules: Inverse Bidirectional Sampling (IBS) and Scale-Feature Relationship Cross-Fusion (SFRCF). IBS adopts a symmetric expansion–compression design with channel-space reordering to suppress background redundancy while reconstructing spatial coherence, ensuring consistency be-tween encoding and decoding stages. In contrast, SFRCF explicitly investigates the interplay between fusion strategy and model scale. We observe that inter-group element-wise multiplication enhances representation capacity in compact models by promoting nonlinear interactions among semantic groups, whereas in larger models it induces excessive en-tanglement due to the quadratic growth of interaction space. To this end, SFRCF adopts inter-group additive fusion for                                                              
+
+> arXiv:2607.04125v1 [cs.CV] 5 Jul 2026 31 45
+> 244
+> 12
+> 149
+> 12
+> 121
+> 101 31
+> 240
+> 211 72
+> 101
+> 62
+> 157
+> 201
+> 80 21
+> 45
+> 144
+> 30
+> 90 41
+> 207
+> 111
+> 76
+> 152
+> 66 178
+> 120 105
+> 201 98
+> 31 62 45 121 149 211 244
+> 101 90 31 41 72 111 240 207
+> 101 152 157 76 30 66 201 178
+> 80 120 21 105 144 201 45 98
+> Chained Structure of Rearranged Tokens
+> 101 80
+> 101
+> 12
+> 178 98
+> 207
+> 244
+> 11
+> 11
+> Expand Compress
+> Compress Expand
+> DW 3 3
+> Inverse Bidirectional Sampling (IBS)
+> Split
+> Split
+> DW k 1k1
+> DW k 2k2
+> DW k 2k2
+> DW k 1k1
+> BN
+> SiLU
+> BN
+> SiLU
+> BN
+> SiLU
+> BN
+> SiLU
+> SiLU
+> SiLU
+> C
+> C
+> C
+> C
+> C
+> C
+> C
+> C
+> C
+> C
+> C
+> C
+> C
+> 11
+> 11
+> 11
+> 11
+> BN,SiLU
+> BN,SiLU
+> BN,SiLU
+> 11
+> 11
+> BN
+> SiLU
+> BN
+> SiLU
+> Scale -Feature Relationship Cross -Fusion (SFRCF)
+> CChannel -wise Concatenation
+> Element -wise Addition
+> Element -wise Multiplication
+> IBS
+> IBS
+> IBS
+> SFRCF Head
+> SFRCF
+> IBS
+> SFRCF Head
+> IBS
+> SFRCF Head
+> IBS IBS
+> Feature Retention and Fusion Detector (FRFDet)
+> Upsample
+> Downsample
+> Feature Extraction Modules
+> Backbone Neck Head
+
+Fig. 2: Overview of FRFDet. IBS enables symmetric down-/up-sampling, and SFRCF performs scale-aware cross-fusion to reduce semantic drift. larger architectures, which preserves group-level semantics, stabilizes gradient propagation, and yields more robust fusion in cluttered UAV scenes. Extensive experiments on VisDrone [16], UAVDT [17], HazyDet [18], and MS COCO [7] show that FRFDet achieves state-of-the-art performance with lower computational cost and latency, balancing accuracy, efficiency, and scalability. 
+
+Our main contributions are summarized as follows: 
+
+(1) We propose FRFDet, an efficient real-time detector for UAV-based small object detection that mitigates feature redundancy and scale inconsistency. (2) We design Inverse Bidirectional Sampling (IBS), asymmetric learnable sampling module that preserves fine-grained details and spatial alignment. (3) We present Scale-Feature Relationship Cross-Fusion (SFRCF), a scale-aware fusion mechanism that adapts cross-level interactions to model capacity. (4) Extensive experiments on UAV benchmarks and MS COCO demonstrate strong performance, scalability, and gen-eralization with low computational overhead. II. R ELATED WORK 
+
+A. General Object Detection 
+
+Object detectors are commonly categorized into two-stage, one-stage, and end-to-end paradigms. Two-stage methods, such as Faster R-CNN [1], generate region proposals followed by refinement, while one-stage detectors directly predict ob-ject locations and categories using anchor-based [19]–[21] or anchor-free designs [22]–[26]. End-to-end Transformer-based detectors, including DETR [27], Deformable DETR [28], and RT-DETR [5], further simplify the pipeline by removing anchors and NMS. Recent real-time detectors, notably the YOLO series [29]–[35], achieve strong speed–accuracy trade-offs on benchmarks such as MS COCO [7]. However, these methods often struggle in UAV scenarios, where small object size, dense distributions, and severe background redundancy degrade feature discrimination and limit generalization. 
+
+B. Small Object Detection in UAV Imagery 
+
+Small object detection in UAV imagery faces challenges from low resolution, background clutter, and limited onboard resources. Many approaches adopt coarse-to-fine strategies, using clustering or region cropping to focus on informative areas, as in ClusDet [36], DMNet [37], CDMNet [38], and UFPMP-Det [13]. Others exploit multi-resolution features or high-resolution branches to balance local detail and global context, such as HRDNet [15] and QueryDet [39], while CEASC [10] and ESOD [40] enhance detection via feature reuse or auxiliary supervision. Despite their effectiveness, these methods often introduce heuristic designs and increased architectural complexity, limiting scalability. Moreover, they largely overlook feature redundancy suppression during trans-formation and the impact of model scale on multi-scale fusion strategies. In contrast, our work focuses on efficient feature sampling and scale-aware fusion, providing a lightweight so-lution that better balances accuracy, efficiency, and scalability in UAV-based small object detection. III. M ETHOD 
+
+A. Rethinking Feature Generation and Fusion 
+
+Most modern detectors adopt a multi-scale pipeline con-sisting of backbone feature extraction, neck aggregation, and head prediction [5], [32], [41], [42]. While effective for generic detection, this paradigm is suboptimal for UAV-based small object detection. In particular, small objects are highly sensitive to information loss caused by downsampling and to semantic misalignment introduced by naive cross-scale fusion. These observations motivate us to revisit feature sampling and integration from the perspective of detail preservation and scale-aware fusion. Stem 
+
+> /2
+> Stage
+> /16
+> Stage
+> /32
+> (b) IBS
+> Feature
+> (c) Strided Conv
+> SSIM Matrix
+> (a) Strided Conv
+> Feature
+> (d) IBS
+> SSIM Matrix
+
+Fig. 3: Feature maps and Structural Similarity Index Measure (SSIM) matrices across stages. Boxes indicate targets; brighter colors in (c) and (d) denote higher channel similarity. 
+
+B. Inverse Bidirectional Sampling 
+
+Conventional multi-scale feature generation relies on asym-metric operations, such as strided convolutions or pooling for downsampling [1], [26], [31] and interpolation for upsampling [32], [43]. Such asymmetry leads to detail degradation, back-ground redundancy, and spatial misalignment (fig. 3 (a,c)), which are particularly harmful to small objects in UAV im-agery. To address this, we propose Inverse Bidirectional Sam-pling (IBS), a lightweight and learnable strategy that enforces approximate structural symmetry between down- and up-sampling. Given an input feature map Xi ∈ RCin ×Hi×Wi , the downsampling path applies a compact expansion–compression unit with point-wise and depth-wise convolutions to en-hance high-frequency details while suppressing background responses. The features are then reorganized into structured spatial groups, yielding compact and semantically coherent representations (fig. 3 (b,d)): 
+
+FD = Treorg 
+
+ FEC (Xi; θ(S))  (1) where FEC denotes the expansion–compression transforma-tion and Treorg performs spatial reorganization. The upsampling process mirrors this design by applying the inverse transformation in reverse order, as indicated by the red arrows in fig. 2, reusing the same operations to reconstruct higher-resolution features: 
+
+FU = FEC 
+
+ Treorg (Xi; θ(S))  (2) This symmetric formulation preserves spatial coherence across scales and mitigates semantic drift during feature transfor-mation. Unlike interpolation-based methods or fixed rear-rangement operators, IBS is fully learnable and structure-aware, enabling more stable multi-scale representations. By jointly suppressing background redundancy and preserving fine-grained details, IBS provides a robust foundation for small object detection in cluttered UAV scenes. 
+
+C. Scale-Feature Relationship Cross-Fusion 
+
+After refining multi-scale feature generation with IBS, we focus on cross-scale semantic fusion. Existing fusion strate-gies, such as concatenation, addition, and attention-based (b) Concat Fusion 
+
+> Heatmap
+> (c) SFRCF
+> Heatmap
+> (f) SFRCF
+> Feature
+> (d) Concat Fusion
+> Feature
+> (a) Image and
+> Ground Truth
+
+Fig. 4: Fusion visualizations on VisDrone. Naive fusion shows background bias, while SFRCF enhances target features. 20.0       
+
+> 21.0
+> 22.0
+> 23.0
+> 24.0
+> 25.0
+> 26.0
+> 27.0
+> 28.0
+> 29.0
+> 30.0
+> 31.0 VisDrone (Val) HazyDet (Test)
+> 21.2
+> 25.8
+> 29.6
+> 30.4
+> 49.0
+> 50.0
+> 51.0
+> 52.0
+> 53.0
+> 54.0
+> 55.0
+> 56.0
+> 57.0
+> 58.0
+> 59.0
+> 60.0
+> 49.9
+> 54.9
+> 58.2
+> 59.8 59.7
+> UAVDT (Val)
+> 12.0
+> 13.0
+> 14.0
+> 15.0
+> 16.0
+> 17.0
+> 18.0
+> 19.0
+> 20.0
+> 21.0
+> 22.0
+> 23.0
+> 16.0
+> 19.3
+> 18.7
+> 20.5
+> 21.7 21.5 21.6
+> AP (%)
+> Model Scales
+> SFRCF w multiplication SFRCF w addition
+> 30.8
+> 58.3
+> 29.8
+> 29.2
+> 26.1
+> 16.4
+> 20.6
+> 50.4
+> 19.4
+> 58.6
+> 57.9
+> 54.9
+> 28.8
+> 22.2
+
+Fig. 5: Comparison of AP at different scales of FRFDet on three UAV datasets, employing various fusion strategies. designs [3], [34], [41], [42], typically adopt fixed fusion paradigms regardless of model scale. These methods over-looks the influence of model width and depth on cross-scale interactions, which is particularly critical for small object detection in cluttered UAV scenes. Given two spatially aligned feature maps from adjacent levels, XSi ∈ RCi×H×W and 
+
+XSi+1 ∈ RCi+1 ×H×W , SFRCF first splits them into channel groups and applies lightweight depth-wise and point-wise convolutions to enhance receptive-field diversity: 
+
+X(j) → F j = P W Conv (DW Conv (X(j))) (3) where j denotes the group index. Let x1, x 2 ∈ RCin be corresponding channel vectors from adjacent scales after trans-formation, and let W1, W 2 denote learnable linear projections. We consider two element-wise fusion operators. Additive fusion is defined as: 
+
+Fadd = W T 
+
+> 1
+
+x1 + W T 
+
+> 2
+
+x2 (4) which aggregates features independently and scales linearly with channel dimension Cin . Multiplicative fusion is defined as: 
+
+Fmul = ( W T 
+
+> 1
+
+x1) ⊙ (W T 
+
+> 2
+
+x2) (5) which introduces pairwise channel interactions and yields an effective interaction space proportional to C2
+
+> in
+
+.This distinction reveals a scale-dependent trade-off. In compact models with limited channels, multiplicative fusion enhances expressive capacity through nonlinear cross-scale modulation, as evidenced by fig. 4 (c) vs. (b) and fig. 4 (f) vs. (d). However, as model width increases, the quadratic growth of interaction terms introduces redundant entanglement, am-plifying background responses in cluttered UAV scenes. In contrast, additive fusion preserves group-level semantics and maintains stable feature integration in wider architectures. Based on this analysis, SFRCF adopts a scale-aware fusion strategy, employing multiplicative fusion for compact models and additive fusion for wider models. The fused features are further refined using lightweight residual point-wise convolu-tions to stabilize optimization. By explicitly aligning fusion behavior with model capacity, SFRCF enables efficient and robust cross-scale semantic integration across different model scales. For more theoretical analysis, see Appendix D. IV. E XPERIMENTS 
+
+A. Datasets and Metrics 
+
+We evaluate FRFDet on three UAV benchmarks—VisDrone, UAVDT, and HazyDet—as well as MS COCO 2017 to assess both task-specific effectiveness and cross-domain generaliza-tion. Following common practice [10], [11], [40], results on VisDrone are reported on the validation set. UAVDT and HazyDet are evaluated on their official test splits, while COCO results are reported on the validation set under standard real-time detection protocols [31], [35]. Performance is measured using mean Average Precision (AP), AP 50 , and AP 75 . Model efficiency is evaluated by parameter count, FLOPs, and FPS, measured on a single NVIDIA RTX 4090 with batch size 1. 
+
+B. Implementation Details 
+
+All models are implemented with Ultralytics and MMDetec-tion. FRFDet is trained from scratch using YOLO11. For UAV benchmarks, models are trained for 300 epochs with SGD (lr = 0.01, batch = 16). For MS COCO, the batch size is set to 32, with other settings unchanged. All experiments use a 640×640 input unless specified. 
+
+C. Comparative Results and Analysis 1) VisDrone: As shown in table I, FRFDet consistently outperforms state-of-the-art lightweight detectors. FRFDet-S surpasses YOLO11-S, DTSSNet [44], and RemDet-S [11] by 1.4–2.7% AP with fewer parameters and lower FLOPs. At larger scales, FRFDet-X achieves 30.8% AP with 94.6 FPS, outperforming RemDet-X while using nearly half the parameters. Performance further improves with higher res-olution, demonstrating the robustness of IBS across scales. Under cluster-based cropping, FRFDet achieves up to 41.5% AP, confirming its strong compatibility without relying on handcrafted region filtering. 
+
+2) UAVDT: On UAVDT (table II), FRFDet-L achieves 21.7% AP, outperforming previous UAV-specific detectors such as YOLC [45], EFC [46], GLSDet [47], and RemDet-L. This highlights the effectiveness of scale-aware sampling and fusion in densely packed traffic scenes.                                                                                                                                                                                                                                                                                                        
+
+> Method Input Size Test-set AP AP 50 Params (M) FLOPs (G) FPS YOLOv7-Tiny [CVPR 2023] 640 ×640 o19.1 34.1 6.0 6.6 YOLOv8-N [2023] 640 ×640 o19.5 33.3 3.0 4.3 233.4 YOLOv9-T [ECCV 2024] 640 ×640 o19.7 33.6 2.0 3.8 99.4 YOLOv10-N [NeurIPS 2024] 640 ×640 o19.3 33.1 2.3 3.3 158.7 YOLO11-N [2024] 640 ×640 o19.3 33.1 2.6 3.2 177.3 YOLOv12-N [arXiv 2025] 640 ×640 o19.2 33.2 2.6 3.2 143.8 YOLO11-S [2024] 640 ×640 o23.4 38.9 9.4 10.7 164.4 DTSSNet [TGRS 2024] 1333 ×800 o24.2 39.9 10.1 50.3 -RemDet-Tiny [AAAI 2025] 640 ×640 o21.8 37.1 3.2 4.6 289.8 RemDet-S [AAAI 2025] 640 ×640 o24.7 41.5 11.9 16.0 -FRFDet-T (Ours) 640 ×640 o22.2 37.2 2.6 4.6 144.9 FRFDet-S (Ours) 640 ×640 o26.1 42.5 9.3 15.7 123.7 Faster R-CNN [TPAMI 2016] 1333 ×800 o21.4 40.7 41.8 187.2 21.1 Retinanet [ICCV 2017] 1333 ×800 o21.8 39.3 38.0 214.7 19.2 SAHI [ICIP 2022] 1333 ×800 o25.6 43.5 26.1 --FSAF [CVPR 2019] 1333 ×800 o26.3 50.3 -518.3 15.8 YOLO11-M [2024] 640 ×640 o27.3 44.5 20.0 33.8 144.0 RemDet-M [AAAI 2025] 640 ×640 o28.2 46.1 23.3 34.4 -HRDNet [ICME 2021] 2666 ×1600 o28.3 49.3 ---QueryDet [CVPR 2022] 1333 ×800 o28.3 48.1 -888.4 11.3 GFL V1 [NeurIPS 2020] 1333 ×800 o28.4 50.0 -525.0 13.5 CEASC [CVPR 2023] 1333 ×800 o28.7 50.7 -150.2 21.7 RemDet-L [AAAI 2025] 640 ×640 o29.3 47.4 35.3 66.7 138.4 RemDet-X [AAAI 2025] 640 ×640 o29.9 48.3 74.1 112.0 110.2 EFC [TGRS 2024] 1333 ×800 o30.1 52.1 40.0 477.6 -FRFDet-M (Ours) 640 ×640 o29.2 46.7 17.4 47.7 98.8 FRFDet-L (Ours) 640 ×640 o29.8 47.3 22.6 57.2 78.4 FRFDet-X (Ours) 640 ×640 o30.8 48.8 38.9 106.3 94.6 FRFDet-X †(Ours) 1024 ×1024 o37.5 58.4 38.9 272.2 45.8 ClusDet [ICCV 2019] 1000 ×600 o + ca 26.7 50.6 -436.0 6.5 DMNet [CVPRW 2020] 1000 ×600 o + dc 28.2 47.6 -471.4 5.9 CDMNet [ICCVW 2021] 1000 ×600 ca 29.2 49.5 ---GLSAN [TIP 2020] 1333 ×800 o + ca 30.7 55.4 ---AMRNet [arXiv 2020] 1500 ×800 o + aug 31.7 52.7 ---YOLC [TITS 2024] 1024 ×640 o + ca 31.8 55.0 -151.0 2.3 CZDet [CVPRW 2023] 1999 ×1200 o + dc 33.2 58.3 --8.4 UFPMP-Det [AAAI 2022] 1333 ×800 o + ca 36.6 62.4 -150.2 21.7 ESOD [TIP 2024] 1333 ×800 o + ca 37.9 62.3 -180.6 28.6 RemDet-X [AAAI 2025] 1024 ×640 o + ca 40.0 61.9 74.1 182.0 110.2 FRFDet-X (Ours) 640 ×640 ca 40.9 63.0 38.9 106.3 94.6 FRFDet-X †(Ours) 1024 ×1024 o + ca 41.5 63.1 38.9 272.2 45.8
+
+TABLE I: Comparison with SOTA UAV detectors on Vis-Drone. “o”, “ca”, “dc”, and “aug” denote original, cluster-aware cropped, dense cropped, and augmented settings. “–” denotes unreported results; “†” indicates 1.6× resolution. Best results are bolded; competitors underlined; ours shaded. 
+
+Method AP AP 50 AP 75 
+
+Faster-RCNN [TPAMI 2016] 11.0 23.4 8.4 CenterNet [ICCV 2019] 13.2 26.7 11.8 ClusDet [ICCV 2019] 13.7 26.5 12.5 DMNet [CVPRW 2020] 14.7 24.6 12.5 CDMNet [ICCVW 2021] 16.8 29.1 18.5 GFL V1 [NeurIPS 2020] 16.9 29.5 17.9 GLSAN [TIP 2020] 17.0 28.1 18.8 CEASC [CVPR 2023] 17.1 30.9 17.8 EFC [TGRS 2024] 18.0 31.5 18.9 AMRNet [arXiv 2020] 18.2 30.4 19.8 GLSDet [TGRS 2025] 18.3 29.8 17.6 YOLC [TTTS 2024] 19.3 30.9 20.1 RemDet-L [AAAI 2025] 20.6 34.5 22.1 FRFDet-L (Ours) 21.7 32.7 25.0 
+
+TABLE II: SOTA comparison on UAVDT (original set). 
+
+3) HazyDet: FRFDet shows strong robustness under de-graded visual conditions (table III). In pretraining–finetuning settings, FRFDet improves over TOOD [26] by +3.0% AP on synthetic data and +1.4% on real foggy scenes. When trained from scratch, FRFDet consistently outperforms Method Test-set RDDTS Params (M) FLOPs (G) AP AP 50 AP AP 50                                                                                                                                     
+
+> Mode: Pretrained on ImageNet-1K + fine-tuned with the “1 ×” schedule (12 epochs)
+> Dynamic R-CNN [ECCV 2020] 47.6 63.5 22.5 32.4 41.4 201.7 Grid R-CNN [CVPR 2019] 50.5 68.6 25.2 36.6 64.5 317.4 GFL V1 [NeurIPS 2020] 36.8 52.2 13.9 22.9 32.3 198.7 Reppoints [ICCV 2019] 43.8 65.7 21.3 35.1 36.8 184.3 FCOS [ICCV 2019] 45.9 67.1 22.8 34.5 32.1 191.5 CenterNet [ICCV 2019] 47.2 67.0 23.8 37.1 32.1 191.5 ATSS [CVPR 2020] 50.4 68.4 25.1 37.7 32.1 195.6 DDOD [ACM MM 2021] 50.7 68.6 26.1 38.6 32.2 173.1 TOOD [CVPR 2021] 51.4 69.8 25.8 39.0 32.0 192.5 DeCoDet [arXiv 2024] 51.5 71.1 25.9 39.5 34.6 225.4 Deformable DETR [ICLR 2021] 51.9 71.5 26.5 40.2 40.0 192.5 FRFDet-P (Ours) 54.4 75.1 27.2 41.3 33.9 228.2
+> Mode: Trained from scratch for 300 epochs
+> YOLOv8-N [2023] 47.5 67.8 25.5 39.1 3.0 4.0 YOLOv9-T [ECCV 2024] 47.6 67.7 26.8 40.6 2.0 3.8 YOLOv10-N [NeurIPS 2024] 47.5 67.6 26.7 41.2 2.3 3.3 YOLO11-N [2024] 47.5 67.7 26.7 40.9 2.6 3.2 YOLOv12-N [arXiv 2024] 47.5 68.0 25.7 39.8 2.6 3.2 FRFDet-T (Ours) 50.4 69.9 28.5 42.6 2.6 4.6 FRFDet-S (Ours) 54.9 74.4 32.4 47.2 9.3 15.7 FRFDet-M (Ours) 58.3 77.8 36.6 52.1 17.4 47.7 FRFDet-L (Ours) 58.6 77.9 37.8 53.7 22.7 57.2 FRFDet-X (Ours) 59.8 79.0 38.2 54.4 39.0 106.3
+
+TABLE III: Results on HazyDet and RDDTS. ResNet-50 pretrained; FRFDet-P built on TOOD. 
+
+Method AP AP 50 Params (M) FLOPs (G) YOLOv6-3.0-N [arXiv 2023] 37.5 52.7 4.7 5.7 YOLOv7-Tiny [CVPR 2023] 37.4 55.2 6.2 6.8 YOLOv8-N [2023] 37.3 52.6 3.2 4.4 Gold-YOLO-N [NeurIPS 2023] 39.6 55.7 5.6 6.0 YOLOv9-T [ECCV 2024] 38.3 53.1 2.0 3.8 YOLOv10-N [NeurIPS 2024] 38.5 52.8 2.3 3.3 Hyper-YOLO-T [TPAMI 2024] 38.5 54.5 3.1 4.8 YOLO11-N [2024] 39.5 55.1 2.6 3.2 RemDet-Tiny [AAAI 2025] 39.5 55.8 3.2 4.6 YOLOv12-N [arXiv 2025] 40.6 56.7 2.6 3.2 FRFDet-T (Ours) 41.3 57.2 2.6 4.6 YOLOv6-3.0-S [arXiv 2023] 44.3 61.2 18.5 22.6 YOLOv8-S [2023] 44.9 61.8 11.2 14.3 Gold-YOLO-S [NeurIPS 2023] 45.4 62.5 21.5 23.0 RemDet-S [AAAI 2025] 45.5 62.8 11.9 16.0 YOLOv10-S [NeurIPS 2024] 46.3 63.0 7.2 10.8 RT-DETR-R18 [CVPR 2024] 46.5 63.8 20.2 60.0 YOLOv9-S [ECCV 2024] 46.8 63.4 7.1 13.2 YOLO11-S [2024] 47.0 63.8 9.4 10.8 Hyper-YOLO-S [TPAMI 2024] 48.0 65.1 14.8 19.5 YOLOv12-S [arXiv 2025] 48.0 65.0 9.3 10.7 FRFDet-S (Ours) 48.3 65.4 9.3 15.8 
+
+TABLE IV: Comparison with real-time detectors on MS COCO. YOLOv8–YOLOv12, and FRFDet-X establishes a new state-of-the-art with 59.8% AP, demonstrating resilience to severe visibility degradation. 
+
+4) MS COCO: On MS COCO (table IV), FRFDet gen-eralizes well beyond UAV scenarios. In particular, compact variants (T/S) outperform recent real-time detectors by up to +1.8% AP, validating the transferability of IBS and SFRCF to generic object detection. 
+
+IBS-D IBS-U SFRCF AP AP 50 Params FLOPs - - - 19.3 +(0.0) 33.1 +(0.0) 2.6 3.2 
+
+✓ - - 20.7 +(1.4) 35.0 +(1.9) 2.1 3.6 - ✓ - 20.0 +(0.7) 34.1 +(1.0) 2.8 3.7 
+
+✓ ✓ - 21.5 +(2.2) 35.9 +(2.8) 2.3 4.1 - - ✓ 20.2 +(0.9) 34.3 +(1.2) 2.8 3.6 
+
+✓ ✓ ✓ 22.2 +(2.9) 37.2 +(4.1) 2.6 4.6 
+
+TABLE V: Component ablation of FRFDet-T on VisDrone. 
+
+D. Ablation and Analysis 1) Effect of IBS and SFRCF: Ablations on VisDrone (ta-ble V) show that symmetric IBS improves AP by +2.2%, confirming its effectiveness in preserving spatial structure and suppressing redundancy. Adding SFRCF brings a further +0.9% AP gain on compact models, validating scale-aware fusion. Additional analyses are in Appendices C and D. 
+
+2) Fusion Strategy vs. Model Scale: As illustrated in fig. 5, element-wise multiplication consistently outperforms addition in compact models, while additive fusion is more effective in wider architectures. This trend is more pronounced when increasing model width, confirming that fusion behavior is strongly coupled with model capacity, as assumed in SFRCF. 
+
+3) Visualization: Qualitative results on VisDrone, HazyDet, and MS COCO show that FRFDet detects more objects with less category confusion than prior general and small-object SOTA methods (see Appendix E). V. C ONCLUSION 
+
+This paper presents FRFDet, an efficient single-stage detec-tor for UAV-based small object detection. To mitigate feature redundancy and semantic inconsistency in multi-scale repre-sentations, we develop IBS, a symmetric sampling strategy for preserving fine-grained details, and SFRCF, a scale-aware cross-group fusion mechanism that adapts fusion behaviors to model capacity. Extensive experiments on UAV and generic benchmarks demonstrate strong effectiveness, scalability, and generalization, indicating that FRFDet provides a practical and deployable solution for real-time aerial perception. REFERENCES [1] S. Ren, K. He, R. Girshick, and J. Sun, “Faster r-cnn: Towards real-time object detection with region proposal networks,” IEEE transactions on pattern analysis and machine intelligence , vol. 39, no. 6, pp. 1137–1149, 2016. [2] C.-Y. Wang, A. Bochkovskiy, and H.-Y. M. Liao, “Yolov7: Trainable bag-of-freebies sets new state-of-the-art for real-time object detectors,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2023, pp. 7464–7475. [3] A. Dosovitskiy, “An image is worth 16x16 words: Transformers for image recognition at scale,” arXiv preprint arXiv:2010.11929 , 2020. [4] Z. Liu, Y. Lin, Y. Cao, H. Hu, Y. Wei, Z. Zhang, S. Lin, and B. Guo, “Swin transformer: Hierarchical vision transformer using shifted windows,” in Proceedings of the IEEE/CVF international conference on computer vision , 2021, pp. 10 012–10 022. [5] Y. Zhao, W. Lv, S. Xu, J. Wei, G. Wang, Q. Dang, Y. Liu, and J. Chen, “Detrs beat yolos on real-time object detection,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition ,2024, pp. 16 965–16 974. [6] A. Gu and T. Dao, “Mamba: Linear-time sequence modeling with selective state spaces,” arXiv preprint arXiv:2312.00752 , 2023. [7] T.-Y. Lin, M. Maire, S. Belongie, J. Hays, P. Perona, D. Ramanan, P. Doll´ ar, and C. L. Zitnick, “Microsoft coco: Common objects in context,” in Computer Vision–ECCV 2014: 13th European Conference, Zurich, Switzerland, September 6-12, 2014, Proceedings, Part V 13 .Springer, 2014, pp. 740–755. [8] A. Stergiou, R. Poppe, and G. Kalliatakis, “Refining activation down-sampling with softpool,” in Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV) , October 2021, pp. 10 357– 10 366. [9] C. Zhu, Y. He, and M. Savvides, “Feature selective anchor-free module for single-shot object detection,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2019, pp. 840– 849. [10] B. Du, Y. Huang, J. Chen, and D. Huang, “Adaptive sparse convolutional networks with global context enhancement for faster object detection on drone images,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2023, pp. 13 435–13 444. [11] C. Li, R. Zhao, Z. Wang, H. Xu, and X. Zhu, “Remdet: Rethinking efficient model design for uav object detection,” in Proceedings of the AAAI Conference on Artificial Intelligence , vol. 39, no. 5, 2025, pp. 4643–4651. [12] F. C. Akyon, S. O. Altinuc, and A. Temizel, “Slicing aided hyper inference and fine-tuning for small object detection,” in 2022 IEEE international conference on image processing (ICIP) . IEEE, 2022, pp. 966–970. [13] Y. Huang, J. Chen, and D. Huang, “Ufpmp-det: Toward accurate and efficient object detection on drone imagery,” in Proceedings of the AAAI conference on artificial intelligence , vol. 36, no. 1, 2022, pp. 1026–1033. [14] S. Deng, S. Li, K. Xie, W. Song, X. Liao, A. Hao, and H. Qin, “A global-local self-adaptive network for drone-view object detection,” 
+
+IEEE Transactions on Image Processing , vol. 30, pp. 1556–1569, 2020. [15] Z. Liu, G. Gao, L. Sun, and Z. Fang, “Hrdnet: High-resolution detection network for small objects,” in 2021 IEEE international conference on multimedia and expo (ICME) . IEEE, 2021, pp. 1–6. [16] D. Du, P. Zhu, L. Wen, X. Bian, H. Lin, Q. Hu, T. Peng, J. Zheng, X. Wang, Y. Zhang et al. , “Visdrone-det2019: The vision meets drone object detection in image challenge results,” in Proceedings of the IEEE/CVF international conference on computer vision workshops ,2019, pp. 0–0. [17] D. Du, Y. Qi, H. Yu, Y. Yang, K. Duan, G. Li, W. Zhang, Q. Huang, and Q. Tian, “The unmanned aerial vehicle benchmark: Object detection and tracking,” in Proceedings of the European conference on computer vision (ECCV) , 2018, pp. 370–386. [18] C. Feng, Z. Chen, R. Kou, G. Gao, C. Wang, X. Li, X. Shu, Y. Dai, Q. Fu, and J. Yang, “Hazydet: Open-source benchmark for drone-view object detection with depth-cues in hazy scenes,” arXiv preprint arXiv:2409.19833 , 2024. [19] T.-Y. Lin, P. Goyal, R. Girshick, K. He, and P. Doll´ ar, “Focal loss for dense object detection,” in Proceedings of the IEEE international conference on computer vision , 2017, pp. 2980–2988. [20] S. Zhang, C. Chi, Y. Yao, Z. Lei, and S. Z. Li, “Bridging the gap between anchor-based and anchor-free detection via adaptive training sample selection,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2020, pp. 9759–9768. [21] Z. Chen, C. Yang, Q. Li, F. Zhao, Z.-J. Zha, and F. Wu, “Disentangle your dense object detector,” in Proceedings of the 29th ACM interna-tional conference on multimedia , 2021, pp. 4939–4948. [22] Z. Yang, S. Liu, H. Hu, L. Wang, and S. Lin, “Reppoints: Point set representation for object detection,” in Proceedings of the IEEE/CVF international conference on computer vision , 2019, pp. 9657–9666. [23] Z. Tian, C. Shen, H. Chen, and T. He, “Fcos: Fully convolutional one-stage object detection,” in Proceedings of the IEEE/CVF international conference on computer vision , 2019, pp. 9627–9636. [24] K. Duan, S. Bai, L. Xie, H. Qi, Q. Huang, and Q. Tian, “Centernet: Keypoint triplets for object detection,” in Proceedings of the IEEE/CVF international conference on computer vision , 2019, pp. 6569–6578. [25] X. Li, W. Wang, L. Wu, S. Chen, X. Hu, J. Li, J. Tang, and J. Yang, “Generalized focal loss: Learning qualified and distributed bounding boxes for dense object detection,” Advances in neural information processing systems , vol. 33, pp. 21 002–21 012, 2020. [26] C. Feng, Y. Zhong, Y. Gao, M. R. Scott, and W. Huang, “Tood: Task-aligned one-stage object detection,” in 2021 IEEE/CVF International Conference on Computer Vision (ICCV) . IEEE Computer Society, 2021, pp. 3490–3499. [27] N. Carion, F. Massa, G. Synnaeve, N. Usunier, A. Kirillov, and S. Zagoruyko, “End-to-end object detection with transformers,” in 
+
+European conference on computer vision . Springer, 2020, pp. 213– 229. [28] X. Zhu, W. Su, L. Lu, B. Li, X. Wang, and J. Dai, “Deformable detr: Deformable transformers for end-to-end object detection,” arXiv preprint arXiv:2010.04159 , 2020. [29] C. Li, L. Li, Y. Geng, H. Jiang, M. Cheng, B. Zhang, Z. Ke, X. Xu, and X. Chu, “Yolov6 v3. 0: A full-scale reloading,” arXiv preprint arXiv:2301.05586 , 2023. [30] C.-Y. Wang, I.-H. Yeh, and H.-Y. Mark Liao, “Yolov9: Learning what you want to learn using programmable gradient information,” in Euro-pean conference on computer vision . Springer, 2024, pp. 1–21. [31] A. Wang, H. Chen, L. Liu, K. CHEN, Z. Lin, J. Han, and g. ding, “Yolov10: Real-time end-to-end object detection,” in Advances in Neural Information Processing Systems , A. Globerson, L. Mackey, D. Belgrave, A. Fan, U. Paquet, J. Tomczak, and C. Zhang, Eds., vol. 37. Curran Associates, Inc., 2024, pp. 107 984–108 011. [Online]. Available: https://proceedings.neurips.cc/paper files/paper/ 2024/file/c34ddd05eb089991f06f3c5dc36836e0-Paper-Conference.pdf [32] G. Jocher and J. Qiu, “Ultralytics yolo11,” 2024. [Online]. Available: https://github.com/ultralytics/ultralytics [33] Y. Tian, Q. Ye, and D. Doermann, “Yolov12: Attention-centric real-time object detectors,” arXiv preprint arXiv:2502.12524 , 2025. [34] C. Wang, W. He, Y. Nie, J. Guo, C. Liu, Y. Wang, and K. Han, “Gold-yolo: Efficient object detector via gather-and-distribute mechanism,” 
+
+Advances in Neural Information Processing Systems , vol. 36, 2024. [35] Y. Feng, J. Huang, S. Du, S. Ying, J.-H. Yong, Y. Li, G. Ding, R. Ji, and Y. Gao, “Hyper-yolo: When visual object detection meets hypergraph computation,” IEEE Transactions on Pattern Analysis and Machine Intelligence , 2024. [36] F. Yang, H. Fan, P. Chu, E. Blasch, and H. Ling, “Clustered object de-tection in aerial images,” in Proceedings of the IEEE/CVF international conference on computer vision , 2019, pp. 8311–8320. [37] C. Li, T. Yang, S. Zhu, C. Chen, and S. Guan, “Density map guided object detection in aerial images,” in proceedings of the IEEE/CVF conference on computer vision and pattern recognition workshops , 2020, pp. 190–191. [38] C. Duan, Z. Wei, C. Zhang, S. Qu, and H. Wang, “Coarse-grained density map guided object detection in aerial images,” in Proceedings of the IEEE/CVF International Conference on Computer Vision , 2021, pp. 2789–2798. [39] C. Yang, Z. Huang, and N. Wang, “Querydet: Cascaded sparse query for accelerating high-resolution small object detection,” in Proceedings of the IEEE/CVF Conference on computer vision and pattern recognition ,2022, pp. 13 668–13 677. [40] K. Liu, Z. Fu, S. Jin, Z. Chen, F. Zhou, R. Jiang, Y. Chen, and J. Ye, “Esod: Efficient small object detection on high-resolution images,” IEEE Transactions on Image Processing , 2024. [41] T.-Y. Lin, P. Doll´ ar, R. Girshick, K. He, B. Hariharan, and S. Belongie, “Feature pyramid networks for object detection,” in Proceedings of the IEEE conference on computer vision and pattern recognition , 2017, pp. 2117–2125. [42] M. Tan, R. Pang, and Q. V. Le, “Efficientdet: Scalable and efficient object detection,” in Proceedings of the IEEE/CVF conference on computer vision and pattern recognition , 2020, pp. 10 781–10 790. [43] G. Jocher, A. Chaurasia, and J. Qiu, “Ultralytics yolov8,” 2023. [Online]. Available: https://github.com/ultralytics/ultralytics [44] L. Chen, C. Liu, W. Li, Q. Xu, and H. Deng, “Dtssnet: Dynamic training sample selection network for uav object detection,” IEEE Transactions on Geoscience and Remote Sensing , 2024. [45] C. Liu, G. Gao, Z. Huang, Z. Hu, Q. Liu, and Y. Wang, “Yolc: You only look clusters for tiny object detection in aerial images,” IEEE Transactions on Intelligent Transportation Systems , 2024. [46] Y. Xiao, T. Xu, X. Yu, Y. Fang, and J. Li, “A lightweight fusion strategy with enhanced inter-layer feature correlation for small object detection,” 
+
+IEEE Transactions on Geoscience and Remote Sensing , 2024. [47] Y. Chen, Z. Ye, H. Sun, T. Gong, S. Xiong, and X. Lu, “Global-local fusion with semantic information-guidance for accurate small object detection in uav aerial images,” IEEE Transactions on Geoscience and Remote Sensing , 2025. [48] Y. Bahri, E. Dyer, J. Kaplan, J. Lee, and U. Sharma, “Explaining neural scaling laws,” Proceedings of the National Academy of Sciences , vol. 121, no. 27, p. e2311878121, 2024. [49] E. Bayraktar and C. B. Yigit, “Conditional-pooling for improved data transmission,” Pattern Recognition , p. 109978, 2023. [Online]. Available: https://www.sciencedirect.com/science/article/pii/ S0031320323006763 [50] J. Wang, K. Chen, R. Xu, Z. Liu, C. C. Loy, and D. Lin, “Carafe: Content-aware reassembly of features,” in Proceedings of the IEEE/CVF international conference on computer vision , 2019, pp. 3007–3016. [51] W. Liu, H. Lu, H. Fu, and Z. Cao, “Learning to upsample by learning to sample,” in Proceedings of the IEEE/CVF International Conference on Computer Vision , 2023, pp. 6027–6037. [52] G. Yang, J. Lei, Z. Zhu, S. Cheng, Z. Feng, and R. Liang, “Afpn: Asymptotic feature pyramid network for object detection,” in 2023 IEEE International Conference on Systems, Man, and Cybernetics (SMC) .IEEE, 2023, pp. 2184–2189. [53] Y. Quan, D. Zhang, L. Zhang, and J. Tang, “Centralized feature pyramid for object detection,” IEEE Transactions on Image Processing , 2023. [54] S. Bai, Y. Cai, R. Chen, K. Chen, X. Chen, Z. Cheng, L. Deng, W. Ding, C. Gao, C. Ge, W. Ge, Z. Guo, Q. Huang, J. Huang, F. Huang, B. Hui, S. Jiang, Z. Li, M. Li, M. Li, K. Li, Z. Lin, J. Lin, X. Liu, J. Liu, C. Liu, Y. Liu, D. Liu, S. Liu, D. Lu, R. Luo, C. Lv, R. Men, L. Meng, X. Ren, X. Ren, S. Song, Y. Sun, J. Tang, J. Tu, J. Wan, P. Wang, P. Wang, Q. Wang, Y. Wang, T. Xie, Y. Xu, H. Xu, J. Xu, Z. Yang, M. Yang, J. Yang, A. Yang, B. Yu, F. Zhang, H. Zhang, X. Zhang, B. Zheng, H. Zhong, J. Zhou, F. Zhou, J. Zhou, Y. Zhu, and K. Zhu, “Qwen3-vl technical report,” arXiv preprint arXiv:2511.21631 , 2025. [55] W. Hong, W. Yu, X. Gu, G. Wang, G. Gan, H. Tang, J. Cheng, J. Qi, J. Ji, L. Pan et al. , “Glm-4.1 v-thinking: Towards versatile mul-timodal reasoning with scalable reinforcement learning,” arXiv preprint arXiv:2507.01006 , 2025. [56] W. Lin, X. Wei, R. An, T. Ren, T. Chen, R. Zhang, Z. Guo, W. Zhang, L. Zhang, and H. Li, “Perceive anything: Recognize, explain, cap-tion, and segment anything in images and videos,” arXiv preprint arXiv:2506.05302 , 2025. [57] Q. Wang, Q. Guo, Y. Sun, J. Yang, D. Zhang, S. Pang, and Q. Guo, “Personalq: Select, quantize, and serve personalized diffusion models for efficient inference,” arXiv preprint arXiv:2603.22943 , 2026. A. A RCHITECTURAL SCALING ANALYSIS : W IDTH AND 
+
+DEPTH FACTORS 
+
+We construct FRFDet models at different scales by adjusting the width and depth factors, as summarized in table VI, to validate the scalability of our architecture. To examine how model scale influences the choice of fusion strategy, we conduct two sets of controlled experiments: (1) For FRFDet-T/S/M/X, we fix the depth factor at 0.5 and progressively increase the width factor from 0.25 to 1.5; (2) For FRFDet-M and FRFDet-L, we fix the width factor at 1.0 and gradually increase the depth factor from 0.5 to 1.0. Based on the results presented in fig. 5 and section IV.D of the main text, we observe a clear correlation between the preferred fusion strategy and the model capacity. Specif-ically, inter-group element-wise multiplication facilitates non-linear pairwise interactions, which compensates for the limited representation capacity of lightweight models (FRFDet-T/S), particularly under challenging conditions such as low-light or foggy UAV imagery. In contrast, inter-group element-wise addition benefits larger models (FRFDet-L/X) by leveraging identity mapping to mitigate background redundancy caused by channel over-expansion. Interestingly, despite the adoption of different fusion strategies across scales, increasing the width factor consistently yields greater performance gains than increasing the depth factor, which aligns with the scale law phenomenon [48]. 
+
+Model Scale Width Factor Depth Factor FRFDet-T 0.25 0.5 FRFDet-S 0.5 0.5 FRFDet-M 1.0 0.5 FRFDet-L 1.0 1.0 FRFDet-X 1.5 0.5 
+
+TABLE VI: Settings for the ratio of model scale factors. Beyond empirical observations, we further provide a the-oretical perspective in Appendix D, analyzing the entropy of foreground and background features to better explain the effectiveness of each fusion strategy. B. D ETAILS OF IBS This section details the design of the Inverse Bidirectional Sampling (IBS) module, which addresses the critical chal-lenge of excessive background redundancy in UAV imagery that weakens small object features. IBS integrates a channel expansion-compression unit FEC and a spatial reorganization operator Treorg to retain crucial small object details while reducing redundancy. Its bidirectional and approximately sym-metric design further enhances local spatial consistency and representation fidelity. To provide a comprehensive under-standing, this section extends the formulations of Eq. (1) and Eq. (2) in the main text. Let the input feature map be X ∈ RCin ×H×W . The FEC 
+
+is designed to enhance cross-channel interaction and suppress redundancy by employing 1×1 convolutions for dimensional                     
+
+> rAP AP 50 Params (M) FLOPs (G) FPS 121.4 36.5 2.5 3.9 148.2
+> 222.2 37.2 2.6 4.6 144.9 422.2 37.0 2.8 5.9 115.3
+
+TABLE VII: Ablation study on expansion ratios r in IBS for FRFDet-T on VisDrone.           
+
+> Method AP AP 50
+> IBS-D w/o Residual + IBS-U w/o Residual 21.7 36.5 IBS-D w/o Residual + IBS-U w Residual 21.8 36.7 IBS-D w Residual + IBS-U w/o Residual 22.2 37.2
+> IBS-D w Residual + IBS-U w Residual 22.0 37.1
+
+TABLE VIII: Ablation study on residual connections in IBS for FRFDet-T on VisDrone. expansion and compression. To enrich the representation ca-pacity in the high-dimensional space, small-kernel depthwise convolutions are inserted to capture localized high-frequency information. The formulation of the downsampling path IBS-D is as follows: 
+
+FEDW = SiLU  BN (Conv Cin →Cmid  
+
+> 1×1
+
+(X))  (6) 
+
+FIBS P W = SiLU  BN (DWConv Cmid →Cmid  
+
+> 3×3
+
+(X))  (7) 
+
+FCDW = SiLU  BN (Conv Cmid →C out S2 
+
+> 1×1
+
+(X))  (8) 
+
+X′
+
+= FEDW (X) (9) 
+
+FEC = Y = FCDW (FIBS P W (X′
+
+) + X′
+
+) (10) Here, FEDW and FCDW denote the expansion and compression operations, respectively. The intermediate channel dimension is set to Cmid = Cout × r, where r is the expansion ratio. As shown in the ablation study in table VII, r = 2 achieves the best trade-off between detection accuracy and computational cost. Following FEC , a spatial reorganization step is applied. The sampling factor S (typically 2) is used to compress the channels to Cout S2 and prepare the feature map for spatial rearrangement. Specifically, the tensor Y ∈ R Cout S2 ×H×W is first unfolded with a sliding window of stride S:
+
+Y ′ = Funf old (Y ) (11) Then, the S × S local patches are flattened and merged into the channel dimension, yielding: 
+
+Treorg = Y ′′ 
+
+= Frearrange (Y ′
+
+) ∈ RCout ×H′×W ′
+
+(12) This completes the IBS-D downsampling path. Motivated by the observed drawbacks of asymmetric sampling in feature reconstruction and inter-channel SSIM (see fig. 3(a,c)), we propose a structurally symmetric upsampling variant (IBS-U). It follows the IBS-D design while discarding the residual connection in FEC :
+
+Y ′ = Frearrange (Y ′′ 
+
+) (13) 
+
+Y = Ff old (Y ′
+
+) (14) 
+
+X = FCDW (FIBS P W (FEDW (Y ))) (15) A key difference between IBS-U and IBS-D lies in the use of residual connections. In IBS-U, residual connections are preserved to facilitate the propagation of low-level detail features from earlier layers. For high-resolution UAV imagery, retaining fine-grained details is critical for accurate small object detection and classification. By injecting uncompressed shallow features directly into deeper layers, the residual path helps sustain fine-grained information flow throughout the network. In contrast, IBS-D typically operates in the deeper decoder layers. Introducing abstract semantic features through residual connections at this stage may disrupt spatial consistency when fusing with shallow features, potentially leading to localization bias. To validate this design choice, we conduct an ablation study on different combinations of residual connections in IBS-D and IBS-U. As shown in table VIII, keeping the residual connection in IBS-D while removing it from IBS-U yields the best performance, further validating the soundness of our analysis. C. F URTHER COMPARISON AND ABLATION STUDIES OF 
+
+FRFD ET 
+
+IBS-D/U outperforms conventional sampling methods (e.g., PatchMerging [4], SoftPool [8], ConditionalPool [49], CARAFE [50], Dysample [51]), as shown in table IX, due to the joint effect of enhanced detail preservation and background suppression. As shown in table X, SFRCF surpasses AFPN [52] and CFP [53] with higher accuracy and lower FLOPs. Unlike direct addition (AFPN) or top-down semantic injection (CFP), SFRCF utilizes cross-group element-wise multiplication for nonlinear interactions, enhancing representation in compact models. To explore the impact of kernel size design in cross-scale fusion (SFRCF), we investigate whether globally fixed kernel sizes or hierarchically adaptive kernel sizes are more effective in capturing multi-scale semantics. This is motivated by the inherent disparity between shallow and deep features—where shallow layers encode fine-grained spatial details and deeper layers capture abstract global semantics. For fixed-size kernels, we evaluate standard 3 × 3 and 5 ×
+
+5 configurations across all SFRCF stages. For hierarchically adaptive kernels, we fix one side of the convolution kernel at 
+
+3 × 3 while varying the other side k2 × k2 according to layer depth: 
+
+k2 = 3 × (l0 + ∆ l · (l − l0)) (16) where l0 denotes the starting layer, ∆l is the kernel growth factor, and l is the current layer index. This adaptive strategy aligns the receptive field with the semantic abstraction level at each stage. As shown in table XI, the hierarchically adaptive kernel configuration outperforms both fixed-size baselines, achieving the highest AP and AP 50 with negligible increases in pa-rameters and FLOPs. These results highlight the advantage                                      
+
+> Sampling Method AP AP 50 Params FLOPs Downsampling PatchMerging [ICCV 2021] 18.3 31.7 2.2 2.7 SoftPool [ICCV 2021] 19.2 32.8 1.9 2.4 ConditionalPool [PR 2023] 19.2 33.0 1.9 2.4 IBS-D (Ours) 20.7 35.0 2.1 3.6 Upsampling Nearest 19.3 33.1 2.6 3.2 CARAFE [ICCV 2019] 19.4 33.0 2.9 3.6 Dysample [ICCV 2023] 19.7 33.7 2.6 3.2 IBS-U (Ours) 20.0 34.1 2.8 3.7
+
+TABLE IX: Comparison of upsampling and downsampling methods in IBS with other approaches on VisDrone.                    
+
+> Fusion Method AP AP 50 Params FLOPs Direct fusion AFPN [SMC 2023] 19.1 32.6 2.5 4.1 Progressive fusion CFP [TIP 2023] 19.5 33.6 6.9 9.8 SFRCF (Ours) 20.2 34.3 2.8 3.6
+
+TABLE X: Performance comparison of SFRCF with other direct fusion method and progressive fusion method on Vis-Drone. of depth-aware receptive field design in fusing neighboring-scale features and demonstrate its effectiveness in enhancing detection performance. D. A NALYSIS OF BACKGROUND AND FOREGROUND 
+
+ENTROPY 
+
+In addition to the quantitative analysis (fig. 5) and the qualitative visualizations of feature maps (fig. 3 and fig. 4) and inter-channel similarity (SSIM) (fig. 3) provided in the main paper, we further investigate the effectiveness of our proposed components (IBS and SFRCF) from an information-theoretic perspective. Specifically, we analyze the entropy difference between foreground and background regions to reveal the key factors behind the effectiveness of our method. Given the ground-truth bounding boxes, we divide each feature map into foreground and background regions. For each region, we compute the Shannon entropy as follows: Let a region contain a set of feature values: 
+
+x = {x1, x 2, ..., x n} , x i ∈ R (17) 1. Discretization into histogram bins: Divide the value range of x into K equally spaced bins B1, B 2, ..., B K , and compute the bin counts c:
+
+cj = # {xi ∈ Bj } , j = 1 , 2, ..., K (18) 2. Probability normalization: 
+
+pi = ci
+
+PKj=1 cj + ϵ , ϵ > 0 (19) Here, we set ϵ to 1 × 10 −9.3. Entropy computation: 
+
+H(x) = −
+
+> K
+
+X
+
+> i=1
+
+pi · log 2(pi), p i > 0 (20) 1 3 5 7
+
+> 0.5
+> 0.8
+> 1.1
+> 1.4
+> 1.7
+> 2.0
+> 2.3
+> 2.6
+> 2.9
+> 3.2
+> 3.5
+> 3.8
+
+Foreground Entropy          
+
+> 3.34
+> 2.33
+> 0.60
+> Entropy
+> 1.32
+> 2.23
+> 1.33
+> 3.21
+> 0.61
+> 11 14 17 20
+> 2.36
+> 0.60
+> 1.33
+> 1.58
+> 1.32
+> 0.61
+> 1.34
+> 0.81
+> Backbone Neck
+> IBS -DIBS -UIBS -D
+> 1357
+> 3.0
+> 3.2
+> 3.4
+> 3.6
+> 3.8
+> 4.0
+> 4.2
+> 4.4
+> 4.6
+> 4.8
+> 5.0
+> 5.2
+
+Background Entropy          
+
+> 3.54
+> 3.89
+> 4.26
+> 4.14
+> 4.00
+> 3.72
+> 3.15
+> 4.11
+> 11 14 17 20
+> 3.73
+> 4.03
+> 3.60
+> 4.23
+> 3.65
+> 3.47
+> 4.15
+> 4.62
+> Backbone Neck
+> IBS -DIBS -UIBS -D
+> 1357
+> 0.0
+> 0.4
+> 0.8
+> 1.2
+> 1.6
+> 2.0
+> 2.4
+> 2.8
+> 3.2
+> 3.6
+> 4.0
+> 4.4
+
+Background -Foreground Entropy Gap                                    
+
+> 0.20
+> 1.56
+> 2.39
+> 11 14 17 20
+> 1.37
+> 2.33
+> 2.86 2.81
+> Backbone
+> IBS -DIBS -U
+> 3.50
+> 1357
+> 0.5
+> 0.8
+> 1.1
+> 1.4
+> 1.7
+> 2.0
+> 2.3
+> 2.6
+> 2.9
+> 3.2
+> 3.5
+> 3.8 3.77
+> 2.75
+> 0.65
+> Entropy
+> 1.48
+> 2.71
+> 1.50
+> 0.66
+> 11 14 17 20
+> 2.77
+> 0.65
+> 1.49
+> 1.91
+> 1.48
+> 0.66
+> 1.50
+> Backbone Neck
+> IBS -DIBS -UIBS -D
+> 1357
+> 3.0
+> 3.2
+> 3.4
+> 3.6
+> 3.8
+> 4.0
+> 4.2
+> 4.4
+> 4.6
+> 4.8
+> 5.0
+> 5.2
+> 3.36
+> 3.87
+> 4.31
+> 4.11
+> 3.68 4.11
+> 2.95
+> 4.24
+> 11 14 17 20
+> 2.98
+> 4.44
+> 4.14 4.14
+> 3.96
+> 4.27
+> 4.20
+> 4.52
+> Backbone Neck
+> IBS -DIBS -UIBS -D
+> 1357
+> -1.0
+> -0.5
+> 0.5
+> 1.0
+> 1.5
+> 2.0
+> 2.5
+> 3.0
+> 3.5
+> 4.0
+> 4.5
+> -0.41
+> 1.12
+> 2.61
+> 11 14 17 20
+> 0.21
+> 2.48
+> 3.79
+> 2.70
+> Backbone
+> IBS -DIBS -U
+> 3.58
+> 1357
+> 0.5
+> 0.8
+> 1.1
+> 1.4
+> 1.7
+> 2.0
+> 2.3
+> 2.6
+> 2.9
+> 3.2
+> 3.5
+> 3.8 3.78
+> 2.68
+> 0.55
+> Entropy
+> 1.40
+> 2.66
+> 1.41
+
+LayerGroup (IBS -D + IBS -U)           
+
+> 0.56
+> 11 14 17 20
+> 2.71
+> 0.55
+> 1.39
+> 1.83
+> 1.39
+> 0.55
+> 1.42
+> 0.85
+> Backbone Neck
+> IBS -DIBS -UIBS -D
+> 1357
+> 3.0
+> 3.2
+> 3.4
+> 3.6
+> 3.8
+> 4.0
+> 4.2
+> 4.4
+> 4.6
+> 4.8
+> 5.0
+> 5.2
+> 3.92
+> 4.11
+> 4.34
+> 3.83 3.86
+> 2.82
+
+LayerGroup (IBS -D + IBS -U)          
+
+> 4.31
+> 11 14 17 20
+> 4.09
+> 4.30
+> 3.59
+> 4.20
+> 3.37
+> 3.57
+> 4.43
+> 4.48
+> Backbone Neck
+> IBS -DIBS -UIBS -D
+> 1357
+> -1.0
+> -0.5
+> 0.0
+> 0.5
+> 1.0
+> 1.5
+> 2.0
+> 2.5
+> 3.0
+> 3.5
+> 4.0
+> 4.5
+> 0.14
+> 1.43
+> 2.45
+
+LayerGroup (IBS -D + IBS -U)         
+
+> 11 14 17 20
+> 1.38
+> 1.98
+> 3.02 3.01
+> Backbone
+> IBS -DIBS -U
+> 3.75
+> VisDrone  UAVDT  HazyDet
+> 0.07
+> 1.77
+> 2.82
+> 3.66 3.81
+> 2.65
+> 2.27
+> 3.43
+> 0.0
+> 3.74 1.17
+> -0.75
+> 2.34
+> 3.79 3.63
+> 2.37 2.20
+> 3.75
+> 0.92
+> -0.63
+> 3.46
+> 3.66
+> 0.97
+> 3.60
+> 2.23
+> 2.65
+> 3.61
+> baseline
+> FRFDet
+> 3.58
+> 3.57
+
+Fig. 6: Quantitative visualization of foreground and background entropy for FRFDet’s IBS compared to the baseline model across three UAV datasets. Red and blue curves represent FRFDet and the baseline model, respectively. “LayerGroup (IBS-D+IBS-U)” denotes a set of non-contiguous layers that collectively constitute the IBS module. “Background-Foreground Entropy Gap” is defined as the background entropy minus the foreground entropy. Values in bold represent superior results. 
+
+Kernel Sizes AP AP 50 Params (M) FLOPs (G) (3,3), (3,3), (3,3), (3,3) 21.7 36.5 2.6 4.6 (5,5), (5,5), (5,5), (5,5) 21.8 36.8 2.6 4.6 (3,5), (3,3), (3,5), (3,7) 22.2 37.2 2.6 4.6 
+
+TABLE XI: Ablation study on kernel sizes for neighboring scale fusion across SFRCF stages in FRFDet-T on VisDrone. Building on the above formulation, we computed the aver-age foreground and background entropy across layer groups (each comprising multiple target layers) for IBS and SFRCF on three UAV datasets, and tracked the evolution of the background-foreground entropy gap with increasing depth. As illustrated in fig. 6, we present a quantitative comparison of foreground and background entropy for IBS across three UAV datasets. The first column reveals that IBS consistently increases foreground entropy compared to the baseline, with the most notable gains observed at layer groups 11 and 14. These groups correspond to the IBS-U module, characterized by a learnable symmetric structure. This suggests that IBS effectively captures richer discriminative features throughout the feature transmission process, while the symmetric sam-pling mechanism enhances the model’s focus on target regions by improving foreground feature expressiveness. The second column shows that IBS significantly reduces background en-tropy, indicating a suppression of background redundancy and noise. This leads to more compact and informative repre-sentations, improving the quality of learned features. Conse-quently, the combination of increased foreground entropy and decreased background entropy results in a smaller background-foreground entropy gap, as depicted in the third column. This reduced gap implies enhanced foreground saliency, further validating the core strength of IBS—its ability to suppress background clutter while preserving and enhancing discrim-inative features that are critical for accurate small object detection. However, a noteworthy phenomenon is observed in the third row, corresponding to the HazyDet dataset—a representative foggy UAV scenario. During the feature extraction stage, our method exhibits higher background entropy than the baseline. This increase is attributed to the elevated scene complexity and intensified foreground-background ambiguity introduced 12 15 18 21 
+
+> 0.5
+> 0.8
+> 1.1
+> 1.4
+> 1.7
+> 2.0
+> 2.3
+> 2.6
+> 2.9
+> 3.2
+> 3.5
+> 3.8
+
+Foreground Entropy    
+
+> 1.34
+> 2.34
+> 0.60
+> Entropy
+> 1.33
+> 2.33
+> 1.33 1.34
+> 0.61
+> Neck
+> VisDrone
+> 12 15 18 21
+> 3.0
+> 3.2
+> 3.4
+> 3.6
+> 3.8
+> 4.0
+> 4.2
+> 4.4
+> 4.6
+> 4.8
+> 5.0
+> 5.2
+
+Background Entropy    
+
+> 4.03
+> 3.71
+> 4.51
+> 4.03 4.07
+> 3.64
+> 4.45
+> 3.92
+> Neck
+> 12 15 18 21
+> 0.5
+> 0.8
+> 1.1
+> 1.4
+> 1.7
+> 2.0
+> 2.3
+> 2.6
+> 2.9
+> 3.3
+> 3.6
+> 3.9
+
+Background -Foreground Entropy Gap               
+
+> Neck
+> 12 15 18 21
+> 0.5
+> 0.8
+> 1.1
+> 1.4
+> 1.7
+> 2.0
+> 2.3
+> 2.6
+> 2.9
+> 3.2
+> 3.5
+> 3.8
+> 1.50
+> 2.75
+> 0.65
+> Entropy
+> 1.49
+> 2.76
+> 1.49 1.50
+> 0.66
+> Neck
+> UAVDT
+> 12 15 18 21
+> 3.0
+> 3.2
+> 3.4
+> 3.6
+> 3.8
+> 4.0
+> 4.2
+> 4.4
+> 4.6
+> 4.8
+> 5.0
+> 5.2
+> 4.01
+> 3.49
+> 4.42
+> 4.15
+> 3.39
+> 4.32 4.36
+> Neck
+> 12 15 18 21
+> 0.5
+> 0.8
+> 1.1
+> 1.4
+> 1.7
+> 2.0
+> 2.3
+> 2.6
+> 2.9
+> 3.3
+> 3.6
+> 3.9 Neck
+> 12 15 18 21
+> 0.5
+> 0.8
+> 1.1
+> 1.4
+> 1.7
+> 2.0
+> 2.3
+> 2.6
+> 2.9
+> 3.2
+> 3.5
+> 3.8
+> 1.41
+> 2.68
+> Entropy  2.68
+> 1.40
+
+LayerGroup (SFRCF)    
+
+> 0.55
+> Neck
+> HazyDet
+> 12 15 18 21
+> 3.0
+> 3.2
+> 3.4
+> 3.6
+> 3.8
+> 4.0
+> 4.2
+> 4.4
+> 4.6
+> 4.8
+> 5.0
+> 5.2
+> 4.07
+> 3.70
+> 4.39
+> 4.07
+> 4.02
+> 3.67
+> 4.42
+
+LayerGroup (SFRCF)    
+
+> Neck
+> 12 15 18 21
+> 0.5
+> 0.8
+> 1.1
+> 1.4
+> 1.7
+> 2.0
+> 2.3
+> 2.6
+> 2.9
+> 3.3
+> 3.6
+> 3.9
+
+LayerGroup (SFRCF)  
+
+> Neck
+> 1.42 1.40
+> 0.56
+> 3.91
+> 4.34
+> 3.11
+> 2.82
+> 3.31
+> 2.31
+> 1.37
+> 2.69
+> 3.91
+> 2.70
+> 1.74
+> 0.74
+> 2.51
+> 1.15
+> 2.66
+> 3.77
+> 1.90
+> 3.70
+> 3.00
+> 1.34
+> 2.67
+> 3.83
+> 2.66
+> baseline
+> FRFDet
+> 1.02
+> 2.27
+> 3.79
+
+Fig. 7: Quantitative visualization of foreground and background entropy for the SFRCF module in our FRFDet compared to the baseline model across three UAV datasets. Red and blue curves represent FRFDet and the baseline model, respectively. “LayerGroup (SFRCF)” denotes a set of non-contiguous layers that collectively constitute the SFRCF module. Values in bold represent superior results. FRFDet -T (Ours) Ground Truth RemDet -T
+
+Fig. 8: Visualization of detection results on VisDrone, com-paring our FRFDet-T with RemDet-T under the from-scratch training mode. by haze, which compels the model to attend to background regions that are visually entangled with the foreground in the early layers. As the network deepens, it gradually learns to disentangle and distinguish foreground from background. This progressive refinement is illustrated in the third column of the third row, where the gap between the red and blue curves consistently narrows from the 1st to the 5th layer group. From the 7th layer group onward, the entropy gap continues to decrease, reflecting enhanced discriminative capacity and more precise feature representation in deeper stages. Similarly, we further analyze the SFRCF module in the Neck, as illustrated in fig. 7. Across all three UAV datasets, the foreground entropy of our method remains comparable to that of the baseline, indicating that SFRCF effectively preserves the discriminative capability for foreground objects. In contrast, the background entropy of our approach is sig-nificantly lower than that of the baseline, demonstrating that SFRCF offers substantial advantages in aligning multi-scale semantic features while suppressing uncertainty and noise in irrelevant background regions. Moreover, the reduced entropy gap between background and foreground further validates that our SFRCF module more effectively delineates the semantic YOLOv8 -N YOLOv9 -T YOLOv10 -N YOLO11 -N YOLOv12 -N FRFDet -T Ground Truth Fig. 9: Visualization of detection results on HazyDet’s RDDTS, comparing our FRFDet-T with state-of-the-art real-time detectors under the from-scratch training mode. boundaries between foreground and background throughout the fusion process. E. M ORE VISUALIZATION RESULTS 
+
+A. Qualitative Results under VisDrone 
+
+As depicted in fig. 8, we compare FRFDet-T with RemDet-T on the VisDrone dataset. FRFDet-T not only detects more small objects but also minimizes misclassifications between similar categories, such as people and pedestrians. 
+
+B. Qualitative Results under Foggy UAV Conditions 
+
+As shown in fig. 9, FRFDet demonstrates robust detection under foggy conditions characterized by reduced visibility and significant noise. It accurately localizes targets, whereas other methods often produce missed detections or misclassifications (e.g., misclassifying a truck as a bus). These results highlight FRFDet’s resilience in challenging UAV scenarios and its strong generalization capability in real-world environments. F. L IMITATIONS AND FUTURE DIRECTIONS 
+
+Although FRFDet achieves state-of-the-art performance on representative UAV benchmarks and the large-scale MS COCO dataset, and demonstrates strong generalization in real-world foggy conditions, it still follows a supervised learning paradigm and relies on single-modality inputs. Consequently, its generalization capability in complex and unseen real-world scenarios remains limited. Recent advancements in Visual Language Large Models (VLLMs), such as Qwen3-VL [54], GLM-4.1V [55], and PAM [56], have showcased remarkable capabilities in generaliza-tion, visual grounding, and instance-level perception, includ-ing tasks like visual grounding and instance segmentation. Meanwhile, diffusion models [57] have emerged as a pow-erful paradigm for high-quality data generation, offering new opportunities for constructing large-scale annotated datasets to support the training of VLLMs. These models achieve robust performance by leveraging supervised fine-tuning (SFT) or reinforcement fine-tuning (RFT) paradigms with high-quality data and multimodal capabilities. Despite these achievements, applying VLLMs to small object detection in unmanned aerial vehicle (UAV) imagery remains an underexplored yet critical research direction. This task demands the development of high-quality, UAV-specific multimodal benchmarks to address challenges such as dense object distributions, high-resolution imagery, and hallucination caused by noisy backgrounds. By tackling these issues, multimodal methods can strive to achieve detection precision comparable to specialized visual small object detection models, thereby advancing the field of aerial perception. In future work, we plan to explore the integration of UAV small object detection with language-image-video multimodal capabilities to enhance robustness and generalization across diverse UAV scenarios.

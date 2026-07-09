@@ -1,0 +1,396 @@
+Title: MiLSD: A Micro Line-Segment Detector for Resource-Constrained Devices
+
+URL Source: https://arxiv.org/pdf/2607.06600v1
+
+Published Time: Thu, 09 Jul 2026 00:01:27 GMT
+
+Number of Pages: 10
+
+Markdown Content:
+> 1
+
+# MiLSD: A Micro Line-Segment Detector for Resource-Constrained Devices 
+
+Parsa Hassani Shariat Panahi π , Amir Hossein Jalilvand π , and M. Hassan Najafi +
+
+Abstract —Line segment detection is a key building block in visual SLAM, 3D reconstruction, and industrial inspection. Re-cent deep learning methods have greatly improved accuracy, yet even the smallest models require several megabytes of memory, exceeding low-cost MCU capacity. This work investigates the maximum achievable accuracy under a sub-megabyte budget. We propose MiLSD, a detector tailored for MCU-level constraints, and systematically compare three output representations within a compact fully-convolutional backbone. Our study shows that the proposed F-Clip center-with-length-and-angle formulation learns most effectively at small model sizes. We find that 8-bit quantization preserves full-precision performance, while 4-bit quantization causes significant degra-dation, particularly in angle regression, with quantization-aware training recovering only part of the loss. With a one-megabyte activation budget and inference enhancements including sub-pixel decoding, test-time augmentation, and a lightweight ver-ifier, MiLSD improves sAP 10 on ShanghaiTech Wireframe from 
+
+10 .6 (25k parameters, 0.25 MB) to 24 .1 within 1 MB. Rather than competing with GPU-scale parsers, we map the accuracy– memory trade-off across representations, bit-widths, capacities, and post-processing strategies for embedded vision systems. 
+
+Index Terms —line segment detection, TinyML, quantization, memory-constrained inference, embedded vision. 
+
+I. I NTRODUCTION 
+
+# LINE segments are a primitive structural feature in com-puter vision: the straight edges of walls, doors, buildings, and machined parts [1]. They support SLAM, structure-from-motion, vanishing-point estimation, lane and power-line de-tection, and industrial inspection. While much recent progress has targeted GPU- or cloud-based platforms, this work focuses on detection under the tight memory and compute constraints of real-time embedded hardware. Classical detectors such as LSD [1] (Line Segment Detec-tor) and EDLines [2] run on a CPU but find all edges, while modern learned wireframe parsers [3]–[6] recover only salient segments but require GPU- or phone-class compute. Table I situates representative methods across this spectrum. Classical detectors grow line-support regions from local gradients and validate them statistically. LSD groups pixels with consistent gradient orientation and accepts a segment if its number of false alarms is below one. EDLines reaches comparable quality faster by chaining edge pixels into clean chains. ELSED [7] targets embedded CPUs for high frame rates. Their shared weakness: accuracy degrades under blur, low contrast, and clutter, and runtime is content-dependent. At its evaluated  
+
+> πSchool of Computer Engineering, Iran University of Science and Tech-nology, Tehran, Iran
+> +Electrical, Computer, and Systems Engineering Department, Case Western Reserve University, OH, USA
+
+640 × 480 resolution, ELSED also requires several full-frame gradient and edge buffers ( ∼1.5–2 MB) that exceed even the 1 MB SRAM of an STM32H7, and since its edge walk is global and data-dependent, it cannot be tiled and admits no static worst-case memory bound, unlike a fixed-cost CNN. Classical detectors have also been mapped to FPGAs and ASICs for deterministic latency, but these implementations accelerate hand-designed gradient logic, not neural networks on general-purpose microcontrollers. ShanghaiTech Wireframe [8] reframed line detection as a learning problem. L-CNN [3] proposed junctions and veri-fied candidate lines. AFM [9] used attraction fields, while HAWP [4] combined holistic fields with endpoint verification. ULSD [10] generalized across pinhole, fisheye, and spher-ical cameras, and LETR [11] uses transformers for direct line detection. L-CNN, HAWP, ULSD, and LETR achieve 
+
+sAP 10 ≈ 63 –70 (AFM, an earlier field-based method, scores 
+
+≈ 24 ), but assume workstation-class memory. The unifying observation is that classical detectors are light but find every edge, while learned parsers are accurate but GPU-bound; no learned method yet occupies the MCU column of Table I. Even the lightest learned detector, M-LSD-tiny [6], requires at least 78 MB of runtime memory, orders of magnitude beyond the SRAM budget of typical microcontrollers. For context, the STM32F746 provides only 320 KB of SRAM and 1 MB of flash [12]. On such devices, the bottleneck is peak activation memory, not parameter storage. Prior work differs in how segments are encoded at the network output. Heatmap methods require a separate linker. Tri-point and center-with-displacement designs (TP-LSD [13], M-LSD [6]) target mobile inference. F-Clip [5] compresses each segment to center, length, and angle; we encode that angle as a double-angle (cos 2 θ, sin 2 θ). On microcontrollers, activations domi-nate SRAM usage [14], [15]. MCUNet [16] uses hardware-aware search, and MCUNetV2 [14] adds patch-based infer-ence. Integer quantization with straight-through gradients [17], [18] underpins PTQ and QAT. Int8 is generally safe; sub-8-bit demands care [19], [20]. To our knowledge, no prior work combines these threads for MCU-scale line segment detection. This work investigates the maximum achievable accuracy under a sub-megabyte memory budget. We study three axes: (i) output representation: heatmap, center-with-displacement, and F-Clip-style center-with-length-and-angle; (ii) quantiza-tion: full-precision, 8-bit, and 4-bit; and (iii) inference en-hancements: sub-pixel decoding, test-time augmentation, and a lightweight verifier. We propose MiLSD, a detector designed for MCU-scale memory. With a 1 MB activation budget, MiLSD achieves arXiv:2607.06600v1 [cs.CV] 7 Jul 2026 2
+
+sAP 10 = 24 .1 on ShanghaiTech Wireframe, improving over a 
+
+0.25 MB baseline at 10 .6. Our quantization study reveals that 8-bit inference preserves full-precision performance, while 4-bit quantization causes significant degradation, particularly in angle regression, where quantization-aware training recovers only part of the loss. This sensitivity has not been reported in prior work. The main contributions are:  
+
+> •
+
+A comparison of three output representations under ex-treme memory constraints, identifying F-Clip-style as the most effective at small model sizes.  
+
+> •
+
+A quantization study revealing angle regression in the 
+
+(cos 2 θ, sin 2 θ) space as the most sensitive component to bit-width reduction.  
+
+> •
+
+MiLSD, operating within 1 MB memory while achieving 
+
+sAP 10 = 24 .1 on ShanghaiTech Wireframe.  
+
+> •
+
+An accuracy–resource frontier characterizing trade-offs among capacity, quantization, and post-processing. Targeting MCU-scale detection, where memory is the bind-ing constraint, we show that meaningful wireframe quality is achievable within 1 MB despite GPU-class parsers remaining out of reach. Our study maps the accuracy–resource trade-offs across representations, quantization, and post-processing. The rest of the paper is organized as follows. Section II details the proposed architecture, including the three output representations, the compact backbone, and the quantization-aware training pipeline. Section III describes the experimental protocol, dataset, and training hyperparameters. Section IV presents our empirical findings on representation selection, quantization sensitivity, capacity scaling, and comparisons to prior art. Section V introduces the full MiLSD system on the STM32H7, incorporating capacity scaling, sub-pixel decoding, test-time augmentation, and a learned verification head. Section VI summarizes our contributions and discusses directions for future work. II. P ROPOSED MILSD DESIGN 
+
+This section describes the design of MiLSD, a line-segment detector optimized for microcontroller-scale memory. We first present three output representations for encoding segments on a fixed grid, then describe the compact backbone shared across all variants, followed by the quantization strategy that enables int8 deployment, and finally the training pipeline and deployment flow. 
+
+A. Output Representations 
+
+A key design decision for any learned line-segment detector is how to encode the continuous geometry of a segment into discrete network outputs. We study three representations on a 
+
+128 × 128 output grid (Fig. 1). 
+
+(i) Heatmap: A per-pixel binary classification map indicat-ing whether a pixel lies on a line. This is the most direct representation but requires an external post-processing linker to assemble pixels into continuous segments. While concep-tually simple, the linker introduces additional computational overhead and hyperparameters, and the network itself does not produce geometric primitives. v1 · Heatmap + linker                                      
+
+> per-pixel line probability
+> (a dense map, not segments)
+> v2 · Center + displacement
+> center + 2 displacement vectors
+> (4 numbers, int4-fragile)
+> v6 · F-Clip
+> center + length + angle
+> (cos2θ, sin2θ)
+> length
+> θ
+> Fig. 1. Three output encodings as dense per-pixel maps (not explicit segments). v1 predicts per-pixel line probability and requires an external linker. v2 Center + displacement [6], [13]: center confidence with two endpoint offset vectors (four channels; int4-fragile). v6 F-Clip [5]: center plus length and angle (cos 2 θ, sin 2 θ).grayscale image 256 × 256
+> 8 ch 128²
+> 16 ch 64²
+> 32 ch 64²·3
+> 32 ch 128²
+> convolutional backbone 5 conv layers · ~25k params shrinks 256 →64, then back up to the 128 output grid
+> center
+> length
+> cos 2θ
+> sin 2θ 4 maps · 128×128
+> decode
+> line segments
+> Fig. 2. Backbone and output head architecture. A 256 ×256 grayscale input is encoded through five strided convolutions, reducing spatial resolution to
+> 64 ×64 and expanding channels to 32 . A 1×1projection and nearest-neighbor upsampling restore the resolution to 128 ×128 , followed by a 3×3
+> output head producing the four prediction maps.
+
+(ii) Center-with-Displacement: Inspired by TP-LSD and M-LSD [6], [13], this representation predicts a center confidence map alongside displacement vectors from each center pixel to the two endpoints. Each segment is thus encoded as a center point plus two offset vectors. This formulation is single-stage and does not require an external linker, but the network must learn to regress four continuous values (two displacements) per detected segment. 
+
+(iii) F-Clip: Following Dai et al. [5], this representation encodes each segment as a center confidence map, a length 
+
+ℓ, and an orientation. Whereas F-Clip regresses the angle directly as a scalar, we encode it as (cos 2 θ, sin 2 θ); this double-angle encoding resolves the 180 ◦ ambiguity inherent to undirected line segments, making it uniquely defined for any line orientation. For a ground-truth segment with endpoints 
+
+p1, p2, the targets at the center cell are: 
+
+ℓ = ∥p2 − p1∥, θ = atan2( y2 − y1, x 2 − x1)
+
+During inference, decoding inverts this representation: for each detected center peak above a confidence threshold, the segment is reconstructed as a line of length ℓ oriented at θ, centered at the detected location. This compact encoding requires only four output channels (center, length, cos 2 θ, sin 2 θ), making it particularly attractive for memory-constrained deployment. Section IV-A compares these three representations under iden-tical memory budgets. 
+
+B. Backbone Architecture 
+
+All three output heads share a common compact backbone designed to minimize activation memory while preserving sufficient spatial resolution for accurate line localization. The architecture (Fig. 2) consists of: 1) A strided fully-convolutional encoder with five convolu-tional layers, channel widths 8 → 16 → 32 → 32 → 32 ,3          
+
+> TABLE I REPRESENTATIVE LINE SEGMENT DETECTORS ACROSS CLASSICAL ,LEARNED ,AND EFFICIENT REGIMES (CORE IDEAS AND PLATFORMS PER THE RESPECTIVE PAPERS ). T HE On MCU? COLUMN HIGHLIGHTS THAT PRIOR LEARNED METHODS TARGET GPU, PHONE ,OR FPGA PLATFORMS .
+
+Work Core idea Learned Platform Output On MCU? 
+
+LSD [1] Gradient region-growing + a contrario validation no CPU segments no EDLines [2] Edge-drawing + line fitting + Helmholtz validation no CPU segments no ELSED [7] Edge-drawing with segment continuation (embedded-oriented) no CPU/ARM segments no Wireframe-CNN [8] Junction +line heatmaps, dataset that started the field yes GPU heatmaps no L-CNN [3] Junction proposals + line verification head yes GPU junctions no AFM [9] Attraction-field map regressed then squeezed to lines yes GPU field no HAWP [4], [21] Holistic attraction field + endpoint verification yes GPU 4D field no TP-LSD [13] Tri-points (center + two endpoints), single-stage yes GPU tri-point no F-Clip [5] Fully-convolutional center + length + angle yes GPU center+geo no DeepLSD [22] Learned line attraction field + classical refinement yes GPU field no LETR [11] Transformer, line entities without edge maps yes GPU endpoints no M-LSD / -tiny [6] Compact MobileNetV2, center + displacement (mobile) yes Phone/GPU center+disp no LSDNet [23] Lightweight CNN front-end + classical LSD back-end yes GPU/CPU segments no EvLSD-IED [24] Event-based LSD via image-to-event distillation yes Event cam endpoints no Predecessor (FPGA) [25] Modified Canny + step-length linking, hardware accelerator no FPGA segments n/a 
+
+This work Tiny FCN, F-Clip output, int8 quantized yes MCU center+geo yes fp32   
+
+> any value (continuous)
+> int8
+> 256 levels — fi ne grid, snap error tiny (free)
+> int4
+> 16 levels — coarse grid, big snap error (accuracy drops)
+> Fig. 3. Quantization scheme. Continuous weights are snapped to discrete levels: int8 provides 256 levels (fine grid), while int4 provides only 16 levels (coarse grid). Quantization is performed per-tensor and symmetric.
+
+and stride-2 downsampling that reduces the input reso-lution from 256 × 256 to 64 × 64 .2) A 1 × 1 convolutional reduction layer that projects features to a compact representation. 3) A nearest-neighbor upsampling layer that restores the spatial resolution to 128 × 128 .4) A 3 × 3 output head that produces the final prediction maps (center confidence, length, and orientation for F-Clip; center and displacements for endpoint representa-tion; or a single heatmap). The total parameter count is approximately 25 k at the smallest width. Section IV-D demonstrates that parameter capacity is not the primary bottleneck in this regime; rather, input resolution and activation memory constrain performance. 
+
+C. Quantization for MCU Deployment 
+
+To fit the model within microcontroller SRAM and use optimized integer inference kernels such as CMSIS-NN [26], we quantize weights and activations to integer precision. We adopt per-tensor symmetric quantization, implemented with fake-quantization in the forward pass and the straight-through estimator (STE) for gradient propagation during backpropaga-tion [17], [18]. For a weight tensor w and target bit-width b, the quantiza-tion scale is: 
+
+s = max |w|
+
+2b−1 − 1
+
+The quantized weight is computed as: 
+
+ˆw = s · round 
+
+ ws
+
+
+
+This operation snaps continuous values onto a discrete grid of 
+
+2b levels. As illustrated in Fig. 3, 8-bit quantization provides 256 levels, offering fine granularity, while 4-bit quantization reduces this to only 16 levels, introducing substantial rounding error. We evaluate two quantization strategies:  
+
+> •
+
+Post-training quantization (PTQ): The model is first trained in full precision, then weights and activations are quantized once using a small calibration set. This is computationally efficient but can suffer from accuracy degradation, particularly at low bit-widths.  
+
+> •
+
+Quantization-aware training (QAT): The quantization op-eration is simulated during training, allowing the model to learn weights that are robust to quantization error. While more expensive, QAT often recovers some of the accuracy lost in PTQ. Our deployed model uses int8 quantization with QAT, achieving performance comparable to full precision as shown in Section IV-B. We also investigate 4-bit quantization to understand the limits of aggressive compression, revealing that angle regression is particularly sensitive to bit-width reduction. 
+
+D. Training Pipeline and Deployment Flow 
+
+Training is performed entirely off-device on a GPU work-station; the microcontroller executes only int8 inference. This 4off-device (Kaggle GPU) on-device  
+
+> Wireframe data
+> GT line labels
+> train CNN (fp32)
+> QAT fake-quant
+> export int8 (X-CUBE-AI)
+> STM32F746 int8 inference deploy
+> Fig. 4. Off-device training and on-MCU inference pipeline. The model is trained on GPU with quantization simulation, then exported through X-CUBE-AI for deployment on the STM32F746. The MCU executes int8 inference only.
+
+train-off / infer-on split is the defining premise of our deploy-ment strategy and is common practice in TinyML systems. The training pipeline proceeds as follows: 1) A 256 × 256 grayscale image is fed into the backbone. 2) The network produces prediction maps (center, length, 
+
+cos 2 θ, sin 2 θ for F-Clip) on a 128 × 128 grid. 3) Loss is computed against ground-truth segments en-coded in the same representation, using a combination of binary cross-entropy for center confidence and smooth L1 loss for geometric attributes. 4) For QAT, quantization simulation is enabled during training with STE gradient propagation. For deployment, the trained model is exported through X-CUBE-AI, STMicroelectronics’ neural network inference library for STM32 microcontrollers. The export process gen-erates optimized C code that runs on the Arm Cortex-M7 core, using CMSIS-NN for efficient integer arithmetic. The inference pipeline on the MCU (Fig. 4) consists of: 1) Input image capture (grayscale, 256 × 256 ). 2) int8 inference through the quantized network. 3) Decoding of output maps into line segments (center detection, length and angle extraction, endpoint com-putation). 4) Optional post-processing: Line-of-Interest verification and non-maximum suppression. The entire inference pipeline is designed to operate within the 320 KB SRAM budget of the STM32F746, with peak acti-vation memory as the primary constraint rather than parameter storage. III. E XPERIMENTAL SETUP 
+
+a) Dataset and metric: We train and evaluate on the ShanghaiTech Wireframe benchmark [8] (5,000 training and 462 held-out evaluation images, ∼74 segments per image). Accuracy is structural average precision sAP t at squared-endpoint-distance thresholds t ∈ { 5, 10 , 15 } in the 128 2 output space; we headline sAP 10 . For comparability with the FPGA predecessor [25] we also reference its Q1 (coverage) and Q2 (noise-suppression) measures. 
+
+b) Implementation: Table II lists the training configura-tion. Training is in PyTorch on a GPU; versions v1–v6 of the design search [27] share the backbone of Section II. All models are trained for 300 epochs with a batch size of 32, using the Adam optimizer and a cosine annealing learning rate schedule starting from 10 −3. Data augmentation is limited to random horizontal and vertical flips. The loss function combines binary cross-entropy for center classification with   
+
+> TABLE II TRAINING HYPERPARAMETERS (DEPLOYED F-C LIP MODEL ).
+
+Setting Value Input → output resolution 256 × 256 → 128 × 128 
+
+Backbone channels 8 → 16 → 32 → 32 → 32 
+
+(∼25k params) Output head center, length, cos 2 θ, sin 2 θ
+
+Epochs / batch 300 / 32 Optimizer / LR Adam / 1 × 10 −3, cosine schedule Augmentation horizontal + vertical flip Loss BCE(center) + 2 .0×
+
+L1(length, angle), masked Quantization per-tensor symmetric; PTQ and QAT 0510 15 20 25              
+
+> 0.3 v1 Heatmap baseline 3.6 v2 Endpoint center+disp 10.6 v6 F-Clip 25k 17.8 MiLSD W4 0.39M 21.0 MiLSD +TTA4 24.1 MiLSD +LoI
+> sAP10
+> Fig. 5. From baseline to MiLSD: sAP 10 on Wireframe at each step. The output representation drives the first gains (heatmap v1 →endpoint v2 →
+> F-Clip), reaching 10 .6for the 25k-parameter F-Clip model; scaling capacity to the width-4 MiLSD backbone ( 0.39 M parameters) lifts this to 17 .8, and the inference-time stages (test-time augmentation then the Line-of-Interest verification head) carry it to sAP 10 = 24 .1(purple).
+
+smooth L1 loss for length and angle regression, weighted by a factor of 2.0 for the geometric terms and masked to ground-truth segment locations. We evaluate both PTQ and QAT at 8 and 4 bits. IV. R ESULTS 
+
+A. Representation Comparison: The Climb 
+
+Fig. 5 traces the evolution of sAP 10 across the successive versions v1–v6 of our design search, providing a step-by-step account of how accuracy accumulates as each design choice is introduced. At the lowest rung of this progression, the heatmap baseline proves fundamentally inadequate for producing clean, discrete segments, registering only sAP 10 = 0 .3. Endpoint regression constitutes the first formulation capable of yielding 510.6   
+
+> fp32
+> 10.0
+> int8
+> 0.7
+> int4 PTQ
+> 6.9
+> int4 QA T
+> sAP10
+> full-precision (fp32) level
+> no loss
+> collapses
+> QA T
+> recovers
+> partway
+> Fig. 6. sAP 10 versus bit-width for the deployed F-Clip model on Wireframe. The int8 point overlaps fp32; PTQ at 4 bits fails while QAT partially recovers.
+
+a meaningful structural score, reaching sAP 10 = 3 .6, yet it remains limited in its ability to recover coherent geometry. The decisive inflection occurs with the adoption of the F-Clip representation, which at the identical 25k-parameter budget more than doubles performance to sAP 10 = 7 .2, establishing that the output encoding itself, rather than model size, is the dominant factor at this scale. Subsequent refinements complete the climb in a more incremental fashion: aligning the output grid with the label resolution at 256 px input lifts accuracy to 
+
+8.6; incorporating the full training set of 5,000 images together with flip augmentation raises it further to 9.3; and extending the training schedule to 300 epochs yields the final deployed score of sAP 10 = 10 .6. Taken together, these results demon-strate unambiguously that the largest gains originate from the choice of representation , not from additional capacity. This finding carries particular significance for microcontroller-scale design: a geometric encoding that explicitly parameterizes each segment by its center, length, and orientation equips even a 25k-parameter network with sufficient inductive structure to learn meaningful segment hypotheses, whereas the heatmap and endpoint alternatives remain unable to assemble coherent geometric predictions under the same severe parameter con-straint. 
+
+B. Quantization 
+
+Fig. 6 and Table III present the results of our systematic quantization study, evaluated across the three principal output representations corresponding to versions v1, v2, and v6 of the design search. For the deployed F-Clip model, the transition from full-precision fp32 inference to 8-bit integer quantization incurs a degradation of only 0.6 sAP 10 points (10 .6 → 10 .0), indicating that int8 arithmetic is sufficient for on-device deployment with negligible impact on structural accuracy. By contrast, post-training quantization at 4 bits proves catastrophic, collapsing performance to sAP 10 = 0 .7;quantization-aware training partially mitigates this failure, re-covering the score to 6.9, which corresponds to approximately 
+
+60% of the int4-induced gap relative to the fp32 baseline. Inspection of the per-head errors reveals that the degradation is concentrated almost entirely in the (cos 2 θ, sin 2 θ) angle regression branch, whose inherently narrow dynamic range is poorly served by the coarse 4-bit quantization grid. On this basis, the deployed model adopts int8 throughout. More broadly, these results suggest that pushing quantization beyond 8 bits is unlikely to remain viable for geometric regression    
+
+> TABLE III QUANTIZATION RESULTS ,sAP 10 ON WIREFRAME .
+
+Representation fp32 int8 int4 PTQ int4 QAT Heatmap (v1) ∗ 0.3 0.3 0.3 n/a Endpoint (v2) 3.6 3.6 ∼0.3 fragile 
+
+F-Clip (v6, deployed) 10.6 10.0 0.7 6.9               
+
+> ∗Heatmap is not built for sAP; on its own terms Q2 = 0 .86 , recall = 0 .44 .128 192 256 272 288
+> input resolution (px)
+> 0510 15 sAP10 (accuracy) 0100 200 300 peak SRAM (KB)
+> 320 KB SRAM budget
+> 80
+> 180
+> 256
+> 289
+> 324
+> peak SRAM
+> 7.2 8.6
+> sAP (accuracy)
+> 256 px output = labels past 256 px: more memory, no accuracy gain
+> Fig. 7. Input resolution sets a genuine accuracy–memory trade-off. Accuracy (blue, left axis) climbs as resolution rises, but only until the 128 output grid reaches the 128 -px label resolution at 256 px input; past that the output is finer than the labels and accuracy saturates, while peak SRAM (coral, right axis) keeps growing and crosses the 320 KB budget. 256 px is therefore the operating point.
+
+heads of this kind without substantial architectural or training modifications. 
+
+C. Resolution–Memory Trade-off 
+
+Fig. 7 plots both sAP 10 and peak SRAM consumption as functions of input resolution, enabling a joint assessment of the accuracy–memory trade-off that governs operating-point selec-tion on resource-constrained hardware. The chosen configura-tion of 256 px input is selected at the point where the 128 ×128 
+
+output grid aligns with the native label resolution, and where peak SRAM remains within the 320 KB ceiling imposed by the STM32F746. This analysis reveals a pronounced and interpretable trade-off: as input resolution increases, structural accuracy improves steadily until the output grid reaches parity with the label resolution, at which point further resolution gains yield diminishing or negligible returns. Beyond this saturation point, peak SRAM continues to grow without a commensurate accuracy benefit. The 256 px operating point therefore represents the optimal balance between detection quality and memory footprint for the F746 deployment target. 
+
+D. Capacity and Overfitting 
+
+To test whether the 25k-parameter backbone is capacity-limited, we swept backbone width through three operating points ( ∼25k, ∼98k, and ∼209k parameters) while holding all other training settings fixed, and recorded the held-out loss floor at convergence. The result is nearly flat: the smallest model settles at 1.74 , while the intermediate and largest 62.0   
+
+> 2.5
+> 3.0
+> 0150 299 train loss held-out loss
+> epoch
+
+Fig. 8. Training the F-Clip model over 300 epochs. Train and held-out loss track together throughout, with a final gap of ≈ 0.01 : the 25k-parameter model shows no overfitting despite only 5,000 training images. 10k 100k 1M 10M 100M 
+
+> 0
+> 20
+> 40
+> 60
+> 80
+> v1
+> v2
+> v6
+> M-LSD-tiny
+> M-LSD
+> L-CNN
+> HA WP
+> HA WPv2
+> F-Clip
+> Wireframe-
+> CNN
+> AFM MiLSD (H7, 1 MB)
+> F-Clip 25k (this work)
+> MiLSD H7 (this work)
+> mobile / phone
+> GPU-class
+> model size (parameters, log scale)
+> sAP10
+
+Fig. 9. Accuracy vs. parameter budget on the Wireframe benchmark (log-scale 
+
+x). Our two operating points sit at the extreme low-resource end: the 25k-parameter F-Clip model on the STM32F746 ( sAP 10 = 10 .6) and MiLSD on the STM32H7 ( 0.39 M parameters, sAP 10 = 24 .1, purple). Related learned detectors use 24 × to 1,600 × more parameters and assume mobile or GPU compute; their figures are from the respective papers (Table IV) [3]–[6], [8], [9], [21]. 
+
+variants both reach 1.73 ; an eightfold increase in parameters yields only a 0.01 reduction in held-out loss. This pattern is consistent with the capacity-gap effect documented in the knowledge-distillation literature [28], and implies limited headroom for naive distillation-based improvement at this scale. The flatness further suggests that the model is already operating near the information-theoretic limit imposed by the dataset and the chosen input resolution, such that additional parameters are unlikely to translate into measurable gains in structural accuracy. Complementing this capacity analysis, Fig. 8 plots the training and held-out loss trajectories over the full 300-epoch schedule. The two curves remain closely aligned throughout training, converging to a final gap of ap-proximately 0.01 , indicating the absence of overfitting despite the severely constrained 25k-parameter architecture and the modest size of the training set. Together, these observations support the conclusion that the fixed small-width design is both memory-efficient and well-regularized by its architectural constraints. 
+
+E. Comparison with Prior Work 
+
+Table IV and Fig. 9 jointly situate our two operating points within the broader accuracy–resource frontier of the learned line-segment detection literature. At the low-resource end of this range, the 25k-parameter F746 model achieves 
+
+sAP 10 = 10 .6 within a 0.25 MB activation footprint, while 
+
+TABLE IV ACCURACY VS . RESOURCES ON WIREFRAME . P RIOR sAP 10 FIGURES ARE FROM THE RESPECTIVE PAPERS OR , FOR METHODS PREDATING THE S AP 
+
+> METRIC
+
+, FROM LATER RE -EVALUATIONS [1], [3]–[6], [8], [9], [21], [29]–[31]; PARAMETER COUNTS ARE LARGELY AS TABULATED BY 
+
+LINEA [30]. LINEA REPORTS THE 462-IMAGE WIREFRAME VALIDATION SPLIT .
+
+Method sAP 10 Params On MCU? DT-LSD [29] 71.7 217 M no HAWPv2 [21] 69.7 ∼11 M no LINEA-L [30] 67.9 25 M no F-Clip [5] 67.4 ∼28 M no HAWP [4] 66.5 ∼10 M no LINEA-N [30] 65.0 3.9 M no EM-LSD [31] 63.2 1.1 M no L-CNN [3] 62.9 ∼9.7 M no M-LSD [6] 62.1 1.5 M no M-LSD-tiny [6] 58.0 0.6 M (≥78 MB) no AFM [9] 24.4 ∼43 M no Wireframe-CNN [8] 5.1 ∼30 M no Classical LSD [1] ≈0 n/a CPU 
+
+Ours: F-Clip int8 (F746) 
+
+10.6 0.025 M (0.25 MB) yes 
+
+Ours: MiLSD (H7) 24.1 0.39 M (∼1 MB) yes 
+
+MiLSD (Section V) extends this capability to sAP 10 = 24 .1
+
+under the expanded 1 MB SRAM budget of the STM32H7. In absolute accuracy terms, both models remain substan-tially below the performance of contemporary transformer-era parsers, including DT-LSD at 71 .7 [29] and LINEA at 
+
+65 .0–67 .9 [30], as well as compact GPU-oriented designs such as EM-LSD, which attains 63 .2 with 1.1 M parameters [31]. This disparity is an expected consequence of operating in a memory regime where peak SRAM is measured in kilobytes rather than megabytes. On the resource axis, however, our position is distinctive: Table IV lists no other learned detector with an affirmative On MCU? entry or an accompanying int8/int4 quantization study. To our knowledge, this is the first learned line-segment detector designed and evaluated under sub-megabyte MCU SRAM budgets, occupying a previously empty region between high-accuracy GPU-based parsers and classical lightweight detectors. 
+
+F. Qualitative Results 
+
+Fig. 10 provides a qualitative side-by-side comparison of versions v1 through v6 on two representative Wireframe-val images [27], offering visual corroboration of the quan-titative trends reported above. In the heatmap formulation (v1), predictions remain densely distributed across the image without resolving into discrete, well-formed segments. End-point regression (v2) produces scattered short segments that fail to reconstruct the underlying room structure. Beginning with F-Clip at v3, the detections progressively recover co-herent architectural geometry, a visual pattern that directly mirrors the quantitative sAP 10 jump at v3 ( 3.6 → 7.2)and the more incremental refinement observed across v3–v6 7Input Ground Truth v1: Heatmap v2: Endpoint 
+
+v3: F-Clip @192 v4: F-Clip @256 v5: F-Clip +data+aug v6: F-Clip +longer  
+
+> Fig. 10. Detections on two Wireframe-val images for v1 (heatmap), v2 (endpoint), and v3–v6 (F-Clip progression); layout described in Section IV-F. The dominant visual step is v2 →v3; later versions refine segment placement incrementally.
+
+(7.2 → 10 .6). The qualitative contrast is visually striking: F-Clip yields coherent, well-localized segments that align closely with salient architectural edges, whereas the heatmap and endpoint alternatives continue to produce noisy, fragmented, or incomplete detections that lack geometric consistency. V. M ILSD: V ERIFICATION -A UGMENTED DETECTION ON THE STM32H7 The 320 KB SRAM budget of the STM32F746 imposes a hard ceiling on the detector developed in Section II, restricting it to approximately 25k parameters and a correspondingly minimal activation footprint. A larger yet still microcontroller-class platform, the STM32H7, which provides 1 MB of SRAM and is executed via CMSIS-NN [26] on a Cortex-M7 core, affords sufficient headroom to accommodate both a more capa-ble backbone and a substantially richer inference pipeline. We designate the resulting system MiLSD (Micro Line-Segment Detector). MiLSD preserves the F-Clip center–length–angle output representation [5] (Section II-A) introduced earlier and 8Input image 256×256, grayscale          
+
+> int8 backbone strided CNN, ~0.39M params (CMSIS-NN)
+> F-Clip heads (128×128) center · length · cos2θ, sin2θ
+> Decode 3×3 peak-NMS + sub-pixel
+> Candidate segments center ± length·[cosθ, sinθ]
+> LoI veri fi cation head pool features along line
+> →MLP
+> →veri fi cation score
+> Scored segments rank by (verify × center) sAP10 = 24.1
+> TTA (test-time augmentation) orig + H/V/HV fl ips, averaged (×4 forward, same arena)
+> On-device: STM32H7 · 1 MB SRAM · int8 / CMSIS-NN · activation arena ≈ 1 MB · con fi rm with X-CUBE-AI / ST Edge AI
+> averaged maps
+> pools backbone + head features
+> Stage gains: 17.8 (trained) →18.1 (sub-pixel) →21.0 (TTA4) →24.1 (LoI).
+
+Fig. 11. MiLSD inference pipeline on the STM32H7. An int8 fully-convolutional backbone predicts F-Clip center/length/angle maps; candidate segments are decoded by 3×3 peak non-maximum suppression with sub-pixel refinement; optional test-time flip augmentation averages the predicted maps; and a small Line-of-Interest (LoI) head pools features along each candidate and re-scores it. All stages reuse a single ≈1 MB activation arena. 
+
+extends it along two complementary axes: first, a capacity-scaled int8 backbone whose activation arena is deliberately sized to approach, but not exceed, the 1 MB SRAM budget; and second, a sequence of inference-time refinement stages, comprising sub-pixel decoding, test-time augmentation, and a learned verification head, each of which contributes additional accuracy without increasing the size of the trained network. The complete pipeline is illustrated in Fig. 11. In contrast to the F746 model, whose performance is bounded by its severely constrained 25k-parameter budget, MiLSD exploits the expanded memory envelope to scale model capacity while preserving a lightweight, inference-efficient pipeline appropri-ate for real-time embedded deployment. 
+
+A. Capacity-Scaled Backbone 
+
+With eight times the SRAM of the F746, the backbone width is increased until the int8 activation arena approaches, but does not exceed, 1 MB, yielding a approximately 0.39 M-parameter model (peak arena approximately 1 MB at 256 px input; a 0.7 MB fallback configuration is also retained for devices with tighter memory). Trained as in Section II for 300 epochs, this model attains sAP 10 = 17 .8 on Wireframe-val, versus 10 .6 for the 25k F746 model, confirming that, beyond the extreme F746 regime, capacity is a genuine lever. This 68% relative improvement demonstrates that the additional parameters are effectively utilized when the memory budget permits, validating our decision to scale the backbone for the H7 platform. 
+
+B. Sub-Pixel Decoding and Test-Time Augmentation 
+
+The center peaks are refined to sub-pixel accuracy by a one-dimensional parabolic fit over each peak’s neighbourhood, directly targeting the endpoint precision that structural AP rewards ( sAP 10 : 17 .8 → 18 .1). This refinement is partic-ularly beneficial for structural AP, which penalizes endpoint localization errors quadratically. Averaging the predicted maps over the image and its horizontal, vertical, and diagonal flips (test-time augmentation, TTA) further improves robustness 
+
+TABLE V MILSD ON WIREFRAME -VAL (STM32H7 MODEL ). E ACH STAGE IS INFERENCE -TIME ONLY ; THE TRAINED NETWORK IS UNCHANGED . T HE ORACLE RANKS THE SAME CANDIDATES BY THEIR TRUE LABELS AND IS THE RECALL CEILING OF THE CANDIDATE SET .Configuration sAP 5 sAP 10 sAP 15 
+
+Trained model (sub-pixel decode) 12.1 18.1 21.2 + test-time augmentation ( ×4) 15.1 21.0 24.0 + LoI verification ( MiLSD ) 16.0 24.1 27.9 
+
+Oracle (perfect verifier) 24.1 37.4 40.0 
+
+(sAP 10 : 18 .1 → 21 .0), a gain of nearly 3 points from the four-view ensemble. TTA multiplies inference latency by the number of views but reuses the same activation arena, so it does not raise peak memory, making it a memory-free accuracy boost at the cost of increased latency. 
+
+C. Line-of-Interest Verification Head 
+
+The largest gain comes from a trained verifier in the spirit of L-CNN [3] and HAWP [4], scaled to the microcontroller. With the backbone frozen , a small multilayer perceptron takes, for each candidate segment, features bilinearly pooled at 32 points along the line from the backbone feature map and the output maps, together with a short geometric descriptor, and predicts a verification score (real vs. spurious), trained with one-to-one matched labels. Re-ranking by verification × center score reaches the MiLSD row of Table V. The decode and post-filtering design were obtained by analyzing the inference stages of the principal wireframe parsers [3]–[5], [32], [33]; across that study, weight-free post-processing saturates near 
+
+sAP 10 = 21 , and only the trained verifier advances beyond it, contributing an additional 3.1 points to reach 24.1. The oracle row ( sAP 10 = 37 .4) bounds what the candidate set can deliver; the LoI head recovers about 55% of the gap from TTA. The remainder reflects unannotated image edges and recall limits; junction-based candidate generation [3] could help but exceeds the 1 MB budget. 9 
+
+> Fig. 12. Four Wireframe-val scenes: ground truth (left, green) and MiLSD output (right, yellow) after LoI verification; line opacity encodes verifier confidence.
+
+D. Qualitative Results 
+
+Fig. 12 shows MiLSD on held-out scenes. The detector is complete on the salient structure (cabinetry, counters, window mullions, and architectural edges are recovered at correct ori-entation and length). The dense scene of example 2 illustrates the verifier suppressing the redundant ridge detections that a raw center-heatmap emits, demonstrating the effectiveness of the learned verification head. Example 3 shows that the remaining stray predictions are real but unannotated edges (reflections, texture seams), consistent with the oracle analysis above, which identified that many false positives are actually unlabeled ground-truth edges. These qualitative results validate that MiLSD achieves its accuracy gains through meaningful structural understanding rather than overfitting to the training set. 
+
+E. Deployment Budget 
+
+The SRAM ceiling is set by the backbone’s int8 activation arena (approximately 1 MB); the LoI head’s pooled feature (<0.5 MB) fits within that peak and TTA reuses it, so neither raises it. Weights total approximately 0.54 MB (backbone plus head), well within flash. Latency is dominated by the int8 convolutions and scales with the number of TTA views; the LoI head adds a small per-line cost. On-device arena and latency must be confirmed with ST Edge AI [34]; the fig-ures here are software-measured. The memory-efficient design ensures that all inference stages operate within the 1 MB SRAM budget, making MiLSD deployable on the STM32H7 without requiring external memory. Source code is released for reproducibility [35]. VI. C ONCLUSION 
+
+This paper presented MiLSD, a line-segment detector ex-plicitly designed for microcontroller-scale memory, alongside a systematic study of the accuracy–resource trade-off under extreme memory constraints. We compared three output rep-resentations and found that the F-Clip center-with-length-and-angle encoding learns most effectively at small model sizes, achieving sAP 10 = 10 .6 with only 25k parameters. Our quantization study revealed that 8-bit weights preserve full-precision accuracy, while 4-bit quantization collapses, particu-larly in the (cos 2 θ, sin 2 θ) angle regression, with quantization-aware training recovering only part of the loss. By scaling the backbone to a 1 MB activation budget and adding inference-time enhancements including sub-pixel decoding, test-time augmentation, and a Line-of-Interest verification head, MiLSD improves sAP 10 from 10 .6 at 0.25 MB to 24 .1 within 1 MB on the ShanghaiTech Wireframe benchmark. To our knowledge, no prior work characterizes the joint trade-off among representation choice, quantization bit-width, and on-device post-processing at this memory scale. F-Clip wins at int8 but its angle head is int4-fragile, whereas heatmaps tolerate lower precision yet require an external linker, a finding that informs future TinyML geometric-vision designs. As expected, Wireframe accuracy remains far below GPU-class parsers given the SRAM envelope we target; that gap is inherent to the memory regime rather than a limitation we aim to overcome. REFERENCES [1] R. G. von Gioi, J. Jakubowicz, J.-M. Morel, and G. Randall, “LSD: A fast line segment detector with a false detection control,” IEEE Trans. on Pattern Analysis and Machine Intelligence (TPAMI) , vol. 32, no. 4, pp. 722–732, 2010. [2] C. Akinlar and C. Topal, “EDLines: A real-time line segment detector with a false detection control,” Pattern Recognition Letters , vol. 32, no. 13, pp. 1633–1642, 2011. [3] Y. Zhou, H. Qi, and Y. Ma, “End-to-end wireframe parsing,” in                                           
+
+> IEEE/CVF Int. Conf. on Computer Vision (ICCV) ,2019, l-CNN. arXiv:1905.03246. [4] N. Xue, T. Wu, S. Bai, F.-D. Wang, G.-S. Xia, L. Zhang, and P. H. Torr, “Holistically-attracted wireframe parsing,” in IEEE/CVF Conf. on Computer Vision and Pattern Recognition (CVPR) , 2020, hAWP. arXiv:2003.01663. [5] X. Dai, H. Gong, S. Wu, X. Yuan, and Y. Ma, “Fully convolu-tional line parsing,” Neurocomputing , vol. 506, pp. 1–11, 2022, f-Clip. arXiv:2104.11207. [6] G. Gu, B. Ko, S. Go, S.-H. Lee, J. Lee, and M. Shin, “Towards light-weight and real-time line segment detection,” in AAAI Conf. on Artificial Intelligence , 2022, m-LSD / M-LSD-tiny; MobileNetV2, center+displacement. arXiv:2106.00186. [7] I. Suárez, J. M. Buenaposada, and L. Baumela, “ELSED: Enhanced line segment drawing,” Pattern Recognition , vol. 127, p. 108619, 2022, arXiv:2108.03144. [8] K. Huang, Y. Wang, Z. Zhou, T. Ding, S. Gao, and Y. Ma, “Learning to parse wireframes in images of man-made environments,” in IEEE/CVF Conf. on Computer Vision and Pattern Recognition (CVPR) , 2018. [9] N. Xue, S. Bai, F. Wang, G.-S. Xia, T. Wu, and L. Zhang, “Learning attraction field representation for robust line segment detection,” in
+> IEEE/CVF Conf. on Computer Vision and Pattern Recognition (CVPR) ,2019, aFM. arXiv:1812.02122. [10] H. Li, H. Yu, J. Wang, W. Yang, L. Yu, and S. Scherer, “ULSD: Unified line segment detection across pinhole, fisheye, and spherical cameras,” ISPRS J. of Photogrammetry and Remote Sensing , 2021, arXiv:2011.03174. [11] Y. Xu, W. Xu, D. Cheung, and Z. Tu, “Line segment detection using transformers without edges,” in IEEE/CVF Conf. on Computer Vision and Pattern Recognition (CVPR) , 2021, lETR. arXiv:2101.01909. 10
+
+[12] STMicroelectronics, “STM32F746xx arm cortex-m7 microcontroller datasheet,” https://www.st.com/en/microcontrollers-microprocessors/ stm32f746ng.html, 320 KB SRAM, 1 MB flash, 216 MHz Cortex-M7. [13] S. Huang, F. Qin, P. Xiong, N. Ding, Y. He, and X. Liu, “TP-LSD: Tri-points based line segment detector,” in European Conf. on Computer Vision (ECCV) , 2020, arXiv:2009.05505. [14] J. Lin, W.-M. Chen, H. Cai, C. Gan, and S. Han, “MCUNetV2: Memory-efficient patch-based inference for tiny deep learning,” in 
+
+Advances in Neural Information Processing Systems (NeurIPS) , 2021, arXiv:2110.15352. [15] C. Banbury, C. Zhou, I. Fedorov, R. Matas Navarro, U. Thakker, D. Gope, V. Janapa Reddi, M. Mattina, and P. N. Whatmough, “Mi-croNets: Neural network architectures for deploying tinyml applications on commodity microcontrollers,” Proc. of Machine Learning and Sys-tems (MLSys) , 2021, arXiv:2010.11267. [16] J. Lin, W.-M. Chen, Y. Lin, J. Cohn, C. Gan, and S. Han, “MCUNet: Tiny deep learning on IoT devices,” in Advances in Neural Information Processing Systems (NeurIPS) , 2020, arXiv:2007.10319. [17] B. Jacob, S. Kligys, B. Chen, M. Zhu, M. Tang, A. Howard, H. Adam, and D. Kalenichenko, “Quantization and training of neural networks for efficient integer-arithmetic-only inference,” in IEEE/CVF Conf. on Com-puter Vision and Pattern Recognition (CVPR) , 2018, arXiv:1712.05877. [18] Y. Bengio, N. Léonard, and A. Courville, “Estimating or propagating gradients through stochastic neurons for conditional computation,” arXiv preprint arXiv:1308.3432 , 2013, straight-through estimator. [19] M. Rusci, A. Capotondi, and L. Benini, “Memory-driven mixed low precision quantization for enabling deep network inference on micro-controllers,” arXiv preprint arXiv:1905.13082 , 2019. [20] P.-E. Novac, G. Boukli Hacene, A. Pegatoquet, B. Miramond, and V. Gripon, “Quantization and deployment of deep neural networks on microcontrollers,” Sensors , vol. 21, no. 9, p. 2984, 2021. [21] N. Xue, T. Wu, S. Bai, F.-D. Wang, G.-S. Xia, L. Zhang, and P. H. Torr, “Holistically-attracted wireframe parsing: From supervised to self-supervised learning,” IEEE Trans. on Pattern Analysis and Machine Intelligence (TPAMI) , 2023, hAWPv2/v3. arXiv:2210.12971. [22] R. Pautrat, D. Barath, V. Larsson, M. R. Oswald, and M. Pollefeys, “DeepLSD: Line segment detection and refinement with deep image gradients,” in IEEE/CVF Conf. on Computer Vision and Pattern Recog-nition (CVPR) , 2023, line attraction field. arXiv:2212.07766. [23] L. Teplyakov, L. Erlygin, and E. Shvets, “LSDNet: Trainable modifi-cation of LSD algorithm for real-time line segment detection,” IEEE Access , vol. 10, pp. 45 256–45 265, 2022, arXiv:2209.04642. [24] Wang et al. , “EvLSD-IED: Event-based line segment detection with image-to-event distillation,” IEEE Trans. on Instrumentation and Mea-surement (TIM) , 2024, knowledge-distillation precedent for LSD. [25] C. Ossimitz and N. Taherinejad, “A fast line segment detector using approximate computing,” 05 2021, pp. 1–5. [26] L. Lai, N. Suda, and V. Chandra, “CMSIS-NN: Efficient neural network kernels for arm cortex-m CPUs,” arXiv preprint arXiv:1801.06601 ,2018. [27] P. Hassani Shariat Panahi, “LSD-TML-All: Training and evalua-tion notebooks for versions v1–v6,” https://www.kaggle.com/code/ parsahshariatpanahi/lsd-tml-all, 2026, kaggle notebooks for the repre-sentation and quantization study (v1–v6). [28] S. I. Mirzadeh, M. Farajtabar, A. Li, N. Levine, A. Matsukawa, and H. Ghasemzadeh, “Improved knowledge distillation via teacher assis-tant,” in AAAI Conf. on Artificial Intelligence , 2020, capacity-gap effect. [29] S. Janampa and M. Pattichis, “Dt-lsd: Deformable transformer-based line segment detection,” in Proceedings of the Winter Conference on Applications of Computer Vision (WACV) , February 2025, pp. 3477– 3486. [30] S. Janampa and M. Pattichis, “Linea: Fast and accurate line detection using scalable transformers,” 2025. [Online]. Available: https://arxiv.org/abs/2505.16264 [31] S. Hu, L. Zhao, and Q. Wang, “Em-lsd: A lightweight and efficient model for multi-scale line segment detection,” Robotics and Autonomous Systems , vol. 195, p. 105192, 2026. [Online]. Available: https://www.sciencedirect.com/science/article/pii/S0921889025002891 [32] Z. Zhang, Z. Li, N. Bi, J. Zheng, J. Wang, K. Huang, W. Luo, Y. Xu, and S. Gao, “PPGNet: Learning point-pair graph for line segment detection,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) , 2019, pp. 7105–7114. [33] K. Zhao, Q. Han, C.-B. Zhang, J. Xu, and M.-M. Cheng, “Deep Hough transform for semantic line detection,” in Proceedings of the European Conference on Computer Vision (ECCV) , 2020. [34] STMicroelectronics, “ST Edge AI Suite / X-CUBE-AI / ST Edge AI De-veloper Cloud,” https://www.st.com/en/embedded-software/x-cube-ai. html, 2025, model analysis, int8 code generation, and on-target bench-marking for STM32. [35] P. Hassani Shariat Panahi, A. H. Jalilvand, and M. H. Najafi, “MiLSD: Micro line-segment detector,” https://github.com/F4RAN/MiLSD, 2026, source code, trained models, and evaluation scripts for the MiLSD implementation. 
+
+Parsa Hassani Shariat Panahi received his B.Sc. degree in Computer Engineering from Azad Uni-versity South Tehran Branch, Tehran, Iran, and the M.Sc. degree in Computer Engineering - Com-puter Networks from Iran University of Science and Technology, Tehran, Iran. His research inter-ests include cellular networks, QoE assessment, telecommunication networks, wireless communica-tion, and machine learning. He can be reached at parsa_hassani@comp.iust.ac.ir. 
+
+Amir Hossein Jalilvand received his B.Sc. de-gree in Computer Engineering from Bu-Ali Sina University, Hamadan, Iran, and the M.Sc. degree in Computer Engineering - Computer Architecture from Iran University of Science and Technology, Tehran, Iran. He is currently pursuing his Ph.D. in Computer Engineering. His research interests in-clude cellular networks, stochastic and unary com-puting, computer architecture, fuzzy logic, and ma-chine learning. Mr. Jalilvand has authored several publications in these fields. He can be reached at jalilvand_a@comp.iust.ac.ir. 
+
+M. Hassan Najafi received his Ph.D. in electrical and electronics engineering from the University of Minnesota-Twin Cities, Minneapolis, MN, USA, in 2018. He is currently an Associate Professor at the Electrical, Computer, and Systems Engineering Department at Case Western Reserve University. His research interests include stochastic and approxi-mate computing, unary processing, in-memory com-puting, and hyperdimensional computing. He has authored/coauthored more than 120 peer-reviewed papers and has been granted 12 U.S. patents with more pending. Dr. Najafi received the NSF CAREER Award in 2024, the Best Paper Award at GLSVLSI’23 and ICCD’17, and the 2018 EDAA Outstanding Dissertation Award. Dr. Najafi is a senior member of IEEE and a senior member of the U.S. National Academy of Inventors (NAI). He can be reached at najafi@case.edu.
