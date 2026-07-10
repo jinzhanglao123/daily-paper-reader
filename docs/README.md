@@ -6,37 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-09
-- 运行时间：2026-07-09 21:06:20 UTC
+- 最新运行日期：2026-07-10
+- 运行时间：2026-07-10 20:29:47 UTC
 - 运行状态：成功
-- 本次总论文数：5
+- 本次总论文数：1
 - 精读区：1
-- 速读区：4
+- 速读区：0
 
 ### 今日简报（AI）
-今日研读5篇前沿论文，聚焦强化学习的泛化、效率与安全探索。  
-最值得关注的是扩散模型引导不确定性估计的延迟策略优化，以及任务表征解耦对视觉RL泛化的提升。  
-建议从扩散模型与策略优化的结合切入，它可能重塑你对模型决策安全的认知。
-- 详情：[/202607/09/README](/202607/09/README)
+今日精读了一篇8分论文《ORCAID》，探索如何用倾斜规则破解深度强化学习的连续动作黑箱。
+最值得关注的是它把复杂连续决策变成了人类能看懂的“如果-那么”规则，让AI行为不再难以捉摸。
+对可解释AI有兴趣的读者，可以进一步了解规则提取在机器人控制等场景中的落地可能性。
+- 详情：[/202607/10/README](/202607/10/README)
 
 ### 精读区论文标签
-1. [Diffusion-Guided Uncertainty-Aware Delayed Policy Optimization](/202607/09/2607.05064v1-diffusion-guided-uncertainty-aware-delayed-policy-optimization)  
-   标签：评分：9.0/10、query:uav-drl
-   evidence：解决强化学习中的延迟反馈问题，这是长时程奖励分配的一种形式
+1. [ORCAID: Oblique Rule-Based Continuous-Action Interpretation for Deep RL Policies](/202607/10/2607.07235v1-orcaid-oblique-rule-based-continuous-action-interpretation-for-deep-rl-policies)  
+   标签：评分：8.0/10、query:uav-drl
+   evidence：从混合连续-离散动作空间中的RL智能体提取可解释策略
 
 ### 速读区论文标签
-1. [FRFDet: Efficient UAV Small Object Detection with Symmetric Sampling and Scalable Fusion](/202607/09/2607.04125v1-frfdet-efficient-uav-small-object-detection-with-symmetric-sampling-and-scalable-fusion)  
-   标签：评分：7.0/10、query:uav-drl
-   evidence：可用于输电线路缺陷检测的无人机小目标检测方法
-2. [Task-Relevant Representation Decoupling for Visual Reinforcement Learning Generalization](/202607/09/2607.00796v1-task-relevant-representation-decoupling-for-visual-reinforcement-learning-generalization)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：将观测解耦为任务相关与任务无关表示，提升视觉强化学习的泛化性
-3. [Progress- and Reliability-Oriented Group Policy Optimization for Agentic Reinforcement Learning](/202607/09/2607.04242v1-progress--and-reliability-oriented-group-policy-optimization-for-agentic-reinforcement-learning)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：长时域交互任务的步骤级分组优化
-4. [MiLSD: A Micro Line-Segment Detector for Resource-Constrained Devices](/202607/09/2607.06600v1-milsd-a-micro-line-segment-detector-for-resource-constrained-devices)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：用于工业检测的微型线段检测器，与输电线路检测相关
+- 本次无速读推荐。
 
 
 <div class="dpr-home-promo-card">

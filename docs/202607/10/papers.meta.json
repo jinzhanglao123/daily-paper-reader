@@ -1,0 +1,24 @@
+{
+  "label": "2026-07-10",
+  "date": "2026-07-10",
+  "generated_at": "2026-07-10T20:29:58",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202607/10/2607.07235v1-orcaid-oblique-rule-based-continuous-action-interpretation-for-deep-rl-policies",
+      "section": "deep",
+      "title_en": "ORCAID: Oblique Rule-Based Continuous-Action Interpretation for Deep RL Policies",
+      "authors": "Ignacio D. Lopez-Miguel, Ezio Bartocci, Thomas Eiter, Martin Tappler",
+      "date": "2026-07-08",
+      "pdf": "https://arxiv.org/pdf/2607.07235v1",
+      "score": "8.0",
+      "evidence": "从混合连续-离散动作空间中的RL智能体提取可解释策略",
+      "tldr": "针对强化学习连续动作策略难解释的挑战，提出ORCAID方法，通过高效的斜决策树训练算法从混合连续-离散环境下的深度RL智能体中提取可解释规则策略，采用三阶段分裂搜索在连续动作空间拟合局部线性模型，为RL策略提供简明解释，提升AI决策透明性。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Explainability remains a key issue in reinforcement learning (RL). Distilling an interpretable policy from an agent trained in a complex environment is particularly challenging when the action space is continuous. We introduce ORCAID, a novel method for extracting interpretable rule-based policies from RL agents operating in mixed continuous-discrete environments with continuous action spaces. Our main contribution is an efficient oblique decision tree training algorithm that partitions the state space by hyperplanes and fits local linear models. The key idea lies in a three-stage split search: efficient random initialization, local refinement, and backward elimination. Finally, adjacent leaves are merged to yield a concise set of interpretable rules describing a given deep RL policy. We evaluate ORCAID across multiple RL environments, demonstrating that the extracted rule-based policies maintain strong performance with a low number of parameters and can even be used to improve the performance of the original deep RL policy.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
