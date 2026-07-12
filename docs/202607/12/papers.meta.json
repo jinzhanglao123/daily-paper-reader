@@ -1,0 +1,69 @@
+{
+  "label": "2026-07-12",
+  "date": "2026-07-12",
+  "generated_at": "2026-07-12T20:38:10",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202607/12/2607.04153v1-mask-based-predictive-representations-for-reinforcement-learning",
+      "section": "deep",
+      "title_en": "Mask-based Predictive Representations for Reinforcement Learning",
+      "authors": "Kai Zhao",
+      "date": "2026-07-05",
+      "pdf": "https://arxiv.org/pdf/2607.04153v1",
+      "score": "8.0",
+      "evidence": "基于掩码预测的视觉深度强化学习表示，提升采样效率",
+      "tldr": "视觉深度强化学习需要从高维图像和有限样本中提取有效状态，样本效率是关键挑战。本文受自然语言处理和计算机视觉启发，提出基于掩码预测的自监督辅助任务，利用序列上下文预测被掩码信息以强化任务理解。结合Transformer在隐空间重构掩码序列，学习到的压缩表征能显著提升强化学习的样本效率，并在多个连续与离散控制基准上超越当前最优方法，为视觉强化学习提供了高效表征学习新范式。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Vision-based deep reinforcement learning involves dealing with high-dimensional inputs of image information. It is crucial to abstract effective states from high-dimensional image inputs and limited samples for sample-efficient reinforcement learning. To address this challenge, inspired by fields such as natural language processing and computer vision, we propose a self-supervised task based on mask prediction as an auxiliary task for reinforcement learning. This non-reconstruction method uses the sequence information collected by the agent from the environment and the context information in the sequence to predict the masked information, thereby strengthening the agent's understanding of the task and learning effective representations. Combined with transformers, we find that the model reconstructs the masked input sequence in the latent space. By feeding the compressed representations learned by this method into reinforcement learning models, we observe an improvement in the sample efficiency of reinforcement learning. Moreover, the model outperforms state-of-the-art sample-efficient reinforcement learning methods on multiple continuous and discrete control benchmarks.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/12/2607.03754v1-exploring-sam-supervision-for-fine-grained-uav-target-segmentation-under-data-scarcity",
+      "section": "quick",
+      "title_en": "Exploring SAM Supervision for Fine-Grained UAV Target Segmentation under Data Scarcity",
+      "authors": "Le-Anh Tran",
+      "date": "2026-07-04",
+      "pdf": "https://arxiv.org/pdf/2607.03754v1",
+      "score": "7.0",
+      "evidence": "使用SAM3的无人机目标分割方法可增强输电线路缺陷检测",
+      "tldr": "无人机目标分割因物体微小、背景杂乱和精细标注稀缺而难以部署轻量模型。本文研究利用SAM3生成伪标签，提出两阶段粗-细掩码精炼策略，并设计由IdentityFormer、ASPP和PixelShuffle构成的轻量级分割网络IPS-Seg。大量实验表明，该方法在分割精度与计算效率间取得良好平衡，伪标签策略可稳定提升性能。该工作验证了大型基础模型作为低成本标注源的潜力，为低标签视觉领域训练紧凑模型提供了新思路。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Unmanned aerial vehicle (UAV) target segmentation remains challenging due to the small size of objects, appearance variations, cluttered backgrounds, and the scarcity of densely annotated data. These factors hinder the performance and practical deployment of lightweight segmentation models in real-world UAV applications. To address this problem, this paper investigates the use of SAM3 (Segment Anything Model 3) as a pseudo-label generator for training compact segmentation networks. Specifically, two supervision paradigms are explored: (i) direct pseudo-supervision using unaltered SAM3-generated masks, and (ii) a refinement strategy that re-applies SAM3 to localized image patches for improved mask quality. Based on these paradigms, a two-stage SAM3-guided pseudo-label generation framework is proposed. In the first stage, SAM3 generates coarse masks for initial object localization. The localized regions are subsequently cropped into patches and processed by SAM3 again to generate fine masks with accurate object boundaries and discard false positives. The resulting coarse and fine masks are then used as pseudo-labels to optimize a lightweight network, termed IPS-Seg, which consists of three components: an IdentityFormer backbone for feature extraction, an Atrous Spatial Pyramid Pooling module for multi-scale context aggregation, and a PixelShuffle-based decoder for spatial resolution recovery. Extensive experiments under multiple supervision settings demonstrate the effectiveness of the proposed framework. The results show that IPS-Seg achieves a favorable trade-off between segmentation accuracy and computational efficiency while benefiting consistently from the proposed pseudo-label generation strategy. These findings highlight the potential of large-scale foundation models as annotation sources for training compact task-specific segmentation networks in low-label vision domains.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/12/2607.07893v1-reachability-preserving-bellman-operator-for-the-discounted-reach-cost-value-function-uniting-hamilton-jacobi-reachability-and-reinforcement-learning",
+      "section": "quick",
+      "title_en": "Reachability-Preserving Bellman Operator for the Discounted Reach-Cost Value Function: Uniting Hamilton-Jacobi Reachability and Reinforcement Learning",
+      "authors": "Isabelle El-Hajj, Prashant Solanki, Jasper van Beers, Coen de Visser, Erik-Jan van Kampen",
+      "date": "2026-07-08",
+      "pdf": "https://arxiv.org/pdf/2607.07893v1",
+      "score": "7.0",
+      "evidence": "统一HJ可达性与强化学习用于长期可达任务，可扩展至长时域奖励分配",
+      "tldr": "Hamilton-Jacobi (HJ) 可达性分析为动力学系统提供严格的安全保证，但遭遇维数灾难；深度强化学习 (DRL) 虽可扩展，却基于累加奖励，与可达性的非加性目标不兼容。本文基于保留原始语义的折扣可达价值函数，提出一种非加性贝尔曼算子，并证明其收缩性及与HJ公式的等价性。实验表明该算子值迭代收敛，且可将强化学习解释为样本近似求解器，结果与HJ解一致，零水平集对齐。这建立了HJ可达性与RL之间的语义保真桥梁，为高维系统可扩展安全证书计算开辟新途径。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Hamilton-Jacobi (HJ) reachability provides rigorous safety and reachability guarantees for continuous-time dynamical systems, but its numerical solution suffers from the curse of dimensionality. Deep reinforcement learning (DRL), by contrast, offers scalable sample-based methods. However, RL is typically built around additive cumulative rewards; whereas, reachability objectives are inherently non-additive. This mismatch makes a direct bridge between HJ reachability and RL nontrivial. Recent discounted formulations have either introduced contraction by altering the original reachability semantics, or preserved exact semantics on the HJ side without a corresponding Bellman fixed-point characterization. In this paper, we close this gap by building on a semantics-preserving discounted reach-based value function and deriving a non-additive Bellman operator whose unique fixed point exactly matches the value function in the HJ formulation. We prove that discounting makes this operator contractive, yielding existence, uniqueness, and convergence of value iteration. Furthermore, we establish the equivalence between the HJ and Bellman characterizations, and show that RL can be interpreted as a sample-based approximation scheme for the same fixed-point equation. This yields a principled and semantically exact connection between HJ reachability and RL, enabling learning-based methods to approximate reachability value functions while preserving their safety-critical meaning. As a result, the proposed framework opens the door to scalable, data-driven computation of reachable sets and safety certificates in high-dimensional systems. Numerical experiments demonstrate close agreement with HJ solutions, confirm preservation of reachability semantics via alignment of zero level sets, and support the interpretation of reinforcement learning as a sample-based solver of the proposed Bellman operator.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/12/2607.04179v1-critiquedrivevlm-from-verifier-guided-reinforcement-learning-to-latent-thought-distillation-for-autonomous-driving",
+      "section": "quick",
+      "title_en": "CritiqueDriveVLM: From Verifier-Guided Reinforcement Learning to Latent Thought Distillation for Autonomous Driving",
+      "authors": "Zhaohong Liu, Hao Ye, Xianlin Zhang, Mengshi Qi",
+      "date": "2026-07-05",
+      "pdf": "https://arxiv.org/pdf/2607.04179v1",
+      "score": "6.0",
+      "evidence": "利用多维验证器的多轮强化学习在自动驾驶中提供密集反馈",
+      "tldr": "端到端视觉语言模型在自动驾驶中存在推理幻觉与高延迟难题，传统思维链方法虽可缓解但消耗巨大且无法实时部署。为解决可靠性与效率的权衡，提出CritiqueDriveVLM框架：先用验证器引导的强化学习训练高精度的System-2教师模型，再通过潜在思想蒸馏将推理能力压缩进无思维链的System-1学生模型。在DriveLMM-01基准上，教师模型多选题准确率从55.54%跃升至76.54%，学生模型以平均28 token的低生成量实现88%的推理延迟缩减，为低延迟自动驾驶提供了实用路径。",
+      "tags": "query:uav-drl",
+      "abstract_en": "End-to-end Vision-Language Models (VLMs) show immense potential in autonomous driving. However, standard Supervised Fine-Tuning (SFT) often suffers from reasoning hallucinations and conservative biases. While traditional tool-augmented frameworks and Chain-of-Thought (CoT) approaches mitigate these issues, they incur exorbitant token consumption and unacceptable latency, rendering real-time deployment impractical. To resolve this reliability-efficiency trade-off, we propose CritiqueDriveVLM, a novel unified three-stage framework internalizing reasoning directly into the VLM. First, we introduce Critique-Driven Multi-Turn Reinforcement Learning (RL) guided by a multi-dimensional verifier. By providing granular scalar feedback and a multi-turn penalty, we force the policy to internalize logical deduction, cultivating a robust System-2 Teacher that achieves high accuracy without fragile external tools. Subsequently, we propose Latent Thought Distillation to overcome the latency bottleneck. By aligning the Student's latent representations with the Teacher's fully converged reasoning states, we compress deep logical capabilities into a fast, CoT-free System-1 Student. Extensive experiments on the widely-used DriveLMM-01 benchmark demonstrate remarkable improvements. Compared to the base model, our tool-free Teacher significantly boosts Multiple Choice Quality (MCQ) from 55.54% to a state-of-the-art 76.54%. Crucially, our distilled Student preserves competitive reasoning depth while drastically minimizing generation length to an average of merely 28 tokens. This slashes inference latency by 88% (from 3482 ms to 416 ms), paving a highly robust pathway for low-latency autonomous driving.Our source code is available at https://github.com/MICLAB-BUPT/CritiqueDriveVLM.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

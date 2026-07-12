@@ -1,0 +1,166 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-12T20:33:45.181661+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 3,
+    "quick_skim_target": 11,
+    "quick_selected": 3
+  },
+  "deep_dive": [
+    {
+      "id": "2607.04153v1",
+      "source": "arxiv",
+      "title": "Mask-based Predictive Representations for Reinforcement Learning",
+      "abstract": "Vision-based deep reinforcement learning involves dealing with high-dimensional inputs of image information. It is crucial to abstract effective states from high-dimensional image inputs and limited samples for sample-efficient reinforcement learning. To address this challenge, inspired by fields such as natural language processing and computer vision, we propose a self-supervised task based on mask prediction as an auxiliary task for reinforcement learning. This non-reconstruction method uses the sequence information collected by the agent from the environment and the context information in the sequence to predict the masked information, thereby strengthening the agent's understanding of the task and learning effective representations. Combined with transformers, we find that the model reconstructs the masked input sequence in the latent space. By feeding the compressed representations learned by this method into reinforcement learning models, we observe an improvement in the sample efficiency of reinforcement learning. Moreover, the model outperforms state-of-the-art sample-efficient reinforcement learning methods on multiple continuous and discrete control benchmarks.",
+      "authors": [
+        "Kai Zhao"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-07-05T07:42:00+00:00",
+      "link": "https://arxiv.org/pdf/2607.04153v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "mask-based predictive representations for visual deep RL, improving sample efficiency",
+      "llm_evidence_cn": "基于掩码预测的视觉深度强化学习表示，提升采样效率",
+      "llm_evidence": "基于掩码预测的视觉深度强化学习表示，提升采样效率",
+      "canonical_evidence": "基于掩码预测的视觉深度强化学习表示，提升采样效率",
+      "llm_tldr_en": "Proposes a mask-based self-supervised auxiliary task for visual deep RL to learn effective representations, directly applicable to image-based UAV inspection DRL tasks.",
+      "llm_tldr_cn": "针对视觉深强学习中图像输入状态抽象难、样本效率低的问题，提出掩码预测自监督辅助任务。利用序列上下文预测掩码信息，结合Transformer学习表示，在多种视觉控制任务中显著提升采样效率和性能，为无人机巡检等图像RL任务提供有效状态抽象。",
+      "llm_tldr": "针对视觉深强学习中图像输入状态抽象难、样本效率低的问题，提出掩码预测自监督辅助任务。利用序列上下文预测掩码信息，结合Transformer学习表示，在多种视觉控制任务中显著提升采样效率和性能，为无人机巡检等图像RL任务提供有效状态抽象。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "deep reinforcement learning for UAV inspection tasks",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.03754v1",
+      "source": "arxiv",
+      "title": "Exploring SAM Supervision for Fine-Grained UAV Target Segmentation under Data Scarcity",
+      "abstract": "Unmanned aerial vehicle (UAV) target segmentation remains challenging due to the small size of objects, appearance variations, cluttered backgrounds, and the scarcity of densely annotated data. These factors hinder the performance and practical deployment of lightweight segmentation models in real-world UAV applications. To address this problem, this paper investigates the use of SAM3 (Segment Anything Model 3) as a pseudo-label generator for training compact segmentation networks. Specifically, two supervision paradigms are explored: (i) direct pseudo-supervision using unaltered SAM3-generated masks, and (ii) a refinement strategy that re-applies SAM3 to localized image patches for improved mask quality. Based on these paradigms, a two-stage SAM3-guided pseudo-label generation framework is proposed. In the first stage, SAM3 generates coarse masks for initial object localization. The localized regions are subsequently cropped into patches and processed by SAM3 again to generate fine masks with accurate object boundaries and discard false positives. The resulting coarse and fine masks are then used as pseudo-labels to optimize a lightweight network, termed IPS-Seg, which consists of three components: an IdentityFormer backbone for feature extraction, an Atrous Spatial Pyramid Pooling module for multi-scale context aggregation, and a PixelShuffle-based decoder for spatial resolution recovery. Extensive experiments under multiple supervision settings demonstrate the effectiveness of the proposed framework. The results show that IPS-Seg achieves a favorable trade-off between segmentation accuracy and computational efficiency while benefiting consistently from the proposed pseudo-label generation strategy. These findings highlight the potential of large-scale foundation models as annotation sources for training compact task-specific segmentation networks in low-label vision domains.",
+      "authors": [
+        "Le-Anh Tran"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-04T07:59:10+00:00",
+      "link": "https://arxiv.org/pdf/2607.03754v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "UAV target segmentation method using SAM3 could enhance transmission line defect detection from UAV images",
+      "llm_evidence_cn": "使用SAM3的无人机目标分割方法可增强输电线路缺陷检测",
+      "llm_evidence": "使用SAM3的无人机目标分割方法可增强输电线路缺陷检测",
+      "canonical_evidence": "使用SAM3的无人机目标分割方法可增强输电线路缺陷检测",
+      "llm_tldr_en": "This paper explores using Segment Anything Model 3 (SAM3) to generate pseudo-labels for training compact segmentation networks on UAV imagery under data scarcity, improving fine-grained target segmentation which is a crucial step for automated defect detection in transmission line inspection.",
+      "llm_tldr_cn": "无人机目标分割面临目标小、外观多变、背景杂乱和标注数据稀缺等挑战，阻碍了轻量化模型在实际应用中的部署。本文探索使用SAM3作为伪标签生成器训练紧凑分割网络，提出直接伪监督和局部块细化两种范式。实验表明该方法在数据稀缺下提升了细粒度分割精度，为无人机输电线路巡检中的缺陷检测提供了有效的特征提取基础。",
+      "llm_tldr": "无人机目标分割面临目标小、外观多变、背景杂乱和标注数据稀缺等挑战，阻碍了轻量化模型在实际应用中的部署。本文探索使用SAM3作为伪标签生成器训练紧凑分割网络，提出直接伪监督和局部块细化两种范式。实验表明该方法在数据稀缺下提升了细粒度分割精度，为无人机输电线路巡检中的缺陷检测提供了有效的特征提取基础。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "transmission line defect detection from UAV imagery",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.04179v1",
+      "source": "arxiv",
+      "title": "CritiqueDriveVLM: From Verifier-Guided Reinforcement Learning to Latent Thought Distillation for Autonomous Driving",
+      "abstract": "End-to-end Vision-Language Models (VLMs) show immense potential in autonomous driving. However, standard Supervised Fine-Tuning (SFT) often suffers from reasoning hallucinations and conservative biases. While traditional tool-augmented frameworks and Chain-of-Thought (CoT) approaches mitigate these issues, they incur exorbitant token consumption and unacceptable latency, rendering real-time deployment impractical. To resolve this reliability-efficiency trade-off, we propose CritiqueDriveVLM, a novel unified three-stage framework internalizing reasoning directly into the VLM. First, we introduce Critique-Driven Multi-Turn Reinforcement Learning (RL) guided by a multi-dimensional verifier. By providing granular scalar feedback and a multi-turn penalty, we force the policy to internalize logical deduction, cultivating a robust System-2 Teacher that achieves high accuracy without fragile external tools. Subsequently, we propose Latent Thought Distillation to overcome the latency bottleneck. By aligning the Student's latent representations with the Teacher's fully converged reasoning states, we compress deep logical capabilities into a fast, CoT-free System-1 Student. Extensive experiments on the widely-used DriveLMM-01 benchmark demonstrate remarkable improvements. Compared to the base model, our tool-free Teacher significantly boosts Multiple Choice Quality (MCQ) from 55.54% to a state-of-the-art 76.54%. Crucially, our distilled Student preserves competitive reasoning depth while drastically minimizing generation length to an average of merely 28 tokens. This slashes inference latency by 88% (from 3482 ms to 416 ms), paving a highly robust pathway for low-latency autonomous driving.Our source code is available at https://github.com/MICLAB-BUPT/CritiqueDriveVLM.",
+      "authors": [
+        "Zhaohong Liu",
+        "Hao Ye",
+        "Xianlin Zhang",
+        "Mengshi Qi"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-07-05T08:51:47+00:00",
+      "link": "https://arxiv.org/pdf/2607.04179v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Uses multi-turn RL with multi-dimensional verifier for dense feedback in autonomous driving",
+      "llm_evidence_cn": "利用多维验证器的多轮强化学习在自动驾驶中提供密集反馈",
+      "llm_evidence": "利用多维验证器的多轮强化学习在自动驾驶中提供密集反馈",
+      "canonical_evidence": "利用多维验证器的多轮强化学习在自动驾驶中提供密集反馈",
+      "llm_tldr_en": "Introduces CritiqueDriveVLM, a framework that combines verifier-guided multi-turn RL and latent thought distillation to improve reliability and efficiency of VLMs for autonomous driving.",
+      "llm_tldr_cn": "针对自动驾驶中端到端视觉语言模型（VLM）存在的推理幻觉和计算冗余问题，本文提出CritiqueDriveVLM框架，通过三阶段训练实现高效推理。第一阶段引入多维验证器引导的多轮强化学习，提供细粒度的轨迹级奖励以缓解稀疏奖励问题；第二阶段通过潜在思维蒸馏将复杂的推理过程压缩进模型内部，消除运行时对工具调用和长思维链的依赖；第三阶段微调确保任务性能。在真实驾驶场景下的实验表明，该方法在保持低延迟的同时显著减少了决策错误，成功平衡了可靠性与效率，为实时自动驾驶系统提供了一种可行方案。",
+      "llm_tldr": "针对自动驾驶中端到端视觉语言模型（VLM）存在的推理幻觉和计算冗余问题，本文提出CritiqueDriveVLM框架，通过三阶段训练实现高效推理。第一阶段引入多维验证器引导的多轮强化学习，提供细粒度的轨迹级奖励以缓解稀疏奖励问题；第二阶段通过潜在思维蒸馏将复杂的推理过程压缩进模型内部，消除运行时对工具调用和长思维链的依赖；第三阶段微调确保任务性能。在真实驾驶场景下的实验表明，该方法在保持低延迟的同时显著减少了决策错误，成功平衡了可靠性与效率，为实时自动驾驶系统提供了一种可行方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.07893v1",
+      "source": "arxiv",
+      "title": "Reachability-Preserving Bellman Operator for the Discounted Reach-Cost Value Function: Uniting Hamilton-Jacobi Reachability and Reinforcement Learning",
+      "abstract": "Hamilton-Jacobi (HJ) reachability provides rigorous safety and reachability guarantees for continuous-time dynamical systems, but its numerical solution suffers from the curse of dimensionality. Deep reinforcement learning (DRL), by contrast, offers scalable sample-based methods. However, RL is typically built around additive cumulative rewards; whereas, reachability objectives are inherently non-additive. This mismatch makes a direct bridge between HJ reachability and RL nontrivial. Recent discounted formulations have either introduced contraction by altering the original reachability semantics, or preserved exact semantics on the HJ side without a corresponding Bellman fixed-point characterization. In this paper, we close this gap by building on a semantics-preserving discounted reach-based value function and deriving a non-additive Bellman operator whose unique fixed point exactly matches the value function in the HJ formulation. We prove that discounting makes this operator contractive, yielding existence, uniqueness, and convergence of value iteration. Furthermore, we establish the equivalence between the HJ and Bellman characterizations, and show that RL can be interpreted as a sample-based approximation scheme for the same fixed-point equation. This yields a principled and semantically exact connection between HJ reachability and RL, enabling learning-based methods to approximate reachability value functions while preserving their safety-critical meaning. As a result, the proposed framework opens the door to scalable, data-driven computation of reachable sets and safety certificates in high-dimensional systems. Numerical experiments demonstrate close agreement with HJ solutions, confirm preservation of reachability semantics via alignment of zero level sets, and support the interpretation of reinforcement learning as a sample-based solver of the proposed Bellman operator.",
+      "authors": [
+        "Isabelle El-Hajj",
+        "Prashant Solanki",
+        "Jasper van Beers",
+        "Coen de Visser",
+        "Erik-Jan van Kampen"
+      ],
+      "primary_category": "eess.SY",
+      "categories": [
+        "eess.SY"
+      ],
+      "published": "2026-07-08T20:04:46+00:00",
+      "link": "https://arxiv.org/pdf/2607.07893v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "unites Hamilton-Jacobi reachability and RL, preserving reachability semantics over long horizons",
+      "llm_evidence_cn": "统一HJ可达性与强化学习用于长期可达任务，可扩展至长时域奖励分配",
+      "llm_evidence": "统一HJ可达性与强化学习用于长期可达任务，可扩展至长时域奖励分配",
+      "canonical_evidence": "统一HJ可达性与强化学习用于长期可达任务，可扩展至长时域奖励分配",
+      "llm_tldr_en": "Proposes a Bellman operator that preserves reachability semantics, bridging Hamilton-Jacobi reachability and deep reinforcement learning for long-horizon safety-critical tasks.",
+      "llm_tldr_cn": "为解决强化学习中非加性可达性目标与标准奖励的错配问题，提出一种保持精确可达性语义的贝尔曼算子，实现了汉密尔顿-雅可比可达性与深度强化学习的统一。该算子通过折扣到达成本值函数，在保持收缩性的同时确保长期安全约束，实验验证了其在复杂系统中的有效性。",
+      "llm_tldr": "为解决强化学习中非加性可达性目标与标准奖励的错配问题，提出一种保持精确可达性语义的贝尔曼算子，实现了汉密尔顿-雅可比可达性与深度强化学习的统一。该算子通过折扣到达成本值函数，在保持收缩性的同时确保长期安全约束，实验验证了其在复杂系统中的有效性。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
