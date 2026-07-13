@@ -1,0 +1,101 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-13T21:20:39.917459+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2607.09042v1",
+      "source": "arxiv",
+      "title": "Learning More from Less: Reinforcement Learning from Hindsight",
+      "abstract": "Reinforcement learning (RL) is increasingly used to post-train vision-language-action (VLA) models, but every update consumes robot rollouts that are slow and costly to collect, making sample efficiency a central concern. Manipulation tasks typically provide only sparse rewards, so a weak policy fails almost every rollout early in training and has little to learn from, even when those failures execute coherent behavior. Such a failure, however, is a success at a different task. We present Learning from Hindsight (LfH), which brings hindsight relabeling to RL post-training of VLAs by scoring failed rollouts against the tasks they actually achieved. A single vision-language model relabels both the instruction and the reward, proposing a hindsight instruction for a group of failed rollouts and scoring how well each satisfies it, and the policy trains on the relabeled and original rollouts jointly. Because VLAs generalize across language, relabeling in language lets the policy learn more from the same trajectories. On out-of-distribution LIBERO-PRO tasks, where standard RL improves only slowly, LfH achieves $5\\times$ improvement in sample efficiency, and outperforms a dense progress-reward baseline. The gains hold across VLA backbones and on a physical Franka robot.",
+      "authors": [
+        "Iris Xu",
+        "Sunshine Jiang",
+        "John Marangola",
+        "Nitish Dashora",
+        "Richard Li",
+        "Thomas Liu",
+        "Zexue He",
+        "Yuheng Zhi",
+        "Alex Pentland",
+        "Pulkit Agrawal",
+        "Zhang-Wei Hong"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-07-10T02:17:41+00:00",
+      "link": "https://arxiv.org/pdf/2607.09042v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "hindsight relabeling for reward assignment in RL",
+      "llm_evidence_cn": "使用事后重标记进行强化学习奖励分配",
+      "llm_evidence": "使用事后重标记进行强化学习奖励分配",
+      "canonical_evidence": "使用事后重标记进行强化学习奖励分配",
+      "llm_tldr_en": "Hindsight relabeling turns failures into learning opportunities by reassigning tasks and rewards, improving sample efficiency for RL.",
+      "llm_tldr_cn": "针对VLA模型RL后训练中样本效率低、弱策略失败轨迹无法利用的问题，提出事后学习方法，利用视觉-语言模型对失败轨迹重新标记指令和奖励，转化为成功任务数据。实验在机器人操作任务中验证了该方法能显著提高学习效率，为长时程任务中的奖励分配提供了有效机制。",
+      "llm_tldr": "针对VLA模型RL后训练中样本效率低、弱策略失败轨迹无法利用的问题，提出事后学习方法，利用视觉-语言模型对失败轨迹重新标记指令和奖励，转化为成功任务数据。实验在机器人操作任务中验证了该方法能显著提高学习效率，为长时程任务中的奖励分配提供了有效机制。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.07252v1",
+      "source": "arxiv",
+      "title": "Safe Reinforcement Learning using Ideas from Model Predictive Control",
+      "abstract": "Reinforcement learning (RL) enables the synthesis of control policies directly from data, making it highly appealing for complex cyber-physical systems (CPSs) and robotics. A persistent challenge, however, is ensuring strict, hard safety constraints during the active learning phase. In real-world physical systems, violating mechanical limits can cause irreversible damage, necessitating that exploration remains strictly within safe operational regions. We propose a generalized framework that combines the adaptive, high-performance nature of deep reinforcement learning (DRL) with the formal safety guarantees of model predictive control (MPC). Using a mathematical model of the system dynamics, offline MPC computations define a feasible state-action space, representing all safe combinations of system states and control inputs that guarantee constraint satisfaction. During training and deployment, the RL agent's instantaneous actions are projected onto this globally verified feasible set via a safety filter. We systematically evaluate our generalized approach on a non-linear 1-DoF laboratory testbed, demonstrating successful exploration and stable policy convergence on physical hardware.",
+      "authors": [
+        "Georg Schäfer",
+        "Jakob Rehrl",
+        "Stefan Huber",
+        "Simon Hirlaender"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.RO"
+      ],
+      "published": "2026-07-08T10:35:04+00:00",
+      "link": "https://arxiv.org/pdf/2607.07252v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "safe DRL framework applicable to UAV inspection",
+      "llm_evidence_cn": "适用于无人机巡检的安全深度强化学习框架",
+      "llm_evidence": "适用于无人机巡检的安全深度强化学习框架",
+      "canonical_evidence": "适用于无人机巡检的安全深度强化学习框架",
+      "llm_tldr_en": "Combines DRL with MPC to ensure safe exploration; useful for safety-critical UAV inspection tasks.",
+      "llm_tldr_cn": "针对深度强化学习在探索阶段可能违反安全约束导致物理系统损伤的问题，提出结合模型预测控制的安全框架。通过离线MPC计算安全状态-动作空间，限制DRL探索不超出可行区域。实验证明该方法能在学习过程中确保硬安全约束，为无人机巡检等安全关键任务提供了可证安全的DRL方案。",
+      "llm_tldr": "针对深度强化学习在探索阶段可能违反安全约束导致物理系统损伤的问题，提出结合模型预测控制的安全框架。通过离线MPC计算安全状态-动作空间，限制DRL探索不超出可行区域。实验证明该方法能在学习过程中确保硬安全约束，为无人机巡检等安全关键任务提供了可证安全的DRL方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "deep reinforcement learning for UAV inspection tasks",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

@@ -6,34 +6,28 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-12
-- 运行时间：2026-07-12 20:37:57 UTC
+- 最新运行日期：2026-07-13
+- 运行时间：2026-07-13 21:24:32 UTC
 - 运行状态：成功
-- 本次总论文数：4
+- 本次总论文数：2
 - 精读区：1
-- 速读区：3
+- 速读区：1
 
 ### 今日简报（AI）
-今日速览4篇前沿AI论文，涵盖强化学习表征、无人机分割与自动驾驶评测，并精读了一篇高分掩码预测表示工作。  
-最值得关注：掩码预测让视觉强化学习更鲁棒，而可达性Bellman算子将安全探索装进了数学框架。  
-若你关心RL在视觉或安全约束上的落地，不妨从这两篇读起。
-- 详情：[/202607/12/README](/202607/12/README)
+今日精读高分论文，探索如何用“后见之明”从稀疏反馈中高效学习；速读则关注借鉴模型预测控制提升安全性的思路。  
+最值得跟进的结论：后见之明重标记可大幅提升样本效率；MPC思想能为强化学习戴上安全带，约束探索中的危险动作。  
+建议读者从Hindsight Experience Replay入手，思考如何在你自己的任务里把失败经验改写为成功指引。
+- 详情：[/202607/13/README](/202607/13/README)
 
 ### 精读区论文标签
-1. [Mask-based Predictive Representations for Reinforcement Learning](/202607/12/2607.04153v1-mask-based-predictive-representations-for-reinforcement-learning)  
-   标签：评分：8.0/10、query:uav-drl
-   evidence：基于掩码预测的视觉深度强化学习表示，提升采样效率
+1. [Learning More from Less: Reinforcement Learning from Hindsight](/202607/13/2607.09042v1-learning-more-from-less-reinforcement-learning-from-hindsight)  
+   标签：评分：9.0/10、query:uav-drl
+   evidence：使用事后重标记进行强化学习奖励分配
 
 ### 速读区论文标签
-1. [Exploring SAM Supervision for Fine-Grained UAV Target Segmentation under Data Scarcity](/202607/12/2607.03754v1-exploring-sam-supervision-for-fine-grained-uav-target-segmentation-under-data-scarcity)  
-   标签：评分：7.0/10、query:uav-drl
-   evidence：使用SAM3的无人机目标分割方法可增强输电线路缺陷检测
-2. [Reachability-Preserving Bellman Operator for the Discounted Reach-Cost Value Function: Uniting Hamilton-Jacobi Reachability and Reinforcement Learning](/202607/12/2607.07893v1-reachability-preserving-bellman-operator-for-the-discounted-reach-cost-value-function-uniting-hamilton-jacobi-reachability-and-reinforcement-learning)  
-   标签：评分：7.0/10、query:uav-drl
-   evidence：统一HJ可达性与强化学习用于长期可达任务，可扩展至长时域奖励分配
-3. [CritiqueDriveVLM: From Verifier-Guided Reinforcement Learning to Latent Thought Distillation for Autonomous Driving](/202607/12/2607.04179v1-critiquedrivevlm-from-verifier-guided-reinforcement-learning-to-latent-thought-distillation-for-autonomous-driving)  
+1. [Safe Reinforcement Learning using Ideas from Model Predictive Control](/202607/13/2607.07252v1-safe-reinforcement-learning-using-ideas-from-model-predictive-control)  
    标签：评分：6.0/10、query:uav-drl
-   evidence：利用多维验证器的多轮强化学习在自动驾驶中提供密集反馈
+   evidence：适用于无人机巡检的安全深度强化学习框架
 
 
 <div class="dpr-home-promo-card">

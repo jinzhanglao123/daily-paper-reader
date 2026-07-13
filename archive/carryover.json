@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-07-12T20:33:45.182448+00:00",
-  "updated_date": "20260712",
+  "generated_at": "2026-07-13T21:20:39.918118+00:00",
+  "updated_date": "20260713",
   "carryover_days": 9,
   "tag_states": {
     "UAV-DRL": {
-      "updated_date": "20260712",
+      "updated_date": "20260713",
       "carryover_days": 9,
       "items": []
     }
