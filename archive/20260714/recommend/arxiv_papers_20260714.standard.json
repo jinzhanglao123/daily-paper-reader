@@ -1,0 +1,68 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-14T21:19:30.523362+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2607.09773v1",
+      "source": "arxiv",
+      "title": "EvoCUA-1.5: Online Reinforcement Learning for Multi-turn Computer-Use Agents",
+      "abstract": "Computer-use agents must solve long-horizon tasks through repeated interaction with partially observable, multimodal desktop environments. Although imitation learning and offline trajectory refinement provide strong priors, static traces cannot cover the causal feedback loop of real computer use: each action changes the screen state, future action space, and recovery options. EvoCUA-1.5 extends self-evolving computer-use agents from offline experience learning to online reinforcement learning, where policies interact with executable sandbox environments and improve from verifiable task outcomes. Online RL in this setting requires more than directly reusing single-turn language-RL recipes. Multi-turn interaction introduces context-managed observations, sparse terminal rewards, variable-length trajectories, and slow environment feedback. EvoCUA-1.5 addresses these challenges with Step-Level Policy Optimization (STEPO), which preserves trajectory-level advantage balance after decomposition into step-level samples; policy-aware filtering and pass-rate calibration over verifiable synthesized tasks; Dynamic Tri-Adaptive Curriculum (DTAC), which combines learnable tasks, difficult positive replay, and controlled infeasible-task exposure; and a fully asynchronous RL infrastructure with staleness control and mini-group batching. Experiments show that these components improve training stability and downstream performance. EvoCUA-1.5 achieves 63.2\\% success on OSWorld-Verified, outperforming comparable 32B/35B-scale open-weight baselines and even approaching models with significantly larger parameter counts. Overall, EvoCUA-1.5 provides a practical framework for scaling online RL in multi-turn computer-use agents.",
+      "authors": [
+        "Mianqiu Huang",
+        "Taofeng Xue",
+        "Chong Peng",
+        "Jinrui Ding",
+        "Sicheng Fan",
+        "Jiale Hong",
+        "Yufei Gao",
+        "Xiaocheng Zhang",
+        "Linsen Guo",
+        "Xin Yang",
+        "Dengchang Zhao",
+        "Yuchen Xie",
+        "Peng Pei",
+        "Xunliang Xie",
+        "Xipeng Qiu"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.CL",
+        "cs.LG"
+      ],
+      "published": "2026-07-07T16:36:25+00:00",
+      "link": "https://arxiv.org/pdf/2607.09773v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "online RL for long-horizon tasks, reward from verifiable outcomes",
+      "llm_evidence_cn": "面向长周期任务的在线强化学习，从可验证结果中获得奖励",
+      "llm_evidence": "面向长周期任务的在线强化学习，从可验证结果中获得奖励",
+      "canonical_evidence": "面向长周期任务的在线强化学习，从可验证结果中获得奖励",
+      "llm_tldr_en": "Extends computer-use agents to online RL for long-horizon tasks, learning from verifiable outcomes in sandbox environments.",
+      "llm_tldr_cn": "计算机使用代理需要解决长周期任务，但模仿学习无法捕捉真实的因果反馈。EvoCUA-1.5将自进化代理从离线学习扩展到在线强化学习，通过与沙箱环境交互并获得可验证的结果反馈来改进策略。该方法处理了多轮交互中的上下文观测管理，为基于语言模型的长周期任务学习提供了新范式。",
+      "llm_tldr": "计算机使用代理需要解决长周期任务，但模仿学习无法捕捉真实的因果反馈。EvoCUA-1.5将自进化代理从离线学习扩展到在线强化学习，通过与沙箱环境交互并获得可验证的结果反馈来改进策略。该方法处理了多轮交互中的上下文观测管理，为基于语言模型的长周期任务学习提供了新范式。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

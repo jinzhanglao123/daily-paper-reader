@@ -6,28 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-13
-- 运行时间：2026-07-13 21:24:32 UTC
+- 最新运行日期：2026-07-14
+- 运行时间：2026-07-14 21:21:22 UTC
 - 运行状态：成功
-- 本次总论文数：2
-- 精读区：1
+- 本次总论文数：1
+- 精读区：0
 - 速读区：1
 
 ### 今日简报（AI）
-今日精读高分论文，探索如何用“后见之明”从稀疏反馈中高效学习；速读则关注借鉴模型预测控制提升安全性的思路。  
-最值得跟进的结论：后见之明重标记可大幅提升样本效率；MPC思想能为强化学习戴上安全带，约束探索中的危险动作。  
-建议读者从Hindsight Experience Replay入手，思考如何在你自己的任务里把失败经验改写为成功指引。
-- 详情：[/202607/13/README](/202607/13/README)
+今日速读一篇论文，揭示在线强化学习如何让多轮电脑操控智能体越来越聪明。  
+其核心方法是让智能体在真实交互中实时试错优化，比传统训练更适应多步骤任务。  
+普通读者若感兴趣，可留意这类技术如何落地到日常自动化工具，比如自动填表或文件管理。
+- 详情：[/202607/14/README](/202607/14/README)
 
 ### 精读区论文标签
-1. [Learning More from Less: Reinforcement Learning from Hindsight](/202607/13/2607.09042v1-learning-more-from-less-reinforcement-learning-from-hindsight)  
-   标签：评分：9.0/10、query:uav-drl
-   evidence：使用事后重标记进行强化学习奖励分配
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Safe Reinforcement Learning using Ideas from Model Predictive Control](/202607/13/2607.07252v1-safe-reinforcement-learning-using-ideas-from-model-predictive-control)  
+1. [EvoCUA-1.5: Online Reinforcement Learning for Multi-turn Computer-Use Agents](/202607/14/2607.09773v1-evocua-15-online-reinforcement-learning-for-multi-turn-computer-use-agents)  
    标签：评分：6.0/10、query:uav-drl
-   evidence：适用于无人机巡检的安全深度强化学习框架
+   evidence：面向长周期任务的在线强化学习，从可验证结果中获得奖励
 
 
 <div class="dpr-home-promo-card">
