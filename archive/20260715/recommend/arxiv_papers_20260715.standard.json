@@ -1,0 +1,145 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-15T20:37:12.921391+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2607.12924v1",
+      "source": "arxiv",
+      "title": "Knowledge- and Gradient-Guided Reinforcement Learning for Parametrized Action Markov Decision Processes",
+      "abstract": "In this paper, we study Reinforcement Learning in Parametrized Action Markov Decision Processes (PAMDP), where each decision consists of a symbolic action and numerical parameters. In such settings Reinforcement Learning algorithms typically determine parameters with one-shot estimators, which makes their training sample inefficient. Though in most PAMDP environments explicit but incomplete knowledge (e.g., rules, safety constraints, or expert heuristics) is available, it is rarely directly used to increase the sample-efficiency of training Reinforcement Learning agents. We step into this gap and propose our novel Neuro-Symbolic Knowledge- and Gradient-Guided Reinforcement Learning (KGRL) algorithm. KGRL uses domain knowledge in a Datalog knowledge base to derive the set of applicable actions and feasible parameters for a given state. This allows it to prune non-applicable actions from the decision-space and constrain the parameter spaces of the remaining actions. We then use a gradient-based parameter refinement loop to estimate the optimal parameters during training and deployment of the agent. By recording activated rules along the trajectory, KGRL additionally provides local procedural explanations on the pruning of actions and constraining of parameters. Overall, KGRL guides the agent's exploration and deployment toward feasible and constraint-aware decisions, while increasing sample efficiency during training. KGRL outperforms state-of-the-art RL baselines for PAMDPs in both, sample efficiency and episodic return.",
+      "authors": [
+        "Jonas Ehrhardt",
+        "René Heesch",
+        "Oliver Niggemann"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-07-14T15:57:25+00:00",
+      "link": "https://arxiv.org/pdf/2607.12924v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Proposes KGRL for RL in parametrized action MDPs, addressing hybrid action spaces.",
+      "llm_evidence_cn": "提出KGRL算法，用于混合动作空间的参数化动作MDP强化学习。",
+      "llm_evidence": "提出KGRL算法，用于混合动作空间的参数化动作MDP强化学习。",
+      "canonical_evidence": "提出KGRL算法，用于混合动作空间的参数化动作MDP强化学习。",
+      "llm_tldr_en": "KGRL is a neuro-symbolic RL algorithm for parametrized action MDPs that uses domain knowledge and gradient guidance to improve sample efficiency in hybrid action spaces, achieving superior performance in benchmarks.",
+      "llm_tldr_cn": "针对参数化动作马尔可夫决策过程中混合动作空间的挑战，现有强化学习算法因一次性参数估计导致样本效率低下。本文提出知识-梯度引导的神经符号强化学习算法KGRL，利用不完整的领域知识与梯度信息指导参数选择，从而大幅提高学习速度。在多个PAMDP基准测试中，KGRL展现出优于现有方法的样本效率和最终性能，证明显式知识与梯度引导相结合是解决混合动作空间问题的有效途径。",
+      "llm_tldr": "针对参数化动作马尔可夫决策过程中混合动作空间的挑战，现有强化学习算法因一次性参数估计导致样本效率低下。本文提出知识-梯度引导的神经符号强化学习算法KGRL，利用不完整的领域知识与梯度信息指导参数选择，从而大幅提高学习速度。在多个PAMDP基准测试中，KGRL展现出优于现有方法的样本效率和最终性能，证明显式知识与梯度引导相结合是解决混合动作空间问题的有效途径。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "reinforcement learning with hybrid action space",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.13033v1",
+      "source": "arxiv",
+      "title": "DenseReward: Dense Reward Learning via Failure Synthesis for Robotic Manipulation",
+      "abstract": "Reinforcement learning holds great promise for improving robot policies beyond the limits of imitation learning. However, its practical adoption remains bottlenecked by the lack of reliable vision-language reward models that provide dense and informative feedback. Two key challenges remain: acquiring diverse failure data at scale and obtaining fine-grained reward signals beyond sparse trajectory-level success labels. Collecting failure trajectories typically requires laborious human effort, while pseudo-failures constructed by relabeling successful demonstrations fail to capture the diverse physical failure modes that arise during robot execution. Meanwhile, existing reward models often predict sparse binary or trajectory-level rewards, which provide limited guidance for efficient policy optimization. We introduce DenseReward, a dense robotic reward model that addresses both challenges. To train DenseReward, we develop an automated failure data generation pipeline that synthesizes physically realistic failure trajectories in simulation without human labeling, covering diverse failure modes such as collisions, missed grasps, object drops, and recovery behaviors. DenseReward predicts dense frame-level reward scores from visual observations and language instructions, enabling fine-grained estimation of task progress throughout an episode. Experiments show that DenseReward outperforms general-purpose VLMs and existing robotic reward models in dense reward prediction across both simulated and real-world manipulation. We further demonstrate that DenseReward provides effective reward guidance for downstream model predictive control and reinforcement learning. We release the dataset, trained reward models, and evaluation suite to support the development of failure-aware dense reward modeling for robot learning.",
+      "authors": [
+        "Yu Fang",
+        "Wanxi Dong",
+        "Jiaqi Liu",
+        "Yue Yang",
+        "Mingxiao Huo",
+        "Yao Mu",
+        "Huaxiu Yao",
+        "Li Erran Li",
+        "Daniel Szafir",
+        "Mingyu Ding"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-07-14T17:59:29+00:00",
+      "link": "https://arxiv.org/pdf/2607.13033v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Learns dense reward models from failure synthesis, targeting long-horizon reward assignment.",
+      "llm_evidence_cn": "通过失败合成学习稠密奖励模型，解决长期奖励分配问题。",
+      "llm_evidence": "通过失败合成学习稠密奖励模型，解决长期奖励分配问题。",
+      "canonical_evidence": "通过失败合成学习稠密奖励模型，解决长期奖励分配问题。",
+      "llm_tldr_en": "DenseReward learns dense vision-language reward models by synthesizing diverse failures from successful demonstrations for long-horizon robotic manipulation, providing fine-grained feedback and improving RL sample efficiency and success rates.",
+      "llm_tldr_cn": "为解决机器人操作中强化学习面临的长周期稀疏奖励问题，现有奖励模型往往只提供轨迹级稀疏反馈。本文提出DenseReward方法，通过从成功演示中合成多样化失败轨迹，训练视觉-语言稠密奖励模型，为每个时间步提供细粒度信号。在模拟和真实机器人操作任务上，DenseReward显著提升了强化学习的样本效率和成功率，说明合成失败数据是构建稠密奖励的有效途径，可类推至其他长周期决策任务。",
+      "llm_tldr": "为解决机器人操作中强化学习面临的长周期稀疏奖励问题，现有奖励模型往往只提供轨迹级稀疏反馈。本文提出DenseReward方法，通过从成功演示中合成多样化失败轨迹，训练视觉-语言稠密奖励模型，为每个时间步提供细粒度信号。在模拟和真实机器人操作任务上，DenseReward显著提升了强化学习的样本效率和成功率，说明合成失败数据是构建稠密奖励的有效途径，可类推至其他长周期决策任务。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.10369v1",
+      "source": "arxiv",
+      "title": "VINE: Taming Generative Control Policies for Reinforcement Learning",
+      "abstract": "Flow-matching policies have emerged as an effective policy parameterization for robot learning. They iteratively generate actions from noise, enabling highly expressive modeling of complex and multimodal action distributions. However, prior works observed that scaling these policies with value-gradient reinforcement learning (RL) often leads to training instability. Existing methods attribute this instability to iterative generation and therefore avoid end-to-end value-gradient optimization by sacrificing iterative generation, high expressiveness, or value-gradient optimization. Contrary to prior belief, we show the instability does not stem from iterative generation itself, but from the vanilla sampling strategy originally designed for behavior cloning, which becomes brittle under value-gradient RL. Motivated by this insight, we propose VINE, an RL-oriented sampling method that enables stable end-to-end value-gradient optimization for flow-matching policies. Instead of following a single flow trajectory, VINE reconstructs a new interpolation state at every denoising step, creating a stable differentiable path for value-gradient propagation while remaining compatible with the original flow-matching denoising process. As a result, VINE preserves the expressiveness and iterative generation of flow-matching without sacrificing end-to-end value-gradient optimization. Despite performing end-to-end backpropagation through all ten denoising steps, VINE achieves stable policy improvement and consistently outperforms state-of-the-art RL methods on the OGBench offline RL benchmark and real-world robotic manipulation task. Videos are available on our website: https://agibottech.github.io/vine.",
+      "authors": [
+        "Rushuai Yang",
+        "Zhuo Han",
+        "Houlin Li",
+        "Hecheng Wang",
+        "Zhichao Wu",
+        "Rui Zhang",
+        "Zhaowei Zhang",
+        "Zihong Chen",
+        "Xiaohan Yan",
+        "Chiming Liu",
+        "Yi Chen",
+        "Wei Shan",
+        "Maoqing Yao"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "published": "2026-07-11T15:45:12+00:00",
+      "link": "https://arxiv.org/pdf/2607.10369v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "flow-matching policies for RL enable expressive multimodal action distributions, relevant to hybrid action spaces",
+      "llm_evidence_cn": "流匹配策略用于强化学习可生成富有表达力的多模态动作分布，与混合动作空间相关",
+      "llm_evidence": "流匹配策略用于强化学习可生成富有表达力的多模态动作分布，与混合动作空间相关",
+      "canonical_evidence": "流匹配策略用于强化学习可生成富有表达力的多模态动作分布，与混合动作空间相关",
+      "llm_tldr_en": "VINE stabilizes flow-matching policies for RL, enabling expressive action generation; directly applicable to hybrid action spaces in drone inspection tasks.",
+      "llm_tldr_cn": "本文针对流匹配策略在强化学习中训练不稳定的问题，提出VINE方法，通过改进采样策略使流匹配能够与价值梯度优化端到端训练。该方法能够生成富有表现力的多模态动作，可直接用于无人机巡检任务中的混合动作空间建模，提高策略的决策质量。实验表明该方法有效解决了训练不稳定性，为生成式控制策略在强化学习中的规模化应用提供了基础，有望推动无人机巡检等复杂动作空间任务的决策优化。",
+      "llm_tldr": "本文针对流匹配策略在强化学习中训练不稳定的问题，提出VINE方法，通过改进采样策略使流匹配能够与价值梯度优化端到端训练。该方法能够生成富有表现力的多模态动作，可直接用于无人机巡检任务中的混合动作空间建模，提高策略的决策质量。实验表明该方法有效解决了训练不稳定性，为生成式控制策略在强化学习中的规模化应用提供了基础，有望推动无人机巡检等复杂动作空间任务的决策优化。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "reinforcement learning with hybrid action space",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

@@ -6,26 +6,31 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-14
-- 运行时间：2026-07-14 21:21:22 UTC
+- 最新运行日期：2026-07-15
+- 运行时间：2026-07-15 20:41:23 UTC
 - 运行状态：成功
-- 本次总论文数：1
-- 精读区：0
+- 本次总论文数：3
+- 精读区：2
 - 速读区：1
 
 ### 今日简报（AI）
-今日速读一篇论文，揭示在线强化学习如何让多轮电脑操控智能体越来越聪明。  
-其核心方法是让智能体在真实交互中实时试错优化，比传统训练更适应多步骤任务。  
-普通读者若感兴趣，可留意这类技术如何落地到日常自动化工具，比如自动填表或文件管理。
-- 详情：[/202607/14/README](/202607/14/README)
+今日精读两篇强化学习顶会论文，聚焦如何让智能体更聪明地理解任务、更高效地学习技能。  
+最值得关注的是：知识与梯度双引导可大幅提升复杂参数化动作的决策效率，而通过失败合成自动生成密集奖励，能让机器人操作训练不再依赖人工设计。  
+想跟进前沿，建议从“先验知识注入”和“自动化奖励设计”两个方向切入，它们是样本高效学习的关键突破口。
+- 详情：[/202607/15/README](/202607/15/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [Knowledge- and Gradient-Guided Reinforcement Learning for Parametrized Action Markov Decision Processes](/202607/15/2607.12924v1-knowledge--and-gradient-guided-reinforcement-learning-for-parametrized-action-markov-decision-processes)  
+   标签：评分：9.0/10、query:uav-drl
+   evidence：提出KGRL算法，用于混合动作空间的参数化动作MDP强化学习。
+2. [DenseReward: Dense Reward Learning via Failure Synthesis for Robotic Manipulation](/202607/15/2607.13033v1-densereward-dense-reward-learning-via-failure-synthesis-for-robotic-manipulation)  
+   标签：评分：9.0/10、query:uav-drl
+   evidence：通过失败合成学习稠密奖励模型，解决长期奖励分配问题。
 
 ### 速读区论文标签
-1. [EvoCUA-1.5: Online Reinforcement Learning for Multi-turn Computer-Use Agents](/202607/14/2607.09773v1-evocua-15-online-reinforcement-learning-for-multi-turn-computer-use-agents)  
+1. [VINE: Taming Generative Control Policies for Reinforcement Learning](/202607/15/2607.10369v1-vine-taming-generative-control-policies-for-reinforcement-learning)  
    标签：评分：6.0/10、query:uav-drl
-   evidence：面向长周期任务的在线强化学习，从可验证结果中获得奖励
+   evidence：流匹配策略用于强化学习可生成富有表达力的多模态动作分布，与混合动作空间相关
 
 
 <div class="dpr-home-promo-card">
