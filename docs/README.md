@@ -6,31 +6,28 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-15
-- 运行时间：2026-07-15 20:41:23 UTC
+- 最新运行日期：2026-07-16
+- 运行时间：2026-07-16 21:23:19 UTC
 - 运行状态：成功
-- 本次总论文数：3
-- 精读区：2
+- 本次总论文数：2
+- 精读区：1
 - 速读区：1
 
 ### 今日简报（AI）
-今日精读两篇强化学习顶会论文，聚焦如何让智能体更聪明地理解任务、更高效地学习技能。  
-最值得关注的是：知识与梯度双引导可大幅提升复杂参数化动作的决策效率，而通过失败合成自动生成密集奖励，能让机器人操作训练不再依赖人工设计。  
-想跟进前沿，建议从“先验知识注入”和“自动化奖励设计”两个方向切入，它们是样本高效学习的关键突破口。
-- 详情：[/202607/15/README](/202607/15/README)
+今日精读一篇9.0分论文《TRACE》，提出基于信用分配的长程智能体逐轮奖励方法，速读一篇7.0分论文探索知识梯度指导的参数化动作强化学习。  
+最值得关注：在长时间任务中，如何自动评估每步决策的真正贡献仍是当前核心难题，TRACE 的轮次级信用分配为解决稀疏反馈下的策略学习提供了新思路。  
+建议读者若关注复杂决策场景，可从信用分配或知识引导的奖励塑造切入，结合现有基线比较实验效果。
+- 详情：[/202607/16/README](/202607/16/README)
 
 ### 精读区论文标签
-1. [Knowledge- and Gradient-Guided Reinforcement Learning for Parametrized Action Markov Decision Processes](/202607/15/2607.12924v1-knowledge--and-gradient-guided-reinforcement-learning-for-parametrized-action-markov-decision-processes)  
+1. [TRACE: Turn-level Reward Assignment via Credit Estimation for Long-Horizon Agents](/202607/16/2607.13988v1-trace-turn-level-reward-assignment-via-credit-estimation-for-long-horizon-agents)  
    标签：评分：9.0/10、query:uav-drl
-   evidence：提出KGRL算法，用于混合动作空间的参数化动作MDP强化学习。
-2. [DenseReward: Dense Reward Learning via Failure Synthesis for Robotic Manipulation](/202607/15/2607.13033v1-densereward-dense-reward-learning-via-failure-synthesis-for-robotic-manipulation)  
-   标签：评分：9.0/10、query:uav-drl
-   evidence：通过失败合成学习稠密奖励模型，解决长期奖励分配问题。
+   evidence：通过状态转移的轮次级奖励估计解决长程信用分配问题。
 
 ### 速读区论文标签
-1. [VINE: Taming Generative Control Policies for Reinforcement Learning](/202607/15/2607.10369v1-vine-taming-generative-control-policies-for-reinforcement-learning)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：流匹配策略用于强化学习可生成富有表达力的多模态动作分布，与混合动作空间相关
+1. [Knowledge- and Gradient-Guided Reinforcement Learning for Parametrized Action Markov Decision Processes](/202607/16/2607.12924v2-knowledge--and-gradient-guided-reinforcement-learning-for-parametrized-action-markov-decision-processes)  
+   标签：评分：7.0/10、query:uav-drl
+   evidence：针对离散与连续混合动作空间的强化学习方法
 
 
 <div class="dpr-home-promo-card">
