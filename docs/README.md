@@ -6,28 +6,31 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-16
-- 运行时间：2026-07-16 21:23:19 UTC
+- 最新运行日期：2026-07-17
+- 运行时间：2026-07-17 21:26:38 UTC
 - 运行状态：成功
-- 本次总论文数：2
+- 本次总论文数：3
 - 精读区：1
-- 速读区：1
+- 速读区：2
 
 ### 今日简报（AI）
-今日精读一篇9.0分论文《TRACE》，提出基于信用分配的长程智能体逐轮奖励方法，速读一篇7.0分论文探索知识梯度指导的参数化动作强化学习。  
-最值得关注：在长时间任务中，如何自动评估每步决策的真正贡献仍是当前核心难题，TRACE 的轮次级信用分配为解决稀疏反馈下的策略学习提供了新思路。  
-建议读者若关注复杂决策场景，可从信用分配或知识引导的奖励塑造切入，结合现有基线比较实验效果。
-- 详情：[/202607/16/README](/202607/16/README)
+今日聚焦多模态智能体技能与策略协同进化，并快速回顾无人机动态路径规划与知识图谱推理进展。  
+最值得关注的是 SPyCE 框架让智能体通过技能与策略共同进化，大幅提升多模态任务中的泛化能力。  
+建议普通读者从 SPyCE 的方法解析入手，理解智能体如何像人类一样边学技能边优化策略。
+- 详情：[/202607/17/README](/202607/17/README)
 
 ### 精读区论文标签
-1. [TRACE: Turn-level Reward Assignment via Credit Estimation for Long-Horizon Agents](/202607/16/2607.13988v1-trace-turn-level-reward-assignment-via-credit-estimation-for-long-horizon-agents)  
-   标签：评分：9.0/10、query:uav-drl
-   evidence：通过状态转移的轮次级奖励估计解决长程信用分配问题。
+1. [SPyCE: Skill-Policy Co-evolution for Multimodal Agents](/202607/17/2607.13854v1-spyce-skill-policy-co-evolution-for-multimodal-agents)  
+   标签：评分：8.0/10、query:uav-drl
+   evidence：将长时域轨迹蒸馏为与策略协同进化的技能，解决奖励分配问题
 
 ### 速读区论文标签
-1. [Knowledge- and Gradient-Guided Reinforcement Learning for Parametrized Action Markov Decision Processes](/202607/16/2607.12924v2-knowledge--and-gradient-guided-reinforcement-learning-for-parametrized-action-markov-decision-processes)  
+1. [Dynamical Vehicle Orienteering Problem for Multi-Rotor Unmanned Aerial Vehicles](/202607/17/2607.13789v1-dynamical-vehicle-orienteering-problem-for-multi-rotor-unmanned-aerial-vehicles)  
    标签：评分：7.0/10、query:uav-drl
-   evidence：针对离散与连续混合动作空间的强化学习方法
+   evidence：无人机路径规划最大化目标奖励，适用于巡检路径规划
+2. [Reachability-Aware Pretraining for Efficient Target-Oriented Path Exploration in Temporal Knowledge Graph Reasoning](/202607/17/2607.14886v1-reachability-aware-pretraining-for-efficient-target-oriented-path-exploration-in-temporal-knowledge-graph-reasoning)  
+   标签：评分：6.0/10、query:uav-drl
+   evidence：强化学习中面向稀疏奖励的高效探索预训练，与长时域奖励分配相关
 
 
 <div class="dpr-home-promo-card">
