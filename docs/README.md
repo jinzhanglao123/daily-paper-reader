@@ -6,31 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-17
-- 运行时间：2026-07-17 21:26:38 UTC
+- 最新运行日期：2026-07-18
+- 运行时间：2026-07-18 21:18:38 UTC
 - 运行状态：成功
-- 本次总论文数：3
-- 精读区：1
-- 速读区：2
+- 本次总论文数：1
+- 精读区：0
+- 速读区：1
 
 ### 今日简报（AI）
-今日聚焦多模态智能体技能与策略协同进化，并快速回顾无人机动态路径规划与知识图谱推理进展。  
-最值得关注的是 SPyCE 框架让智能体通过技能与策略共同进化，大幅提升多模态任务中的泛化能力。  
-建议普通读者从 SPyCE 的方法解析入手，理解智能体如何像人类一样边学技能边优化策略。
-- 详情：[/202607/17/README](/202607/17/README)
+今日速读了一篇关于智能体强化学习的新方法 SEED，它让模型在训练中自我进化、边做边学。  
+核心亮点是“自演进在线策略蒸馏”，无需依赖静态数据集，能持续提升智能体在多步任务中的探索效率。  
+建议关注该方法后续在复杂游戏或真实机器人上的落地实验，它可能让 AI 助理更擅长自主规划。
+- 详情：[/202607/18/README](/202607/18/README)
 
 ### 精读区论文标签
-1. [SPyCE: Skill-Policy Co-evolution for Multimodal Agents](/202607/17/2607.13854v1-spyce-skill-policy-co-evolution-for-multimodal-agents)  
-   标签：评分：8.0/10、query:uav-drl
-   evidence：将长时域轨迹蒸馏为与策略协同进化的技能，解决奖励分配问题
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Dynamical Vehicle Orienteering Problem for Multi-Rotor Unmanned Aerial Vehicles](/202607/17/2607.13789v1-dynamical-vehicle-orienteering-problem-for-multi-rotor-unmanned-aerial-vehicles)  
+1. [SEED: Self-Evolving On-Policy Distillation for Agentic Reinforcement Learning](/202607/18/2607.14777v1-seed-self-evolving-on-policy-distillation-for-agentic-reinforcement-learning)  
    标签：评分：7.0/10、query:uav-drl
-   evidence：无人机路径规划最大化目标奖励，适用于巡检路径规划
-2. [Reachability-Aware Pretraining for Efficient Target-Oriented Path Exploration in Temporal Knowledge Graph Reasoning](/202607/17/2607.14886v1-reachability-aware-pretraining-for-efficient-target-oriented-path-exploration-in-temporal-knowledge-graph-reasoning)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：强化学习中面向稀疏奖励的高效探索预训练，与长时域奖励分配相关
+   evidence：通过自进化蒸馏在线轨迹的事后技能，实现长时域奖励分配
 
 
 <div class="dpr-home-promo-card">

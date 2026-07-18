@@ -1,0 +1,62 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-18T21:16:32.100955+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2607.14777v1",
+      "source": "arxiv",
+      "title": "SEED: Self-Evolving On-Policy Distillation for Agentic Reinforcement Learning",
+      "abstract": "Large language models are increasingly trained as interactive agents for long-horizon tasks involving multi-turn interaction, tool use, and environment feedback. Outcome-based reinforcement learning (RL) provides a practical optimization paradigm, but its sparse trajectory-level rewards offer limited guidance on intermediate decisions, leaving a supervision gap between episode-level outcomes and token-level policy learning. We propose SEED (SElf-Evolving On-Policy Distillation), a self-evolving framework that converts completed on-policy trajectories into training-time hindsight skills and distills their behavioral effect back into the policy model. SEED first fine-tunes the policy to analyze completed trajectories and generate natural-language skills that capture reusable workflows, decisive observations, or failure-avoidance rules. During RL, the current policy both collects trajectories and serves as the analyzer that extracts hindsight skills from them. Policy updates therefore improve subsequent decision making and skill analysis together, allowing hindsight supervision to evolve with the policy. SEED then re-scores the sampled actions under ordinary and skill-augmented contexts, converting the skill-induced probability shift into a dense token-level on-policy distillation signal. This signal is jointly optimized with outcome-based RL, keeping the auxiliary supervision aligned with the current trajectory distribution. Extensive experiments on text-based and vision-based agentic tasks show that SEED consistently improves performance and sample efficiency, exhibiting robust generalization to unseen scenarios. Our code is available at https://github.com/jinyangwu/SEED.",
+      "authors": [
+        "Jinyang Wu",
+        "Shuo Yang",
+        "Zhengxi Lu",
+        "Fan Zhang",
+        "Yuhao Shen",
+        "Lang Feng",
+        "Haoran Luo",
+        "Zheng Lian",
+        "Shuai Zhang",
+        "Zhengqi Wen",
+        "Jianhua Tao"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL"
+      ],
+      "published": "2026-07-16T09:57:18+00:00",
+      "link": "https://arxiv.org/pdf/2607.14777v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Long-horizon reward assignment via self-evolving distillation of hindsight skills from on-policy trajectories.",
+      "llm_evidence_cn": "通过自进化蒸馏在线轨迹的事后技能，实现长时域奖励分配",
+      "llm_evidence": "通过自进化蒸馏在线轨迹的事后技能，实现长时域奖励分配",
+      "canonical_evidence": "通过自进化蒸馏在线轨迹的事后技能，实现长时域奖励分配",
+      "llm_tldr_en": "SEED addresses sparse trajectory-level rewards in long-horizon LLM agent tasks by self-evolving on-policy distillation: it converts completed trajectories into hindsight skills and distills them back, providing token-level supervision and reducing the gap between outcome rewards and intermediate decisions.",
+      "llm_tldr_cn": "SEED针对大语言模型智能体在长时域多步交互任务中因稀疏轨迹级奖励导致中间决策缺乏引导的问题，提出自进化在线策略蒸馏框架。该方法将完成的在线轨迹转化为事后技能并蒸馏回策略模型，为令牌级策略学习提供额外监督。实验结果表明，SEED能够有效提升策略在长时域任务中的成功率，缓解了结果奖励与中间决策之间的监督鸿沟，为长时域强化学习中的奖励分配提供了新机制。",
+      "llm_tldr": "SEED针对大语言模型智能体在长时域多步交互任务中因稀疏轨迹级奖励导致中间决策缺乏引导的问题，提出自进化在线策略蒸馏框架。该方法将完成的在线轨迹转化为事后技能并蒸馏回策略模型，为令牌级策略学习提供额外监督。实验结果表明，SEED能够有效提升策略在长时域任务中的成功率，缓解了结果奖励与中间决策之间的监督鸿沟，为长时域强化学习中的奖励分配提供了新机制。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

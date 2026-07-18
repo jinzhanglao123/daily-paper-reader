@@ -1,0 +1,24 @@
+{
+  "label": "2026-07-18",
+  "date": "2026-07-18",
+  "generated_at": "2026-07-18T21:18:47",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202607/18/2607.14777v1-seed-self-evolving-on-policy-distillation-for-agentic-reinforcement-learning",
+      "section": "quick",
+      "title_en": "SEED: Self-Evolving On-Policy Distillation for Agentic Reinforcement Learning",
+      "authors": "Jinyang Wu, Shuo Yang, Zhengxi Lu, Fan Zhang, Yuhao Shen, Lang Feng, Haoran Luo, Zheng Lian, Shuai Zhang, Zhengqi Wen, Jianhua Tao",
+      "date": "2026-07-16",
+      "pdf": "https://arxiv.org/pdf/2607.14777v1",
+      "score": "7.0",
+      "evidence": "通过自进化蒸馏在线轨迹的事后技能，实现长时域奖励分配",
+      "tldr": "在长时智能体强化学习中，稀疏轨迹奖励导致中间决策指导不足，形成监督缺口。SEED框架将完成的在线轨迹转化为自然语言事后技能，并通过技能增强的蒸馏信号提供密集令牌级监督，与结果导向RL联合优化。实验表明，SEED在文本与视觉任务上显著提升性能与样本效率，并鲁棒泛化至新场景。该方法为智能体训练提供了高效的自进化在线蒸馏范式。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Large language models are increasingly trained as interactive agents for long-horizon tasks involving multi-turn interaction, tool use, and environment feedback. Outcome-based reinforcement learning (RL) provides a practical optimization paradigm, but its sparse trajectory-level rewards offer limited guidance on intermediate decisions, leaving a supervision gap between episode-level outcomes and token-level policy learning. We propose SEED (SElf-Evolving On-Policy Distillation), a self-evolving framework that converts completed on-policy trajectories into training-time hindsight skills and distills their behavioral effect back into the policy model. SEED first fine-tunes the policy to analyze completed trajectories and generate natural-language skills that capture reusable workflows, decisive observations, or failure-avoidance rules. During RL, the current policy both collects trajectories and serves as the analyzer that extracts hindsight skills from them. Policy updates therefore improve subsequent decision making and skill analysis together, allowing hindsight supervision to evolve with the policy. SEED then re-scores the sampled actions under ordinary and skill-augmented contexts, converting the skill-induced probability shift into a dense token-level on-policy distillation signal. This signal is jointly optimized with outcome-based RL, keeping the auxiliary supervision aligned with the current trajectory distribution. Extensive experiments on text-based and vision-based agentic tasks show that SEED consistently improves performance and sample efficiency, exhibiting robust generalization to unseen scenarios. Our code is available at https://github.com/jinyangwu/SEED.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
