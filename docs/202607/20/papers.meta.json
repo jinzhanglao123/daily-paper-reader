@@ -1,0 +1,24 @@
+{
+  "label": "2026-07-20",
+  "date": "2026-07-20",
+  "generated_at": "2026-07-20T21:06:22",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202607/20/2607.15610v1-process-reward-informed-tree-rollout-for-effective-multi-turn-rl",
+      "section": "deep",
+      "title_en": "Process Reward Informed Tree Rollout for Effective Multi-Turn RL",
+      "authors": "Xintong Li, Sha Li, Yuwei Zhang, Changlong Yu, Rongmei Lin, Hongye Jin, Shuyi Guan, Xin Liu, Linwei Li, Qingyu Yin, Jingbo Shang",
+      "date": "2026-07-17",
+      "pdf": "https://arxiv.org/pdf/2607.15610v1",
+      "score": "9.0",
+      "evidence": "过程奖励引导的树展开用于长时域强化学习",
+      "tldr": "面对多轮智能体强化学习中均匀轨迹采样效率低、易陷入无效尝试的挑战，本文提出过程奖励引导的自适应树展开框架PATR。PATR利用任务相关的过程评分标记部分轨迹，从高潜力状态智能分支，重用公共前缀并剪枝退化路径。在SWE-Bench和FrozenLake上，PATR实现了最高+5.0和+9.3个百分点的提升，显著优于均匀展开基线。该框架兼容标准策略优化，同等预算下大幅提升探索效率，为长程多轮智能体任务提供了高效且可扩展的RL范式。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Reinforcement learning (RL) has become a key approach for training LLM agents, yet popular methods such as GRPO/RLOO rely on multiple independently sampled complete trajectories for advantage estimation. In long-horizon agentic tasks, such a uniform rollout strategy can waste budget on uninformative dead-end attempts, while promising intermediate states do not receive sufficient exploration. The multi-turn structure of agentic trajectories, with interleaved actions and observations, naturally supports organizing a trajectory group as a tree, where each turn serves as a decision point for exploration. This perspective reframes effective exploration as the problem of deciding where to branch. We propose Process-Scorer Guided Adaptive Tree Rollout (PATR), a quality-aware rollout framework for multi-turn agent RL. PATR uses task-appropriate process feedback to score partial trajectories, selectively branches from promising states, reuses shared prefixes, and conservatively stops degenerate paths to reduce wasted sampling. The resulting rollout groups remain compatible with standard policy optimization while providing more efficient exploration under the same training budget. We evaluate PATR on FrozenLake and the challenging SWE-Bench, which is largely unexplored by prior tree-rollout agent RL methods. Experiments show that PATR improves performance by up to +5.0 points on SWE-Bench and +9.3 points on FrozenLake, highlighting process-guided tree rollouts as an effective strategy for scalable multi-turn RL.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
