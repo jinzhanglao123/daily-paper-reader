@@ -1,0 +1,166 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-21T20:12:26.786097+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 3,
+    "deep_cap": 6,
+    "deep_selected": 3,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [
+    {
+      "id": "2607.17038v1",
+      "source": "arxiv",
+      "title": "Reward-Driven LLM Agent Workflows: Synthesizing POMDP Routing and Self-Correction for Autonomous Decision-Making",
+      "abstract": "This paper addresses key technical challenges in current large language model (LLM) agent applications, including long-horizon planning, sparse reward attribution, and dynamic environmental interaction, by designing and optimizing an intelligent agent workflow. The proposed architecture is based on the synthesis of core AI paradigms: Visual, Language, Generative, Graph, Multimodal, Reinforcement, and Agent Intelligence. Unlike conventional baseline models that rely on static prompting and lack robust perception-action loops, our approach introduces a Partially Observable Markov Decision Process (POMDP) routing mechanism. This mechanism is augmented with an internal, self-correcting reward model that evaluates decision trajectories before execution. By integrating multimodal inputs and advanced reinforcement learning principles (such as proximal policy optimization and value function approximation), the agent maintains long-term structural memory and dynamically adapts its reasoning pathways to mitigate error accumulation. Empirical experiments on the ALFWorld embodied simulation environment and the WebShop online navigation benchmark demonstrate a 24.5% absolute improvement in task success rate and trajectory efficiency over mainstream baselines like the standard ReAct framework. Comprehensive ablation studies confirm the significant contribution of the reward-driven critique module in suppressing hallucination rates. This research bridges theoretical foundations of reinforcement learning and graph-based memory with autonomous agent workflows. Ultimately, the resulting architecture offers a practical, scalable reference framework for developing artificial intelligence technologies in complex, multi-step autonomous systems. Code is available at https://github.com/01Amez/RLAW_Implementation.",
+      "authors": [
+        "Amez Amanj Ali",
+        "Kuo-Kun Tseng"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-07-19T02:51:41+00:00",
+      "link": "https://arxiv.org/pdf/2607.17038v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "long-horizon planning and sparse reward attribution in RL agent workflows",
+      "llm_evidence_cn": "强化学习智能体工作流中的长时域规划与稀疏奖励分配",
+      "llm_evidence": "强化学习智能体工作流中的长时域规划与稀疏奖励分配",
+      "canonical_evidence": "强化学习智能体工作流中的长时域规划与稀疏奖励分配",
+      "llm_tldr_en": "Addresses long-horizon planning and sparse reward attribution in LLM agents by proposing a POMDP routing mechanism with a self-correcting reward model, synthesizing RL, vision, and language; the workflow outperforms static prompting in reward allocation and decision quality.",
+      "llm_tldr_cn": "长时域任务中稀疏奖励分配是强化学习智能体面临的关键挑战。本文针对大语言模型驱动的智能体，设计了一种基于部分可观察马尔可夫决策过程（POMDP）路由与内部自我校正奖励模型的工作流。该工作流融合视觉、语言、强化学习等多种范式，通过动态环境交互与决策路径评估，有效处理长时域规划与稀疏奖励归因。实验表明，该工作流在长时域任务上优于静态提示方法，显著提升了奖励分配效率与决策质量，为构建更鲁棒的自主决策智能体提供了新思路。",
+      "llm_tldr": "长时域任务中稀疏奖励分配是强化学习智能体面临的关键挑战。本文针对大语言模型驱动的智能体，设计了一种基于部分可观察马尔可夫决策过程（POMDP）路由与内部自我校正奖励模型的工作流。该工作流融合视觉、语言、强化学习等多种范式，通过动态环境交互与决策路径评估，有效处理长时域规划与稀疏奖励归因。实验表明，该工作流在长时域任务上优于静态提示方法，显著提升了奖励分配效率与决策质量，为构建更鲁棒的自主决策智能体提供了新思路。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.16506v1",
+      "source": "arxiv",
+      "title": "Foresight Residual RL for Long-Horizon Robot Manipulation with Vision-Language-Action Models",
+      "abstract": "Vision-Language-Action (VLA) policies offer strong general-purpose manipulation priors, but often fail on tight-tolerance, contact-rich assembly due to long-horizon credit assignment and subtask coupling: a state that is geometrically successful for the current skill can be brittle for downstream skills. We show this failure mode in residual reinforcement learning (RL) over a frozen VLA base policy: constant sparse success rewards improve each subtask in isolation yet yield little or no gain when skills are chained, because terminal state quality is uncontrolled. We propose Foresight Residual RL, which optimizes handoff quality by augmenting each subtask's sparse success reward with an offline-estimated foresight value -- the probability of future subtask success conditioned on the terminal state of the current subtask. Concretely, we (i) train a visual foresight predictor from images of terminal states of the base policy, labeled using downstream rollout statistics, and (ii) train residual policies via backward foresight induction, using the predictor output as a reward multiplier. On a three-phase wrench-based nut-tightening assembly task in Isaac Gym (grasp, move-insert, rotate), our method achieves 85.6% full-task success, outperforming standard subtask residual RL (54.5%) and VLA baselines, while leaving per-subtask success unchanged. These results highlight that improving long-horizon performance requires shaping which successful states are produced at each sub-task, not only whether success occurs.",
+      "authors": [
+        "Yuhan Liu",
+        "Xinyu Zhang",
+        "Litao Liu",
+        "Abdeslam Boularias"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.LG"
+      ],
+      "published": "2026-07-17T21:00:28+00:00",
+      "link": "https://arxiv.org/pdf/2607.16506v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "addresses long-horizon credit assignment with foresight value in residual RL",
+      "llm_evidence_cn": "通过残差强化学习中的前瞻值解决长时序信用分配问题",
+      "llm_evidence": "通过残差强化学习中的前瞻值解决长时序信用分配问题",
+      "canonical_evidence": "通过残差强化学习中的前瞻值解决长时序信用分配问题",
+      "llm_tldr_en": "Proposes Foresight Residual RL to improve long-horizon manipulation by augmenting sparse rewards with offline-estimated foresight values for better handoff quality, demonstrated on robot assembly tasks.",
+      "llm_tldr_cn": "针对长时序机器人操作中的信用分配和子任务耦合问题，提出前瞻残差强化学习方法，通过离线估计的前瞻值增强稀疏成功奖励，优化子任务交接质量，在接触丰富的装配任务中显著提升了技能链的性能。",
+      "llm_tldr": "针对长时序机器人操作中的信用分配和子任务耦合问题，提出前瞻残差强化学习方法，通过离线估计的前瞻值增强稀疏成功奖励，优化子任务交接质量，在接触丰富的装配任务中显著提升了技能链的性能。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2607.16999v1",
+      "source": "arxiv",
+      "title": "Counterfactual Shapley Credit Assignment",
+      "abstract": "The Credit Assignment Problem (CAP) is fundamental to developing efficient and explainable Reinforcement Learning (RL) agents. Existing frameworks, whether relying on temporal contiguity or hindsight-conditioned reward reweighting, frequently fail to attribute properly between an agent's policy (skill) and environmental stochasticity (luck). A principled approach to CAP must isolate the true causal drivers of observed outcomes from spurious correlations and environmental randomness. We introduce Counterfactual Shapley Credit Assignment, a novel framework grounded in causal theory that attributes credit and blame via the Counterfactual Shapley Value ($φ$-value). By redistributing environmental rewards, $φ$-values enhance temporal credit assignment across three critical dimensions: sparse causality, high stochasticity, and delayed rewards, all while preserving the optimal policy. We derive a consistent estimator that computes $φ$-values efficiently, enabling a new class of policy gradient methods, $φ$-PPO, combined with Prioritized Trajectory Replay (PTR). Empirical results demonstrate that $φ$-values align precisely to the ground truth causes of task rewards with superior sample efficiency in challenging environments where prior state-of-the-art methods fail to converge.",
+      "authors": [
+        "Mingxuan Li",
+        "Kaizhan-Lee",
+        "Elias Bareinboim"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-07-18T23:28:20+00:00",
+      "link": "https://arxiv.org/pdf/2607.16999v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "novel credit assignment framework using counterfactual Shapley values for RL",
+      "llm_evidence_cn": "利用反事实Shapley值的强化学习信用分配框架",
+      "llm_evidence": "利用反事实Shapley值的强化学习信用分配框架",
+      "canonical_evidence": "利用反事实Shapley值的强化学习信用分配框架",
+      "llm_tldr_en": "Introduces Counterfactual Shapley Credit Assignment, a causal framework that attributes credit using φ-values, improving temporal credit assignment in RL.",
+      "llm_tldr_cn": "现有强化学习信用分配方法难以区分策略与环境随机性的贡献。本文提出基于因果理论的反事实Shapley信用分配框架，通过反事实Shapley值重新分配环境奖励，从三个关键维度增强时序信用分配，为可解释且高效的强化学习提供新思路。实验证明该方法能有效隔离真实因果驱动因素。",
+      "llm_tldr": "现有强化学习信用分配方法难以区分策略与环境随机性的贡献。本文提出基于因果理论的反事实Shapley信用分配框架，通过反事实Shapley值重新分配环境奖励，从三个关键维度增强时序信用分配，为可解释且高效的强化学习提供新思路。实验证明该方法能有效隔离真实因果驱动因素。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.17243v1",
+      "source": "arxiv",
+      "title": "LenGuard-GPC: Length Guarding with Guided-Prompt Consistency for Spatial Reasoning Reinforce Learning",
+      "abstract": "Multi-view spatial reasoning requires vision-language models to compare visual evidence across images, align object correspondences, and infer spatial relations over long visual contexts, a setting where chain-of-thought reasoning tends to grow verbose without becoming more accurate. Reinforcement learning with verifiable rewards is a natural fit for this task, but standard GRPO reward relies on sparse outcome-level feedback and gives no signal about where a reasoning trajectory goes wrong, nor any control over its length. We propose LenGuard-GPC, a dense reward framework that addresses both problems together. For each sampled trajectory, it compares the token-wise predictive distributions under a standard prompt and a guided prompt, and uses the resulting token-sum KL divergence as a dense reward signal. Since this KL penalty accumulates over tokens and would otherwise reward shorter responses regardless of their quality, we introduce a staged length bonus that keeps reasoning length within a controlled range without simply encouraging brevity. On six multi-view spatial reasoning benchmarks, LenGuard-GPC improves accuracy over vanilla GRPO while reducing average response length.",
+      "authors": [
+        "Xingjian Tao",
+        "Yiwei Wang",
+        "Yujun Cai",
+        "Jing Tang"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-07-19T13:24:40+00:00",
+      "link": "https://arxiv.org/pdf/2607.17243v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "proposes dense reward framework for RL in long-horizon spatial reasoning",
+      "llm_evidence_cn": "为长时序空间推理强化学习提出密集奖励框架",
+      "llm_evidence": "为长时序空间推理强化学习提出密集奖励框架",
+      "canonical_evidence": "为长时序空间推理强化学习提出密集奖励框架",
+      "llm_tldr_en": "Addresses sparse reward and length control in RL for spatial reasoning by providing token-level dense rewards via guided-prompt consistency, improving accuracy and efficiency.",
+      "llm_tldr_cn": "针对多视图空间推理中强化学习的奖励稀疏和长度失控问题，提出LenGuard-GPC密集奖励框架，通过比较标准提示与引导提示下的令牌预测分布提供逐令牌反馈，控制了推理长度并提升了准确率。",
+      "llm_tldr": "针对多视图空间推理中强化学习的奖励稀疏和长度失控问题，提出LenGuard-GPC密集奖励框架，通过比较标准提示与引导提示下的令牌预测分布提供逐令牌反馈，控制了推理长度并提升了准确率。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

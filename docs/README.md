@@ -6,26 +6,34 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-20
-- 运行时间：2026-07-20 21:06:13 UTC
+- 最新运行日期：2026-07-21
+- 运行时间：2026-07-21 20:17:25 UTC
 - 运行状态：成功
-- 本次总论文数：1
-- 精读区：1
-- 速读区：0
+- 本次总论文数：4
+- 精读区：3
+- 速读区：1
 
 ### 今日简报（AI）
-今天精读了一篇高分论文，探讨如何用过程奖励信号引导树展开，来提升多轮强化学习的效果。  
-核心结论是，将中间步骤的奖励直接融入搜索策略，能显著改善多轮交互中的规划与探索效率。  
-建议对强化学习或对话系统感兴趣的读者，关注这种“奖励引导搜索”的新范式。
-- 详情：[/202607/20/README](/202607/20/README)
+今日精读智能体决策与机器人操控前沿，速读空间推理强化方法。  
+最值得关注：奖励驱动的LLM工作流将POMDP路由与自校正结合，以及前瞻残差RL助长程机器人操作。  
+建议普通读者从《Reward-Driven LLM Agent Workflows》入手，理解智能体如何自主规划纠错。
+- 详情：[/202607/21/README](/202607/21/README)
 
 ### 精读区论文标签
-1. [Process Reward Informed Tree Rollout for Effective Multi-Turn RL](/202607/20/2607.15610v1-process-reward-informed-tree-rollout-for-effective-multi-turn-rl)  
+1. [Reward-Driven LLM Agent Workflows: Synthesizing POMDP Routing and Self-Correction for Autonomous Decision-Making](/202607/21/2607.17038v1-reward-driven-llm-agent-workflows-synthesizing-pomdp-routing-and-self-correction-for-autonomous-decision-making)  
    标签：评分：9.0/10、query:uav-drl
-   evidence：过程奖励引导的树展开用于长时域强化学习
+   evidence：强化学习智能体工作流中的长时域规划与稀疏奖励分配
+2. [Foresight Residual RL for Long-Horizon Robot Manipulation with Vision-Language-Action Models](/202607/21/2607.16506v1-foresight-residual-rl-for-long-horizon-robot-manipulation-with-vision-language-action-models)  
+   标签：评分：8.0/10、query:uav-drl
+   evidence：通过残差强化学习中的前瞻值解决长时序信用分配问题
+3. [Counterfactual Shapley Credit Assignment](/202607/21/2607.16999v1-counterfactual-shapley-credit-assignment)  
+   标签：评分：8.0/10、query:uav-drl
+   evidence：利用反事实Shapley值的强化学习信用分配框架
 
 ### 速读区论文标签
-- 本次无速读推荐。
+1. [LenGuard-GPC: Length Guarding with Guided-Prompt Consistency for Spatial Reasoning Reinforce Learning](/202607/21/2607.17243v1-lenguard-gpc-length-guarding-with-guided-prompt-consistency-for-spatial-reasoning-reinforce-learning)  
+   标签：评分：7.0/10、query:uav-drl
+   evidence：为长时序空间推理强化学习提出密集奖励框架
 
 
 <div class="dpr-home-promo-card">
