@@ -6,34 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-21
-- 运行时间：2026-07-21 20:17:25 UTC
+- 最新运行日期：2026-07-22
+- 运行时间：2026-07-22 20:09:21 UTC
 - 运行状态：成功
-- 本次总论文数：4
-- 精读区：3
-- 速读区：1
+- 本次总论文数：1
+- 精读区：1
+- 速读区：0
 
 ### 今日简报（AI）
-今日精读智能体决策与机器人操控前沿，速读空间推理强化方法。  
-最值得关注：奖励驱动的LLM工作流将POMDP路由与自校正结合，以及前瞻残差RL助长程机器人操作。  
-建议普通读者从《Reward-Driven LLM Agent Workflows》入手，理解智能体如何自主规划纠错。
-- 详情：[/202607/21/README](/202607/21/README)
+今天深入评估了一篇多智能体强化学习在参数化动作空间中的算法比较研究，得分亮眼。
+最值得关注的是它系统对比了多种多智能体AC算法，在复杂动作场景下找出了更鲁棒、更高效的解决方案。
+建议读者尝试将其中胜出的算法框架迁移到你的多智能体协作场景，先从离散-连续混合动作的简化版入手实验。
+- 详情：[/202607/22/README](/202607/22/README)
 
 ### 精读区论文标签
-1. [Reward-Driven LLM Agent Workflows: Synthesizing POMDP Routing and Self-Correction for Autonomous Decision-Making](/202607/21/2607.17038v1-reward-driven-llm-agent-workflows-synthesizing-pomdp-routing-and-self-correction-for-autonomous-decision-making)  
+1. [Comparative Study of Multi-Agent Actor-Critic Algorithms in Parameterized Action Reinforcement Learning](/202607/22/2607.19117v1-comparative-study-of-multi-agent-actor-critic-algorithms-in-parameterized-action-reinforcement-learning)  
    标签：评分：9.0/10、query:uav-drl
-   evidence：强化学习智能体工作流中的长时域规划与稀疏奖励分配
-2. [Foresight Residual RL for Long-Horizon Robot Manipulation with Vision-Language-Action Models](/202607/21/2607.16506v1-foresight-residual-rl-for-long-horizon-robot-manipulation-with-vision-language-action-models)  
-   标签：评分：8.0/10、query:uav-drl
-   evidence：通过残差强化学习中的前瞻值解决长时序信用分配问题
-3. [Counterfactual Shapley Credit Assignment](/202607/21/2607.16999v1-counterfactual-shapley-credit-assignment)  
-   标签：评分：8.0/10、query:uav-drl
-   evidence：利用反事实Shapley值的强化学习信用分配框架
+   evidence：离散与连续动作的参数化行动强化学习算法
 
 ### 速读区论文标签
-1. [LenGuard-GPC: Length Guarding with Guided-Prompt Consistency for Spatial Reasoning Reinforce Learning](/202607/21/2607.17243v1-lenguard-gpc-length-guarding-with-guided-prompt-consistency-for-spatial-reasoning-reinforce-learning)  
-   标签：评分：7.0/10、query:uav-drl
-   evidence：为长时序空间推理强化学习提出密集奖励框架
+- 本次无速读推荐。
 
 
 <div class="dpr-home-promo-card">

@@ -1,0 +1,24 @@
+{
+  "label": "2026-07-22",
+  "date": "2026-07-22",
+  "generated_at": "2026-07-22T20:09:30",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202607/22/2607.19117v1-comparative-study-of-multi-agent-actor-critic-algorithms-in-parameterized-action-reinforcement-learning",
+      "section": "deep",
+      "title_en": "Comparative Study of Multi-Agent Actor-Critic Algorithms in Parameterized Action Reinforcement Learning",
+      "authors": "Ubayd Ali Bapoo, Clement N Nyirenda",
+      "date": "2026-07-21",
+      "pdf": "https://arxiv.org/pdf/2607.19117v1",
+      "score": "9.0",
+      "evidence": "离散与连续动作的参数化行动强化学习算法",
+      "tldr": "参数化动作强化学习在离散-连续混合控制中前景广阔，但多智能体扩展研究稀缺。本文系统比较了共享经验的多智能体Actor-Critic算法MAGAC、MASAC、MATQC，在基准环境中评估其可扩展性。实验表明MAGAC显著提升GAC，而MASAC和MATQC增益有限，且超过5个智能体后性能提升微弱但计算成本剧增。该研究揭示了共享经验多智能体框架在参数化动作任务中的学习效率与计算开销权衡，为后续算法设计提供参考。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Parameterized action reinforcement learning has shown strong performance in environments requiring both discrete action selection and continuous parameterization. Prior work established the effectiveness of single-agent actor-critic algorithms - Greedy Actor-Critic (GAC), Soft Actor-Critic (SAC), and Truncated Quantile Critics (TQC) - on benchmark parameterized action tasks, but their extension to multi-agent settings remains largely unexplored. This paper presents a comparative study of shared-experience multi-agent extensions of these algorithms: Multi-Agent Greedy Actor-Critic (MAGAC), Multi-Agent Soft Actor-Critic (MASAC), and Multi-Agent Truncated Quantile Critics (MATQC). Rather than following the centralized training, decentralized execution (CTDE) paradigm, the proposed framework uses multiple independent actor-critic agents that share a replay buffer while maintaining separate policy and value networks. We evaluate the algorithms on the Platform-v0 and Goal-v0 benchmarks against their single-agent counterparts, using three-, five-, and ten-agent configurations to assess scalability. Performance is measured by average evaluation return and training time across ten independent runs, with one-way ANOVA and Tukey HSD post-hoc tests used to assess statistical significance. Results show that the multi-agent framework consistently improves Greedy Actor-Critic performance, while MASAC and MATQC show comparatively modest gains over their single-agent versions. Increasing the number of agents beyond five yields limited additional performance while substantially raising computational cost, particularly for MAGAC. These results highlight a trade-off between learning performance and computational efficiency, offering insight into the scalability of shared-experience multi-agent actor-critic methods for parameterized action reinforcement learning.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
