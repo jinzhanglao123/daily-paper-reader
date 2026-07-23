@@ -1,0 +1,54 @@
+{
+  "label": "2026-07-23",
+  "date": "2026-07-23",
+  "generated_at": "2026-07-23T21:23:12",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202607/23/2607.18910v1-breaking-feedback-blindness-utility-augmented-transformer-for-sequential-decision-making",
+      "section": "deep",
+      "title_en": "Breaking Feedback-Blindness: Utility-Augmented Transformer for Sequential Decision Making",
+      "authors": "Yuyang Shen, Shan Dai, Daimin Chen",
+      "date": "2026-07-21",
+      "pdf": "https://arxiv.org/pdf/2607.18910v1",
+      "score": "8.0",
+      "evidence": "提出效用增强Transformer，克服序贯决策中的反馈盲区，改进长时域奖励分配",
+      "tldr": "在非平稳环境中，现有Transformer决策模型面临反馈盲检索瓶颈，即注意力仅依赖观测相似性而忽略奖励历史，导致次优选择。提出效用增强Transformer（UAT），引入紧凑效用状态调制注意力投影，使动作-奖励历史直接作用于检索。在合成导航、脓毒症治疗、投资组合和延迟推荐任务中，UAT显著优于观测仅模型和输入级反馈基线，噪声越大优势越明显，验证了其反馈条件检索的有效性和理论上的表达能力提升。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Sequential decision making in non-stationary and partially observable environments requires rapid adaptation to latent regime changes. However, existing Transformer decision models face a structural bottleneck in the retrieval mechanism: even when reward is used for training or exposed as an input token, attention retrieval remains primarily driven by observation-derived similarity. We formalize this limitation as feedback-blind retrieval, and formally show that, on feedback-informative tasks, observation-equivalent histories with different action-reward outcomes cannot be distinguished by any observation-only attention, resulting in suboptimal choice. To address this mismatch, we propose the Utility-Augmented Transformer (UAT), a new feedback-conditioned retrieval attention architecture in which a compact utility state modulates the query, key, and value projections, allowing action-reward history to directly alter context retrieval during the forward pass. UAT also enjoys an exact zero-gate degradation property that recovers the Vanilla Transformer when feedback is uninformative. Under finite-horizon compactness and Lipschitz assumptions, we prove that UAT strictly enlarges the observation-only Transformer class and can uniformly approximate feedback-dependent decision maps. Across four non-stationary benchmarks: synthetic navigation with hidden goal shifts, non-stationary sepsis treatment, cross-market portfolio allocation, and delayed-feedback recommendation, UAT consistently improves performance over observation-only, test-time adaptation, and input-level feedback baselines, with particularly large gains in noisier regimes that require stronger adaptation.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/23/2607.13818v1-learning-robust-execution-in-robotic-manipulation-with-agentic-reinforcement-learning",
+      "section": "quick",
+      "title_en": "Learning Robust Execution in Robotic Manipulation with Agentic Reinforcement Learning",
+      "authors": "Xiaopeng Zhang, Yueyang Weng, Qi Liu, Yongjin Mu, Yanjie Li",
+      "date": "2026-07-15",
+      "pdf": "https://arxiv.org/pdf/2607.13818v1",
+      "score": "6.0",
+      "evidence": "智能体强化学习解决长时域执行和累积误差",
+      "tldr": "机器人操作面临不确定性、长时域执行和累积误差等挑战，现有视觉-语言-动作模型缺乏对执行稳定性进行评估和从偏离中恢复的机制。本文提出两个运行时执行质量评估指标和一个智能体强化学习框架，该框架通过高层决策在少量执行模式间选择并触发恢复机制。在LIBERO基准上，标准设置下成功率最高提升13.7%，干扰设置下最高提升39.2%，显著增强了操作执行的鲁棒性。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Robotic manipulation poses fundamental challenges due to uncertainty, long-horizon execution, and compounding errors, which can easily destabilize execution and lead to task failure. Although recent vision-language-action (VLA) models exhibit strong generalization, they typically lack explicit mechanisms to assess execution stability and to recover when execution deviates from its nominal behavior. In this paper, we propose: (1) two complementary metrics to assess execution quality at runtime, and (2) an agentic reinforcement learning framework that learns to restore effective execution through high-level decision-making rather than directly learning low-level actions. In this framework, an agentic policy reasons over recent execution history and selects among a small set of execution modes to regulate the execution process. Under execution degradation, it triggers appropriate recovery mechanisms to restore the robot to previously visited nominal states, enabling the task to continue. We evaluate the proposed method on the LIBERO benchmark, achieving up to a 13.7% improvement in success rate under standard settings and up to a 39.2% improvement under disturbance settings, demonstrating substantially enhanced execution robustness.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/23/2607.17669v1-attention-from-above-a-multimodal-model-for-drone-based-object-localization",
+      "section": "quick",
+      "title_en": "Attention from Above: A Multimodal Model for Drone-Based Object Localization",
+      "authors": "Hyun-Ki Jung",
+      "date": "2026-07-20",
+      "pdf": "https://arxiv.org/pdf/2607.17669v1",
+      "score": "6.0",
+      "evidence": "基于无人机的目标检测方法，可应用于输电线路缺陷检测",
+      "tldr": "无人机目标检测正从预定义类别向文本提示指定目标发展，但仍面临小目标检测精度不足的挑战。本文基于YOLO-World框架，提出一种融合注意力机制的多模态模型，将骨干网络中的C2f层替换为A2C2f层，增强局部特征表示。在VisDrone数据集上，mAP@0.5从32.5%提升至35.2%，mAP@0.5-0.95从18.5%提升至19.9%，显著提高检测精度，为无人机影像场景下的高效目标定位提供了有效方案。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Drone-based object detection technology has advanced rapidly, becoming increasingly sophisticated and efficient. Recently, research trends have expanded beyond the detection of predefined objects toward the identification of specified target objects. For example, desired targets can be specified through textual prompts, enabling accurate detection of objects of interest. To address this demand, this paper proposes an efficient multimodal-based object detection model aimed at improving small object detection performance. The proposed method is built upon the YOLO-World framework and replaces the C2f layers used in the YOLOv8 backbone with attention-based A2C2f layers. This modification enables more precise representation of local features, particularly for small objects or objects with well-defined boundaries. In addition, the incorporation of attention mechanisms and parallel processing structures significantly enhances the model's computational accuracy. Comparative experiments conducted on the VisDrone dataset demonstrate that the proposed model outperforms the original YOLO-World model. Specifically, precision increases from 43.0% to 45.1%, recall from 32.8% to 35.0%, the F1 score from 37.2% to 39.4%, mAP@0.5 from 32.5% to 35.2%, and mAP@0.5-0.95 from 18.5% to 19.9%, confirming a substantial improvement in detection accuracy. These results verify that the proposed approach provides an effective and highly accurate solution for object detection in drone-based image and video application environments.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

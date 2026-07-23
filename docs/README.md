@@ -6,26 +6,31 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-22
-- 运行时间：2026-07-22 20:09:21 UTC
+- 最新运行日期：2026-07-23
+- 运行时间：2026-07-23 21:23:00 UTC
 - 运行状态：成功
-- 本次总论文数：1
+- 本次总论文数：3
 - 精读区：1
-- 速读区：0
+- 速读区：2
 
 ### 今日简报（AI）
-今天深入评估了一篇多智能体强化学习在参数化动作空间中的算法比较研究，得分亮眼。
-最值得关注的是它系统对比了多种多智能体AC算法，在复杂动作场景下找出了更鲁棒、更高效的解决方案。
-建议读者尝试将其中胜出的算法框架迁移到你的多智能体协作场景，先从离散-连续混合动作的简化版入手实验。
-- 详情：[/202607/22/README](/202607/22/README)
+今日精读一篇打破反馈盲区的效用增强Transformer论文，并速览了机器人自主鲁棒执行与无人机多模态定位两项研究。  
+最值得关注的是：将显式效用信息注入Transformer注意力，能显著改善顺序决策中的反馈利用效率。  
+建议在自己的决策系统中尝试嵌入效用信号，观察任务导向的样本效率变化。
+- 详情：[/202607/23/README](/202607/23/README)
 
 ### 精读区论文标签
-1. [Comparative Study of Multi-Agent Actor-Critic Algorithms in Parameterized Action Reinforcement Learning](/202607/22/2607.19117v1-comparative-study-of-multi-agent-actor-critic-algorithms-in-parameterized-action-reinforcement-learning)  
-   标签：评分：9.0/10、query:uav-drl
-   evidence：离散与连续动作的参数化行动强化学习算法
+1. [Breaking Feedback-Blindness: Utility-Augmented Transformer for Sequential Decision Making](/202607/23/2607.18910v1-breaking-feedback-blindness-utility-augmented-transformer-for-sequential-decision-making)  
+   标签：评分：8.0/10、query:uav-drl
+   evidence：提出效用增强Transformer，克服序贯决策中的反馈盲区，改进长时域奖励分配
 
 ### 速读区论文标签
-- 本次无速读推荐。
+1. [Learning Robust Execution in Robotic Manipulation with Agentic Reinforcement Learning](/202607/23/2607.13818v1-learning-robust-execution-in-robotic-manipulation-with-agentic-reinforcement-learning)  
+   标签：评分：6.0/10、query:uav-drl
+   evidence：智能体强化学习解决长时域执行和累积误差
+2. [Attention from Above: A Multimodal Model for Drone-Based Object Localization](/202607/23/2607.17669v1-attention-from-above-a-multimodal-model-for-drone-based-object-localization)  
+   标签：评分：6.0/10、query:uav-drl
+   evidence：基于无人机的目标检测方法，可应用于输电线路缺陷检测
 
 
 <div class="dpr-home-promo-card">

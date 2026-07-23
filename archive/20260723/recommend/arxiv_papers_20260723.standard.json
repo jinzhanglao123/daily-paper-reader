@@ -1,0 +1,128 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-23T21:18:58.439954+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2607.18910v1",
+      "source": "arxiv",
+      "title": "Breaking Feedback-Blindness: Utility-Augmented Transformer for Sequential Decision Making",
+      "abstract": "Sequential decision making in non-stationary and partially observable environments requires rapid adaptation to latent regime changes. However, existing Transformer decision models face a structural bottleneck in the retrieval mechanism: even when reward is used for training or exposed as an input token, attention retrieval remains primarily driven by observation-derived similarity. We formalize this limitation as feedback-blind retrieval, and formally show that, on feedback-informative tasks, observation-equivalent histories with different action-reward outcomes cannot be distinguished by any observation-only attention, resulting in suboptimal choice. To address this mismatch, we propose the Utility-Augmented Transformer (UAT), a new feedback-conditioned retrieval attention architecture in which a compact utility state modulates the query, key, and value projections, allowing action-reward history to directly alter context retrieval during the forward pass. UAT also enjoys an exact zero-gate degradation property that recovers the Vanilla Transformer when feedback is uninformative. Under finite-horizon compactness and Lipschitz assumptions, we prove that UAT strictly enlarges the observation-only Transformer class and can uniformly approximate feedback-dependent decision maps. Across four non-stationary benchmarks: synthetic navigation with hidden goal shifts, non-stationary sepsis treatment, cross-market portfolio allocation, and delayed-feedback recommendation, UAT consistently improves performance over observation-only, test-time adaptation, and input-level feedback baselines, with particularly large gains in noisier regimes that require stronger adaptation.",
+      "authors": [
+        "Yuyang Shen",
+        "Shan Dai",
+        "Daimin Chen"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-07-21T09:52:23+00:00",
+      "link": "https://arxiv.org/pdf/2607.18910v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "proposes Utility-Augmented Transformer to overcome feedback-blindness in sequential decision making, improving reward utilization over long horizons",
+      "llm_evidence_cn": "提出效用增强Transformer，克服序贯决策中的反馈盲区，改进长时域奖励分配",
+      "llm_evidence": "提出效用增强Transformer，克服序贯决策中的反馈盲区，改进长时域奖励分配",
+      "canonical_evidence": "提出效用增强Transformer，克服序贯决策中的反馈盲区，改进长时域奖励分配",
+      "llm_tldr_en": "Existing Transformer decision models suffer from feedback-blind retrieval, where attention ignores reward. This paper proposes UAT to incorporate reward into attention for better long-horizon credit assignment in RL.",
+      "llm_tldr_cn": "现有Transformer决策模型存在反馈盲区问题，注意力机制受观测相似性主导而忽略奖励信号。本文提出效用增强Transformer（UAT），将奖励信息融入注意力计算，提高了长序列决策中的信用分配能力，实验表明在反馈信息任务上优于基线方法。",
+      "llm_tldr": "现有Transformer决策模型存在反馈盲区问题，注意力机制受观测相似性主导而忽略奖励信号。本文提出效用增强Transformer（UAT），将奖励信息融入注意力计算，提高了长序列决策中的信用分配能力，实验表明在反馈信息任务上优于基线方法。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.13818v1",
+      "source": "arxiv",
+      "title": "Learning Robust Execution in Robotic Manipulation with Agentic Reinforcement Learning",
+      "abstract": "Robotic manipulation poses fundamental challenges due to uncertainty, long-horizon execution, and compounding errors, which can easily destabilize execution and lead to task failure. Although recent vision-language-action (VLA) models exhibit strong generalization, they typically lack explicit mechanisms to assess execution stability and to recover when execution deviates from its nominal behavior. In this paper, we propose: (1) two complementary metrics to assess execution quality at runtime, and (2) an agentic reinforcement learning framework that learns to restore effective execution through high-level decision-making rather than directly learning low-level actions. In this framework, an agentic policy reasons over recent execution history and selects among a small set of execution modes to regulate the execution process. Under execution degradation, it triggers appropriate recovery mechanisms to restore the robot to previously visited nominal states, enabling the task to continue. We evaluate the proposed method on the LIBERO benchmark, achieving up to a 13.7% improvement in success rate under standard settings and up to a 39.2% improvement under disturbance settings, demonstrating substantially enhanced execution robustness.",
+      "authors": [
+        "Xiaopeng Zhang",
+        "Yueyang Weng",
+        "Qi Liu",
+        "Yongjin Mu",
+        "Yanjie Li"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-07-15T13:25:52+00:00",
+      "link": "https://arxiv.org/pdf/2607.13818v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "agentic RL for long-horizon execution with compounding errors",
+      "llm_evidence_cn": "智能体强化学习解决长时域执行和累积误差",
+      "llm_evidence": "智能体强化学习解决长时域执行和累积误差",
+      "canonical_evidence": "智能体强化学习解决长时域执行和累积误差",
+      "llm_tldr_en": "This paper proposes an agentic RL framework that uses high-level decision-making and two complementary execution quality metrics to recover from deviations in long-horizon robotic manipulation tasks, addressing compounding errors.",
+      "llm_tldr_cn": "机器人操作中长时域任务易受不确定性和累积误差影响，现有VLA模型缺乏执行稳定性评估。本文提出智能体强化学习框架，通过高层决策和两个运行时执行质量指标来恢复有效执行。实验表明该方法能显著提升长时域操作任务的鲁棒性，为长时域奖励分配提供了新思路。",
+      "llm_tldr": "机器人操作中长时域任务易受不确定性和累积误差影响，现有VLA模型缺乏执行稳定性评估。本文提出智能体强化学习框架，通过高层决策和两个运行时执行质量指标来恢复有效执行。实验表明该方法能显著提升长时域操作任务的鲁棒性，为长时域奖励分配提供了新思路。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.17669v1",
+      "source": "arxiv",
+      "title": "Attention from Above: A Multimodal Model for Drone-Based Object Localization",
+      "abstract": "Drone-based object detection technology has advanced rapidly, becoming increasingly sophisticated and efficient. Recently, research trends have expanded beyond the detection of predefined objects toward the identification of specified target objects. For example, desired targets can be specified through textual prompts, enabling accurate detection of objects of interest. To address this demand, this paper proposes an efficient multimodal-based object detection model aimed at improving small object detection performance. The proposed method is built upon the YOLO-World framework and replaces the C2f layers used in the YOLOv8 backbone with attention-based A2C2f layers. This modification enables more precise representation of local features, particularly for small objects or objects with well-defined boundaries. In addition, the incorporation of attention mechanisms and parallel processing structures significantly enhances the model's computational accuracy. Comparative experiments conducted on the VisDrone dataset demonstrate that the proposed model outperforms the original YOLO-World model. Specifically, precision increases from 43.0% to 45.1%, recall from 32.8% to 35.0%, the F1 score from 37.2% to 39.4%, mAP@0.5 from 32.5% to 35.2%, and mAP@0.5-0.95 from 18.5% to 19.9%, confirming a substantial improvement in detection accuracy. These results verify that the proposed approach provides an effective and highly accurate solution for object detection in drone-based image and video application environments.",
+      "authors": [
+        "Hyun-Ki Jung"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-20T08:21:12+00:00",
+      "link": "https://arxiv.org/pdf/2607.17669v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "drone-based object detection model applicable to transmission line defect detection",
+      "llm_evidence_cn": "基于无人机的目标检测方法，可应用于输电线路缺陷检测",
+      "llm_evidence": "基于无人机的目标检测方法，可应用于输电线路缺陷检测",
+      "canonical_evidence": "基于无人机的目标检测方法，可应用于输电线路缺陷检测",
+      "llm_tldr_en": "A multimodal model for drone-based object localization improves small object detection by integrating attention layers into YOLO-World, enabling precise detection of text-specified objects.",
+      "llm_tldr_cn": "针对无人机小目标检测性能提升的需求，本文提出一种高效的多模态目标检测模型。该方法在YOLO-World框架基础上，将YOLOv8骨干网络中的C2f层替换为基于注意力的A2C2f层，以增强局部特征的精确表示。实验表明，该方法能有效提升对小目标的检测精度，为无人机图像目标定位提供了更优方案。",
+      "llm_tldr": "针对无人机小目标检测性能提升的需求，本文提出一种高效的多模态目标检测模型。该方法在YOLO-World框架基础上，将YOLOv8骨干网络中的C2f层替换为基于注意力的A2C2f层，以增强局部特征的精确表示。实验表明，该方法能有效提升对小目标的检测精度，为无人机图像目标定位提供了更优方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "transmission line defect detection from UAV imagery",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
