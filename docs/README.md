@@ -6,31 +6,29 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-23
-- 运行时间：2026-07-23 21:23:00 UTC
+- 最新运行日期：2026-07-24
+- 运行时间：2026-07-24 21:02:13 UTC
 - 运行状态：成功
-- 本次总论文数：3
-- 精读区：1
-- 速读区：2
+- 本次总论文数：2
+- 精读区：2
+- 速读区：0
 
 ### 今日简报（AI）
-今日精读一篇打破反馈盲区的效用增强Transformer论文，并速览了机器人自主鲁棒执行与无人机多模态定位两项研究。  
-最值得关注的是：将显式效用信息注入Transformer注意力，能显著改善顺序决策中的反馈利用效率。  
-建议在自己的决策系统中尝试嵌入效用信号，观察任务导向的样本效率变化。
-- 详情：[/202607/23/README](/202607/23/README)
+今日精读两篇高价值论文，聚焦无人机边缘计算与自适应强化学习。  
+无人机计算提出“飞行中计算”新范式，自适应强化学习则实现多时间尺度决策优化，两者均指向动态环境下的智能调度。  
+建议关注端侧智能与物理世界交互的前沿突破，可延伸阅读强化学习在边缘云协同中的应用。
+- 详情：[/202607/24/README](/202607/24/README)
 
 ### 精读区论文标签
-1. [Breaking Feedback-Blindness: Utility-Augmented Transformer for Sequential Decision Making](/202607/23/2607.18910v1-breaking-feedback-blindness-utility-augmented-transformer-for-sequential-decision-making)  
+1. [Computing on the Fly: Navigating a Vision for the Future of Drone Computing](/202607/24/2607.19213v1-computing-on-the-fly-navigating-a-vision-for-the-future-of-drone-computing)  
    标签：评分：8.0/10、query:uav-drl
-   evidence：提出效用增强Transformer，克服序贯决策中的反馈盲区，改进长时域奖励分配
+   evidence：报告展望了全国范围的无人机群对桥梁和输电线路进行持续巡检
+2. [Adaptive Multi-Horizon Reinforcement Learning](/202607/24/2607.20656v1-adaptive-multi-horizon-reinforcement-learning)  
+   标签：评分：8.0/10、query:uav-drl
+   evidence：提出自适应多时间尺度RL处理长序列规划，无需固定折扣因子，直接解决长序列奖励分配问题
 
 ### 速读区论文标签
-1. [Learning Robust Execution in Robotic Manipulation with Agentic Reinforcement Learning](/202607/23/2607.13818v1-learning-robust-execution-in-robotic-manipulation-with-agentic-reinforcement-learning)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：智能体强化学习解决长时域执行和累积误差
-2. [Attention from Above: A Multimodal Model for Drone-Based Object Localization](/202607/23/2607.17669v1-attention-from-above-a-multimodal-model-for-drone-based-object-localization)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：基于无人机的目标检测方法，可应用于输电线路缺陷检测
+- 本次无速读推荐。
 
 
 <div class="dpr-home-promo-card">
