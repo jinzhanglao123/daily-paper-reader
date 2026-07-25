@@ -1,0 +1,39 @@
+{
+  "label": "2026-07-25",
+  "date": "2026-07-25",
+  "generated_at": "2026-07-25T20:57:45",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202607/25/2607.15660v1-toolverse-unlocking-massive-environments-and-long-horizon-tasks-for-agentic-reinforcement-learning",
+      "section": "quick",
+      "title_en": "ToolVerse: Unlocking Massive Environments and Long-Horizon Tasks for Agentic Reinforcement Learning",
+      "authors": "Shuaiyu Zhou, Fengpeng Yue, Zengjie Hu, Yuanzhe Shen, Chenyang Zhang, feng hong, Cao Liu, Ke Zeng",
+      "date": "2026-07-17",
+      "pdf": "https://arxiv.org/pdf/2607.15660v1",
+      "score": "6.0",
+      "evidence": "面向大规模长视界任务的智能体强化学习框架，应对长时间步下的信用分配问题",
+      "tldr": "现有LLM智能体在大规模动态环境中工具集成推理薄弱。本文提出ToolVerse框架，自动从近400个MCPs构建含4500个工具的大规模环境，并基于工具依赖图与动态解锁采样生成GUST长程任务数据集。通过细粒度Turn-Aware Relative Advantage算法缓解信用分配，增强强化学习训练。实验表明该方法显著提升LLM长程工具使用性能，在多个智能体基准上实现鲁棒推理。",
+      "tags": "query:uav-drl",
+      "abstract_en": "While LLM agents demonstrate strong reasoning abilities in compact and well-defined scenarios, they struggle to maintain robustness and effectiveness when faced with large-scale, diverse, and dynamic real-world environments that demand seamless tool integration. To address this gap, we introduce ToolVerse, a comprehensive framework that scales up agentic RL environments and enables agents to perform complex long-horizon reasoning in Tool-Integrated Reasoning (TIR) tasks. First, ToolVerse automatically builds the massive executable agent training environments from nearly 400 real-world Model Context Protocols (MCPs) that contain about 4500 tools. Second, we propose a task design strategy based on a tool dependency graph, utilizing Dynamic Unlocking Sampling Algorithm to generate long-horizon tasks, and produce GUST (Graph Unlocking Sampling Tasks) dataset. Third, to alleviate the credit assigment problem in long-horizon agentic RL, we propose a fine-grained Turn-Aware Relative Advantage algorithm. We conduct extensive Agentic RL training using ToolVerse and evaluate our framework on serveral agentic benchmarks. Experimental results demonstrate that our framework significantly strengthens LLMs' capabilities in long-horizon tool use, achieving a marked performance boost and showcasing robust reasoning within dynamic environments.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/25/2607.20834v1-offline-rl-with-hierarchical-action-chunking",
+      "section": "quick",
+      "title_en": "Offline RL with Hierarchical Action Chunking",
+      "authors": "Ahad Jawaid",
+      "date": "2026-07-23",
+      "pdf": "https://arxiv.org/pdf/2607.20834v1",
+      "score": "6.0",
+      "evidence": "利用分层规划和动作组块缓解长视界诅咒的离线RL算法",
+      "tldr": "长周期任务中，值估计误差沿时间反向传播复合，制约离线目标条件强化学习的可扩展性。现有分层方法虽缓解问题，但低层控制器仍存在短视执行与偏差值估计。我们提出HiQC，结合高层隐式规划与低层动作分块，通过条件化评论家于动作序列实现无偏k步备份，双层次压缩时间跨度。在OGBench套件上，HiQC取得最高综合性能，尤其在humanoid-giant等长周期导航任务中优势显著，为离线分层强化学习提供了误差更紧的理论保证。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Offline goal-conditioned reinforcement learning (RL) holds the promise of learning general-purpose policies from static datasets. However, scaling these methods to long-horizon tasks remains a challenge due to the curse of horizon, where value estimation errors can compound through long chains of bootstrapped Bellman backups. Existing hierarchical approaches mitigate this by decomposing tasks into subgoals, yet they often rely on low-level controllers that suffer from myopic execution and biased value estimates. In this work, we propose Hierarchical Implicit Q-Chunking (HiQC), an offline goal-conditioned RL algorithm that combines high-level latent planning with low-level action chunking. By conditioning the low-level critic on temporally extended action sequences, HiQC enables unbiased k-step value backups, compressing the horizon at both the planning and execution levels. We theoretically demonstrate that this dual decomposition results in a tighter bound on value error under a bounded per-backup error model compared to standard hierarchy or flat chunking alone. Empirically, HiQC achieves the highest aggregate performance among the compared methods on the OGBench suite, with its largest gains on long-horizon navigation tasks such as humanoid-giant.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

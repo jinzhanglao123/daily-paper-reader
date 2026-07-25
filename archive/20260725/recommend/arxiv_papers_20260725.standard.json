@@ -1,0 +1,94 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-25T20:55:23.633031+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2607.15660v1",
+      "source": "arxiv",
+      "title": "ToolVerse: Unlocking Massive Environments and Long-Horizon Tasks for Agentic Reinforcement Learning",
+      "abstract": "While LLM agents demonstrate strong reasoning abilities in compact and well-defined scenarios, they struggle to maintain robustness and effectiveness when faced with large-scale, diverse, and dynamic real-world environments that demand seamless tool integration. To address this gap, we introduce ToolVerse, a comprehensive framework that scales up agentic RL environments and enables agents to perform complex long-horizon reasoning in Tool-Integrated Reasoning (TIR) tasks. First, ToolVerse automatically builds the massive executable agent training environments from nearly 400 real-world Model Context Protocols (MCPs) that contain about 4500 tools. Second, we propose a task design strategy based on a tool dependency graph, utilizing Dynamic Unlocking Sampling Algorithm to generate long-horizon tasks, and produce GUST (Graph Unlocking Sampling Tasks) dataset. Third, to alleviate the credit assigment problem in long-horizon agentic RL, we propose a fine-grained Turn-Aware Relative Advantage algorithm. We conduct extensive Agentic RL training using ToolVerse and evaluate our framework on serveral agentic benchmarks. Experimental results demonstrate that our framework significantly strengthens LLMs' capabilities in long-horizon tool use, achieving a marked performance boost and showcasing robust reasoning within dynamic environments.",
+      "authors": [
+        "Shuaiyu Zhou",
+        "Fengpeng Yue",
+        "Zengjie Hu",
+        "Yuanzhe Shen",
+        "Chenyang Zhang",
+        "feng hong",
+        "Cao Liu",
+        "Ke Zeng"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-07-17T06:12:04+00:00",
+      "link": "https://arxiv.org/pdf/2607.15660v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Framework for agentic RL with massive environments and long-horizon tasks, addressing credit assignment over extended sequences",
+      "llm_evidence_cn": "面向大规模长视界任务的智能体强化学习框架，应对长时间步下的信用分配问题",
+      "llm_evidence": "面向大规模长视界任务的智能体强化学习框架，应对长时间步下的信用分配问题",
+      "canonical_evidence": "面向大规模长视界任务的智能体强化学习框架，应对长时间步下的信用分配问题",
+      "llm_tldr_en": "ToolVerse scales up RL environments with 4500 tools from 400 MCPs, enabling long-horizon tool-integrated reasoning; the framework inherently deals with long-horizon task decomposition and credit assignment.",
+      "llm_tldr_cn": "ToolVerse为解决LLM智能体在大规模长视界真实场景中的鲁棒性问题，自动构建包含近400个MCP约4500种工具的强化学习训练环境。提出基于工具依赖图的任务设计策略，使智能体能够执行复杂的工具集成推理。该框架天然涉及长视界任务的分解与信用分配，为长期奖励分配提供实践平台。",
+      "llm_tldr": "ToolVerse为解决LLM智能体在大规模长视界真实场景中的鲁棒性问题，自动构建包含近400个MCP约4500种工具的强化学习训练环境。提出基于工具依赖图的任务设计策略，使智能体能够执行复杂的工具集成推理。该框架天然涉及长视界任务的分解与信用分配，为长期奖励分配提供实践平台。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.20834v1",
+      "source": "arxiv",
+      "title": "Offline RL with Hierarchical Action Chunking",
+      "abstract": "Offline goal-conditioned reinforcement learning (RL) holds the promise of learning general-purpose policies from static datasets. However, scaling these methods to long-horizon tasks remains a challenge due to the curse of horizon, where value estimation errors can compound through long chains of bootstrapped Bellman backups. Existing hierarchical approaches mitigate this by decomposing tasks into subgoals, yet they often rely on low-level controllers that suffer from myopic execution and biased value estimates. In this work, we propose Hierarchical Implicit Q-Chunking (HiQC), an offline goal-conditioned RL algorithm that combines high-level latent planning with low-level action chunking. By conditioning the low-level critic on temporally extended action sequences, HiQC enables unbiased k-step value backups, compressing the horizon at both the planning and execution levels. We theoretically demonstrate that this dual decomposition results in a tighter bound on value error under a bounded per-backup error model compared to standard hierarchy or flat chunking alone. Empirically, HiQC achieves the highest aggregate performance among the compared methods on the OGBench suite, with its largest gains on long-horizon navigation tasks such as humanoid-giant.",
+      "authors": [
+        "Ahad Jawaid"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-07-23T01:48:46+00:00",
+      "link": "https://arxiv.org/pdf/2607.20834v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Offline RL algorithm for long-horizon tasks that uses hierarchical planning and action chunking to mitigate horizon curse",
+      "llm_evidence_cn": "利用分层规划和动作组块缓解长视界诅咒的离线RL算法",
+      "llm_evidence": "利用分层规划和动作组块缓解长视界诅咒的离线RL算法",
+      "canonical_evidence": "利用分层规划和动作组块缓解长视界诅咒的离线RL算法",
+      "llm_tldr_en": "HiQC combines high-level latent planning with low-level action chunking in offline goal-conditioned RL, addressing compounding errors in long-horizon value estimation.",
+      "llm_tldr_cn": "HiQC针对离线RL在长视界任务中价值估计误差累积的问题，提出分层隐式Q组块算法。高层进行潜在规划生成子目标，低层使用动作组块执行，通过对扩展动作序列的条件化缓解短视执行。实验证明该方法在长视界操作任务上优于现有分层RL方法，为长期信用分配提供了新思路。",
+      "llm_tldr": "HiQC针对离线RL在长视界任务中价值估计误差累积的问题，提出分层隐式Q组块算法。高层进行潜在规划生成子目标，低层使用动作组块执行，通过对扩展动作序列的条件化缓解短视执行。实验证明该方法在长视界操作任务上优于现有分层RL方法，为长期信用分配提供了新思路。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
