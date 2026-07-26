@@ -6,29 +6,28 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-25
-- 运行时间：2026-07-25 20:57:34 UTC
+- 最新运行日期：2026-07-26
+- 运行时间：2026-07-26 20:17:13 UTC
 - 运行状态：成功
-- 本次总论文数：2
+- 本次总论文数：1
 - 精读区：0
-- 速读区：2
+- 速读区：1
 
 ### 今日简报（AI）
-今日速读两篇强化学习论文，聚焦智能体在复杂环境中的长期任务执行能力。  
-值得关注工具交互与层次化动作抽象在离线学习中的应用，动作分块可能显著提升决策效率。  
-建议读者可进一步对比在线与离线场景下，动作抽象对泛化能力的影响。
-- 详情：[/202607/25/README](/202607/25/README)
+今天速读了一篇关于协作任务中连续动作空间的新解法，即让智能体自发演化出“默认行为”。
+
+核心发现是：通过让默认动作随策略自我迭代，能大幅提升多智能体在连续控制协作中的协同效率。
+
+如果你也在做多智能体连续控制，可以关注这种把“什么都不做”也变成学习目标的思路，或许能减少无效探索。
+- 详情：[/202607/26/README](/202607/26/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-1. [ToolVerse: Unlocking Massive Environments and Long-Horizon Tasks for Agentic Reinforcement Learning](/202607/25/2607.15660v1-toolverse-unlocking-massive-environments-and-long-horizon-tasks-for-agentic-reinforcement-learning)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：面向大规模长视界任务的智能体强化学习框架，应对长时间步下的信用分配问题
-2. [Offline RL with Hierarchical Action Chunking](/202607/25/2607.20834v1-offline-rl-with-hierarchical-action-chunking)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：利用分层规划和动作组块缓解长视界诅咒的离线RL算法
+1. [A Self-Evolving Default Action for Cooperative Tasks with Continuous Action Space](/202607/26/2607.18597v2-a-self-evolving-default-action-for-cooperative-tasks-with-continuous-action-space)  
+   标签：评分：7.0/10、query:uav-drl
+   evidence：连续动作空间中的反事实信用分配
 
 
 <div class="dpr-home-promo-card">

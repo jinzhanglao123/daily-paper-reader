@@ -1,0 +1,24 @@
+{
+  "label": "2026-07-26",
+  "date": "2026-07-26",
+  "generated_at": "2026-07-26T20:17:21",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202607/26/2607.18597v2-a-self-evolving-default-action-for-cooperative-tasks-with-continuous-action-space",
+      "section": "quick",
+      "title_en": "A Self-Evolving Default Action for Cooperative Tasks with Continuous Action Space",
+      "authors": "Shuangyao Huang",
+      "date": "2026-07-21",
+      "pdf": "https://arxiv.org/pdf/2607.18597v2",
+      "score": "7.0",
+      "evidence": "连续动作空间中的反事实信用分配",
+      "tldr": "在多智能体连续动作合作任务中，现有反事实信用分配方法常引入偏差且难以保证收敛。本文提出SAFE框架，利用从经验缓存中自演化的默认动作构建反事实基线，无需额外仿真或先验知识。该方法为策略梯度提供无偏估计，确保收敛至局部最优。在协作车辆任务上的实验表明，SAFE性能一致超越现有最优模型，为连续动作合作多智能体学习提供了简单有效的解决方案。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Counterfactual credit assignment has proven effective in multi-agent reinforcement learning (MARL) for discrete action spaces, yet its extension to continuous-action cooperative tasks remains challenging. Existing methods that approximate the counterfactual baseline via Monte Carlo sampling often introduce bias into policy gradients and fail to guarantee convergence to local optima, as the sampled actions may not have been sufficiently trained. To address these limitations, we propose SAFE, a novel MARL framework that employs a counterfactual baseline conditioned on a self-evolving default action sampled from each agent's experience buffer. This design naturally extends to continuous action spaces without relying on additional simulations, reward models, or environment-specific prior knowledge. The baseline accurately quantifies each agent's contribution, and introduces no bias into the deterministic policy gradient, ensuring convergence to local optima. Extensive experiments on cooperative vehicular tasks demonstrate that SAFE consistently outperforms state-of-the-art models.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

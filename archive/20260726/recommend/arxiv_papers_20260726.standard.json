@@ -1,0 +1,53 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-07-26T20:16:26.389632+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2607.18597v2",
+      "source": "arxiv",
+      "title": "A Self-Evolving Default Action for Cooperative Tasks with Continuous Action Space",
+      "abstract": "Counterfactual credit assignment has proven effective in multi-agent reinforcement learning (MARL) for discrete action spaces, yet its extension to continuous-action cooperative tasks remains challenging. Existing methods that approximate the counterfactual baseline via Monte Carlo sampling often introduce bias into policy gradients and fail to guarantee convergence to local optima, as the sampled actions may not have been sufficiently trained. To address these limitations, we propose SAFE, a novel MARL framework that employs a counterfactual baseline conditioned on a self-evolving default action sampled from each agent's experience buffer. This design naturally extends to continuous action spaces without relying on additional simulations, reward models, or environment-specific prior knowledge. The baseline accurately quantifies each agent's contribution, and introduces no bias into the deterministic policy gradient, ensuring convergence to local optima. Extensive experiments on cooperative vehicular tasks demonstrate that SAFE consistently outperforms state-of-the-art models.",
+      "authors": [
+        "Shuangyao Huang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.MA"
+      ],
+      "published": "2026-07-21T00:17:55+00:00",
+      "link": "https://arxiv.org/pdf/2607.18597v2",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "counterfactual credit assignment for continuous action spaces",
+      "llm_evidence_cn": "连续动作空间中的反事实信用分配",
+      "llm_evidence": "连续动作空间中的反事实信用分配",
+      "canonical_evidence": "连续动作空间中的反事实信用分配",
+      "llm_tldr_en": "Introduces a self-evolving default action for counterfactual credit assignment in continuous multi-agent RL, addressing bias in policy gradients.",
+      "llm_tldr_cn": "针对连续动作空间多智能体协同任务中反事实信用分配困难的问题，提出SAFE框架，利用从经验缓冲区采样的自进化默认动作构建反事实基线，无需额外仿真即可自然扩展至连续空间，减少策略梯度偏差并确保收敛。",
+      "llm_tldr": "针对连续动作空间多智能体协同任务中反事实信用分配困难的问题，提出SAFE框架，利用从经验缓冲区采样的自进化默认动作构建反事实基线，无需额外仿真即可自然扩展至连续空间，减少策略梯度偏差并确保收敛。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}
