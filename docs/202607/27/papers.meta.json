@@ -1,0 +1,24 @@
+{
+  "label": "2026-07-27",
+  "date": "2026-07-27",
+  "generated_at": "2026-07-27T20:38:26",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202607/27/2607.17760v1-generalize-and-guide-decomposing-rewards-for-few-shot-inverse-reinforcement-learning",
+      "section": "quick",
+      "title_en": "Generalize and Guide: Decomposing Rewards for Few-Shot Inverse Reinforcement Learning",
+      "authors": "Ziyi Liu, Grace Zhang",
+      "date": "2026-07-20",
+      "pdf": "https://arxiv.org/pdf/2607.17760v1",
+      "score": "6.0",
+      "evidence": "逆强化学习中的奖励分解信用分配",
+      "tldr": "现实任务常伴随显著变化，使得收集覆盖所有场景的专家演示不切实际，而相关任务数据却较易获取。针对此问题，提出多任务判别器邻近引导逆强化学习（MPG），将奖励函数分解为可泛化的判别器与邻近引导函数，分别用于识别专家行为和修正探索偏差。在物体配置、桌面布局变化等导航与操作任务中，MPG取得81.2%平均成功率，比最强单任务基线提升24.7个百分点。该方法有效利用多任务演示，为少样本逆强化学习的实际应用提供了新思路。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Inverse reinforcement learning (IRL) provides a powerful framework for learning from demonstrations. However, real-world tasks often exhibit substantial natural variations (e.g., picking up mugs with varying shapes), making it impractical to collect demonstrations that fully specify a new task under every possible scenario. In practice, while demonstrations for the target task are limited, it is often easier to obtain datasets of heterogeneous but related behaviors. This motivates the problem of few-shot IRL with multi-task demonstrations (FM-IRL), where an agent must learn a new task with substantial variations from only a limited number of target-task demonstrations, together with sufficient demonstrations of related tasks and online agent experience. To do so, we must both recover the expert distribution of the new task and provide guidance when the agent deviates from it. We introduce Multitask discriminator Proximity-Guided IRL (MPG), which learns two complementary reward components: (1) a generalizable discriminator that transfers shared structure across related tasks to identify expert behavior in a new task, and (2) a proximity function that measures how far a state deviates from expert behavior and provides corrective guidance during exploration. We demonstrate the effectiveness of our method on multiple challenging navigation and manipulation tasks under significant variations (e.g., object configurations, table layouts, and initial robot poses), achieving an average success rate of 81.2%, outperforming the strongest per-task baseline by an average of 24.7 percentage points.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
