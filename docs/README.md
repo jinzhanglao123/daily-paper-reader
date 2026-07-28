@@ -6,26 +6,29 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-27
-- 运行时间：2026-07-27 20:38:20 UTC
+- 最新运行日期：2026-07-28
+- 运行时间：2026-07-28 20:43:04 UTC
 - 运行状态：成功
-- 本次总论文数：1
-- 精读区：0
-- 速读区：1
+- 本次总论文数：2
+- 精读区：2
+- 速读区：0
 
 ### 今日简报（AI）
-今日速读了一篇关于小样本逆向强化学习的新研究，通过分解奖励实现泛化与引导。  
-该方法将奖励分解为“泛化”和“引导”两部分，有望让机器人从极少量演示中学习复杂任务。  
-想了解AI如何快速模仿人类操作，这篇论文提供了一个简洁的切入点。
-- 详情：[/202607/27/README](/202607/27/README)
+今日精读两篇高分论文，聚焦长程任务的强化学习新架构。  
+重点方向：自适应多时间尺度决策、分层架构解决稀疏奖励问题。  
+想攻克复杂任务？建议从这两篇的层级化与多视野设计切入。
+- 详情：[/202607/28/README](/202607/28/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [Adaptive Multi-Horizon Reinforcement Learning](/202607/28/2607.20656v2-adaptive-multi-horizon-reinforcement-learning)  
+   标签：评分：9.0/10、query:uav-drl
+   evidence：提出自适应多时间尺度强化学习以解决长期奖励分配
+2. [Hierarchical Soft Actor-Critic for Sparse-Reward Long-Horizon Reinforcement Learning](/202607/28/2607.23726v1-hierarchical-soft-actor-critic-for-sparse-reward-long-horizon-reinforcement-learning)  
+   标签：评分：9.0/10、query:uav-drl
+   evidence：分层SAC解决稀疏奖励长时序任务中的延迟奖励分配
 
 ### 速读区论文标签
-1. [Generalize and Guide: Decomposing Rewards for Few-Shot Inverse Reinforcement Learning](/202607/27/2607.17760v1-generalize-and-guide-decomposing-rewards-for-few-shot-inverse-reinforcement-learning)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：逆强化学习中的奖励分解信用分配
+- 本次无速读推荐。
 
 
 <div class="dpr-home-promo-card">
