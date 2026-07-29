@@ -6,29 +6,31 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-28
-- 运行时间：2026-07-28 20:43:04 UTC
+- 最新运行日期：2026-07-29
+- 运行时间：2026-07-29 20:45:19 UTC
 - 运行状态：成功
-- 本次总论文数：2
+- 本次总论文数：3
 - 精读区：2
-- 速读区：0
+- 速读区：1
 
 ### 今日简报（AI）
-今日精读两篇高分论文，聚焦长程任务的强化学习新架构。  
-重点方向：自适应多时间尺度决策、分层架构解决稀疏奖励问题。  
-想攻克复杂任务？建议从这两篇的层级化与多视野设计切入。
-- 详情：[/202607/28/README](/202607/28/README)
+今日聚焦AI智能体与多无人机协同，精读两篇顶会新作、速览一则工业案例。
+最值得关注的是《SeekJudge》为计算机操作智能体设计的实用奖励框架（9.0分），以及多无人机在复杂环境中的合作深度强化学习导航方案。
+想落地智能体训练的读者，不妨深挖SeekJudge如何用可评判的奖励信号替代稀疏反馈，加速真实任务中的策略收敛。
+- 详情：[/202607/29/README](/202607/29/README)
 
 ### 精读区论文标签
-1. [Adaptive Multi-Horizon Reinforcement Learning](/202607/28/2607.20656v2-adaptive-multi-horizon-reinforcement-learning)  
+1. [SeekJudge: A Practical Reward Framework for Reinforcement Learning in Computer-Use Agents](/202607/29/2607.23263v1-seekjudge-a-practical-reward-framework-for-reinforcement-learning-in-computer-use-agents)  
    标签：评分：9.0/10、query:uav-drl
-   evidence：提出自适应多时间尺度强化学习以解决长期奖励分配
-2. [Hierarchical Soft Actor-Critic for Sparse-Reward Long-Horizon Reinforcement Learning](/202607/28/2607.23726v1-hierarchical-soft-actor-critic-for-sparse-reward-long-horizon-reinforcement-learning)  
-   标签：评分：9.0/10、query:uav-drl
-   evidence：分层SAC解决稀疏奖励长时序任务中的延迟奖励分配
+   evidence：针对长时域强化学习的实用奖励框架
+2. [Cooperative Multi-UAV Navigation in Complex Environments via Systematic Multi-Agent Deep Reinforcement Learning](/202607/29/2607.25754v1-cooperative-multi-uav-navigation-in-complex-environments-via-systematic-multi-agent-deep-reinforcement-learning)  
+   标签：评分：8.0/10、query:uav-drl
+   evidence：多智能体深度强化学习协同无人机导航
 
 ### 速读区论文标签
-- 本次无速读推荐。
+1. [Distributed Coordination for Resilient Multi-UAV Remote Sensing: A Photovoltaic Inspection Case Study](/202607/29/2607.24482v1-distributed-coordination-for-resilient-multi-uav-remote-sensing-a-photovoltaic-inspection-case-study)  
+   标签：评分：7.0/10、query:uav-drl
+   evidence：多无人机光伏巡检遥感
 
 
 <div class="dpr-home-promo-card">

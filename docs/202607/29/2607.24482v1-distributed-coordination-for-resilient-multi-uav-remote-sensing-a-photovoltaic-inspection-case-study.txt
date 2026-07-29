@@ -1,0 +1,151 @@
+Title: Distributed Coordination for Resilient Multi-UAV Remote Sensing: A Photovoltaic Inspection Case Study
+
+URL Source: https://arxiv.org/pdf/2607.24482v1
+
+Published Time: Tue, 28 Jul 2026 02:04:20 GMT
+
+Number of Pages: 6
+
+Markdown Content:
+# Distributed Coordination for Resilient Multi-UAV Remote Sensing: A Photovoltaic Inspection Case Study 
+
+Guillermo GP-Lenza ∗† , Miguel Fernandez-Cortizas ∗‡ , Martin Molina †, Pascual Campoy ∗∗Centre for Automation and Robotics C.A.R, (UPM-CSIC), Universidad Politécnica de Madrid, Spain 
+
+†Department of Artificial Intelligence, Universidad Politécnica de Madrid, , Spain 
+
+‡Automation and Robotics Group (ARG-SnT), University of Luxembourg - SnT, Luxembourg 
+
+Abstract —Deploying multiple UAVs for remote sensing enables proportional reductions in mission time, but realizing these benefits requires the fleet to coordinate at runtime: distributing sensing targets, responding to platform failures, and recovering from degraded data quality. In inspection campaigns, where mission value depends on complete coverage and the usability of every capture, a centralized ground-station coordinator is a single point of failure: a lost link or station fault leaves sensing gaps that cannot be filled without operator intervention. We propose the SwarmLink, an inter-agent communication infrastructure that non-invasively extends any existing aerial framework with peer-to-peer coordination capability, without modifying the host system. We apply it to photovoltaic plant inspection as a rep-resentative large-scale sensing campaign, extending Aerostack2 with a distributed auction that unifies initial sensing-target allocation, platform-failure recovery, and data-quality-triggered reassignment into a single runtime mechanism. All three dis-ruption scenarios reduce to the same re-auction over remaining targets and active platforms, requiring zero modifications to the Aerostack2 core and no ground-station involvement during the mission. 
+
+Index Terms —multi-UAV systems, photovoltaic inspection, dis-tributed task assignment, auction algorithms, inter-agent commu-nication, aerial robotics frameworks, remote sensing 
+
+I. I NTRODUCTION 
+
+Deploying multiple Remotely Piloted Aircraft Systems (RPAS) for remote sensing and inspection offers proportional reductions in mission time and enables coverage of spatially extensive targets. Photovoltaic (PV) plant inspection is a rep-resentative example: fleets of UAVs equipped with RGB and thermal cameras cover large panel installations at a fraction of the cost and risk of manual methods [1]–[3]. Realizing these benefits, however, requires the fleet to coordinate at runtime, distributing sensing targets, reacting to platform failures, and responding to degraded data quality rather than executing fixed, pre-assigned plans. Multi-UAV inspection campaigns impose three concurrent requirements: complete coverage of all sensing targets, usable data quality for every acquired capture, and resilience to in-mission platform failures. Current practice addresses none of these simultaneously: tasks are partitioned by a ground-station planner prior to takeoff and distributed as fixed routes [4], [5], with no mechanism for runtime renegotiation when either of the following disruptions occurs. Plan Execution Control Basic Robotic Functions Behavior Sensor Actuator Interface Communication Channel Swarm Link Plan Execution Control Basic Robotic Functions Behavior Sensor Actuator Interface Communication Channel Swarm Link Communication Channel 
+
+Fig. 1: Architecture of a representative aerial inspection framework. Each drone instance is namespace-isolated. The SwarmLink (Section II) adds a peer-to-peer coordination layer; the Auction Behavior (Section III) uses it to allocate and reassign sensing targets across the fleet. 
+
+Platform failure. UAVs are subject to in-mission failures including battery depletion, GNSS loss, and mechanical faults [6]. Because assignments are computed and stored centrally prior to takeoff, no surviving agent retains knowledge of the failed drone’s pending targets. Recovery requires the ground station to detect the failure, retrieve the abandoned assign-ments, recompute a partition for the reduced fleet, and push updated plans, introducing latency proportional to ground-link availability and operator response time, with multiple points of failure in the recovery chain. 
+
+Data quality degradation. Onboard image evaluation can identify captures degraded by motion blur, adverse illumi-nation, or specular reflections [3]. Under current practice, the affected drone logs the event and continues along its pre-assigned route; reassignment is deferred to a post-flight correction cycle that may necessitate a full re-survey of the affected area, with coverage gaps persisting for the remainder of the mission. Both failure modes require the active fleet to renegotiate tar-get assignments at runtime without ground-station mediation. Current aerial inspection frameworks do not provide this. Sys-tems such as Aerostack2 [7], which organize drone software arXiv:2607.24482v1 [cs.RO] 27 Jul 2026 TABLE I: Comparison with representative multi-UAV PV inspection systems. GS = ground station; AS2 = Aerostack2. 
+
+Property Luna et.al [4] Melero-Deza et.al [3] Ours 
+
+Task assignment Centralized replan GS dispatch Distributed auction Failure recov-ery Centralized replan Not addressed Distributed re-auction Data quality Not addressed Not addressed Runtime re-assignment GS independence No No Yes Integration Standalone system Centralized add-on to AS2 Non-invasive ext. of AS2 
+
+into abstraction layers (sensor-actuator interfacing, robotic functions, high-level behaviors, plan execution, mission con-trol), run as independent, namespace-isolated instances per drone. A module on one drone has no mechanism to exchange messages with a peer behavior without manual, per-protocol wiring of communication endpoints. Any coordination logic is therefore forced into an external ground station, reintroducing the centralization the distributed approach aims to eliminate. We address this at two levels through an integrated co-ordination architecture layered non-invasively on top of the existing framework. At the infrastructure level, we propose the 
+
+SwarmLink : a framework-agnostic communication layer that gives any behavior a uniform interface, register for message types, forward messages to peers, without knowledge of the underlying transport or fleet composition. At the coordination level, we apply the SwarmLink to PV inspection in Aerostack2 [7] as shown in (Fig. 1), implementing a distributed auc-tion that unifies initial sensing-target allocation, platform-failure recovery, and data-quality-triggered reassignment into a single runtime mechanism. The key architectural insight is that all disruption events reduce to the same re-auction over (remaining targets, active drones); the SwarmLink is what makes this unified, ground-station-free response possible without modifying the host framework. Table I positions this work against representative existing systems. II. S WARM LINK 
+
+A. Design Concept 
+
+The first contribution of this paper is the SwarmLink : an inter-agent communication infrastructure designed around two principles. The first is separation of concerns between use and transport . Any component of an aerial system that wishes to participate in a distributed process should be able to do so through a simple, uniform interface (declare what messages to receive and send messages to named peers) without knowing anything about how that delivery is performed. The transport responsibility (peer discovery, routing, serialization) is entirely         
+
+> Behavior SL Client SL Node Remote Agent
+> Drone A Peer
+> (1) Register register(T, cb)
+> subscribe(T)
+> (2) Receive message msg of type T
+> dispatch(msg)
+> cb(msg)
+> (3) Forward forward(T, msg)
+> route(msg)
+> [ network ]
+> cb(msg)
+> method call
+> message
+
+Fig. 2: SwarmLink message flow. Solid arrows de-note method invocations (Behavior – SL Client); dashed ar-rows denote message exchanges (SL Client – SL Node – Remote Agent). (1) Register : a behavior registers callback cb 
+
+for message type T; the SwarmLink Client subscribes at the node level. (2) Receive message : when a peer sends a message of type T, the SwarmLink Node dispatches it to the client, which invokes cb directly. (3) Forward : a behavior calls 
+
+forward ; SwarmLink serializes and routes the message to all reachable peers. In all cases the behavior has no knowledge of peer addresses or transport. encapsulated in a dedicated gateway node that runs alongside the existing drone stack. The second is non-invasive integration . The gateway ex-tends system capability without modifying existing compo-nents. A system that does not require inter-agent communi-cation is unaffected; components that do opt in through a thin client library without disrupting existing functionality. This constitutes a brownfield integration strategy: distributed-process capability is introduced incrementally through new behaviors, while all pre-existing system functionality remains unmodified. 
+
+B. Architecture 
+
+The SwarmLink comprises two artifacts interacting as shown in Fig. 2: 
+
+SwarmLink Node : one instance runs per drone and owns all inter-agent traffic. It continuously scans the active network, creates forwarding channels to newly discovered peers, and prunes channels for peers that have disappeared. This scan provides both runtime peer discovery and implicit failure de-tection: a crashed or disconnected drone ceases to be reachable within one discovery cycle, and its channel is automatically removed. 
+
+SwarmLink Client : a lightweight library that any behavior embeds to participate in distributed processes. It exposes TABLE II: SwarmLink vs. direct ROS 2 DDS usage.            
+
+> Dimension SwarmLink Raw ROS 2 DDS
+> Discovery overhead Registry resolved once at send time Graph queried per message type at runtime Naming coupling Typed registry; no topic names in be-havior code Per-message-type topic names hard-coded Transport flexi-bility Backend swappable (DDS, Zenoh, MQTT) Tied to DDS Fleet reconfig-uration Handled automat-ically by Swarm-Link Node Explicit pub-lisher/subscriber rewiring required
+
+two operations: register declares interest in a message type and provides a callback invoked on arrival; forward sends a typed message to a named set of peers. The client handles serialization and delegates delivery to the local SwarmLink Node. From the behavior’s perspective, peer addresses, net-work topology, and transport details are completely hidden. The SwarmLink is framework-agnostic: any system that can host a companion node and link a client library can adopt it. Section III shows what this enables when applied to Aerostack2. Compared to direct use of ROS 2 cross-namespace topics, SwarmLink operates at a higher level of abstraction. Raw DDS communication requires per-message-type topic definitions, static publisher-subscriber wiring, and explicit reconnection upon fleet reconfiguration; consulting the ROS 2 graph at runtime to discover active nodes also incurs repeated query overhead that grows with fleet size. The SwarmLink Client abstracts this to two fleet-size-agnostic calls, register and 
+
+forward , applicable uniformly across coordination protocols without per-protocol wiring; behavior code is identical in simulation (shared machine) and field deployment (Wi-Fi). In the Aerostack2 integration, the SwarmLink Node uses ROS 2 DDS topics as the transport backend; the transport-agnostic interface permits future substitution with alternatives such as Zenoh or MQTT without modifying behavior code. Table II summarises the key differences. III. D ISTRIBUTED TASK ASSIGNMENT : T HE AUCTION 
+
+BEHAVIOR 
+
+The second contribution of this paper is a non-invasive extension of Aerostack2 [7] that addresses the runtime prob-lems identified in the Introduction, without any modification to the framework core. The SwarmLink Node is deployed as a companion process alongside each drone’s Aerostack2 stack; the SwarmLink Client is linked into new Aerostack2 behaviors. All pre-existing single-drone and choreographed multi-drone workflows continue to function identically. On top of this unchanged foundation, the Auction Behavior im-plements distributed task assignment: partitioning inspection panels among the active fleet, recovering from drone failures, 
+
+Fig. 3: Sequential greedy auction with five drones ( N = 5 ,
+
+M = 30 waypoints). Each color corresponds to one drone’s assigned route; waypoints are visited in the order determined by the auction. The partition minimizes total travel distance greedily, with each drone claiming the nearest unclaimed waypoint in each round. and responding to image-quality events. In every case the task assignment problem reduces to assigning a set of uninspected waypoints to a set of active drones, and the SwarmLink is what makes a fully distributed solution possible. 
+
+A. Problem and Algorithm 
+
+Given N active UAVs and a set W = {w1, . . . , w M }
+
+of uninspected panel-row waypoints, we seek a partition 
+
+P = {P1, . . . , P N } with S 
+
+> i
+
+Pi = W that minimizes total travel cost. We use a sequential greedy auction [8], [9]: each round every agent bids for its preferred unclaimed waypoint, the one nearest to its current position, using Euclidean distance as the cost metric, the winner broadcasts its claim, and rounds continue until all waypoints are assigned. Message complexity is O(N · M ), well suited to the fleet sizes and panel counts of PV inspection scenarios. A centralized planner can compute an optimal partition but constitutes a single point of failure: if the coordinator is lost the entire mission stalls. The sequential greedy auction does not guarantee optimal partitions [8]; it yields a feasible allocation that degrades gracefully under agent failures — surviving agents converge without any central coordinator — and its simplicity and low message complexity make it well suited to the real-time constraints of in-mission recovery. The plugin architecture allows substitution with algorithms offering stronger guarantees, such as CBBA [10], without modifying SwarmLink or the rest of the system. Fig. 3 shows the algorithm partitioning 30 waypoints among five drones in simulation.    
+
+> Auction Behavior
+> Receive StartAuction
+> compute_bid( W, p )
+> Forward Bid
+> on peer bid:
+> on_bid_received(bid)
+> Broadcast Bid
+> check_convergence()
+> Write assignments to KB
+> Yes
+> No
+> plugin call
+> SwarmLink
+
+Fig. 4: Auction Behavior execution loop. On 
+
+StartAuction , each drone calls compute_bid 
+
+to select its preferred waypoint and forwards the result via SwarmLink. Whenever a peer’s Bid arrives, 
+
+on_bid_received is called and the updated bid is rebroadcast; check_convergence then tests whether all waypoints are claimed. The loop repeats until every drone converges, after which assignments are written to the knowledge base. Green steps are delegated to the 
+
+AuctionPlugin interface, making the bidding strategy independently swappable. 
+
+B. Auction Protocol via SwarmLink 
+
+The auction involves two message types: a
+
+StartAuction broadcast sent once by the auctioneer to initiate bidding, and Bid messages broadcast by each agent to claim a waypoint. Without an inter-agent abstraction layer, each participant must maintain explicit connections to all peers, re-establish them upon fleet reconfiguration, and replicate the connection logic for each coordination protocol, yielding an O(N 2) wiring burden incompatible with dynamic fleet management. Fig. 4 shows the Auction Behavior architecture, with bidding strategy and cost evaluation encapsulated in independently swappable plugins. SwarmLink reduces each step to a single call. The auction-eer calls forward (StartAuction , peers ) once; SwarmLink resolves the current set of reachable peers at runtime and delivers the message to each without the auctioneer knowing their addresses. Each bidder calls register (Bid , callback )once; its callback fires whenever any peer broadcasts a bid, regardless of fleet size or composition. Bid propagation works identically: on claiming a way-point an agent calls forward (Bid , all_peers ), and SwarmLink delivers it to every active participant. Because SwarmLink continuously tracks peer reachability, the protocol is inherently failure-aware: a drone that crashes mid-auction is pruned from the active peer set within one discovery cycle, and its bids simply stop arriving. The remaining agents converge without any explicit failure-handling logic. The one protocol-level constraint introduced by this com-munication model is ordering: since the auctioneer sends 
+
+StartAuction and its own first Bid back-to-back, each bidder must fully initialize its waypoint list within the 
+
+StartAuction callback before the bid loop starts. Defer-ring this initialization would cause the first bid to arrive before the bidder is ready, deadlocking the auction. SwarmLink’s delivery ordering guarantee makes this manageable: both mes-sages arrive in send order, so synchronous initialization inside the callback is sufficient. On convergence, each agent writes its assignments to the shared knowledge base, a per-drone store that holds the current agreed mission state from which downstream path-planning behaviors retrieve their flight plan. The same SwarmLink registrations remain active and are immediately reusable if a failure or image-quality event triggers a re-auction. 
+
+Auction initiation. Any drone that detects a peer fail-ure or an image-quality event initiates an auction; there is no permanent auctioneer. To handle the case where two drones detect the same event simultaneously and both emit a StartAuction message, each message carries a unique identifier composed of the initiator’s ID and a timestamp. A drone that receives a StartAuction while already running an auction compares identifiers and defers to the one with the lower initiator ID, collapsing both triggers into a single auction run. No leader-election round is required; the lightweight deduplication is sufficient for the fleet sizes and failure rates of PV inspection missions. 
+
+C. Handling Failures and Image Quality Events 
+
+Drone failure. The SwarmLink Node detects a failed peer within one discovery cycle and prunes its channel. The surviving drones identify the unfinished waypoints belonging to the lost agent in the knowledge base and launch a new Auction Behavior instance with that subset and the surviving fleet. The re-auction is structurally identical to the initial one. Fig. 5 illustrates this recovery in simulation: drone1 fails mid-mission and the two surviving drones re-auction the abandoned panels without ground-station involvement. 
+
+Image quality failure. When an onboard image-quality evaluation behavior classifies captured images as invalid [3], the drone removes the affected panels from the knowledge base and broadcasts a reassignment request via the SwarmLink Client. The remaining drones launch a new Auction Behavior for those panels, ensuring full inspection coverage without operator intervention. The plugin architecture ensures that alternative assignment strategies, such as the Consensus-Based Bundle Algorithm [10] or energy-aware cost functions, can be substituted without modifying the SwarmLink or the rest of the system, consistent with the non-invasive design principle of the first contribution. Together, the two failure-recovery mechanisms confirm the second contribution: Aerostack2 has gained all three desired (a) Initial allocation: five drones cover all waypoints. (b) After drone1 failure: surviving drones re-auction the remaining panels. 
+
+Fig. 5: Distributed failure recovery via SwarmLink. Symbol key : dotted lines — auction-assigned planned order; solid lines — actual flight trajectories; × — failed drone. (a) Four drones execute their auction-assigned routes. (b) Drone1 fails mid-mission; SwarmLink detects the loss within one discovery cycle and the surviving drones re-auction drone1’s unfinished waypoints, resuming inspection without operator intervention. The image-quality failure scenario follows the same sequence: the affected drone’s panels are removed from the knowledge base and re-auctioned among the active fleet. inspection properties, ground-station independence, drone-failure resilience, and image-quality assurance, purely through the addition of the SwarmLink and the Auction Behavior, with zero changes to the existing framework. IV. C ONCLUSION 
+
+This paper presented SwarmLink and its application to distributed multi-UAV photovoltaic inspection. SwarmLink is a non-invasive inter-agent communication infrastructure that allows any component of an existing aerial framework to participate in distributed coordination through a uniform reg-ister /forward interface, without knowledge of the underlying transport and without any modification to the host system. Applied to Aerostack2, it enables the Auction Behavior: a distributed sequential greedy auction that unifies sensing-target allocation, platform-failure recovery, and data-quality-triggered reassignment into a single runtime re-auction mech-anism, requiring zero changes to the Aerostack2 core and no ground-station involvement during the mission. Three limitations are acknowledged. First, the sequential greedy auction does not guarantee optimal partitions; the plu-gin architecture supports substitution with algorithms offering stronger guarantees, such as CBBA [10]. Second, the protocol assigns the auctioneer role to a single drone; auctioneer failure mid-round is not currently handled and is a planned extension. Third, a network partition that splits the swarm into two disconnected subsets will cause each subset to independently re-auction all remaining waypoints, leading to duplicated cov-erage and potential conflicts upon reconnection. Mitigations under investigation include heartbeat-based partition detection, goal-ID deduplication upon merge, and a lightweight consen-sus round when subsets rejoin; resolving this is a known open problem in fully decentralised coordination [9] and is left for future work. Future work includes field validation with a physical RPAS fleet, evaluation of alternative auction strategies, and scalabil-ity analysis as fleet size and panel count grow. ACKNOWLEDGMENT 
+
+This work is supported by the CORESENSE project funded by the European Union under Horizon Europe grant agreement No. 101070254 (HORIZON-CL4-2021-DIGITAL-EMERGING-01-11). The authors thank the CORESENSE consortium for their contributions to the inspection testbed specification this work is based on. The work of the first author is supported by the Community of Madrid under its Program for Predoctoral Researcher with Ref. PIPF-2023/TEC-31167 (BOCM - 3454/2024) REFERENCES [1] H. Shakhatreh, A. H. Sawalmeh, A. Al-Fuqaha, Z. Dou, E. Almaita, I. Khalil, N. S. Othman, A. Khreishah, and M. Guizani, “Unmanned aerial vehicles (uavs): A survey on civil applications and key research challenges,” IEEE Access , vol. 7, pp. 48 572–48 634, 2019. [2] A. Michail, A. Livera, G. Tziolis, J. L. Carús Candás, A. Fernandez, E. Antuña Yudego, D. Fernández Martínez, A. Antonopoulos, A. Tripolitsiotis, P. Partsinevelos, E. Koutroulis, and G. E. Georghiou, “A comprehensive review of unmanned aerial vehicle-based approaches to support photovoltaic plant diagnosis,” 
+
+Heliyon , vol. 10, no. 1, p. e23983, 2024. [Online]. Available: https://www.sciencedirect.com/science/article/pii/S2405844024000148 [3] J. Melero-Deza, R. Perez-Segui, P. Arias-Perez, M. Fernandez-Cortizas, D. Perez-Saura, G. Guillermo, M. Tradacete-Agreda, C. S. Pérez, F. J. R. Sánchez, and P. Campoy, “Photovoltaic plant monitoring and inspection through synergic integration of uavs and iot,” in International Micro Air Vehicle Conference , 2024, pp. 184–191. [4] M. A. Luna, M. Molina, R. Da-Silva-Gomez, J. Melero-Deza, P. Arias-Perez, and P. Campoy, “A multi-uav system for coverage path planning applications with in-flight re-planning capabilities,” Journal of Field Robotics , vol. 41, no. 5, pp. 1480–1497, 2024. [Online]. Available: https://onlinelibrary.wiley.com/doi/abs/10.1002/rob.22342 [5] P. Stodola, J. Nohel, and L. Horák, “Dynamic reconnaissance operations with uav swarms: adapting to environmental changes,” 
+
+Scientific Reports , vol. 15, no. 1, p. 15092, Apr 2025. [Online]. Available: https://doi.org/10.1038/s41598-025-00201-4 [6] M. Yang, W. Bi, A. Zhang, and F. Gao, “A distributed task reassignment method in dynamic environment for multi-uav system,” 
+
+Applied Intelligence , vol. 52, no. 2, pp. 1582–1601, Jan 2022. [Online]. Available: https://doi.org/10.1007/s10489-021-02502-3 [7] M. Fernandez-Cortizas, M. Molina, P. Arias-Perez, R. Perez-Segui, D. Perez-Saura, and P. Campoy, “Aerostack2: A software framework for developing multi-robot aerial systems,” 2024. [Online]. Available: https://arxiv.org/abs/2303.18237 [8] M. Dias, R. Zlot, N. Kalra, and A. Stentz, “Market-based multirobot coordination: A survey and analysis,” Proceedings of the IEEE , vol. 94, no. 7, pp. 1257–1270, 2006. [9] M. Otte, M. J. Kuhlman, and D. Sofge, “Auctions for multi-robot task allocation in communication limited environments,” Autonomous Robots , vol. 44, no. 3, pp. 547–584, Mar 2020. [Online]. Available: https://doi.org/10.1007/s10514-019-09828-5 [10] H.-L. Choi, L. Brunet, and J. P. How, “Consensus-based decentralized auctions for robust task allocation,” IEEE Transactions on Robotics ,vol. 25, no. 4, pp. 912–926, 2009.

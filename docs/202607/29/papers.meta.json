@@ -1,0 +1,54 @@
+{
+  "label": "2026-07-29",
+  "date": "2026-07-29",
+  "generated_at": "2026-07-29T20:45:32",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202607/29/2607.23263v1-seekjudge-a-practical-reward-framework-for-reinforcement-learning-in-computer-use-agents",
+      "section": "deep",
+      "title_en": "SeekJudge: A Practical Reward Framework for Reinforcement Learning in Computer-Use Agents",
+      "authors": "Yang Wan, Zhenhao Zhang, Jierui Wang, Linchao Zhu",
+      "date": "2026-07-25",
+      "pdf": "https://arxiv.org/pdf/2607.23263v1",
+      "score": "9.0",
+      "evidence": "针对长时域强化学习的实用奖励框架",
+      "tldr": "计算机使用代理的长程GUI任务中，准确判断轨迹是否完成指令是强化学习训练的关键瓶颈，传统规则评价难以对齐人类意图且易因应用更新而过时，现有模型评价仍有性能差距。SeekJudge框架通过Condense、Ground、Seek、Analyze四角色代理的Seek-Analyze循环进行协同判决，并蒸馏单一9B模型作为共享骨干。在在线RL测试中，其下游成功率首次匹配甚至超越原生规则监督，同时提供步骤级反馈、低成本和小上下文优势。这一改进使模型奖励成为规则监督的实用替代方案，推动了计算机使用代理RL的评测与训练。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Deciding whether a trajectory actually fulfills its instruction governs how we measure computer-use agents on long-horizon graphical-user-interface tasks and how we train them with reinforcement learning. This judgment has long relied on rule-based evaluation, which struggles to align with human intention and goes stale when an app updates or its online content drifts. Existing model-based judges attempt to address these problems but still leave a performance gap to the rule-based evaluation. We propose the \\textbf{SeekJudge} framework, in which four role-specialized agents, a Condense, a Ground, a Seek and an Analyze agent, reach a verdict through a Seek--Analyze loop over the trajectory. A seed-calibrated distillation pipeline trains one specialized $9$B model to serve as the shared backbone for all four agents. Measured by downstream success rate on held-out RL test goals, SeekJudge is the first practical model-based reward to match or surpass native rule-based supervision in online RL. Beyond accuracy, SeekJudge provides step-level judgments, runs far cheaper than a closed-source large model, and keeps a small per-call context that scales to much longer trajectories. We further contribute a general architectural improvement to the reward server that speeds up judging in RL. Together these make model-based reward a practical drop-in for rule-based supervision in CUA reinforcement learning.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/29/2607.25754v1-cooperative-multi-uav-navigation-in-complex-environments-via-systematic-multi-agent-deep-reinforcement-learning",
+      "section": "deep",
+      "title_en": "Cooperative Multi-UAV Navigation in Complex Environments via Systematic Multi-Agent Deep Reinforcement Learning",
+      "authors": "Yu Su, Nabil Aouf",
+      "date": "2026-07-28",
+      "pdf": "https://arxiv.org/pdf/2607.25754v1",
+      "score": "8.0",
+      "evidence": "多智能体深度强化学习协同无人机导航",
+      "tldr": "多无人机在复杂环境中的协同导航面临局部最优、奖励稀疏等挑战。本文提出系统化多智能体深度强化学习框架，融合协调探索、示范利用、课程调度与结构感知泛化。通过状态记忆与新颖性估计逃离局部最优，分层缓冲与分级行为克隆提升示范利用，双条件课程调度保障安全与记忆，结构感知门控网络实现零样本跨场景泛化。仿真表明方法在协作成功率、鲁棒性和动态适应性方面表现优异，显著提升了多机协同导航的智能与泛化能力。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Cooperative navigation of multi-agent UAVs in complex environments faces key challenges including local optima traps, sparse rewards, learning imbalance among agents, and insufficient cross-scenario generalisation. This paper proposes a multi-agent deep reinforcement learning framework that addresses these issues through coordinated exploration, demonstration exploitation, safe curriculum scheduling, and structure-aware generalisation. First, a perception mechanism combining memory of visited states, directional novelty estimates, and penalty backpropagation enables agents to proactively detect and escape local optima. Second, a hierarchical collaborative demonstration buffer with tiered behaviour cloning manages trajectories by degree of team collaboration and applies differential supervision to the actor network, improving demonstration utilisation under sparse collaborative signals. Third, a safety-aware dual-condition curriculum scheduling mechanism reviews mastered scenarios through back-testing and experience pre-filling during training, suppressing catastrophic forgetting while ensuring both task performance and flight safety. For generalisation, local geometric features computed from sensor readings are abstracted into a domain parameter, through which a structure-aware gating network and mixture-of-experts mechanism condition the policy on local structural patterns rather than scenario-specific coordinates, enabling cross-scenario transfer without exposure to the target environment. The framework is further validated under mixed static-dynamic obstacle settings, showing robust adaptability to dynamic disturbances. Simulation results confirm strong performance in collaboration success rate, navigation robustness, zero-shot cross-scenario generalisation, and dynamic environment adaptability.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/29/2607.24482v1-distributed-coordination-for-resilient-multi-uav-remote-sensing-a-photovoltaic-inspection-case-study",
+      "section": "quick",
+      "title_en": "Distributed Coordination for Resilient Multi-UAV Remote Sensing: A Photovoltaic Inspection Case Study",
+      "authors": "Guillermo GP-Lenza, Miguel Fernandez-Cortizas, Martin Molina, Pascual Campoy",
+      "date": "2026-07-27",
+      "pdf": "https://arxiv.org/pdf/2607.24482v1",
+      "score": "7.0",
+      "evidence": "多无人机光伏巡检遥感",
+      "tldr": "针对多无人机遥感巡检中集中式地面站存在单点故障、数据质量下降和覆盖不完整的问题，提出SwarmLink点对点协调通信基础设施。以光伏巡检为案例，在Pixhawk飞控和MAVSDK框架上实现，实现任务动态分发、故障恢复和数据质量闭环控制，提高了多机巡检的鲁棒性和效率。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Deploying multiple UAVs for remote sensing enables proportional reductions in mission time, but realizing these benefits requires the fleet to coordinate at runtime: distributing sensing targets, responding to platform failures, and recovering from degraded data quality. In inspection campaigns, where mission value depends on complete coverage and the usability of every capture, a centralized ground-station coordinator is a single point of failure: a lost link or station fault leaves sensing gaps that cannot be filled without operator intervention. We propose the \\textbf{SwarmLink}, an inter-agent communication infrastructure that non-invasively extends any existing aerial framework with peer-to-peer coordination capability, without modifying the host system. We apply it to photovoltaic plant inspection as a representative large-scale sensing campaign, extending Aerostack2 with a distributed auction that unifies initial sensing-target allocation, platform-failure recovery, and data-quality-triggered reassignment into a single runtime mechanism. All three disruption scenarios reduce to the same re-auction over remaining targets and active platforms, requiring zero modifications to the Aerostack2 core and no ground-station involvement during the mission.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
