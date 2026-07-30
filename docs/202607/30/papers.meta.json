@@ -1,0 +1,39 @@
+{
+  "label": "2026-07-30",
+  "date": "2026-07-30",
+  "generated_at": "2026-07-30T20:43:50",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202607/30/2607.20656v3-adaptive-multi-horizon-reinforcement-learning",
+      "section": "deep",
+      "title_en": "Adaptive Multi-Horizon Reinforcement Learning",
+      "authors": "Manoosh Samiei, Doina Precup, Paul Masset",
+      "date": "2026-07-22",
+      "pdf": "https://arxiv.org/pdf/2607.20656v3",
+      "score": "9.0",
+      "evidence": "提出自适应多时域强化学习用于长时域奖励分配",
+      "tldr": "在复杂多变的环境中，强化学习需平衡短期与长期后果，但固定的折扣因子难以适应动态任务，常需手工调优。受生物灵活时间折扣启发，本文提出自适应多时间尺度方法，允许智能体动态选择并组合多个时间尺度，从而快速适应奖励结构变化，无需预定义折扣因子。在MiniGrid的持续学习场景（包含三个不同任务顺序切换）中，实验表明该方法能自动识别有效折扣因子，并在任务变化时保持稳定性能。这一方法不仅提升了参数效率，还增强了适应能力，为人工和生物启发学习系统提供了灵活决策机制，揭示了多时间尺度在持续学习中的重要性。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Effective decision-making in complex and changing environments requires balancing short-term and long-term consequences. In reinforcement learning (RL), this trade-off is typically controlled through a fixed discount factor, which imposes a single exponentially discounted temporal horizon. However, biological agents exhibit flexible and adaptive temporal discounting, suggesting that effective planning requires multiple timescales. Here, we propose a multi-horizon approach that adaptively selects and combines temporal horizons, enabling robust adaptation to changes in reward structure without manual discount-factor tuning. This flexibility makes the method particularly suitable for continual learning scenarios involving task switches and varying environmental configurations. Empirically, we demonstrate that our approach identifies effective discount factors across a range of MiniGrid environments, including continual settings composed of three sequentially changing tasks. These results suggest that adaptive temporal discounting can improve parameter efficiency and enhance adaptability in both artificial and biologically inspired learning systems.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202607/30/2607.23617v1-optimal-reward-shaping-autonomous-car-parking-case-study",
+      "section": "quick",
+      "title_en": "Optimal Reward Shaping: Autonomous Car Parking Case Study",
+      "authors": "Emre Özkaya, Nicolas R. Gauger",
+      "date": "2026-07-26",
+      "pdf": "https://arxiv.org/pdf/2607.23617v1",
+      "score": "7.0",
+      "evidence": "针对无模型强化学习的奖励塑形框架，解决长时域稀疏奖励问题",
+      "tldr": "面向非完整约束自动驾驶泊车，传统奖励设计易陷入策略瘫痪等局部最优。本文提出参数化奖励塑造框架，引入覆盖门控对齐、方向切换惩罚与对齐终止机制，并利用代理贝叶斯优化联合搜索奖励系数与DQN超参数，成功消除典型控制失败，使泊车成功率与轨迹平滑度大幅超越未校准基线，揭示了奖励与算法协同优化的重要性。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Designing effective reward functions for model-free reinforcement learning under non-holonomic constraints remains a persistent challenge, often resulting in severe local minima such as policy paralysis or over-conservative hazard avoidance. In this work, we present a parameterized reward shaping framework featuring coverage-gated alignment feedback, drive-direction switch regularization, and an aligned episode termination mechanism evaluated on an autonomous parallel parking task. Crucially, we show that environmental reward parameters and algorithmic hyperparameters are deeply co-dependent, requiring joint meta-optimization to achieve stable convergence. By employing surrogate-based Bayesian optimization, our co-optimized Deep Q-Network (DQN) agent resolves characteristic control failure modes, significantly outperforming uncalibrated baselines across both success rate and trajectory smoothness.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

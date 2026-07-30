@@ -6,31 +6,28 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-29
-- 运行时间：2026-07-29 20:45:19 UTC
+- 最新运行日期：2026-07-30
+- 运行时间：2026-07-30 20:43:40 UTC
 - 运行状态：成功
-- 本次总论文数：3
-- 精读区：2
+- 本次总论文数：2
+- 精读区：1
 - 速读区：1
 
 ### 今日简报（AI）
-今日聚焦AI智能体与多无人机协同，精读两篇顶会新作、速览一则工业案例。
-最值得关注的是《SeekJudge》为计算机操作智能体设计的实用奖励框架（9.0分），以及多无人机在复杂环境中的合作深度强化学习导航方案。
-想落地智能体训练的读者，不妨深挖SeekJudge如何用可评判的奖励信号替代稀疏反馈，加速真实任务中的策略收敛。
-- 详情：[/202607/29/README](/202607/29/README)
+今日精析自适应多时间尺度强化学习框架，并浅探最优奖励塑形在自动泊车中的应用。  
+长程决策中动态切分时域能有效平衡规划精度与效率，而巧妙的奖励塑形可大幅简化复杂操控任务。  
+想深入智能体规划或自动驾驶开发的朋友，不妨从这两篇的时间解耦与奖励设计切入。
+- 详情：[/202607/30/README](/202607/30/README)
 
 ### 精读区论文标签
-1. [SeekJudge: A Practical Reward Framework for Reinforcement Learning in Computer-Use Agents](/202607/29/2607.23263v1-seekjudge-a-practical-reward-framework-for-reinforcement-learning-in-computer-use-agents)  
+1. [Adaptive Multi-Horizon Reinforcement Learning](/202607/30/2607.20656v3-adaptive-multi-horizon-reinforcement-learning)  
    标签：评分：9.0/10、query:uav-drl
-   evidence：针对长时域强化学习的实用奖励框架
-2. [Cooperative Multi-UAV Navigation in Complex Environments via Systematic Multi-Agent Deep Reinforcement Learning](/202607/29/2607.25754v1-cooperative-multi-uav-navigation-in-complex-environments-via-systematic-multi-agent-deep-reinforcement-learning)  
-   标签：评分：8.0/10、query:uav-drl
-   evidence：多智能体深度强化学习协同无人机导航
+   evidence：提出自适应多时域强化学习用于长时域奖励分配
 
 ### 速读区论文标签
-1. [Distributed Coordination for Resilient Multi-UAV Remote Sensing: A Photovoltaic Inspection Case Study](/202607/29/2607.24482v1-distributed-coordination-for-resilient-multi-uav-remote-sensing-a-photovoltaic-inspection-case-study)  
+1. [Optimal Reward Shaping: Autonomous Car Parking Case Study](/202607/30/2607.23617v1-optimal-reward-shaping-autonomous-car-parking-case-study)  
    标签：评分：7.0/10、query:uav-drl
-   evidence：多无人机光伏巡检遥感
+   evidence：针对无模型强化学习的奖励塑形框架，解决长时域稀疏奖励问题
 
 
 <div class="dpr-home-promo-card">
