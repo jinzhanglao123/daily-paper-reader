@@ -1,0 +1,24 @@
+{
+  "label": "2026-07-31",
+  "date": "2026-07-31",
+  "generated_at": "2026-07-31T21:11:04",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202607/31/2607.28076v1-group-reflective-self-distillation-for-agentic-reinforcement-learning",
+      "section": "quick",
+      "title_en": "Group-Reflective Self-Distillation for Agentic Reinforcement Learning",
+      "authors": "Binbin Zheng, Zijun Xie, Guanqun Zhao, Enlei Gong, Xing Ma, Xiaoliang Fu, Zeyu Chen",
+      "date": "2026-07-30",
+      "pdf": "https://arxiv.org/pdf/2607.28076v1",
+      "score": "6.0",
+      "evidence": "通过群组自蒸馏改进长时域RL奖励信号",
+      "tldr": "在基于可验证奖励的LLM智能体强化学习中，终端奖励仅提供粗粒度轨迹监督，成功行为、重复错误和偶然选择易被混淆。现有自蒸馏方法依赖外部检索或强模型技能，常与当前策略能力失配。本文提出组反思自蒸馏(GRSD)，针对每个提示，策略反思同组内的验证轨迹，停梯度快照对比成败反思生成组级指导，进而调节基于结果的优势值，细化回合级信用分配。实验证明，GRSD在多种智能体环境与模型规模下性能一致超越竞争基线，并更有效泛化至未见任务，为自蒸馏提供了能力对齐与结果区分的新方案。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Reinforcement learning with verifiable rewards (RLVR) is effective for training large language model agents. However, terminal rewards provide only coarse trajectory-level supervision, leaving successful behaviors, recurring mistakes, and incidental choices entangled in the same outcome signal. Existing agentic self-distillation methods enrich sparse supervision with natural-language skills, but skills retrieved externally or extracted from a single trajectory by stronger models may mismatch current experience, exceed the policy's capability, or remain path-specific. We propose Group-Reflective Self-Distillation (GRSD), which derives capability-aligned and outcome-discriminative guidance from the policy's own verified rollouts. For each prompt, the policy reflects on each verified trajectory in an on-policy group, and a stop-gradient snapshot contrasts the resulting reflections from successful and failed rollouts to construct group-level privileged guidance. Conditioned on this guidance, a self-teacher refines turn-level credit assignment by modulating outcome-based advantages while preserving the verifier-determined learning direction. Experiments across multiple agentic environments and model scales demonstrate that GRSD consistently outperforms competitive baselines and generalizes more effectively to unseen tasks.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

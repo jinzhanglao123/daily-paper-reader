@@ -6,28 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-07-30
-- 运行时间：2026-07-30 20:43:40 UTC
+- 最新运行日期：2026-07-31
+- 运行时间：2026-07-31 21:10:53 UTC
 - 运行状态：成功
-- 本次总论文数：2
-- 精读区：1
+- 本次总论文数：1
+- 精读区：0
 - 速读区：1
 
 ### 今日简报（AI）
-今日精析自适应多时间尺度强化学习框架，并浅探最优奖励塑形在自动泊车中的应用。  
-长程决策中动态切分时域能有效平衡规划精度与效率，而巧妙的奖励塑形可大幅简化复杂操控任务。  
-想深入智能体规划或自动驾驶开发的朋友，不妨从这两篇的时间解耦与奖励设计切入。
-- 详情：[/202607/30/README](/202607/30/README)
+今日速读了一篇关于“群组反思式自蒸馏”的论文，探讨如何让智能体从自身经验加速强化学习。  
+核心发现是无需外部指导，通过内部群组反思与知识蒸馏即可提升学习效率，评分6.0/10。  
+建议关注自蒸馏与反思机制结合这一低成本提升智能体性能的路径。
+- 详情：[/202607/31/README](/202607/31/README)
 
 ### 精读区论文标签
-1. [Adaptive Multi-Horizon Reinforcement Learning](/202607/30/2607.20656v3-adaptive-multi-horizon-reinforcement-learning)  
-   标签：评分：9.0/10、query:uav-drl
-   evidence：提出自适应多时域强化学习用于长时域奖励分配
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Optimal Reward Shaping: Autonomous Car Parking Case Study](/202607/30/2607.23617v1-optimal-reward-shaping-autonomous-car-parking-case-study)  
-   标签：评分：7.0/10、query:uav-drl
-   evidence：针对无模型强化学习的奖励塑形框架，解决长时域稀疏奖励问题
+1. [Group-Reflective Self-Distillation for Agentic Reinforcement Learning](/202607/31/2607.28076v1-group-reflective-self-distillation-for-agentic-reinforcement-learning)  
+   标签：评分：6.0/10、query:uav-drl
+   evidence：通过群组自蒸馏改进长时域RL奖励信号
 
 
 <div class="dpr-home-promo-card">
