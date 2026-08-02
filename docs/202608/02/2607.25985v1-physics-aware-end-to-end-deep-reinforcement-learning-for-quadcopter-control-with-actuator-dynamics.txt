@@ -1,0 +1,1625 @@
+Title: 2607.25985v1.pdf
+
+URL Source: https://arxiv.org/pdf/2607.25985v1
+
+Published Time: Wed, 29 Jul 2026 01:17:29 GMT
+
+Number of Pages: 8
+
+Markdown Content:
+> 20 25中華民國航太學會學術研討會 淡水 ，中華民國 114 年11月15日
+> 20 25AASRC Conference Ta msui ,Novemb er 15, 2025
+> 論文編號： 1075
+> 1
+
+# Physics -Aware End -to -End Deep Reinforcement Learning for Quadcopter 
+
+# Control with Actuator Dynamics 
+
+Ya -Chia Shen a,b , Woei -Leong Chan b 
+
+> a
+
+Department of Computer Science and Information Engineering, National Cheng Kung University  
+
+> b
+
+Department of Aeronautics and Astronautics, National Cheng Kung University 
+
+Abstract 
+
+Unmanned aerial vehicles (UAVs), particularly quadcopters, present unique challenges for autonomous control 
+
+due to their underactuated dynamics —only four available control inputs must govern six degrees of freedom. 
+
+This paper investigates a physics -aware, end -to -end deep reinforcement learning (DRL) approach that acts 
+
+directly on low -level body inputs —total thrust and body torques (𝑇 , τ!, τ", τ#)—and closes the loop through a 
+
+high -fidelity Simulink environment. Our simulator integrates a 12 -state rigid -body model (MATLAB Level -2
+
+S-Function) with (i) an Action2RPM allocation based on the Moore –Penrose pseudo -inverse of a coefficient 
+
+matrix derived from thrust and drag terms , and (ii) first -order actuator dynamics for each motor (time constant 
+
+𝑇 $ = 0.076 𝑠 ) including rotor gyroscopic coupling. A shaped reward balances goal -reaching and stability using 
+
+an exponential position well, attitude penalties, and quadratic velocity costs . Four DRL algorithms —DDPG, 
+
+TD3, PPO, and SAC —are evaluated in two stages : (S1) thrust -only hover and (S2) hover with pitch torque 
+
+and a translated goal . Results show that SAC and TD3 achieve superior stability and exploration efficiency ,
+
+while PPO is less sample -efficient. The study highlights the significance of modeling actuator lags and aero-
+
+dynamic moments for stable low -level control and provides a reproducible benchmark for quadcopter DRL. 
+
+Keywords : Deep Reinforcement Learning, Quadcopter Control, UAV, Physics -Aware, Actuator Dynamics 
+
+I. INTRODUCTION 
+
+Unmanned aerial vehicles (UAVs) present a chal-
+
+lenging benchmark for continuous -control learning: 
+
+they are underactuated, fast, and tightly coupled, 
+
+with safety -critical dynamics and strict actuator lim-
+
+its. Deep reinforcement learning (DRL) has recently 
+
+sho wn promise on both task -level navigation and 
+
+low -level attitude/thrust control, leveraging function 
+
+approximation to learn policies directly from state 
+
+feedback [1 ]–[3]. For continuous control, prominent 
+
+algorithms include DDPG [4], TD3 [5], PPO [6], and 
+
+SAC [7], which trade off exploration, stability, and 
+
+sample efficiency in different ways. While many 
+
+studies validate in simplified simulators or body -
+
+level abstractions, bridging the sim -to -real gap re-
+
+quires models that respect thrust/torque generation 
+
+and actuator dynamics [8 ]–[12]. 
+
+Problem and gap . A large portion of UAV DRL 
+
+research assumes idealized rigid -body inputs —e.g., 
+
+instantaneous application of {𝑇 , 𝜏 !, 𝜏 ", 𝜏 #} —
+
+omit ting rotor aerodynamics, actuator lags, and allo-
+
+cation nonlinearities. Such assumptions can ease 
+
+learning but obscure sim -to -real issues, particularly 
+
+in yaw authority, cross -coupled responses, and 
+
+closed -loop bandwidth limits. Recent progress in ar-
+
+chitectural priors (e.g., equivariance) [13], multi -
+
+agent coordination [14], and aggressive flight [12] 
+
+does not fully expose policies to realistic actuation 
+
+and mixing. 
+
+This work . We present a physics -aware, end -to -
+
+end DRL framework for quadcopter control, built in 
+
+MATLAB/Simulink with a Level -2 S -Function plant. 
+
+The agent outputs body -level actions 𝑢 =
+
+.𝑇 , τ!, τ", τ#/%, which are mapped to per -rotor com-
+
+mands through an explicit thrust/torque allocation 
+
+and first -order motor dynamics, including gyro-
+
+scopic coupling. This Simulink -in -the -loop design 
+
+preserves control authority and bandwidth con-
+
+straints encountered on hardw are. 20 25 中華民國航太學會學術研討會 淡水 ，中華民國 114 年 11 月 15 日
+
+20 25 AASRC Conference Ta msui , Novemb er 15, 2025 
+
+論文編號： 1075 
+
+2
+
+Staged learning protocol . To disentangle explora-
+
+tion from stabilization, we employ a two -stage cur-
+
+riculum: an initial thrust -only hover stage with ran-
+
+domized states, followed by a stage that activates an 
+
+additional torque channel and nontrivial waypoints. 
+
+This exposes algorithmic differences in efficiency 
+
+and stability while progressively exercising alloca-
+
+tion and actuator dynamics. 
+
+Contributions . 
+
+> l
+
+Physics -aware end -to -end pipeline: A Sim-
+
+ulink -in -the -loop DRL framework that cou-
+
+pling body -level actions with explicit rotor al-
+
+location and motor dynamics . 
+
+> l
+
+Action2RPM allocation layer: An interpret-
+
+able 𝐴𝑐𝑡𝑖𝑜𝑛 2𝑅𝑃𝑀 layer parameterized by 
+
+𝑐 & , 𝑐 ' , and geometry, enabling reuse across 
+
+airframes . 
+
+> l
+
+Controlled comparison of DRL algorithms: 
+
+A fair evaluation of SAC, TD3, DDPG, and 
+
+PPO on the same physics -aware plant, high-
+
+lighting exploration, stability, and sample -ef-
+
+ficiency trade -offs [4] –[7], [15] –[17].  
+
+> l
+
+Practical training details: A reproducible 
+
+training setup (observation design, reward 
+
+shaping, termination logic, parallelization ca-
+
+veats) tailored to actuator -constrained UAVs, 
+
+complementing recent robust/realistic control-
+
+lers [8] –[11]. 
+
+Organization . Section II reviews the fundamen-
+
+tals of continuous -control reinforcement learning ;
+
+Section III summarizes related work on UAV control 
+
+and highlights the gaps motivating our approach. 
+
+Section IV presents the system formulation and 
+
+closed -loop model ; Section V describes the learning 
+
+methodology ; Section VI outlines the experimental 
+
+setup and evaluation metrics ; Section VII presents 
+
+quantitative and qualitative results ; Section VIII con-
+
+cludes the paper and discusses future directions in 
+
+sim -to -re al transfer and multi -agent extensions. 
+
+II. PRELIMINARIES 
+
+This section summarizes the reinforcement learn-
+
+ing (RL) concepts and notations used throughout ,
+
+emphasizing continuous -control actor -critic methods. 
+
+A. Markov Decision Processes and Values 
+
+We model the environment as a discounted MDP 
+
+ℳ = (𝒮 , 𝒜 , 𝑝 , 𝑟 , γ) with policy (π(( 𝑎 ∣ 𝑠 )) and 
+
+return 
+
+𝐺 & = ∑ γ)𝑟 (𝑠 &*), 𝑎 &*)) 
+
+> ∞
+> )+,
+
+(1) 
+
+The action -value is 
+
+𝑄 -(𝑠 , 𝑎 ) = 𝐸 -[ 𝐺 & ∣∣ 𝑠 & = 𝑠 , 𝑎 & = 𝑎 ] (2) 
+
+We use standard Bellman targets implicitly through 
+
+the updates below. 
+
+B. Policy Gradient and Actor -Critic 
+
+Maximizing 𝐽 (π() = 𝐸 .∼0!,2∼-" [𝑄 -(𝑠 , 𝑎 )], the 
+
+stochastic policy gradient [2] is 
+
+∇(𝐽 = 𝐸 [∇( log π( ( 𝑎 ∣ 𝑠 ) 𝑄 -(𝑠 , 𝑎 )] (3) 
+
+Actor -critic uses a critic 𝑄 3 and a one -step TD tar-
+
+get 𝑦 to fit 𝑄 3 via ℒ𝒬 = 𝐸 ST𝑄 3(𝑠 , 𝑎 ) − 𝑦 V5W.
+
+C. Deep Deterministic Policy Gradient 
+
+For deterministic policies 𝑎 = μ((𝑠 ) [4] ,
+
+∇(𝐽 = 𝐸 .∼0# .∇(μ((𝑠 ) ∇2𝑄 3(𝑠 , 𝑎 )/2+6"(.) (4) 
+
+with TD target 𝑦 = 𝑟 + 𝛾 𝑄 39 [𝑠 :, μ(9(𝑠 :)\ . Target 
+
+networks use Polyak averaging. 
+
+D. Twin Delayed DDPG (TD3 )
+
+TD3 [5] reduces overestimation via twin critics 
+
+and target smoothing: 
+
+𝑦 = 𝑟 + 𝛾 min  
+
+> ;∈{>,5}
+
+𝑄 ` @A $ (𝑠 :, μ(9(𝑠 :) + ϵ) (5) 
+
+𝜖 ∼ clip (𝒩 (0, σ5), −𝑐 , 𝑐 ) (6) 
+
+and delays actor/target updates. 
+
+E. Proximal Policy Optimization (PPO )
+
+PPO [6] maximizes a clipped surrogate objective 
+
+for a stochastic actor:            
+
+> ℒ%%& (𝜃 )=𝐸 ''𝑚𝑖𝑛 +𝑟 '(𝜃 )Â',𝑐𝑙𝑖𝑝 (𝑟 '(𝜃 ),1−𝜀 ,1+𝜀 )Â'67
+
+(7)
+
+𝑟 &(θ) = -"B𝑎 &C𝑠 &D
+
+> -"old B
+
+𝑎 &C𝑠 &D (8)
+
+where 𝐴 &
+
+i is an advantage estimate .
+
+F. SAC (Maximum Entropy) 
+
+SAC [7] augments the return with an entropy bo-
+
+nus to encourage exploration. The maximum -en-
+
+tropy objective and soft value are 
+
+𝐽 (𝜋 ) = 𝐸 (.,2)~F+ .𝑟 (𝑠 , 𝑎 ) + 𝛼 ℋT𝜋 (· |𝑠 )V/ (9)
+
+𝑉 G(𝑠 ) = 𝐸 2~G[𝑄 G(𝑠 , 𝑎 ) − 𝛼𝑙𝑜𝑔𝜋 (𝑎 |𝑠 )] (1 0)
+
+leading to the soft Bellman target            
+
+> 𝑦 =𝑟 +𝛾 𝐸 ,!~./·0𝑠 12'𝑚𝑖 𝑛 3𝑄 =45"(𝑠 1,𝑎 1)−𝛼𝑙𝑜𝑔𝜋 (𝑎 1|𝑠 1)7
+
+(1 1)
+
+and a Tanh -squashed Gaussian policy via reparame-
+
+terization; 𝛼 can be tuned to a target entropy. 
+
+III. RELATED WORK 
+
+RL for aerial robots . Early surveys established 
+
+the algorithmic foundations of RL and DRL [1], [2], 20 25 中華民國航太學會學術研討會 淡水 ，中華民國 114 年 11 月 15 日    
+
+> 20 25AASRC Conference Ta msui ,Novemb er 15, 2025
+> 論文編號： 1075
+> 3
+
+[18] –[20] , and recent reviews focused specifically on 
+
+drones [21] . Within UAVs, DRL has been used 
+
+broadly for high -level tasks such as navigation, path 
+
+planning, and target tracking in complex or large -
+
+scale environments [22] –[27] . These works act on 
+
+waypoints or velocity set -points rather than the vehi-
+
+cle’s low -level actuation, and typically rely on sim-
+
+plified dynamics provided by gym -like simulators. 
+
+Low -level attitude/thrust control . Closer to our 
+
+setting, DRL has been applied to attitude stabiliza-
+
+tion and thrust control [8] –[11], [28] typically com-
+
+manding body moments and total thrust with instan-
+
+taneous actuation and neglecting allocation and lags .
+
+Examples include cascaded designs [8], disturbance 
+
+robustness [9], sim -to -real demonstrations [11], and 
+
+on - vs. off -policy comparisons [10]. 
+
+End -to -end and task -driven control . Aggressive 
+
+and time -optimal flight has been shown with percep-
+
+tion -to -control pipelines [12], and task -driven lines 
+
+such as swarms and multi -tasking highlight agility 
+
+[29], [30], but they are not primarily concerned with 
+
+actuator/propulsor fidelity. 
+
+Architectural priors and multi -agent control .
+
+Inductive biases (symmetry/equivariance) improve 
+
+sample efficiency and generalization; see equivariant 
+
+policies/critics and multi -agent extensions for quad-
+
+rotors [13], [14]. These are complementary to physi-
+
+cal fidelity. 
+
+Reproducibility and infrastructure . The com-
+
+munity has underscored the sensitivity of DRL re-
+
+sults to implementation details and random seeds 
+
+[15] , spurring reliable libraries [16] and analyses of 
+
+parallel/distributed training [31] . We follow these 
+
+best practices in Sec. V.
+
+Positioning . Unlike body -level abstractions [8] –
+
+[10], we expose policies to a realistic actuation path-
+
+way: body -wrench actions {𝑇 , τ!, τ", τ#} are 
+
+mapped to per -rotor speeds via allocation that in-
+
+cludes thrust/torque coupling, and actuator dynamics 
+
+are retained. The approach remains algorithm -agnos-
+
+tic (SAC/TD3/DDPG/PPO) [4] –[7], providing a
+
+physics -aware testbed closer to hardware constraints. 
+
+IV. SYSTEM MODEL & NOTATION 
+
+We model a rigid quadcopter with an inertial 
+
+frame {𝑖 } and a body -fixed frame {𝑏 }. Roll, pitch, 
+
+and yaw follow the Z -Y-X (yaw -pitch -roll) conven-
+
+tion with Euler angles (ϕ, θ, ψ).
+
+A. Frames and ZYX Rotation 
+
+For brevity, let 𝑐 ⋆ = cos (⋆) and 𝑠 ⋆ = sin (⋆) .
+
+The rotation from body to inertial is 
+
+𝑹 ;I = y
+
+𝑐 J𝑐 ( 𝑐 J𝑠 (𝑠 3 − 𝑠 J𝑐 3 𝑐 J𝑠 (𝑐 3 + 𝑠 J𝑠 3
+
+𝑠 J𝑐 ( 𝑠 J𝑠 (𝑠 3 + 𝑐 J𝑐 3 𝑠 J𝑠 (𝑐 3 − 𝑐 J𝑠 3
+
+−𝑠 ( 𝑐 (𝑠 3 𝑐 (𝑐 3
+
+z
+
+𝑹 I; = 𝑹 ;I  
+
+> %
+
+(12 )
+
+Gravity is specified in {𝑖 } and projected to {𝑏 } as 
+
+𝒈 ; = |
+
+0
+
+0
+
+−𝑔 
+
+}, 𝒈 I = 𝑹 I; 𝒈 ; (1 3)
+
+B. States, Inputs, Outputs 
+
+The 12 -dimensional state, low -level input, and 
+
+full -state output are 
+
+𝒙 =
+
+⎣
+
+⎢
+
+⎢
+
+⎢
+
+⎢
+
+⎢
+
+⎢
+
+⎢
+
+⎢
+
+⎢
+
+⎢
+
+⎡ 𝑃 
+
+𝑄 
+
+𝑅 
+
+𝜙 
+
+𝜃 
+
+𝜓 
+
+𝑈 
+
+𝑉 
+
+𝑊 
+
+𝑋 
+
+𝑌 
+
+𝑍 ⎦
+
+⎥
+
+⎥
+
+⎥
+
+⎥
+
+⎥
+
+⎥
+
+⎥
+
+⎥
+
+⎥
+
+⎥
+
+⎤
+
+, 𝒖 = 
+
+𝑇 
+
+𝜏 !
+
+𝜏 "
+
+𝜏 #
+
+ , 𝒚 (𝑡 ) = 𝒙 (𝑡 ) (1 4)
+
+C. Kinematics: Euler and Angular Rates 
+
+Let 𝝎 I = [𝑃 𝑄 𝑅 ]%. The mapping between Eu-
+
+ler -angle rates and body angular rates is 
+
+y
+
+𝜙 ̇
+
+𝜃 ̇
+
+𝜓 ̇
+
+z = 𝑯 (𝜙 , 𝜃 )𝝎 I
+
+𝑯 (𝜙 , 𝜃 ) = y
+
+1 𝑠𝑖𝑛𝜙 𝑡𝑎𝑛𝜃 𝑐𝑜𝑠𝜙 𝑡𝑎𝑛𝜃 
+
+0 𝑐𝑜𝑠𝜙 −𝑠𝑖𝑛𝜙 
+
+0 .;K@ 
+
+> LM.N
+> LM.@
+> LM.N
+
+z (15 )
+
+D. Forces and Moments (motor/thrust level) 
+
+Thrust acts along body +𝑧 I:
+
+𝑭 I = |
+
+0
+
+0
+
+∑ 𝑐 &,; 
+
+> O
+> ;+>
+
+𝑤 ;
+
+> 5
+
+} (16 )
+
+Optional external disturbances given in {𝑖 } are pro-
+
+jected to {𝑏 }:
+
+𝑭 0;.&  
+
+> I
+
+= 𝑹 I; y
+
+𝐹 !
+
+𝐹 "
+
+𝐹 #
+
+z (17 )
+
+Rotor gyroscopic torques (in code form, 𝑤 ; in RPM; 
+
+𝐽 $ is motor inertia) are 20 25 中華民國航太學會學術研討會 淡水 ，中華民國 114 年 11 月 15 日
+
+20 25 AASRC Conference Ta msui , Novemb er 15, 2025 
+
+論文編號： 1075 
+
+4
+
+𝝉 P"QM = 
+
+𝑄 𝐽 $ 
+
+> 5G
+> R,
+
+(−𝑤 > − 𝑤 S + 𝑤 5 + 𝑤 O)
+
+𝑃 𝐽 $ 
+
+> 5G
+> R,
+
+(𝑤 > + 𝑤 S − 𝑤 5 − 𝑤 O)
+
+0
+
+ (18 )
+
+Total body moments: 
+
+𝑴 I = 𝑫 
+
+⎣
+
+⎢
+
+⎢
+
+⎢
+
+⎡𝑤 >
+
+> 5
+
+𝑤 5
+
+> 5
+
+𝑤 S
+
+> 5
+
+𝑤 O
+
+> 5
+
+⎦
+
+⎥
+
+⎥
+
+⎥
+
+⎤
+
++ 𝝉 P"QM + |
+
+𝜏 !
+
+𝜏 "
+
+𝜏 #
+
+} (19 )
+
+where 𝐷 ∈ 𝑅 𝟛 ×𝟜 collects the moment/drag coeffi-
+
+cients (often denoted by the “𝑑𝑐𝑡𝑐𝑞 ” matrix). 
+
+E. Rigid -Body Dynamics 
+
+a) Angular dynamics :
+
+With inerti a 𝑱 I = 𝑑𝑖𝑎𝑔 T𝐽 !, 𝐽 ", 𝐽 #V and 
+
+[𝝎 I ]× = |
+
+0 −𝑅 𝑄 
+
+𝑅 0 −𝑃 
+
+−𝑄 𝑃 0
+
+} (20 )
+
+the rotational dynamics are 
+
+𝝎 ̇I = 𝑱 I
+
+> W>
+
+(𝑴 I − [𝝎 I]×𝑱 I𝝎 I) (21 )
+
+b) Translational dynamics :
+
+Let 𝒗 I = [ 𝑈 𝑉 𝑊 ]% and 𝑚 the mass: 
+
+𝒗 ̇I = > 
+
+> $
+
+T𝑭 I + 𝑭 0;.&  
+
+> I
+
+V + 𝒈 I − [𝝎 I]×𝒗 I (22 )
+
+c) Position kinematics :
+
+𝒑 ̇; = 𝑹 ;I 𝒗 I, 𝒑 ; = [𝑋 𝑌 𝑍 ]% (23 )
+
+d) State derivative (12 states) :
+
+𝒙 ̇ = 
+
+𝝎 ̇I
+
+𝑯 (𝜙 , 𝜃 )𝝎 I
+
+𝒗 ̇I
+
+𝑹 ;I 𝒗 I
+
+ (24 )
+
+F. Action -to -RPM Allocation 
+
+The RL action 𝑎 = [𝑎 > 𝑎 5 𝑎 S 𝑎 O]% ∈ [−1,1]O
+
+is mapped to total thrust and body torques: 
+
+𝑇 = 𝑇 XMYZQ + 𝛼 [𝑇 XMYZQ 𝑎 >, 𝑇 XMYZQ = 𝑚𝑔 (25 )
+
+|
+
+𝜏 !
+
+𝜏 "
+
+𝜏 #
+
+} = y
+
+𝜏 .L2\Z ,! 0 0
+
+0 𝜏 .L2\Z ," 0
+
+0 0 𝜏 .L2\Z ,#
+
+z |
+
+𝑎 5
+
+𝑎 S
+
+𝑎 O
+
+} (26 )
+
+Let 
+
+𝒖 2\\ML = .𝑇 𝜏 ! 𝜏 " 𝜏 #/%
+
+𝑴 =
+
+⎣
+
+⎢
+
+⎢
+
+⎡ 𝑐 !,# 𝑐 !,$ 𝑐 !,% 𝑐 !,&
+
+𝑑𝑐𝑡𝑐 𝑞 #,# 𝑑𝑐𝑡𝑐 𝑞 #,$ 𝑑𝑐𝑡𝑐 𝑞 #,% 𝑑𝑐𝑡𝑐 𝑞 #,&
+
+𝑑𝑐𝑡𝑐 𝑞 $,# 𝑑𝑐𝑡𝑐 𝑞 $,$ 𝑑𝑐𝑡𝑐 𝑞 $,% 𝑑𝑐𝑡𝑐 𝑞 $,&
+
+𝑑𝑐𝑡𝑐 𝑞 %,# 𝑑𝑐𝑡𝑐 𝑞 %,$ 𝑑𝑐𝑡𝑐 𝑞 %,% 𝑑𝑐𝑡𝑐 𝑞 %,&⎦
+
+⎥
+
+⎥
+
+⎤
+
+(27 )
+
+We solve the allocation in 𝑤 ; 
+
+> 5
+
+(RPM 2) by a least -
+
+squares map 
+
+⎣
+
+⎢
+
+⎢
+
+⎢
+
+⎡𝑤 >
+
+> 5
+
+𝑤 5
+
+> 5
+
+𝑤 S
+
+> 5
+
+𝑤 O
+
+> 5
+
+⎦
+
+⎥
+
+⎥
+
+⎥
+
+⎤
+
+= 𝑴 *𝒖 2\\ML (28 )
+
+𝑤 ; = ¦𝑚𝑎𝑥 T𝑤 ;
+
+> 5
+
+, 0V, 𝑤 ; ∈ [𝑤 $;K , 𝑤 $2! ] (29 )
+
+where 𝑀 * is the Moore –Penrose pseudo -inverse 
+
+(used when 𝑀 is not square or poorly conditioned). 
+
+The clipping to [𝑤 $;K , 𝑤 $2! ] enfo rces actuator 
+
+limits. 
+
+G. Motor First -Order Dynamics 
+
+Each commanded RPM passes a first -order lag 
+
+before acting on forces/torques: 
+
+𝑇 $ 𝑦 ̇ (𝑡 ) + 𝑦 (𝑡 ) = 𝑢 (𝑡 ), ](.) 
+
+> ^(.)
+
+= > 
+
+> [6.*>
+
+(3 0)
+
+with time constant 𝑇 $ = 0.076 s in our configura-
+
+tion. Here 𝑢 (𝑡 ) is the commanded RPM and 𝑦 (𝑡 )
+
+the realized RPM used in the thrust/torque computa-
+
+tions above. 
+
+V. METHODOLOGY 
+
+We describe how the DRL agent interacts with the 
+
+quadcopter plant defined in Sec. IV, emphasizing ob-
+
+servation/action design, reward shaping, and the 
+
+training pipeline. 
+
+A. Observation Space 
+
+The agent receives a structured observation vec-
+
+tor comprising : 
+
+> l
+
+Position 𝐩 𝐭 = [𝑋 & 𝑌 & 𝑍 &]% and error (𝐞 𝐭 =
+
+𝐩 𝐭 − 𝐩 *); 
+
+> l
+
+Euler angles (𝜼 𝒕 = [𝜙 & 𝜃 & 𝜓 &]%) , body -frame 
+
+linear velocity (𝐯 𝐭  
+
+> 𝐛
+
+= [𝑈 & 𝑉 & 𝑊 &]%) and body 
+
+rates (𝝎 𝒕 = [𝑃 & 𝑄 & 𝑅 &]%) 
+
+> l
+
+Previous action (𝐚 𝐭 W𝟏 ) (provides control history 
+
+for rotor inertia/lag). 
+
+B. Action Space 
+
+Actions are continuous and directly correspond to 
+
+thrust and body torques: 
+
+𝒂 = S𝑎 [ 𝑎 d7 𝑎 d8 𝑎 d9 W
+
+which are mapped to per -rotor speeds through the al-
+
+location model in Sec. IV . This ensures physical fea-
+
+sibility and respects actuator limits. 
+
+C. Reward Design 
+
+To drive the agent toward the goal while keeping 
+
+the vehicle stable, we shape the reward with (i) a dis-
+
+tance -based positive term, (ii) attitude and rate 20 25 中華民國航太學會學術研討會 淡水 ，中華民國 114 年 11 月 15 日    
+
+> 20 25AASRC Conference Ta msui ,Novemb er 15, 2025
+> 論文編號： 1075
+> 5
+
+penalties for stability, and (iii) a small survival bonus. 
+
+Let 𝒑 & = [𝑥 & 𝑦 & 𝑧 &]% , 𝒑 ∗ = [𝑥 ref 𝑦 ref 𝑧 ref ]% ,
+
+𝑑 & = ‖𝒑 & − 𝒑 ∗‖5, body -frame linear velocity 𝒗 & 
+
+> I
+
+=
+
+[𝑈 & 𝑉 & 𝑊 &]%, body rates (𝑃 &, 𝑄 &, 𝑅 & ), and Euler an-
+
+gles (ϕ&, θ&, ψ&) (rad). Define the distance shaping 
+
+term :
+
+𝑟 0 (𝑑 &) = °𝑤 0𝑒 Wi0: , 𝑑 & ≤ 𝑑 &X
+
+−2𝑑 &, 𝑑 & > 𝑑 &X
+
+(3 1)
+
+and the total reward :
+
+𝑟 & = 𝑟 0(𝑑 &) − 𝜅 @|𝜙 &| − 𝜅 N|𝜃 &| − 𝜅 j|𝜓 &|
+
+−𝜆 Y¶𝑣 &
+
+> I
+
+¶5 
+
+> 5
+
+− 𝜆 k(𝑃 & 
+
+> 5
+
++ 𝑄 & 
+
+> 5
+
++ 𝜌 5𝑅 &
+
+> 5
+
+) + 𝑏 \;YZ (3 2)
+
+Weights used in experiments . We set 𝑤 0 = 30 ,
+
+𝛽 = 3 , 𝑑 th = 0.5 m , λY = 0.01 , λn = 0.003 ,
+
+𝜌 = 0.2, and 𝑏 \;YZ = 1. The attitude penalties share 
+
+the same gain :
+
+κ3 = κ( = κJ = 2 180 
+
+π
+
+D. Training Pipeline 
+
+We adopt an end -to -end DRL training framework 
+
+implemented in MATLAB/Simulink: 
+
+1) The agent interacts with the S -function -based 
+
+plant at each timestep. 
+
+2) Observations are computed, actions are gener-
+
+ated, and mapped to motor dynamics. 
+
+3) Rewards are collected and used for policy up-
+
+dates. 
+
+We evaluate four algorithms —DDPG, TD3, PPO, 
+
+and SAC —under identical network structures and 
+
+hyperparameters for fair comparison. 
+
+VI. EXPERIMENTS 
+
+This section documents the experimental setup 
+
+used to evaluate the proposed approach. We detail 
+
+the Simulink -in -the -loop training architecture, plant 
+
+configuration, observation/action spaces, reward 
+
+shaping, algorithms and hyperparameters, curricu-
+
+lum, hard ware, and evaluation protocol. All dynam-
+
+ics and notation follow Sec. IV .
+
+A. Training Architecture 
+
+Fig . 1 shows the closed -loop data flow per simu-
+
+lation step ( 𝑇 . = 0.005 𝑠 , horizon 𝑇 o = 10 𝑠 ). 
+
+B. Plant & Model Configuration 
+
+We use a rigid -body quadcopter with ZYX rota-
+
+tion, thrust along body +𝑧 I , gravity 𝑔 ; =
+
+[0,0, −𝑔 ]%, and actuator lag 𝑇 $ = 0.076 𝑠 . Alloca-
+
+tion solves for squared rotor speeds given total thrust 
+
+and body torques (Sec. IV ). Table I lists key param-
+
+eters. 
+
+C. Observation & Action Spaces 
+
+Observations: position error to target, Euler an-
+
+gles (𝜙 , 𝜃 , 𝜓 ) , body velocities [𝑈 , 𝑉 , 𝑊 ] , body 
+
+rates [𝑃 , 𝑄 , 𝑅 ], and previous action 𝐚 𝐭 W𝟏 .
+
+Actions: 𝒂 = S𝑎 [ 𝑎 d7 𝑎 d8 𝑎 d9 W , mapped to 
+
+.𝑇 𝜏 ! 𝜏 " 𝜏 #/ and then to per -rotor RPM (least -
+
+squares in 𝜔 ; 
+
+> 5
+
+with clamping). 
+
+D. Reward & Termination 
+
+We use a shaped reward (Eq. (3 2)) combining ex-
+
+ponential distance shaping, angle/velocity penalties, 
+
+and a small living bonus; termination triggers on out -
+
+of -bound states or reaching a goal ball with dwell 
+
+time. 
+
+E. Algorithms & Hyperparameters 
+
+We compare SAC, TD3, DDPG (and PPO in 
+
+thrust -only Stage 1) under identical network sizes 
+
+and optimizer settings; buffers of 10 R , mini -batch 
+
+256, discount 𝛾 = 0.99 , target update 𝜏 = 0.005 ,
+
+learning rate 3 × 10 WO. SAC uses twin critics and an 
+
+entropy target −dim (𝒜 ); TD3 uses twin critics and 
+
+target policy smoothing. 
+
+F. Curriculum & Initialization  
+
+> l
+
+Stage 1: thrust -only hover ( τ! = τ" = τ# = 0)
+
+for 5k episodes with randomized initial 𝑋 , 𝑍 . 
+
+> l
+
+Stage 2: unlocks one moment channel (e.g., τ")
+
+and trains 18k episodes to reach (1, 0, 1)m, with 20 25 中華民國航太學會學術研討會 淡水 ，中華民國 114 年 11 月 15 日    
+
+> 20 25AASRC Conference Ta msui ,Novemb er 15, 2025
+> 論文編號： 1075
+> 6
+
+𝑋 ∼ 𝒩 (0,15), 𝑌 = 0, 𝑍 ∼ 𝒩 (0,15).
+
+G. Hardware & Parallelization 
+
+MATLAB Parallel Computing Toolbox with up to 
+
+8 workers; GPU when available. We limit CPU satu-
+
+ration to reduce OS -level nondeterminism. 
+
+VII. RESULTS 
+
+Unless otherwise stated, all experiments follow 
+
+the common configuration of Sec. VI (sample time 
+
+𝑇 . = 5 ms , horizon 𝑇 o = 10 s ; identical observa-
+
+tions/actions and reward per (3 1)–(3 2)). Every 100 
+
+episodes, an evaluator executes five noise -free 
+
+rollouts; markers in the plots denote these evaluation 
+
+returns. 
+
+A. Stage 1: Thrust -only hover 
+
+Fig . 2 indicates consistent improvement for the 
+
+off -policy baselines. TD3 exhibits a near -monotonic 
+
+increase in training return after ≈ 10 S episodes and 
+
+attains the highest final reward. SAC follows closely, 
+
+with slightly slower early growth yet comparable ter-
+
+minal performance. DDPG improves rapidly at first 
+
+but displays pronounced oscillations and a lower as-
+
+ymptote. PPO remains near zero throughout and 
+
+shows no persistent upward trend within the given 
+
+budget. Evaluation markers mirror the ordering of 
+
+training curves, suggesting that gains are not artifacts 
+
+of exploration noise or replay dynamics. 
+
+B. Stage 2: Thrust plus single -axis torque 
+
+With a translated target and the pitch -torque (τ")
+
+channel enabled, returns start negative and increase 
+
+more gradually ( Fig . 3). TD3 maintains the best 
+
+sample efficiency, producing a steady ascent over the 
+
+entire training window. SAC is more conservative in 
+
+the initial phase —consistent with entropy -regular-
+
+ized exploration —but accelerates in the latter half 
+
+and reaches performance comparable to, and occa-
+
+sionally exceeding on evaluation rollouts, the TD3 
+
+baseline. DDPG remains noisy and does not surpass 
+
+the twin -critic methods under this setting. ( PPO is 
+
+excluded in Stage 2 due to its poor convergence in 
+
+Stage 1.) 
+
+C. Trajectory -level assessment 
+
+The planar projections and 3D trajectory of the 
+
+best SAC agent in Stage 2 (Fig. 5) demonstrate a di-
+
+rect approach toward the goal with negligible lateral 
+
+excursion: 𝑌 remains essentially constant, while 𝑋 
+
+advances toward 1 m and 𝑍 ascends to 1 m. Time 
+
+histories (Fig. 4) show a bounded overshoot in 𝑍 
+
+followed by damped oscillations and settling near the 
+
+reference; 𝑋 exhibits a smooth rise with a mild 20 25 中華民國航太學會學術研討會 淡水 ，中華民國 114 年 11 月 15 日    
+
+> 20 25AASRC Conference Ta msui ,Novemb er 15, 2025
+> 論文編號： 1075
+> 7
+
+corrective phase near arrival; 𝑌 drift is numerically 
+
+negligible (note the axis scale of 10 Wp ). Table II 
+
+quantitatively supports these observations. 
+
+VIII. CONCLUSION 
+
+This work advanced low -level quadcopter control 
+
+by coupling continuous body -wrench actions with an 
+
+explicit thrust/torque allocation and first -order ro-
+
+tor/motor dynamics in a Simulink -in -the -loop setting. 
+
+Empirically, this added physical fidelity makes the 
+
+learning problem harder —not easier —by introduc-
+
+ing actuator lags and allocation nonlinearities that in-
+
+crease variance and slow improvement relative to 
+
+body -level abstractions. Within a two -stage curricu-
+
+lu m (thrust -only hover; thrust plus a single torque 
+
+axis), off -policy methods converged most reliably, 
+
+with TD3 showing the fastest progress and SAC 
+
+achieving comparable final performance with 
+
+stronger evaluation consistency; DDPG and PPO un-
+
+derperformed unde r the same budget. However, 
+
+training remains brittle and we were unable to obtain 
+
+a stable Stage -3 policy for fully coupled 3D attitude 
+
+and position. Future work will remain fully end -to -
+
+end and investigate multi -agent coordination, richer 
+
+observation and reward formulations, and architec-
+
+ture -level advances to reduce sensitivity and enable 
+
+reliable full 3D control under coupled actuator dy-
+
+namics. 
+
+ACKNOWLEDGMENT 
+
+This project was supported by the National 
+
+Science and Technology Council of Taiwan 
+
+(112 -2222 -E-006 -001 -MY3 ). 
+
+REFERENCES 
+
+[1] K. Arulkumaran, M. P. Deisenroth, M. Brund-
+
+age, and A. A. Bharath, “Deep reinforcement 
+
+learning: A brief survey,” IEEE signal pro-
+
+cessing magazine, vol. 34, no. 6, pp. 26 –38, 
+
+2017. 
+
+[2] R. S. Sutton, A. G. Barto et al., Reinforcement 
+
+learning: An introduction. MIT press Cam-
+
+bridge, 1998, vol. 1, no. 1. 
+
+[3] V. Mnih, K. Kavukcuoglu, D. Silver, A. Graves, 
+
+I. Antonoglou, D. Wierstra, and M. Riedmiller, 
+
+“Playing atari with deep reinforcement learn-
+
+ing,” arXiv preprint arXiv:1312.5602, 2013. 
+
+[4] T. P. Lillicrap, J. J. Hunt, A. Pritzel, N. Heess, 
+
+T. Erez, Y. Tassa, D. Silver, and D. Wierstra, 
+
+“Continuous control with deep reinforcement 
+
+learning,” arXiv preprint arXiv:1509.02971, 
+
+2015. 
+
+[5] S. Fujimoto, H. Hoof, and D. Meger, 
+
+“Addressing function approxi - mation error in 
+
+actor -critic methods,” in International confer-
+
+ence on machine learning. PMLR, 2018, pp. 
+
+1587 –1596. 
+
+[6] J. Schulman, F. Wolski, P. Dhariwal, A. Rad-
+
+ford, and O. Klimov, “Prox - imal policy opti-
+
+mization algorithms,” arXiv preprint 
+
+arXiv:1707.06347, 2017. 
+
+[7] T. Haarnoja, A. Zhou, P. Abbeel , and S. Levine, 
+
+“Soft actor -critic: Off - policy maximum en-
+
+tropy deep reinforcement learning with a sto-
+
+chastic actor,” in International conference on 
+
+machine learning. Pmlr, 2018, pp. 1861 –1870. 
+
+[8] W. Koch, R. Mancuso, R. West, and A. Bestav-
+
+ros, “Reinforcement learning for uav attitude 
+
+control,” ACM Transactions on Cyber -Physical 
+
+Systems, vol. 3, no. 2, pp. 1 –21, 2019. 
+
+[9] A. M. Deshpande, A. A. Minai, and M. Kumar, 
+
+“Robust deep rein - forcement learning for 20 25 中華民國航太學會學術研討會 淡水 ，中華民國 114 年 11 月 15 日    
+
+> 20 25AASRC Conference Ta msui ,Novemb er 15, 2025
+> 論文編號： 1075
+> 8
+
+quadcopter control,” IFAC -PapersOnLine, vol. 
+
+54, no. 20, pp. 90 –95, 2021. 
+
+[10] Z. Jiang and A. F. Lynch, “Quadrotor motion 
+
+control using deep reinforcement learning,” 
+
+Journal of Unmanned Vehicle Systems, vol. 9, 
+
+no. 4, pp. 234 –251, 2021. 
+
+[11] T. -D. Do, N. X. Mung, and S. K. Hong, “Deep 
+
+reinforcement learning - based quadcopter con-
+
+troller: A practical approach and experiments,” 
+
+arXiv preprint arXiv:2406.08815, 2024. 
+
+[12] R. Ferede, C. De Wagter, D. Izzo, and G. C. De 
+
+Croon, “End -to -end reinforcement learning for 
+
+time -optimal quadcopter flight,” in 2024 IEEE 
+
+International Conference on Robotics and Au-
+
+tomation (ICRA). IEEE, 2024, pp. 6172 –6177. 
+
+[13] B. Yu and T. Lee, “Equivariant reinforcement 
+
+learning for quadrotor uav,” in 2023 American 
+
+Control Conference (ACC). IEEE, 2023, pp. 
+
+2842 –2847. 
+
+[14] —— , “Multi -agent reinforcement learning for 
+
+the low -level control of a quadrotor uav,” in 
+
+2024 American Control Conference (ACC). 
+
+IEEE, 2024, pp. 1537 –1542. 
+
+[15] P. Henderson, R. Islam, P. Bachman, J. Pineau, 
+
+D. Precup, and D. Meger, “Deep reinforcement 
+
+learning that matters,” in Proceedings of the 
+
+AAAI conference on artificial intelligence, vol. 
+
+32, no. 1, 2018. 
+
+[16] A. Raffin, A. Hill, A. Gleave, A. Kanervisto, M. 
+
+Ernestus, and N. Dor - mann, “Stable -base-
+
+lines3: Reliable reinforcement learning imple-
+
+menta - tions,” Journal of machine learning re-
+
+search, vol. 22, no. 268, pp. 1 –8, 2021. 
+
+[17] P. Ladosz, L. Weng, M. Kim, and H. Oh, “Ex-
+
+ploration in deep rein - forcement learning: A 
+
+survey,” Information Fusion, vol. 85, pp. 1 –22, 
+
+2022. 
+
+[18] L. P. Kaelbling, M. L. Littman, and A. W. 
+
+Moore, “Reinforcement learning: A survey,” 
+
+Journal of artificial intelligence research, vol. 4, 
+
+pp. 237 –285, 1996. 
+
+[19] V. Franc¸ois -Lavet, P. Henderson, R. Islam, M. 
+
+G. Bellemare, J. Pineau et al., “An introduction 
+
+to deep reinforcement learning,” Foundations 
+
+and Trends® in Machine Learning, vol. 11, no. 
+
+3-4, pp. 219 –354, 2018. 
+
+[20] X. Wang, S. Wang, X. Liang, D. Zhao, J. Huang, 
+
+X. Xu, B. Dai, and Q. Miao, “Deep reinforce-
+
+ment learning: A survey,” IEEE Transactions 
+
+on Neural Networks and Learning Systems, vol. 
+
+35, no. 4, pp. 5064 – 5078, 2022. 
+
+[21] A. T. Azar, A. Koubaa, N. Ali Mohamed, H. A. 
+
+Ibrahim, Z. F. Ibrahim, M. Kazim, A. Ammar, 
+
+B. Benjdira, A. M. Khamis, I. A. Hameed et al., 
+
+“Drone deep reinforcement learning: A review,” 
+
+Electronics, vol. 10, no. 9, p. 999, 2021. 
+
+[22] C. Wang, J. Wang, Y. Shen, and X. Zhang, “Au-
+
+tonomous navigation of uavs in large -scale 
+
+complex environments: A deep reinforcement 
+
+learning approach,” IEEE Transactions on Ve-
+
+hicular Technology, vol. 68, no. 3, pp. 2124 –
+
+2136, 2019. 
+
+[23] C. Wang, J. Wang, J. Wang, and X. Zhang, 
+
+“Deep -reinforcement - learning -based autono-
+
+mous uav navigation with sparse rewards,” 
+
+IEEE Internet of Things Journal, vol. 7, no. 7, 
+
+pp. 6180 –6190, 2020. 
+
+[24] C. Yan, X. Xiang, and C. Wang, “Towards real -
+
+time path planning through deep reinforcement 
+
+learning for a uav in dynamic environ - ments,” 
+
+Journal of Intelligent & Robotic Systems, vol. 
+
+98, no. 2, pp. 297 –309, 2020. 
+
+[25] A. Rodriguez -Ramos, C. Sampedro, H. Bavle, 
+
+P. De La Puente, and P. Campoy, “A deep rein-
+
+forcement learning strategy for uav autono-
+
+mous landing on a moving platform,” Journal 
+
+of Intelligent & Robotic Systems, vol. 93, no. 
+
+1, pp. 351 –366, 2019. 
+
+[26] K. K. Nguyen, T. Q. Duong, T. Do -Duy, H. 
+
+Claussen, and L. Hanzo, “3d uav trajectory and 
+
+data collection optimisation via deep reinforce-
+
+ment learning,” IEEE Transactions on Commu-
+
+nications, vol. 70, no. 4, pp. 2358 –2371, 2022. 
+
+[27] B. Ma, Z. Liu, W. Zhao, J. Yuan, H. Long, X. 
+
+Wang, and Z. Yuan, “Target tracking control of 
+
+uav through deep reinforcement learning,” 
+
+IEEE Transactions on Intelligent Transporta-
+
+tion Systems, vol. 24, no. 6, pp. 5983 –6000, 
+
+2023. 
+
+[28] J. Hwangbo, I. Sa, R. Siegwart, and M. Hutter, 
+
+“Control of a quadrotor with reinforcement 
+
+learning,” IEEE Robotics and Automation Let-
+
+ters, vol. 2, no. 4, pp. 2096 –2103, 2017. 
+
+[29] S. Batra, Z. Huang, A. Petrenko, T. Kumar, A. 
+
+Molchanov, and G. S. Sukhatme, “Decentral-
+
+ized control of quadrotor swarms with end -to -
+
+end deep reinforcement learning,” in Confer-
+
+ence on robot learning. PMLR, 2022, pp. 576 –
+
+586. 
+
+[30] J. Xing, I. Geles, Y. Song, E. Aljalbout, and D. 
+
+Scaramuzza, “Multi -task reinforcement learn-
+
+ing for quadrotors,” IEEE Robotics and Auto-
+
+mation Letters, 2024. 
+
+[31] Z. Liu, X. Xu, P. Qiao, and D. Li, “Acceleration 
+
+for deep reinforcement learning using parallel 
+
+and distributed computing: A survey,” ACM 
+
+Computing Surveys, vol. 57, no. 4, pp. 1 –35, 
+
+2024.

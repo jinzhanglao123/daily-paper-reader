@@ -6,34 +6,35 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-01
-- 运行时间：2026-08-01 19:59:36 UTC
+- 最新运行日期：2026-08-02
+- 运行时间：2026-08-02 20:19:21 UTC
 - 运行状态：成功
 - 本次总论文数：4
-- 精读区：1
-- 速读区：3
+- 精读区：0
+- 速读区：4
 
 ### 今日简报（AI）
-1) 今日精读8.0分论文《PLATO: Pointer Learner for Agent and Task Openness》，探索开放任务下智能体如何动态学习，同时速读三篇均6.0分的强化学习与多智能体工作。
-2) 最值得关注的是PLATO提出的任务无关指针学习器，让智能体同时适应新任务与新伙伴；混合优势估计联合视觉语言模型也为具身智能的RL训练提供了新价值函数设计。
-3) 建议顺着PLATO的指针机制深入，结合MARS-RA的多模态比较方法，思考如何让开放环境下的智能体更稳定地分配功劳与协同决策。
-- 详情：[/202608/01/README](/202608/01/README)
+今日速读四篇空中机器人前沿论文，聚焦强化学习与控制协同跃升。
+最值得关注的是物理感知的端到端控制与跨技能演化方法，可让无人机在高动态场景中更稳健、更聪明。
+建议动手实验时优先关注动作模型的动力学建模与技能迁移框架，或许能加速你的控制策略落地。
+- 详情：[/202608/02/README](/202608/02/README)
 
 ### 精读区论文标签
-1. [PLATO: Pointer Learner for Agent and Task Openness](/202608/01/2607.25082v1-plato-pointer-learner-for-agent-and-task-openness)  
-   标签：评分：8.0/10、query:uav-drl
-   evidence：基于指针网络的演员网络处理多智能体强化学习中的可变动作空间
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Hybrid Advantage Estimation with Unified Critic for VLM Agentic Reinforcement Learning](/202608/01/2607.23605v1-hybrid-advantage-estimation-with-unified-critic-for-vlm-agentic-reinforcement-learning)  
+1. [Physics-Aware End-to-End Deep Reinforcement Learning for Quadcopter Control with Actuator Dynamics](/202608/02/2607.25985v1-physics-aware-end-to-end-deep-reinforcement-learning-for-quadcopter-control-with-actuator-dynamics)  
+   标签：评分：7.0/10、query:uav-drl
+   evidence：四旋翼深度强化学习控制，可用于巡检任务
+2. [SkillRise: Agentic Reinforcement Learning for Cross-Task Skill Evolution](/202608/02/2607.26784v1-skillrise-agentic-reinforcement-learning-for-cross-task-skill-evolution)  
+   标签：评分：7.0/10、query:uav-drl
+   evidence：跨任务解耦信用分配实现技能演化
+3. [Learning Adaptive Multi-Task Guidance, Navigation, and Control via Hypernetworks](/202608/02/2607.24292v1-learning-adaptive-multi-task-guidance-navigation-and-control-via-hypernetworks)  
    标签：评分：6.0/10、query:uav-drl
-   evidence：混合优势函数用于多轮信用分配
-2. [Bridging Reinforcement Learning and Optimal Control via Feasible Action Mapping](/202608/01/2607.23930v1-bridging-reinforcement-learning-and-optimal-control-via-feasible-action-mapping)  
+   evidence：空间机器人检查的多任务深度强化学习方法可迁移到无人机巡检。
+4. [CoRE-UIR: Prior-guided common and residual experts for efficient all-in-one remote sensing image restoration](/202608/02/2607.27898v1-core-uir-prior-guided-common-and-residual-experts-for-efficient-all-in-one-remote-sensing-image-restoration)  
    标签：评分：6.0/10、query:uav-drl
-   evidence：动作映射将强化学习动作转化为约束系统的可行参数集
-3. [MARS-RA: Rank Aggregation for Credit Assignment via Multimodal Comparisons in Embodied Multi-Agent Cooperation](/202608/01/2607.27967v1-mars-ra-rank-aggregation-for-credit-assignment-via-multimodal-comparisons-in-embodied-multi-agent-cooperation)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：通过排序聚合解决延迟反馈下的信用分配
+   evidence：图像复原增强无人机影像，支持缺陷检测。
 
 
 <div class="dpr-home-promo-card">

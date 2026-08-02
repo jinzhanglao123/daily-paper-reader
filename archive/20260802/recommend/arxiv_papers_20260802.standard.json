@@ -1,0 +1,188 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-02T20:16:09.115001+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 4,
+    "quick_skim_target": 11,
+    "quick_selected": 4
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2607.25985v1",
+      "source": "arxiv",
+      "title": "Physics-Aware End-to-End Deep Reinforcement Learning for Quadcopter Control with Actuator Dynamics",
+      "abstract": "Unmanned aerial vehicles (UAVs), particularly quadcopters, present unique challenges for autonomous control due to their underactuated dynamics: only four available control inputs must govern six degrees of freedom. This paper investigates a physics-aware, end-to-end deep reinforcement learning (DRL) approach that acts directly on low-level body inputs, total thrust and body torques $(T, τ_x, τ_y, τ_z)$, and closes the loop through a high-fidelity Simulink environment. Our simulator integrates a 12-state rigid-body model (MATLAB Level-2 S-Function) with (i) an Action2RPM allocation based on the Moore-Penrose pseudo-inverse of a coefficient matrix derived from thrust and drag terms, and (ii) first-order actuator dynamics for each motor (time constant $T_m = 0.076$ s), including rotor gyroscopic coupling. A shaped reward balances goal-reaching and stability using an exponential position well, attitude penalties, and quadratic velocity costs. Four DRL algorithms, DDPG, TD3, PPO, and SAC, are evaluated in two stages: (S1) thrust-only hover and (S2) hover with pitch torque and a translated goal. Results show that SAC and TD3 achieve superior stability and exploration efficiency, while PPO is less sample-efficient. The study highlights the significance of modeling actuator lags and aerodynamic moments for stable low-level control and provides a reproducible benchmark for quadcopter DRL.",
+      "authors": [
+        "Ya-Chia Shen",
+        "Woei-Leong Chan"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.LG",
+        "eess.SY"
+      ],
+      "published": "2026-07-28T17:05:47+00:00",
+      "link": "https://arxiv.org/pdf/2607.25985v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "deep reinforcement learning for UAV control, applicable to inspection tasks",
+      "llm_evidence_cn": "四旋翼深度强化学习控制，可用于巡检任务",
+      "llm_evidence": "四旋翼深度强化学习控制，可用于巡检任务",
+      "canonical_evidence": "四旋翼深度强化学习控制，可用于巡检任务",
+      "llm_tldr_en": "Presents a physics-aware end-to-end DRL approach for quadcopter control using low-level body inputs and actuator dynamics, evaluated in a high-fidelity Simulink environment.",
+      "llm_tldr_cn": "针对四旋翼无人机欠驱动动力学难题，提出一种物理感知的端到端深度强化学习控制方法，直接输出总推力和机体力矩，并集成执行器动态模型。在高保真Simulink仿真中验证，该方法有效提升控制性能，是无人机自主巡检的关键使能技术。",
+      "llm_tldr": "针对四旋翼无人机欠驱动动力学难题，提出一种物理感知的端到端深度强化学习控制方法，直接输出总推力和机体力矩，并集成执行器动态模型。在高保真Simulink仿真中验证，该方法有效提升控制性能，是无人机自主巡检的关键使能技术。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "deep reinforcement learning for UAV inspection tasks",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.24292v1",
+      "source": "arxiv",
+      "title": "Learning Adaptive Multi-Task Guidance, Navigation, and Control via Hypernetworks",
+      "abstract": "Autonomous free-flying robots in orbital environments require controllers that are both versatile and resource-efficient, yet maintaining a separate, task-specific policy for each mission profile is architecturally brittle and limits operational flexibility as requirements evolve. We introduce HYPER-GNC, a multi-task reinforcement learning framework in which a hypernetwork maps physics-informed task embeddings to the weights of a shared actor-critic policy, enabling a single compact controller to master four distinct GNC tasks: velocity tracking, docking, inspection, and navigation with obstacle avoidance. The continuous embedding space allows the controller to generalize to novel mission configurations at deployment time without any retraining. Extensive experiments demonstrate that HYPER-GNC achieves sample efficiency comparable to single-task specialists while maintaining stability under significant inertial perturbations and external body wrenches. We further validate the framework on a physical satellite emulator, successfully bridging the simulation-to-reality gap across all mission profiles. Code, trained models, and deployment scripts are made publicly available to support reproducibility.",
+      "authors": [
+        "Ricard Marsal I Castan",
+        "Aman Arora",
+        "Antoine Richard",
+        "Andrej Orsula",
+        "Cédric Pradalier",
+        "Miguel A. Olivares-Méndez"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-07-27T11:39:22+00:00",
+      "link": "https://arxiv.org/pdf/2607.24292v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Multi-task DRL for space robot inspection, method transferable to UAV inspection.",
+      "llm_evidence_cn": "空间机器人检查的多任务深度强化学习方法可迁移到无人机巡检。",
+      "llm_evidence": "空间机器人检查的多任务深度强化学习方法可迁移到无人机巡检。",
+      "canonical_evidence": "空间机器人检查的多任务深度强化学习方法可迁移到无人机巡检。",
+      "llm_tldr_en": "Proposes HYPER-GNC, a multi-task RL framework using hypernetworks for space robot inspection and other GNC tasks, offering a transferable approach for UAV inspection.",
+      "llm_tldr_cn": "针对空间机器人多任务需求和操作灵活性挑战，本文提出HYPER-GNC框架，利用超网络将任务嵌入映射到共享策略权重，实现检查、对接等四类GNC任务的学习与泛化。该方法无需重新训练即可适应新配置，在保持紧凑架构的同时显著提升任务灵活性，其多任务学习思想对无人机巡检的自主控制具有方法论借鉴意义。",
+      "llm_tldr": "针对空间机器人多任务需求和操作灵活性挑战，本文提出HYPER-GNC框架，利用超网络将任务嵌入映射到共享策略权重，实现检查、对接等四类GNC任务的学习与泛化。该方法无需重新训练即可适应新配置，在保持紧凑架构的同时显著提升任务灵活性，其多任务学习思想对无人机巡检的自主控制具有方法论借鉴意义。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "deep reinforcement learning for UAV inspection tasks",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.26784v1",
+      "source": "arxiv",
+      "title": "SkillRise: Agentic Reinforcement Learning for Cross-Task Skill Evolution",
+      "abstract": "Large language model agents often encounter related yet distinct tasks that share reusable solution patterns. Yet standard agentic reinforcement learning treats tasks as independent episodes, while existing approaches to skill learning either focus on repeated attempts of one task or use pipelines with multiple stages that entangle extraction, retrieval, and execution. We introduce SkillRise, a unified reinforcement learning framework for learning skills across tasks. SkillRise organizes related instances into progressively challenging sequences and uses a single policy to alternate between task solving and curating an evolving skill document passed directly to the next task. Decoupled credit assignment across tasks supervises solving with the current task outcome and curation with discounted downstream outcomes. Experiments on ALFWorld, WebShop, and ScienceWorld show that SkillRise achieves the strongest Pass@1 performance among the compared methods, with gains over the strongest baseline ranging from 2.3 to 8.5 percentage points. Although trained across distinct tasks, its learned curation policy remains effective for repeated attempts on the same task. Further analysis reveals scaling at test time across tasks: performance improves with longer sequences of related tasks even when each task is attempted only once. This trend suggests that SkillRise reuses transferable skills across tasks rather than benefiting from repeated sampling of the same task. SkillRise further retains strong performance while substantially reducing the runtime overhead of skill learning pipelines with multiple stages. Together, these results provide a simple and efficient training paradigm for LLM agents to extract, refine, and reuse transferable skills across tasks.",
+      "authors": [
+        "Zhiyuan Yao",
+        "Yuxin Chen",
+        "Zhengxi Lu",
+        "Zishan Xu",
+        "Yueqing Sun",
+        "Yifu Guo",
+        "Yuquan Lu",
+        "Zhengzhou Cai",
+        "Kangning Zhang",
+        "Zhuowen Han",
+        "Zi-Han Wang",
+        "Ziang Ye",
+        "Qi Gu",
+        "Xunliang Cai",
+        "Weiwen Liu",
+        "Yongliang Shen"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-07-29T11:26:33+00:00",
+      "link": "https://arxiv.org/pdf/2607.26784v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "decoupled credit assignment across tasks for skill evolution",
+      "llm_evidence_cn": "跨任务解耦信用分配实现技能演化",
+      "llm_evidence": "跨任务解耦信用分配实现技能演化",
+      "canonical_evidence": "跨任务解耦信用分配实现技能演化",
+      "llm_tldr_en": "Proposes SkillRise, a unified RL framework for cross-task skill learning with decoupled credit assignment across tasks, enabling agents to evolve reusable skills over challenging task sequences.",
+      "llm_tldr_cn": "该工作针对跨任务技能学习中的信用分配问题，提出SkillRise框架，在任务求解与技能文档整理间交替执行，通过跨任务的解耦信用分配监督技能演化，使智能体在递进式任务序列中持续积累可复用技能，显著提升新任务学习效率。",
+      "llm_tldr": "该工作针对跨任务技能学习中的信用分配问题，提出SkillRise框架，在任务求解与技能文档整理间交替执行，通过跨任务的解耦信用分配监督技能演化，使智能体在递进式任务序列中持续积累可复用技能，显著提升新任务学习效率。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2607.27898v1",
+      "source": "arxiv",
+      "title": "CoRE-UIR: Prior-guided common and residual experts for efficient all-in-one remote sensing image restoration",
+      "abstract": "Remote sensing images acquired by unmanned aerial vehicles (UAVs) and satellites are often degraded by adverse weather, illumination variation, and imaging artifacts, which may co-occur and jointly induce global distribution shifts and local structural corruption. Although All-in-One image restoration offers an appealing unified alternative to task-specific pipelines, existing methods still suffer from weak or implicit degradation cues and parameter redundancy caused by full-rank multi-expert designs with overlapping restoration behaviors. We propose CoRE-UIR (Common and Residual Experts for Universal Image Restoration), a prior-guided global-local framework centered on the Common-and-Residual Expert Block (CoRE). CoRE explicitly decomposes restoration capacity into a common dense expert for degradation-invariant restoration and low-rank residual experts for degradation-specific compensation, enabling adaptive specialization without redundant expert replication. Built on this design, Degradation Prior Embedding (DPE) adapts frozen CLIP features into an explicit restoration-oriented prior, while Global Feature Modulation (GFM) aligns global feature statistics before local residual compensation. We also construct MDVD-108K (Multi-Degradation VisDrone), a large-scale UAV restoration dataset covering both single and compound degradations, together with a real-world test set. Extensive experiments on multiple datasets show that CoRE-UIR improves the overall average PSNR by 1.05 dB while running 11.83$\\times$ faster and reducing peak memory by 85.3% relative to the strongest baseline, BaryIR, thereby maintaining a favorable quality-efficiency trade-off. Evaluations on downstream tasks and unseen degradation also validate the generalizability of CoRE-UIR. The code and dataset will be released at https://github.com/zzaiyan/CoRE-UIR.",
+      "authors": [
+        "Zaiyan Zhang",
+        "Qiangqiang Yuan",
+        "Jie Li",
+        "Ziyang Lihe",
+        "Yu Wan",
+        "Yuzeng Chen",
+        "Xin Su",
+        "Liangpei Zhang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-07-30T09:14:08+00:00",
+      "link": "https://arxiv.org/pdf/2607.27898v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Image restoration enhances UAV imagery for defect detection.",
+      "llm_evidence_cn": "图像复原增强无人机影像，支持缺陷检测。",
+      "llm_evidence": "图像复原增强无人机影像，支持缺陷检测。",
+      "canonical_evidence": "图像复原增强无人机影像，支持缺陷检测。",
+      "llm_tldr_en": "Proposes CoRE-UIR, a prior-guided image restoration method for UAV remote sensing, which can enhance image quality for transmission line defect detection.",
+      "llm_tldr_cn": "针对无人机遥感图像常受天气、光照和成像伪影等多因素劣化问题，本文提出CoRE-UIR方法，通过通用与残差专家模块结合自然先验进行退化感知的全局-局部复原。实验证明该方法在统一框架下有效处理多种复合退化，参数更少且效果更优，为提升输电线路无人机巡检图像的缺陷检测精度提供了关键的预处理技术。",
+      "llm_tldr": "针对无人机遥感图像常受天气、光照和成像伪影等多因素劣化问题，本文提出CoRE-UIR方法，通过通用与残差专家模块结合自然先验进行退化感知的全局-局部复原。实验证明该方法在统一框架下有效处理多种复合退化，参数更少且效果更优，为提升输电线路无人机巡检图像的缺陷检测精度提供了关键的预处理技术。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "transmission line defect detection from UAV imagery",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
