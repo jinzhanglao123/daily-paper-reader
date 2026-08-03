@@ -1,0 +1,39 @@
+{
+  "label": "2026-08-03",
+  "date": "2026-08-03",
+  "generated_at": "2026-08-03T20:40:34",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202608/03/2607.29419v1-explore-beyond-the-boundary-using-entropic-information",
+      "section": "deep",
+      "title_en": "Explore Beyond the Boundary Using Entropic Information",
+      "authors": "Bumgeun Park, Donghwan Lee",
+      "date": "2026-07-31",
+      "pdf": "https://arxiv.org/pdf/2607.29419v1",
+      "score": "8.0",
+      "evidence": "提出通过熵信息分配内在奖励来增强稀疏/延迟奖励下的探索",
+      "tldr": "在强化学习中，稀疏且延迟的奖励给探索带来巨大挑战，智能体难以获得有效指导，需要探索广阔的状态空间才能发现奖励信号。我们提出基于熵信息的探索方法ENTINEX，通过计算状态熵值识别分布边界，并对边界区域施加内在奖励，驱动智能体主动扩展探索范围。在多个稀疏和延迟奖励环境中的实验表明，ENTINEX比现有方法更有效提升探索效率，帮助智能体更快发现奖励并获得更高回报。这项工作证明了利用熵信息引导边界探索的潜力，为解决稀疏奖励问题提供了一种高效且通用的内在激励策略。",
+      "tags": "query:uav-drl",
+      "abstract_en": "In reinforcement learning, exploration with sparse and delayed rewards presents a significant challenge due to the limited feedback available for guiding the learning process. Addressing this issue requires extensive exploration in the state space to discover valuable reward signals. In this paper, we propose Entropic Information for Exploration (ENTINEX), a novel method that enhances exploration by incentivizing agents to explore beyond the boundaries of the state distribution. ENTINEX achieves this by assigning intrinsic rewards to these boundaries, leveraging entropic information to identify them effectively. Through extensive experimentation, we demonstrate that ENTINEX consistently improves exploration performance in environments characterized by sparse and delayed rewards. Our experimental results show that ENTINEX outperforms existing exploration methods, highlighting its effectiveness in both sparse and delayed reward scenarios.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/03/2607.23565v1-anticipatory-risk-guided-reinforcement-learning-for-safe-flight-through-dynamic-clutter",
+      "section": "quick",
+      "title_en": "Anticipatory Risk-Guided Reinforcement Learning for Safe Flight Through Dynamic Clutter",
+      "authors": "Yuchao Mei, Guohao Zhang, Luxia Ai, Haopeng Chen, Wenbing Tao",
+      "date": "2026-07-26",
+      "pdf": "https://arxiv.org/pdf/2607.23565v1",
+      "score": "6.0",
+      "evidence": "深度强化学习用于四旋翼安全飞行，采用风险预期，可作为无人机巡检导航的使能方法。",
+      "tldr": "四旋翼在密集动态障碍中安全飞行需预测相对运动引发的碰撞风险，然而传统模块化管道存在感知延迟，端到端方法缺乏物理监督而难以提取可靠时空特征。为此，提出预期风险引导的强化学习框架：利用模拟器特权状态构建最近接近点风险图，通过非对称actor-critic架构自我预测该结构化风险，并在部署时显式引导视觉策略；同时，轻量时空编码器直接从机载深度序列提取运动线索，绕过目标追踪。仿真和真实实验表明，该方法有效提升安全裕度与飞行效率，并实现零样本Sim-to-Real迁移。研究验证了风险先验引导及抽象感知对动态避障泛化的重要性。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Safe quadrotor navigation in cluttered and dynamic environments depends not only on instantaneous geometric perception, but more critically on anticipating collision risks induced by relative motion. Conventional modular pipelines frequently suffer from perception latency, while end-to-end learning methods relying on implicit scalar rewards often struggle to extract reliable spatio-temporal features without physics-grounded supervision. To address this, we propose an anticipatory risk-guided reinforcement learning framework. Leveraging privileged simulator states, we construct a directionally aligned future collision risk map based on the Closest Point of Approach (CPA). Through an asymmetric actor-critic architecture, the network is trained to self-predict this structured risk, which explicitly guides the visual policy during deployment. A lightweight spatio-temporal encoder extracts motion cues directly from onboard depth sequences, bypassing explicit object tracking or optical flow estimation. Extensive simulated and real-world experiments demonstrate that our method effectively improves safety margins and flight efficiency in dense dynamic clutters compared to existing baselines. Furthermore, the learned policy achieves robust zero-shot Sim-to-Real transfer on a physical quadrotor, relying purely on abstracted spatio-temporal depth sequences and its self-predicted risk priors, validating the effectiveness of our approach and its robust generalization from simulation to reality.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
