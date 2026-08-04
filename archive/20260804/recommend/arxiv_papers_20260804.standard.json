@@ -1,0 +1,172 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-04T21:52:35.825992+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2607.28076v2",
+      "source": "arxiv",
+      "title": "Group-Reflective Self-Distillation for Agentic Reinforcement Learning",
+      "abstract": "Reinforcement learning with verifiable rewards (RLVR) is effective for training large language model agents. However, terminal rewards provide only coarse trajectory-level supervision, leaving successful behaviors, recurring mistakes, and incidental choices entangled in the same outcome signal. Existing agentic self-distillation methods enrich sparse supervision with natural-language skills, but skills retrieved externally or extracted from a single trajectory by stronger models may mismatch current experience, exceed the policy's capability, or remain path-specific. We propose Group-Reflective Self-Distillation (GRSD), which derives capability-aligned and outcome-discriminative guidance from the policy's own verified rollouts. For each prompt, the policy reflects on each verified trajectory in an on-policy group, and a stop-gradient snapshot contrasts the resulting reflections from successful and failed rollouts to construct group-level privileged guidance. Conditioned on this guidance, a self-teacher refines turn-level credit assignment by modulating outcome-based advantages while preserving the verifier-determined learning direction. Experiments across multiple agentic environments and model scales demonstrate that GRSD consistently outperforms competitive baselines and generalizes more effectively to unseen tasks.",
+      "authors": [
+        "Binbin Zheng",
+        "Zijun Xie",
+        "Guanqun Zhao",
+        "Enlei Gong",
+        "Xing Ma",
+        "Xiaoliang Fu",
+        "Zeyu Chen"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.LG"
+      ],
+      "published": "2026-07-30T11:49:46+00:00",
+      "link": "https://arxiv.org/pdf/2607.28076v2",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "proposes self-distillation to enrich terminal rewards for long-horizon tasks",
+      "llm_evidence_cn": "提出自蒸馏方法优化长周期任务的终端奖励",
+      "llm_evidence": "提出自蒸馏方法优化长周期任务的终端奖励",
+      "canonical_evidence": "提出自蒸馏方法优化长周期任务的终端奖励",
+      "llm_tldr_en": "Group-Reflective Self-Distillation derives capability-aligned guidance from policy rollouts to improve long-horizon reward assignment in agentic RL, addressing sparse terminal supervision.",
+      "llm_tldr_cn": "针对终端奖励仅提供粗粒度监督的问题，提出群体反思自蒸馏方法，从策略自身的已验证轨迹中提取能力对齐且结果区分度的指导，以缓解长周期奖励分配的稀疏性和纠缠。实验表明该方法能有效提升智能体表现，为长周期任务塑造奖励提供实用途径。",
+      "llm_tldr": "针对终端奖励仅提供粗粒度监督的问题，提出群体反思自蒸馏方法，从策略自身的已验证轨迹中提取能力对齐且结果区分度的指导，以缓解长周期奖励分配的稀疏性和纠缠。实验表明该方法能有效提升智能体表现，为长周期任务塑造奖励提供实用途径。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.02034v1",
+      "source": "arxiv",
+      "title": "Upper-Expectile Multi-Step Q-Learning for Off-Policy Reinforcement Learning",
+      "abstract": "Multi-step returns accelerate reward propagation in off-policy reinforcement learning, but couple the evaluation of each decision to the suboptimal logged actions that follow it, inducing a pessimistic bias that grows with the horizon. We propose Expectile $n$-step Q-learning (ENQ), which replaces the symmetric $n$-step temporal-difference (TD) loss with an asymmetric expectile loss on the action-value error, with expectile level $τ$ as the only method-specific hyperparameter added beyond $n$-step TD. We prove that the ENQ operator is a $γ^{n}$-contraction. Under deterministic dynamics, at $τ=1$, its bias vanishes at the optimal action-value function $Q^*$ on covered in-support pairs, and the corresponding fixed point satisfies the separation-$n$ instance and its multiples of the lower-bound inequality used by Long-Horizon Q-learning (LQL). Under stochastic dynamics, the operator bias admits two-sided bounds with horizon-independent noise constants. Using a single expectile level $τ=0.8$ and a fixed backup horizon across 27 manipulation and navigation task instances, ENQ is competitive with LQL on aggregate, achieves higher measured training-step throughput in our profiling study, and benefits more from a ten-critic ensemble in a controlled scaling experiment.",
+      "authors": [
+        "Abdelghani Ghanem",
+        "Mounir Ghogho"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-08-03T10:30:56+00:00",
+      "link": "https://arxiv.org/pdf/2608.02034v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "proposes ENQ to address pessimistic bias in multi-step off-policy RL for long-horizon tasks",
+      "llm_evidence_cn": "提出ENQ以解决长周期任务中多步离线策略RL的悲观偏差",
+      "llm_evidence": "提出ENQ以解决长周期任务中多步离线策略RL的悲观偏差",
+      "canonical_evidence": "提出ENQ以解决长周期任务中多步离线策略RL的悲观偏差",
+      "llm_tldr_en": "Expectile n-step Q-learning uses asymmetric expectile loss to reduce pessimistic bias in multi-step returns, enabling more accurate value estimation for long-horizon RL.",
+      "llm_tldr_cn": "针对多步回报在离线策略RL中因后续动作次优而产生悲观偏差并随周期增长加剧的问题，提出期望分位数n步Q学习，采用非对称期望损失替代对称TD损失。理论证明偏差在最优动作值函数处消失，实验证实能有效加速奖励传播并提升长周期任务学习性能。",
+      "llm_tldr": "针对多步回报在离线策略RL中因后续动作次优而产生悲观偏差并随周期增长加剧的问题，提出期望分位数n步Q学习，采用非对称期望损失替代对称TD损失。理论证明偏差在最优动作值函数处消失，实验证实能有效加速奖励传播并提升长周期任务学习性能。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2607.25728v1",
+      "source": "arxiv",
+      "title": "Shared Voxel-Map-Based Cooperative Indoor UAV Guidance with a Multi-Agent Soft Actor-Critic Controller",
+      "abstract": "This paper presents a cooperative indoor UAV guidance framework that combines a shared voxel-map world model with a multi-agent Soft Actor-Critic (MASAC) controller. Multiple drones fuse 360 LiDAR observations into a common world-frame occupancy map, which is converted into a compact bird's-eye-view (BEV) representation and provided to each agent as an ego-aligned local crop. This integrate-in-world, act-in- ego design enables consistent multi-UAV spatial fusion whilst retaining decentralised continuous control. The policy combines BEV map features, near-field obstacle observations, and compact goal and peer-state information within a centralised-training, decentralised-execution framework. In simulation, the learned controller achieves a 90.3% success rate in corridor navigation, outperforming Astar planning, an artificial potential field controller, and a prior guidance method. To address residual sim-to-real mismatch, the simulation-trained policy is further adapted using offline imitation fine-tuning from real-world data. Real-world experiments in GNSS-denied indoor environments demonstrate stable two-UAV cooperative operation across increasingly chal- lenging obstacle layouts. The results show that shared voxel-map representations provide an effective and scalable spatial substrate for learned cooperative indoor UAV guidance.",
+      "authors": [
+        "Thomas Hickling",
+        "Dylan Wynne",
+        "Yu Su",
+        "Nabil Aouf"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI",
+        "cs.LG"
+      ],
+      "published": "2026-07-28T13:52:12+00:00",
+      "link": "https://arxiv.org/pdf/2607.25728v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "uses DRL (MASAC) for UAV guidance, applicable to inspection navigation",
+      "llm_evidence_cn": "使用DRL（MASAC）进行无人机导航，可应用于巡检导航",
+      "llm_evidence": "使用DRL（MASAC）进行无人机导航，可应用于巡检导航",
+      "canonical_evidence": "使用DRL（MASAC）进行无人机导航，可应用于巡检导航",
+      "llm_tldr_en": "Proposes cooperative indoor UAV guidance using shared voxel maps and multi-agent SAC, enabling decentralized continuous control for inspection-like tasks.",
+      "llm_tldr_cn": "针对室内无人机协作导航问题，提出融合共享体素地图与多智能体SAC的框架。多机融合360LiDAR观测构建世界坐标系占用地图，转换为BEV并裁剪为自车局部视图，在集中式训练分布式执行框架下学习避障与目标到达策略。仿真表明方法能实现稳定协同飞行，为DRL在无人机巡检导航中的应用提供了方法论基础。",
+      "llm_tldr": "针对室内无人机协作导航问题，提出融合共享体素地图与多智能体SAC的框架。多机融合360LiDAR观测构建世界坐标系占用地图，转换为BEV并裁剪为自车局部视图，在集中式训练分布式执行框架下学习避障与目标到达策略。仿真表明方法能实现稳定协同飞行，为DRL在无人机巡检导航中的应用提供了方法论基础。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "deep reinforcement learning for UAV inspection tasks",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2607.29294v1",
+      "source": "arxiv",
+      "title": "Sample Efficient Hierarchical Reinforcement Learning via Best Policy Identification",
+      "abstract": "We present HBPI-UCRL, a model-based algorithm for hierarchical reinforcement learning (HRL) that learns high-level and low-level policies in parallel. HBPI-UCRL exploits the fact that a high-level transition corresponds to a multi-step transition at the low level. We introduce two conditions on the low-level dynamics that are sufficient to make parallel HRL learnable. When these conditions hold, we prove that HBPI-UCRL has a polynomial sample complexity in the problem parameters. In the sparse-reward, goal-directed setting, our sample complexity upper bound for HBPI-UCRL is strictly lower than that of its non-hierarchical counterpart, providing theoretical justification for the empirical success of HRL.",
+      "authors": [
+        "Anders Jonsson",
+        "Emilie Kaufmann",
+        "Gianmarco Tedeschi",
+        "Lorenzo Steccanella"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-07-31T11:12:31+00:00",
+      "link": "https://arxiv.org/pdf/2607.29294v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "hierarchical RL for sparse-reward long-horizon tasks, improving sample efficiency",
+      "llm_evidence_cn": "分层强化学习用于稀疏奖励长周期任务，提升样本效率",
+      "llm_evidence": "分层强化学习用于稀疏奖励长周期任务，提升样本效率",
+      "canonical_evidence": "分层强化学习用于稀疏奖励长周期任务，提升样本效率",
+      "llm_tldr_en": "HBPI-UCRL is a model-based hierarchical RL algorithm that learns high/low policies in parallel, achieving provably lower sample complexity for sparse-reward, goal-directed settings.",
+      "llm_tldr_cn": "提出HBPI-UCRL，一种基于模型的分层RL算法，并行学习高层与低层策略。在稀疏奖励目标导向设定下，证明其样本复杂度上界低于非分层方法，为长周期任务的高效学习提供了理论依据。",
+      "llm_tldr": "提出HBPI-UCRL，一种基于模型的分层RL算法，并行学习高层与低层策略。在稀疏奖励目标导向设定下，证明其样本复杂度上界低于非分层方法，为长周期任务的高效学习提供了理论依据。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

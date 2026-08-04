@@ -6,28 +6,34 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-03
-- 运行时间：2026-08-03 20:40:15 UTC
+- 最新运行日期：2026-08-04
+- 运行时间：2026-08-04 21:58:24 UTC
 - 运行状态：成功
-- 本次总论文数：2
-- 精读区：1
-- 速读区：1
+- 本次总论文数：4
+- 精读区：2
+- 速读区：2
 
 ### 今日简报（AI）
-今日啃完一篇高分行星探索论文，带你用熵信息看透边界外的未知；速览了让无人机在乱流中安全穿梭的风险引导强化学习。  
-最值得关注的是：用熵度量不确定性来驱动智能体突破已知边界，以及将风险预测融入决策以实现动态避障。  
-普通读者不妨思考，当机器学会“好奇”与“谨慎”，自动驾驶与机器人探险会掀起怎样的变革。
-- 详情：[/202608/03/README](/202608/03/README)
+今日精读两篇强化学习高分论文，速读两篇合作导航与分层策略探索方法，重点关注多智能体自主蒸馏与风险感知学习。  
+值得细看的方向是：群体反思自蒸馏让智能体通过组内互学高效进步，上期望多步Q学习则用风险算子提升离线策略训练的稳定性。  
+建议想跟进强化学习落地的读者从这两篇切入，理解“自蒸馏”与“风险敏感”如何让训练更稳健、更智能。
+- 详情：[/202608/04/README](/202608/04/README)
 
 ### 精读区论文标签
-1. [Explore Beyond the Boundary Using Entropic Information](/202608/03/2607.29419v1-explore-beyond-the-boundary-using-entropic-information)  
+1. [Group-Reflective Self-Distillation for Agentic Reinforcement Learning](/202608/04/2607.28076v2-group-reflective-self-distillation-for-agentic-reinforcement-learning)  
    标签：评分：8.0/10、query:uav-drl
-   evidence：提出通过熵信息分配内在奖励来增强稀疏/延迟奖励下的探索
+   evidence：提出自蒸馏方法优化长周期任务的终端奖励
+2. [Upper-Expectile Multi-Step Q-Learning for Off-Policy Reinforcement Learning](/202608/04/2608.02034v1-upper-expectile-multi-step-q-learning-for-off-policy-reinforcement-learning)  
+   标签：评分：8.0/10、query:uav-drl
+   evidence：提出ENQ以解决长周期任务中多步离线策略RL的悲观偏差
 
 ### 速读区论文标签
-1. [Anticipatory Risk-Guided Reinforcement Learning for Safe Flight Through Dynamic Clutter](/202608/03/2607.23565v1-anticipatory-risk-guided-reinforcement-learning-for-safe-flight-through-dynamic-clutter)  
+1. [Shared Voxel-Map-Based Cooperative Indoor UAV Guidance with a Multi-Agent Soft Actor-Critic Controller](/202608/04/2607.25728v1-shared-voxel-map-based-cooperative-indoor-uav-guidance-with-a-multi-agent-soft-actor-critic-controller)  
    标签：评分：6.0/10、query:uav-drl
-   evidence：深度强化学习用于四旋翼安全飞行，采用风险预期，可作为无人机巡检导航的使能方法。
+   evidence：使用DRL（MASAC）进行无人机导航，可应用于巡检导航
+2. [Sample Efficient Hierarchical Reinforcement Learning via Best Policy Identification](/202608/04/2607.29294v1-sample-efficient-hierarchical-reinforcement-learning-via-best-policy-identification)  
+   标签：评分：6.0/10、query:uav-drl
+   evidence：分层强化学习用于稀疏奖励长周期任务，提升样本效率
 
 
 <div class="dpr-home-promo-card">

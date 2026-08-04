@@ -1,0 +1,69 @@
+{
+  "label": "2026-08-04",
+  "date": "2026-08-04",
+  "generated_at": "2026-08-04T21:58:36",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202608/04/2607.28076v2-group-reflective-self-distillation-for-agentic-reinforcement-learning",
+      "section": "deep",
+      "title_en": "Group-Reflective Self-Distillation for Agentic Reinforcement Learning",
+      "authors": "Binbin Zheng, Zijun Xie, Guanqun Zhao, Enlei Gong, Xing Ma, Xiaoliang Fu, Zeyu Chen",
+      "date": "2026-07-30",
+      "pdf": "https://arxiv.org/pdf/2607.28076v2",
+      "score": "8.0",
+      "evidence": "提出自蒸馏方法优化长周期任务的终端奖励",
+      "tldr": "强化学习用于大语言模型智能体时，终端奖赏仅提供轨迹级粗粒度监督，难以区分成功、错误与偶然行为。本文提出群组反思自蒸馏方法GRSD，让策略对自身已验证的轨迹进行反思，对比成功与失败样本构建群组级特权指导，再以此调节优势实现精细信度分配。实验显示，GRSD在多种环境和模型规模上均优于基线方法，且泛化至新任务的能力更强。该方法为从稀疏奖赏中提取有效学习信号提供了新途径。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Reinforcement learning with verifiable rewards (RLVR) is effective for training large language model agents. However, terminal rewards provide only coarse trajectory-level supervision, leaving successful behaviors, recurring mistakes, and incidental choices entangled in the same outcome signal. Existing agentic self-distillation methods enrich sparse supervision with natural-language skills, but skills retrieved externally or extracted from a single trajectory by stronger models may mismatch current experience, exceed the policy's capability, or remain path-specific. We propose Group-Reflective Self-Distillation (GRSD), which derives capability-aligned and outcome-discriminative guidance from the policy's own verified rollouts. For each prompt, the policy reflects on each verified trajectory in an on-policy group, and a stop-gradient snapshot contrasts the resulting reflections from successful and failed rollouts to construct group-level privileged guidance. Conditioned on this guidance, a self-teacher refines turn-level credit assignment by modulating outcome-based advantages while preserving the verifier-determined learning direction. Experiments across multiple agentic environments and model scales demonstrate that GRSD consistently outperforms competitive baselines and generalizes more effectively to unseen tasks.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/04/2608.02034v1-upper-expectile-multi-step-q-learning-for-off-policy-reinforcement-learning",
+      "section": "deep",
+      "title_en": "Upper-Expectile Multi-Step Q-Learning for Off-Policy Reinforcement Learning",
+      "authors": "Abdelghani Ghanem, Mounir Ghogho",
+      "date": "2026-08-03",
+      "pdf": "https://arxiv.org/pdf/2608.02034v1",
+      "score": "8.0",
+      "evidence": "提出ENQ以解决长周期任务中多步离线策略RL的悲观偏差",
+      "tldr": "在非策略强化学习中，多步回报虽能加速奖励传播，但因耦合次优的历史动作而产生随步数增长的悲观偏差。本文提出Expectile n-step Q-learning (ENQ)，以不对称expectile损失替代对称n步TD损失，仅引入单个超参数τ。理论证明ENQ算子是γ^n-收缩，确定性动态下τ=1时在最优Q函数上偏差消失，随机动态下偏差有上下界且与回溯步数无关。实验在27个任务中与LQL竞争，训练吞吐量更高，且从十critic集成中获益更显著。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Multi-step returns accelerate reward propagation in off-policy reinforcement learning, but couple the evaluation of each decision to the suboptimal logged actions that follow it, inducing a pessimistic bias that grows with the horizon. We propose Expectile $n$-step Q-learning (ENQ), which replaces the symmetric $n$-step temporal-difference (TD) loss with an asymmetric expectile loss on the action-value error, with expectile level $τ$ as the only method-specific hyperparameter added beyond $n$-step TD. We prove that the ENQ operator is a $γ^{n}$-contraction. Under deterministic dynamics, at $τ=1$, its bias vanishes at the optimal action-value function $Q^*$ on covered in-support pairs, and the corresponding fixed point satisfies the separation-$n$ instance and its multiples of the lower-bound inequality used by Long-Horizon Q-learning (LQL). Under stochastic dynamics, the operator bias admits two-sided bounds with horizon-independent noise constants. Using a single expectile level $τ=0.8$ and a fixed backup horizon across 27 manipulation and navigation task instances, ENQ is competitive with LQL on aggregate, achieves higher measured training-step throughput in our profiling study, and benefits more from a ten-critic ensemble in a controlled scaling experiment.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/04/2607.25728v1-shared-voxel-map-based-cooperative-indoor-uav-guidance-with-a-multi-agent-soft-actor-critic-controller",
+      "section": "quick",
+      "title_en": "Shared Voxel-Map-Based Cooperative Indoor UAV Guidance with a Multi-Agent Soft Actor-Critic Controller",
+      "authors": "Thomas Hickling, Dylan Wynne, Yu Su, Nabil Aouf",
+      "date": "2026-07-28",
+      "pdf": "https://arxiv.org/pdf/2607.25728v1",
+      "score": "6.0",
+      "evidence": "使用DRL（MASAC）进行无人机导航，可应用于巡检导航",
+      "tldr": "针对室内无GPS环境下多无人机协同导航难题，提出基于共享体素地图与多智能体SAC的控制框架。无人机群通过360°激光雷达观测融合构建世界坐标系占据地图，生成鸟瞰图并截取自我对齐局部视图作为策略输入，实现集中训练分散执行。仿真走廊导航成功率达90.3%，超越A*规划和人工势场法等基准；通过真实数据离线模仿微调后，在无GNSS室内实现双机稳定协同。共享体素地图为学习型协同室内导航提供了有效、可扩展的空间表示方案。",
+      "tags": "query:uav-drl",
+      "abstract_en": "This paper presents a cooperative indoor UAV guidance framework that combines a shared voxel-map world model with a multi-agent Soft Actor-Critic (MASAC) controller. Multiple drones fuse 360 LiDAR observations into a common world-frame occupancy map, which is converted into a compact bird's-eye-view (BEV) representation and provided to each agent as an ego-aligned local crop. This integrate-in-world, act-in- ego design enables consistent multi-UAV spatial fusion whilst retaining decentralised continuous control. The policy combines BEV map features, near-field obstacle observations, and compact goal and peer-state information within a centralised-training, decentralised-execution framework. In simulation, the learned controller achieves a 90.3% success rate in corridor navigation, outperforming Astar planning, an artificial potential field controller, and a prior guidance method. To address residual sim-to-real mismatch, the simulation-trained policy is further adapted using offline imitation fine-tuning from real-world data. Real-world experiments in GNSS-denied indoor environments demonstrate stable two-UAV cooperative operation across increasingly chal- lenging obstacle layouts. The results show that shared voxel-map representations provide an effective and scalable spatial substrate for learned cooperative indoor UAV guidance.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/04/2607.29294v1-sample-efficient-hierarchical-reinforcement-learning-via-best-policy-identification",
+      "section": "quick",
+      "title_en": "Sample Efficient Hierarchical Reinforcement Learning via Best Policy Identification",
+      "authors": "Anders Jonsson, Emilie Kaufmann, Gianmarco Tedeschi, Lorenzo Steccanella",
+      "date": "2026-07-31",
+      "pdf": "https://arxiv.org/pdf/2607.29294v1",
+      "score": "6.0",
+      "evidence": "分层强化学习用于稀疏奖励长周期任务，提升样本效率",
+      "tldr": "分层强化学习虽在实践中有效，但缺乏理论上的样本效率保证。本文提出基于模型的算法HBPI-UCRL，并行学习高层与低层策略，并引入低层动力学条件确保可学习性。在稀疏奖励目标导向场景下，其样本复杂度上界严格低于非分层方法，首次为分层强化学习的经验成功提供了理论支撑。",
+      "tags": "query:uav-drl",
+      "abstract_en": "We present HBPI-UCRL, a model-based algorithm for hierarchical reinforcement learning (HRL) that learns high-level and low-level policies in parallel. HBPI-UCRL exploits the fact that a high-level transition corresponds to a multi-step transition at the low level. We introduce two conditions on the low-level dynamics that are sufficient to make parallel HRL learnable. When these conditions hold, we prove that HBPI-UCRL has a polynomial sample complexity in the problem parameters. In the sparse-reward, goal-directed setting, our sample complexity upper bound for HBPI-UCRL is strictly lower than that of its non-hierarchical counterpart, providing theoretical justification for the empirical success of HRL.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
