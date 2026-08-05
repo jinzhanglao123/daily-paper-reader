@@ -1,0 +1,213 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-05T21:03:04.277729+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 3,
+    "deep_cap": 6,
+    "deep_selected": 3,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2608.03223v1",
+      "source": "arxiv",
+      "title": "Agentic Reinforcement Learning with Self-Distilled Reward Shaping",
+      "abstract": "Agentic reinforcement learning enables LLM agents to learn through interaction, but sparse trajectory-level rewards reveal success without identifying which intermediate decisions deserve credit. Training-only privileged skills can provide denser supervision by allowing the same frozen policy snapshot to rescore fixed tokens from skill-free trajectories while conditioned on task-matched procedural skills. Existing methods, however, do not jointly calibrate teacher scores across interaction steps, relate teacher confidence to realized returns, and integrate the resulting signal into native reward-to-advantage construction. We introduce Agentic Reinforcement Learning with Self-Distilled Reward Shaping (ADRS), a framework for constructing return-associated token-level credit for multi-turn language agents. ADRS centers and normalizes privileged token scores within each step, modulates them with a return-associated Teacher Value Advantage (TVA) gate based on within-group confidence--return association, and incorporates the gated token signal into native RL credit construction. Together, these components determine what the teacher prefers, when that preference is return-relevant, and how it enters the native reinforcement-learning credit path, while keeping rollouts and inference skill-free. Finally, experiments across three interactive benchmarks show that ADRS consistently improves performance on long-horizon tasks, with gains persisting across RL backbones, reduced-data settings, unseen tasks, and extended training. For anonymous review, our code is available at the following the link: https://github.com/gitrxh/ADRS-arxiv",
+      "authors": [
+        "Ranxu Zhang",
+        "Guinan Chen",
+        "Chenshaodong",
+        "Jinghao Lin",
+        "Xiaozhou Xu",
+        "Sunzhe",
+        "Yanyong Zhang",
+        "Chao Wang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI",
+        "cs.CL"
+      ],
+      "published": "2026-08-04T06:56:47+00:00",
+      "link": "https://arxiv.org/pdf/2608.03223v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "self-distilled reward shaping for long-horizon credit assignment in RL",
+      "llm_evidence_cn": "自蒸馏奖励设计用于强化学习中的长时序信用分配",
+      "llm_evidence": "自蒸馏奖励设计用于强化学习中的长时序信用分配",
+      "canonical_evidence": "自蒸馏奖励设计用于强化学习中的长时序信用分配",
+      "llm_tldr_en": "Proposes ADRS, a framework that densifies sparse trajectory-level rewards via self-distilled reward shaping from privileged skills, jointly calibrating teacher scores and integrating into advantage construction for better intermediate credit assignment.",
+      "llm_tldr_cn": "针对智能体强化学习中稀疏轨迹级奖励无法识别关键中间决策的问题，提出ADRS框架。它通过自蒸馏奖励设计，利用具有任务匹配技能的冻结策略重新评分固定token，并联合校准教师置信度、关联实际回报，将密集信号融入原生优势构建，从而改进长时程信用分配。",
+      "llm_tldr": "针对智能体强化学习中稀疏轨迹级奖励无法识别关键中间决策的问题，提出ADRS框架。它通过自蒸馏奖励设计，利用具有任务匹配技能的冻结策略重新评分固定token，并联合校准教师置信度、关联实际回报，将密集信号融入原生优势构建，从而改进长时程信用分配。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.02958v1",
+      "source": "arxiv",
+      "title": "ValueFormer: A Causal Transformer Value Function with Stage-Aware Labels for Semi-Autonomous Vision-Language-Action Policies",
+      "abstract": "Vision-Language-Action (VLA) policies trained by behavior cloning fail silently: from the action stream alone, a collapsing rollout looks much like one making clean progress, because imitation supplies no notion of progress. Reinforcement learning would supply one, but it is impractical here, where real-robot experience is costly and deformable food resists simulation. The cheap alternative, a terminal success / failure bit, is learnable in principle yet far too sparse to say when a rollout went wrong. We argue that the per-frame label, not the architecture, is the hard part: to be useful it must be dense, continuous, and correctly shaped. We present ValueFormer, a compact policy-agnostic causal transformer over a frozen DINOv3 backbone that emits two per-frame signals in one forward pass: a smooth Monte Carlo value, V_mc, for advantage estimation and a sharp binary value for online mistake detection, targets that pull in opposite directions by design. Failed episodes are labeled with a stage-aware, success-then-decay return that preserves the success curve before the failure stage, and detection is supervised from mistake intervals rather than a single failure time, so mistakes the policy recovers from also carry signal. On a real-robot bimanual sandwich-assembly task 1,427 episodes), a critic-derived per-frame training weight lifts task completion from 70% to 85% (within noise at n=20), and a batched bf16 encoder cuts the live serving cost 3~5 times so the critic runs at 2 Hz alongside the policy on a single GPU.",
+      "authors": [
+        "Inkyu Sa",
+        "Konstantin Stulov",
+        "Rajat Bhageria"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "published": "2026-08-03T23:46:39+00:00",
+      "link": "https://arxiv.org/pdf/2608.02958v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "dense continuous stage-aware labels for value function to handle long-horizon sparse rewards",
+      "llm_evidence_cn": "密集连续阶段性标签用于价值函数处理长时序稀疏奖励",
+      "llm_evidence": "密集连续阶段性标签用于价值函数处理长时序稀疏奖励",
+      "canonical_evidence": "密集连续阶段性标签用于价值函数处理长时序稀疏奖励",
+      "llm_tldr_en": "Introduces ValueFormer, a compact causal transformer value function that uses dense, continuous, correctly shaped per-frame labels derived from trajectory progress, enabling better credit assignment in long-horizon VLA policies.",
+      "llm_tldr_cn": "针对VLA策略训练中稀疏成功/失败信号无法定位错误的问题，提出ValueFormer。它采用密集、连续、阶段性标注的逐帧标签，通过因果Transformer建模价值函数，替代稀疏终端奖励，从而在长时程食品操控等任务中实现更好的信用分配。",
+      "llm_tldr": "针对VLA策略训练中稀疏成功/失败信号无法定位错误的问题，提出ValueFormer。它采用密集、连续、阶段性标注的逐帧标签，通过因果Transformer建模价值函数，替代稀疏终端奖励，从而在长时程食品操控等任务中实现更好的信用分配。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.02993v1",
+      "source": "arxiv",
+      "title": "Neurosymbolic Reasoning with Incremental Knowledge for Sample Efficient Hierarchical Reinforcement Learning",
+      "abstract": "(Flat) Reinforcement Learning (RL) agents face significant challenges in environments with sparse rewards that require long-horizon reasoning. A compelling approach to improve sample efficiency is to incorporate knowledge into learning and decision-making. In standard Hierarchical RL (HRL), knowledge is encoded in a fixed, non-updatable form, such as architectural choices, and remains unchanged throughout learning. With fixed HRL, reasoning with incremental knowledge learned during exploration is impractical before sufficient environmental knowledge is acquired, leading to poor sample efficiency. In this work, we propose neurosymbolic HRL with {\\em Incremental Knowledge (InK)}: symbolic high-level components perform {\\em symbolic planning} (e.g. using $D^*$) on an updatable representation of current InK, while low-level goal-conditioned neural modules learn motion primitives through experience using reward shaping. Experiments on navigation tasks demonstrate that incorporating InK substantially improves sample efficiency. Additionally, to perform {\\em optimal} symbolic planning given {\\em prior} knowledge about the world, we develop Belief World Tree Search. The code is available at https://github.com/CPS-research-group/ink_bwts.",
+      "authors": [
+        "Subrat Prasad Panda",
+        "Blaise Genest",
+        "Arvind Easwaran"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.RO"
+      ],
+      "published": "2026-08-04T01:17:39+00:00",
+      "link": "https://arxiv.org/pdf/2608.02993v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Addresses long-horizon sparse-reward RL via neurosymbolic hierarchical approach",
+      "llm_evidence_cn": "通过神经符号分层方法解决长程稀疏奖励RL",
+      "llm_evidence": "通过神经符号分层方法解决长程稀疏奖励RL",
+      "canonical_evidence": "通过神经符号分层方法解决长程稀疏奖励RL",
+      "llm_tldr_en": "Proposes neurosymbolic HRL with incremental knowledge for long-horizon tasks, significantly improving sample efficiency over fixed-knowledge methods.",
+      "llm_tldr_cn": "扁平强化学习在需要长程推理且奖励稀疏的环境中面临巨大挑战，现有分层方法固定知识无法利用在线学习的新知。本文提出神经符号分层RL与增量知识InK，高层符号组件利用探索过程中逐步积累的增量知识进行推理与子目标生成，低层策略实现子目标，协同训练提升样本效率。实验表明InK在多个稀疏奖励任务上大幅超越固定知识方法，为长程决策提供了有效方案。",
+      "llm_tldr": "扁平强化学习在需要长程推理且奖励稀疏的环境中面临巨大挑战，现有分层方法固定知识无法利用在线学习的新知。本文提出神经符号分层RL与增量知识InK，高层符号组件利用探索过程中逐步积累的增量知识进行推理与子目标生成，低层策略实现子目标，协同训练提升样本效率。实验表明InK在多个稀疏奖励任务上大幅超越固定知识方法，为长程决策提供了有效方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.03753v1",
+      "source": "arxiv",
+      "title": "GORDON: Graph-based Object-centric Rewards for Decomposition of Long-Horizon Manipulation",
+      "abstract": "Learning long-horizon manipulation skills with reinforcement learning remains challenging due to the complexity of reward design, the limited guidance of sparse rewards, and the high cost of manual subtask annotation. Visual demonstrations can provide supervision for reward learning, but rewards learned from raw pixels can be brittle and sensitive to visual variation, background appearance, and robot motion. In this work, we propose GORDON, a graph-based object-centric reward learning framework that learns dense rewards from action-free video demonstrations. Each visual scene is represented as a graph of detected objects and spatial relations, and a graph neural network is trained in a self-supervised manner to embed these graphs into a task-aligned latent space. To align the representation with semantic task progress, we introduce an activity-aware weighted pooling mechanism that emphasizes task-relevant objects while masking robot-dominated motion. The dense reward is then computed as distances in the learned latent space of the current state to demonstrated goal configurations, providing a measure of task progress. In long-horizon tasks, the temporal profile of this reward reveals stage-wise object-state transitions, enabling automatic subtask discovery without manual segmentation. The discovered segments are then used to train subtask-specific rewards and specialized policies that are composed sequentially. Experiments on seven manipulation tasks on MAGICAL and ManiSkill3 benchmarks show that our object-centric reward improves reinforcement learning in short-horizon settings and enables successful policy learning in complex long-horizon tasks through automatic decomposition, achieving an average success rate of 74.4% across the long-horizon tasks (on average approximately +35 p.p. vs. best learned baseline and approximately +25 p.p. vs. oracle).",
+      "authors": [
+        "Andrea Protopapa",
+        "Davide Buoso",
+        "Francesca Pistilli",
+        "Georgia Chalvatzaki",
+        "Giuseppe Averta"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-08-04T14:43:41+00:00",
+      "link": "https://arxiv.org/pdf/2608.03753v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "learns dense rewards for long-horizon tasks from video demonstrations",
+      "llm_evidence_cn": "从视频演示中学习长时域任务的稠密奖励",
+      "llm_evidence": "从视频演示中学习长时域任务的稠密奖励",
+      "canonical_evidence": "从视频演示中学习长时域任务的稠密奖励",
+      "llm_tldr_en": "GORDON learns object-centric rewards from action-free videos to decompose long-horizon manipulation, offering a reward assignment method potentially applicable to UAV inspection sequences.",
+      "llm_tldr_cn": "针对长时域操纵任务奖励设计困难的问题，GORDON提出基于图的物体中心奖励学习框架，从无动作视频演示中自监督学习稠密奖励，实现任务分解与信用分配，其思路可迁移至无人机巡检序列任务。",
+      "llm_tldr": "针对长时域操纵任务奖励设计困难的问题，GORDON提出基于图的物体中心奖励学习框架，从无动作视频演示中自监督学习稠密奖励，实现任务分解与信用分配，其思路可迁移至无人机巡检序列任务。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.03875v1",
+      "source": "arxiv",
+      "title": "Enhancing VLM Reward Models Through Structure-Aware Fine-Tuning",
+      "abstract": "Designing effective reward functions remains a major bottleneck in Reinforcement Learning (RL). Recent work uses large foundation Vision-Language Models (VLMs) as reward models, computing text-observation similarity to bypass manual reward engineering. Although promising, these rewards are often noisy and unreliable, limiting their direct utility during deployment. We present Structure-Aware Fine-Tuning (SAFT), a simple, self-supervised method that refines these imperfect reward signals online without access to ground-truth supervision. SAFT leverages intrinsic structural priors to regularize the VLM's latent space via LoRA adapters. We rigorously evaluate SAFT across a spectrum of base model capabilities to demonstrate its versatility. Our results show that SAFT consistently denoises the reward landscape, yielding faster policy convergence and substantially improved alignment (EPIC distance) relative to the underlying base model, suggesting that failures can often be attributed to structural brittleness rather than semantic misunderstanding. By replacing extensive human preference annotation with structural inductive biases inherent to the task, SAFT offers a scalable path for stabilizing text-conditioned RL and underscores the broader value of incorporating task structure as a general inductive bias.",
+      "authors": [
+        "Pyrros Koussios",
+        "Chenhao Li",
+        "Xin Chen",
+        "Andreas Krause"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-08-04T16:15:12+00:00",
+      "link": "https://arxiv.org/pdf/2608.03875v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "improves RL reward models using structure-aware fine-tuning for reward assignment",
+      "llm_evidence_cn": "利用结构感知微调改进RL奖励模型用于奖励分配",
+      "llm_evidence": "利用结构感知微调改进RL奖励模型用于奖励分配",
+      "canonical_evidence": "利用结构感知微调改进RL奖励模型用于奖励分配",
+      "llm_tldr_en": "Proposes SAFT, a self-supervised method to refine imperfect VLM-based reward signals online without ground-truth, leveraging structural priors and LoRA adapters, improving RL reward reliability.",
+      "llm_tldr_cn": "该文提出结构感知微调（SAFT），一种自监督方法，无需真实标签即可在线细化不完美的VLM奖励信号。SAFT利用内在结构先验通过LoRA适配器规范VLM的潜在空间，从而提升奖励可靠性。实验表明，SAFT能有效降低噪声，增强基于VLM的奖励模型在强化学习部署中的实用性。",
+      "llm_tldr": "该文提出结构感知微调（SAFT），一种自监督方法，无需真实标签即可在线细化不完美的VLM奖励信号。SAFT利用内在结构先验通过LoRA适配器规范VLM的潜在空间，从而提升奖励可靠性。实验表明，SAFT能有效降低噪声，增强基于VLM的奖励模型在强化学习部署中的实用性。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

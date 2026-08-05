@@ -6,34 +6,37 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-04
-- 运行时间：2026-08-04 21:58:24 UTC
+- 最新运行日期：2026-08-05
+- 运行时间：2026-08-05 21:08:50 UTC
 - 运行状态：成功
-- 本次总论文数：4
-- 精读区：2
+- 本次总论文数：5
+- 精读区：3
 - 速读区：2
 
 ### 今日简报（AI）
-今日精读两篇强化学习高分论文，速读两篇合作导航与分层策略探索方法，重点关注多智能体自主蒸馏与风险感知学习。  
-值得细看的方向是：群体反思自蒸馏让智能体通过组内互学高效进步，上期望多步Q学习则用风险算子提升离线策略训练的稳定性。  
-建议想跟进强化学习落地的读者从这两篇切入，理解“自蒸馏”与“风险敏感”如何让训练更稳健、更智能。
-- 详情：[/202608/04/README](/202608/04/README)
+今日精读两篇强化学习与视觉语言模型融合的前沿工作，重点探索了智能体如何通过自我提炼的奖励塑造实现高效探索。
+最具启发的结论是，用“自我蒸馏的奖励塑造”让强化学习智能体自主生成内在激励，以及让Transformer价值函数理解动作的阶段标签，能大幅提升半自主策略的稳定性。
+建议读者先读懂Agentic RL如何自动设计奖励函数，再尝试将这种因果阶段感知思路迁移到自己的视觉-语言-动作任务中。
+- 详情：[/202608/05/README](/202608/05/README)
 
 ### 精读区论文标签
-1. [Group-Reflective Self-Distillation for Agentic Reinforcement Learning](/202608/04/2607.28076v2-group-reflective-self-distillation-for-agentic-reinforcement-learning)  
+1. [Agentic Reinforcement Learning with Self-Distilled Reward Shaping](/202608/05/2608.03223v1-agentic-reinforcement-learning-with-self-distilled-reward-shaping)  
+   标签：评分：9.0/10、query:uav-drl
+   evidence：自蒸馏奖励设计用于强化学习中的长时序信用分配
+2. [ValueFormer: A Causal Transformer Value Function with Stage-Aware Labels for Semi-Autonomous Vision-Language-Action Policies](/202608/05/2608.02958v1-valueformer-a-causal-transformer-value-function-with-stage-aware-labels-for-semi-autonomous-vision-language-action-policies)  
    标签：评分：8.0/10、query:uav-drl
-   evidence：提出自蒸馏方法优化长周期任务的终端奖励
-2. [Upper-Expectile Multi-Step Q-Learning for Off-Policy Reinforcement Learning](/202608/04/2608.02034v1-upper-expectile-multi-step-q-learning-for-off-policy-reinforcement-learning)  
+   evidence：密集连续阶段性标签用于价值函数处理长时序稀疏奖励
+3. [Neurosymbolic Reasoning with Incremental Knowledge for Sample Efficient Hierarchical Reinforcement Learning](/202608/05/2608.02993v1-neurosymbolic-reasoning-with-incremental-knowledge-for-sample-efficient-hierarchical-reinforcement-learning)  
    标签：评分：8.0/10、query:uav-drl
-   evidence：提出ENQ以解决长周期任务中多步离线策略RL的悲观偏差
+   evidence：通过神经符号分层方法解决长程稀疏奖励RL
 
 ### 速读区论文标签
-1. [Shared Voxel-Map-Based Cooperative Indoor UAV Guidance with a Multi-Agent Soft Actor-Critic Controller](/202608/04/2607.25728v1-shared-voxel-map-based-cooperative-indoor-uav-guidance-with-a-multi-agent-soft-actor-critic-controller)  
+1. [GORDON: Graph-based Object-centric Rewards for Decomposition of Long-Horizon Manipulation](/202608/05/2608.03753v1-gordon-graph-based-object-centric-rewards-for-decomposition-of-long-horizon-manipulation)  
    标签：评分：6.0/10、query:uav-drl
-   evidence：使用DRL（MASAC）进行无人机导航，可应用于巡检导航
-2. [Sample Efficient Hierarchical Reinforcement Learning via Best Policy Identification](/202608/04/2607.29294v1-sample-efficient-hierarchical-reinforcement-learning-via-best-policy-identification)  
+   evidence：从视频演示中学习长时域任务的稠密奖励
+2. [Enhancing VLM Reward Models Through Structure-Aware Fine-Tuning](/202608/05/2608.03875v1-enhancing-vlm-reward-models-through-structure-aware-fine-tuning)  
    标签：评分：6.0/10、query:uav-drl
-   evidence：分层强化学习用于稀疏奖励长周期任务，提升样本效率
+   evidence：利用结构感知微调改进RL奖励模型用于奖励分配
 
 
 <div class="dpr-home-promo-card">
