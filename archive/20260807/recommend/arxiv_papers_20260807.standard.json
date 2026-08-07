@@ -1,15 +1,15 @@
 {
   "mode": "standard",
-  "generated_at": "2026-08-07T01:58:01.984290+00:00",
+  "generated_at": "2026-08-07T20:59:34.805840+00:00",
   "stats": {
     "mode": "standard",
     "tag_count": 1,
     "deep_divecandidates": 1,
     "deep_cap": 6,
     "deep_selected": 1,
-    "quick_candidates": 1,
+    "quick_candidates": 2,
     "quick_skim_target": 11,
-    "quick_selected": 1
+    "quick_selected": 2
   },
   "deep_dive": [
     {
@@ -36,14 +36,14 @@
         "keyword:UAV-DRL",
         "query:UAV-DRL"
       ],
-      "llm_score": 8.0,
-      "llm_evidence_en": "Introduces trajectory-level hindsight critique for credit assignment in long-horizon search-augmented RL",
-      "llm_evidence_cn": "引入轨迹级后见批评，用于长时间尺度搜索增强强化学习中的信用分配",
-      "llm_evidence": "引入轨迹级后见批评，用于长时间尺度搜索增强强化学习中的信用分配",
-      "canonical_evidence": "引入轨迹级后见批评，用于长时间尺度搜索增强强化学习中的信用分配",
-      "llm_tldr_en": "Proposes HindSearch, which uses a frozen judge to provide hindsight critiques on failed trajectories, densifying the reward signal for credit assignment in long-horizon RL tasks.",
-      "llm_tldr_cn": "针对搜索增强语言模型智能体通常仅使用二元精确匹配奖励，导致失败轨迹中大量信息浪费的问题，提出HindSearch方法。该方法在每次 rollout 后，利用固定 judge 结合正确答案生成失败轨迹的批评，以此作为学生策略搜索动作的辅助蒸馏信号。实验表明，结合后见批评显著提升了稀疏奖励下的学习效果，证明了后见信息在信用分配中的关键作用。",
-      "llm_tldr": "针对搜索增强语言模型智能体通常仅使用二元精确匹配奖励，导致失败轨迹中大量信息浪费的问题，提出HindSearch方法。该方法在每次 rollout 后，利用固定 judge 结合正确答案生成失败轨迹的批评，以此作为学生策略搜索动作的辅助蒸馏信号。实验表明，结合后见批评显著提升了稀疏奖励下的学习效果，证明了后见信息在信用分配中的关键作用。",
+      "llm_score": 9.0,
+      "llm_evidence_en": "Hindsight critique for long-horizon reward assignment by analyzing failed trajectories.",
+      "llm_evidence_cn": "通过后见评判分析失败轨迹，实现长时域回报分配。",
+      "llm_evidence": "通过后见评判分析失败轨迹，实现长时域回报分配。",
+      "canonical_evidence": "通过后见评判分析失败轨迹，实现长时域回报分配。",
+      "llm_tldr_en": "Introduces HindSearch, a hindsight self-distillation method for search-augmented RL agents. A frozen judge critiques failed trajectories using the gold answer, providing auxiliary credit assignment signals. On QA benchmarks, HindSearch achieves 39.4% EM, improving long-horizon reward assignment by learning from failures.",
+      "llm_tldr_cn": "针对搜索增强型智能体的训练中二值精确匹配奖励无法有效利用失败轨迹的问题，提出HindSearch方法。该方法在每次演示后利用一个冻结的评判模型，依据正确答案为每条失败轨迹生成简短的批评意见，并将其作为额外的策略蒸馏信号，从而显著改善了长时域任务中的回报分配。在标准问答基准上，HindSearch使平均精确匹配率达到39.4%，优于现有基线，验证了从失败中学习对于长程信用分配的增益。",
+      "llm_tldr": "针对搜索增强型智能体的训练中二值精确匹配奖励无法有效利用失败轨迹的问题，提出HindSearch方法。该方法在每次演示后利用一个冻结的评判模型，依据正确答案为每条失败轨迹生成简短的批评意见，并将其作为额外的策略蒸馏信号，从而显著改善了长时域任务中的回报分配。在标准问答基准上，HindSearch使平均精确匹配率达到39.4%，优于现有基线，验证了从失败中学习对于长程信用分配的增益。",
       "llm_tags": [
         "query:uav-drl"
       ],
@@ -55,40 +55,89 @@
   ],
   "quick_skim": [
     {
-      "id": "2608.02951v1",
+      "id": "2608.05987v1",
       "source": "arxiv",
-      "title": "SP3O: Reinforcement Learning from Segment Preferences without Reward Modeling",
-      "abstract": "Preference-based reinforcement learning (PbRL) for general stochastic MDPs often requires training a reward model. Existing reward-model-free methods are either restricted to bandits or deterministic MDPs, such as DPO or P3O, or use zeroth-order, gradient-free optimization, which in general exhibits a slower convergence rate than gradient-based algorithms. Furthermore, existing reward-model-free preference-based RL algorithms almost exclusively use trajectory-level feedback, which can require significant effort from a human evaluator when trajectories are long. On the other hand, segments are much shorter, so they are easier to compare and evaluate. In this paper, we introduce a novel reward-model-free, critic-free, and gradient-based PbRL algorithm compatible with segment preferences named Segment Pairwise Proximal Policy Optimization (SP3O). SP3O utilizes segment-level preference feedback to construct an accurate policy value difference estimator via off-policy importance sampling, and then uses the estimator to compute the policy gradient via a PPO-type loss function. We provide a theoretical basis for the algorithm and analyze the tradeoff in choosing the segment length. We also evaluate it experimentally against other PbRL/RLHF algorithms in robotic control and LLM finetuning settings to show its improved performance, especially in long-horizon tasks.",
+      "title": "AgentOPSD: Recursive Self-Distillation for Agentic Reinforcement Learning",
+      "abstract": "Reinforcement learning (RL) with verifiable rewards constructs trajectory-level advantage estimates, yet it often fails to credit the few pivotal decisions that determine outcomes in long-horizon, multi-turn agentic tasks. Recent work introduces privileged self-distillation for credit assignment, providing denser supervision, but it remains unclear how such local signals should represent sequential credit. We propose AgentOPSD, a critic-free, recursive method for turn-level credit assignment in agentic reinforcement learning. AgentOPSD aggregates token-level teacher-student log-probability gaps into turn-level evidence and recursively updates a Bayesian belief state in log-odds space. This yields a principled reweighting scheme that converts sparse outcome supervision into turn-level credit signals and identifies pivotal turns through the marginal belief revision between consecutive states. The method is fully compatible with standard policy optimization and requires neither an additional critic nor extra rollouts. We evaluate AgentOPSD on ALFWorld, WebShop, and Search-QA using Qwen2.5 models at two scales (3B and 7B). AgentOPSD outperforms GRPO and strong self-distillation baselines, achieving 89.1% success on ALFWorld with Qwen2.5-7B. Ablation studies attribute the gains to turn-level aggregation and history-dependent recursive belief updates.",
       "authors": [
-        "Evan Assmus",
-        "Qining Zhang",
-        "Lei Ying"
+        "Zi-Han Wang",
+        "Zhengxi Lu",
+        "Zhiyuan Yao",
+        "Jinyang Wu",
+        "Jie Wu",
+        "Zhengzhou Cai",
+        "Yueqing Sun",
+        "Ziang Ye",
+        "Linji Hao",
+        "Qi Gu",
+        "Xunliang Cai",
+        "Yongliang Shen",
+        "Yujiu Yang"
       ],
-      "primary_category": "cs.LG",
+      "primary_category": "cs.AI",
       "categories": [
-        "cs.LG",
-        "cs.AI"
+        "cs.AI",
+        "cs.LG"
       ],
-      "published": "2026-08-03T23:28:06+00:00",
-      "link": "https://arxiv.org/pdf/2608.02951v1",
+      "published": "2026-08-06T13:00:59+00:00",
+      "link": "https://arxiv.org/pdf/2608.05987v1",
       "tags": [
         "keyword:UAV-DRL",
         "query:UAV-DRL"
       ],
-      "llm_score": 6.0,
-      "llm_evidence_en": "Uses segment-level preferences for reward assignment without reward model, specifically targeting long trajectories",
-      "llm_evidence_cn": "利用片段级偏好进行无奖励模型的信用分配，专门针对长轨迹问题",
-      "llm_evidence": "利用片段级偏好进行无奖励模型的信用分配，专门针对长轨迹问题",
-      "canonical_evidence": "利用片段级偏好进行无奖励模型的信用分配，专门针对长轨迹问题",
-      "llm_tldr_en": "Introduces SP3O, a gradient-based PbRL algorithm that learns from segment comparisons without reward modeling, offering efficient long-horizon credit assignment.",
-      "llm_tldr_cn": "针对长轨迹下信用分配效率低的问题，提出SP3O算法，无需奖励模型直接基于片段偏好学习，利用梯度优化实现高效信用分配。实验表明比现有无模型方法收敛更快。",
-      "llm_tldr": "针对长轨迹下信用分配效率低的问题，提出SP3O算法，无需奖励模型直接基于片段偏好学习，利用梯度优化实现高效信用分配。实验表明比现有无模型方法收敛更快。",
+      "llm_score": 7.0,
+      "llm_evidence_en": "recursive self-distillation for turn-level credit assignment in long-horizon RL",
+      "llm_evidence_cn": "递归自蒸馏实现长时程强化学习中的回合级信用分配",
+      "llm_evidence": "递归自蒸馏实现长时程强化学习中的回合级信用分配",
+      "canonical_evidence": "递归自蒸馏实现长时程强化学习中的回合级信用分配",
+      "llm_tldr_en": "AgentOPSD is a critic-free recursive method that converts sparse trajectory rewards into dense turn-level signals via Bayesian belief updates for long-horizon agentic tasks.",
+      "llm_tldr_cn": "针对长时程智能体任务中关键决策信用难分配的问题，提出AgentOPSD递归自蒸馏方法。该方法将token级对数概率差距聚合为回合级证据，通过贝叶斯信念更新实现信用重加权，将稀疏轨迹奖励转化为密集的回合级指导。实验表明其能有效识别关键决策，提升信用分配精度，为复杂多轮交互任务的强化学习训练提供更有效的监督信号。",
+      "llm_tldr": "针对长时程智能体任务中关键决策信用难分配的问题，提出AgentOPSD递归自蒸馏方法。该方法将token级对数概率差距聚合为回合级证据，通过贝叶斯信念更新实现信用重加权，将稀疏轨迹奖励转化为密集的回合级指导。实验表明其能有效识别关键决策，提升信用分配精度，为复杂多轮交互任务的强化学习训练提供更有效的监督信号。",
       "llm_tags": [
         "query:uav-drl"
       ],
       "matched_query_tag": "query:uav-drl",
       "matched_query_text": "long-horizon reward assignment in reinforcement learning",
       "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.05989v1",
+      "source": "arxiv",
+      "title": "Observation-Grounded Self-Predictive Reinforcement Learning for Visual Continuous Control",
+      "abstract": "Sample-efficient policy learning from pixels is a long-standing challenge in reinforcement learning (RL). Recent dynamics-based representation learning methods have significantly improved the sample efficiency of model-free visual RL by learning dynamics-aware representations through auxiliary prediction performed either in latent space (self-prediction) or observation space (observation prediction). However, state-of-the-art methods from both categories still struggle on challenging visual control tasks when training data is limited. We posit that relying on either predictive objective alone may be insufficient. In contrast, observation prediction grounds learned representations in observation-level dynamics, but does not directly regularize the temporal predictability of latent representations over extended horizons. In this paper, we propose Observation-Grounded Self-Predictive Representations (OG-SPR), a model-free visual RL algorithm for continuous control that learns representations that are both temporally predictive in latent space and grounded in observation-level dynamics. OG-SPR incorporates two core auxiliary objectives: multi-step latent self-prediction and next-observation prediction. We empirically show that directly imposing latent self-prediction on the shared representation may over-constrain it and does not necessarily improve performance. To address this issue, OG-SPR introduces two lightweight adapters for latent self-prediction, allowing the shared representation to benefit from temporally predictive signals without being forced to directly satisfy the self-prediction objective. Experiments on 28 visual control tasks from the DeepMind Control Suite show that OG-SPR improves aggregate performance over state-of-the-art self-predictive and observation-predictive RL methods, with particularly pronounced gains in challenging domains such as dog and humanoid.",
+      "authors": [
+        "Xinwei Liu",
+        "Junyuan Liang",
+        "Jianting Zhang",
+        "Wuhui Chen"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.RO"
+      ],
+      "published": "2026-08-06T13:02:59+00:00",
+      "link": "https://arxiv.org/pdf/2608.05989v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Visual continuous control RL method applicable to DRL-based UAV inspection tasks.",
+      "llm_evidence_cn": "视觉连续控制强化学习方法，可应用于无人机巡检的深度强化学习。",
+      "llm_evidence": "视觉连续控制强化学习方法，可应用于无人机巡检的深度强化学习。",
+      "canonical_evidence": "视觉连续控制强化学习方法，可应用于无人机巡检的深度强化学习。",
+      "llm_tldr_en": "Proposes an observation-grounded self-predictive RL method combining observation prediction and self-prediction for sample-efficient visual continuous control. It improves representation learning for tasks with limited data, relevant to pixel-based UAV control for inspection.",
+      "llm_tldr_cn": "针对基于像素的视觉连续控制任务中数据效率低的问题，提出一种观测基础的自预测强化学习方法。该方法同时利用观测预测和自预测来学习动态感知的表征，从而在有限训练样本下实现高效学习。实验表明，该方法在多种视觉控制任务上性能优于现有方法，为无人机等实际平台的视觉控制提供了高效的算法基础，对基于深度强化学习的无人机巡检任务具有应用潜力。",
+      "llm_tldr": "针对基于像素的视觉连续控制任务中数据效率低的问题，提出一种观测基础的自预测强化学习方法。该方法同时利用观测预测和自预测来学习动态感知的表征，从而在有限训练样本下实现高效学习。实验表明，该方法在多种视觉控制任务上性能优于现有方法，为无人机等实际平台的视觉控制提供了高效的算法基础，对基于深度强化学习的无人机巡检任务具有应用潜力。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "deep reinforcement learning for UAV inspection tasks",
+      "matched_requirement_id": "req-1",
       "selection_source": "fresh_fetch",
       "quick_tier": "6"
     }

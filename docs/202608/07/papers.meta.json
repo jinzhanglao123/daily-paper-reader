@@ -1,8 +1,8 @@
 {
   "label": "2026-08-07",
   "date": "2026-08-07",
-  "generated_at": "2026-08-07T02:03:43",
-  "count": 2,
+  "generated_at": "2026-08-07T21:01:49",
+  "count": 3,
   "papers": [
     {
       "paper_id": "202608/07/2608.01597v1-hindsearch-trajectory-level-hindsight-critique-for-search-augmented-reinforcement-learning",
@@ -20,17 +20,32 @@
       "selection_source": "fresh_fetch"
     },
     {
-      "paper_id": "202608/07/2608.02951v1-sp3o-reinforcement-learning-from-segment-preferences-without-reward-modeling",
+      "paper_id": "202608/07/2608.05987v1-agentopsd-recursive-self-distillation-for-agentic-reinforcement-learning",
       "section": "quick",
-      "title_en": "SP3O: Reinforcement Learning from Segment Preferences without Reward Modeling",
-      "authors": "Evan Assmus, Qining Zhang, Lei Ying",
-      "date": "2026-08-03",
-      "pdf": "https://arxiv.org/pdf/2608.02951v1",
-      "score": "6.0",
-      "evidence": "利用片段级偏好进行无奖励模型的信用分配，专门针对长轨迹问题",
-      "tldr": "针对长轨迹下信用分配效率低的问题，提出SP3O算法，无需奖励模型直接基于片段偏好学习，利用梯度优化实现高效信用分配。实验表明比现有无模型方法收敛更快。",
+      "title_en": "AgentOPSD: Recursive Self-Distillation for Agentic Reinforcement Learning",
+      "authors": "Zi-Han Wang, Zhengxi Lu, Zhiyuan Yao, Jinyang Wu, Jie Wu, Zhengzhou Cai, Yueqing Sun, Ziang Ye, Linji Hao, Qi Gu, Xunliang Cai, Yongliang Shen, Yujiu Yang",
+      "date": "2026-08-06",
+      "pdf": "https://arxiv.org/pdf/2608.05987v1",
+      "score": "7.0",
+      "evidence": "递归自蒸馏实现长时程强化学习中的回合级信用分配",
+      "tldr": "代理强化学习的长程多轮任务中，稀疏结果监督难以归因于少数关键决策。AgentOPSD提出无critic递归自蒸馏方法，将token级对数概率差聚合为回合级证据，并在对数几率空间中递归更新贝叶斯信念状态，将稀疏监督转化为回合级信用信号并识别关键回合。在Qwen2.5模型上，该方法在ALFWorld达到89.1%成功率，超越GRPO和自蒸馏基线。无需额外rollout，为高效回合级信用分配提供了新方案。",
       "tags": "query:uav-drl",
-      "abstract_en": "Preference-based reinforcement learning (PbRL) for general stochastic MDPs often requires training a reward model. Existing reward-model-free methods are either restricted to bandits or deterministic MDPs, such as DPO or P3O, or use zeroth-order, gradient-free optimization, which in general exhibits a slower convergence rate than gradient-based algorithms. Furthermore, existing reward-model-free preference-based RL algorithms almost exclusively use trajectory-level feedback, which can require significant effort from a human evaluator when trajectories are long. On the other hand, segments are much shorter, so they are easier to compare and evaluate. In this paper, we introduce a novel reward-model-free, critic-free, and gradient-based PbRL algorithm compatible with segment preferences named Segment Pairwise Proximal Policy Optimization (SP3O). SP3O utilizes segment-level preference feedback to construct an accurate policy value difference estimator via off-policy importance sampling, and then uses the estimator to compute the policy gradient via a PPO-type loss function. We provide a theoretical basis for the algorithm and analyze the tradeoff in choosing the segment length. We also evaluate it experimentally against other PbRL/RLHF algorithms in robotic control and LLM finetuning settings to show its improved performance, especially in long-horizon tasks.",
+      "abstract_en": "Reinforcement learning (RL) with verifiable rewards constructs trajectory-level advantage estimates, yet it often fails to credit the few pivotal decisions that determine outcomes in long-horizon, multi-turn agentic tasks. Recent work introduces privileged self-distillation for credit assignment, providing denser supervision, but it remains unclear how such local signals should represent sequential credit. We propose AgentOPSD, a critic-free, recursive method for turn-level credit assignment in agentic reinforcement learning. AgentOPSD aggregates token-level teacher-student log-probability gaps into turn-level evidence and recursively updates a Bayesian belief state in log-odds space. This yields a principled reweighting scheme that converts sparse outcome supervision into turn-level credit signals and identifies pivotal turns through the marginal belief revision between consecutive states. The method is fully compatible with standard policy optimization and requires neither an additional critic nor extra rollouts. We evaluate AgentOPSD on ALFWorld, WebShop, and Search-QA using Qwen2.5 models at two scales (3B and 7B). AgentOPSD outperforms GRPO and strong self-distillation baselines, achieving 89.1% success on ALFWorld with Qwen2.5-7B. Ablation studies attribute the gains to turn-level aggregation and history-dependent recursive belief updates.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/07/2608.05989v1-observation-grounded-self-predictive-reinforcement-learning-for-visual-continuous-control",
+      "section": "quick",
+      "title_en": "Observation-Grounded Self-Predictive Reinforcement Learning for Visual Continuous Control",
+      "authors": "Xinwei Liu, Junyuan Liang, Jianting Zhang, Wuhui Chen",
+      "date": "2026-08-06",
+      "pdf": "https://arxiv.org/pdf/2608.05989v1",
+      "score": "6.0",
+      "evidence": "视觉连续控制强化学习方法，可应用于无人机巡检的深度强化学习。",
+      "tldr": "从像素学习连续控制策略的样本效率仍是强化学习的重大挑战，现有方法多单独依赖潜在自预测或观察预测，难以在数据有限时捕获充分动力学。本文提出观察锚定自预测表示学习算法OG-SPR，融合多步潜在自预测与下一观察预测两个辅助目标，并通过轻量适配器避免对共享表示的过度约束。在28个DeepMind控制任务中，OG-SPR的聚合性能超越当前最优同类方法，尤其在狗和人形机器人等困难领域优势显著，为模型无关视觉RL的表示学习提供了新思路。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Sample-efficient policy learning from pixels is a long-standing challenge in reinforcement learning (RL). Recent dynamics-based representation learning methods have significantly improved the sample efficiency of model-free visual RL by learning dynamics-aware representations through auxiliary prediction performed either in latent space (self-prediction) or observation space (observation prediction). However, state-of-the-art methods from both categories still struggle on challenging visual control tasks when training data is limited. We posit that relying on either predictive objective alone may be insufficient. In contrast, observation prediction grounds learned representations in observation-level dynamics, but does not directly regularize the temporal predictability of latent representations over extended horizons. In this paper, we propose Observation-Grounded Self-Predictive Representations (OG-SPR), a model-free visual RL algorithm for continuous control that learns representations that are both temporally predictive in latent space and grounded in observation-level dynamics. OG-SPR incorporates two core auxiliary objectives: multi-step latent self-prediction and next-observation prediction. We empirically show that directly imposing latent self-prediction on the shared representation may over-constrain it and does not necessarily improve performance. To address this issue, OG-SPR introduces two lightweight adapters for latent self-prediction, allowing the shared representation to benefit from temporally predictive signals without being forced to directly satisfy the self-prediction objective. Experiments on 28 visual control tasks from the DeepMind Control Suite show that OG-SPR improves aggregate performance over state-of-the-art self-predictive and observation-predictive RL methods, with particularly pronounced gains in challenging domains such as dog and humanoid.",
       "source": "arxiv",
       "selection_source": "fresh_fetch"
     }
