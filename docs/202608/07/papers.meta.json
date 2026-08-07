@@ -1,0 +1,39 @@
+{
+  "label": "2026-08-07",
+  "date": "2026-08-07",
+  "generated_at": "2026-08-07T02:03:43",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202608/07/2608.01597v1-hindsearch-trajectory-level-hindsight-critique-for-search-augmented-reinforcement-learning",
+      "section": "deep",
+      "title_en": "HindSearch: Trajectory-Level Hindsight Critique for Search-Augmented Reinforcement Learning",
+      "authors": "Haowei Liu, Jiamian Wang, Hsin-Tai Wu, Zhiqiang Tao, Yi Fang",
+      "date": "2026-08-03",
+      "pdf": "https://arxiv.org/pdf/2608.01597v1",
+      "score": "8.0",
+      "evidence": "引入轨迹级后见批评，用于长时间尺度搜索增强强化学习中的信用分配",
+      "tldr": "针对搜索增强语言模型智能体通常仅使用二元精确匹配奖励，导致失败轨迹中大量信息浪费的问题，提出HindSearch方法。该方法在每次 rollout 后，利用固定 judge 结合正确答案生成失败轨迹的批评，以此作为学生策略搜索动作的辅助蒸馏信号。实验表明，结合后见批评显著提升了稀疏奖励下的学习效果，证明了后见信息在信用分配中的关键作用。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Search-augmented LM agents are typically trained with a binary exact-match reward, which throws away most of what a failed trajectory tells us about why it failed. We introduce HindSearch, a hindsight self-distillation procedure for GRPO: after each rollout, a frozen judge writes a short critique of every failed trajectory using the gold answer, and the critique supplies an auxiliary on-policy distillation signal on the student's search actions. On the standard seven-benchmark suite with Qwen2.5-3B-Instruct, HindSearch reaches 39.4% average EM, outperforming prior search-RL baselines. Removing the judge's access to the gold answer erases most of the gain, isolating hindsight as the source of the improvement.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/07/2608.02951v1-sp3o-reinforcement-learning-from-segment-preferences-without-reward-modeling",
+      "section": "quick",
+      "title_en": "SP3O: Reinforcement Learning from Segment Preferences without Reward Modeling",
+      "authors": "Evan Assmus, Qining Zhang, Lei Ying",
+      "date": "2026-08-03",
+      "pdf": "https://arxiv.org/pdf/2608.02951v1",
+      "score": "6.0",
+      "evidence": "利用片段级偏好进行无奖励模型的信用分配，专门针对长轨迹问题",
+      "tldr": "针对长轨迹下信用分配效率低的问题，提出SP3O算法，无需奖励模型直接基于片段偏好学习，利用梯度优化实现高效信用分配。实验表明比现有无模型方法收敛更快。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Preference-based reinforcement learning (PbRL) for general stochastic MDPs often requires training a reward model. Existing reward-model-free methods are either restricted to bandits or deterministic MDPs, such as DPO or P3O, or use zeroth-order, gradient-free optimization, which in general exhibits a slower convergence rate than gradient-based algorithms. Furthermore, existing reward-model-free preference-based RL algorithms almost exclusively use trajectory-level feedback, which can require significant effort from a human evaluator when trajectories are long. On the other hand, segments are much shorter, so they are easier to compare and evaluate. In this paper, we introduce a novel reward-model-free, critic-free, and gradient-based PbRL algorithm compatible with segment preferences named Segment Pairwise Proximal Policy Optimization (SP3O). SP3O utilizes segment-level preference feedback to construct an accurate policy value difference estimator via off-policy importance sampling, and then uses the estimator to compute the policy gradient via a PPO-type loss function. We provide a theoretical basis for the algorithm and analyze the tradeoff in choosing the segment length. We also evaluate it experimentally against other PbRL/RLHF algorithms in robotic control and LLM finetuning settings to show its improved performance, especially in long-horizon tasks.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

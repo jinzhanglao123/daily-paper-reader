@@ -6,37 +6,28 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-05
-- 运行时间：2026-08-05 21:08:50 UTC
+- 最新运行日期：2026-08-07
+- 运行时间：2026-08-07 02:03:31 UTC
 - 运行状态：成功
-- 本次总论文数：5
-- 精读区：3
-- 速读区：2
+- 本次总论文数：2
+- 精读区：1
+- 速读区：1
 
 ### 今日简报（AI）
-今日精读两篇强化学习与视觉语言模型融合的前沿工作，重点探索了智能体如何通过自我提炼的奖励塑造实现高效探索。
-最具启发的结论是，用“自我蒸馏的奖励塑造”让强化学习智能体自主生成内在激励，以及让Transformer价值函数理解动作的阶段标签，能大幅提升半自主策略的稳定性。
-建议读者先读懂Agentic RL如何自动设计奖励函数，再尝试将这种因果阶段感知思路迁移到自己的视觉-语言-动作任务中。
-- 详情：[/202608/05/README](/202608/05/README)
+今日精读论文提出用轨迹级后见批评改进搜索增强强化学习，速读则探讨无需奖励建模的段落偏好强化学习。  
+最值得关注的方向是让搜索智能体通过事后分析自身路径来自我纠错，以及直接从片段偏好中学习规避耗时奖励设计。  
+建议读者可从「让AI复盘行动轨迹」的思路切入，理解智能体逐步优化搜索策略的机制。
+- 详情：[/202608/07/README](/202608/07/README)
 
 ### 精读区论文标签
-1. [Agentic Reinforcement Learning with Self-Distilled Reward Shaping](/202608/05/2608.03223v1-agentic-reinforcement-learning-with-self-distilled-reward-shaping)  
-   标签：评分：9.0/10、query:uav-drl
-   evidence：自蒸馏奖励设计用于强化学习中的长时序信用分配
-2. [ValueFormer: A Causal Transformer Value Function with Stage-Aware Labels for Semi-Autonomous Vision-Language-Action Policies](/202608/05/2608.02958v1-valueformer-a-causal-transformer-value-function-with-stage-aware-labels-for-semi-autonomous-vision-language-action-policies)  
+1. [HindSearch: Trajectory-Level Hindsight Critique for Search-Augmented Reinforcement Learning](/202608/07/2608.01597v1-hindsearch-trajectory-level-hindsight-critique-for-search-augmented-reinforcement-learning)  
    标签：评分：8.0/10、query:uav-drl
-   evidence：密集连续阶段性标签用于价值函数处理长时序稀疏奖励
-3. [Neurosymbolic Reasoning with Incremental Knowledge for Sample Efficient Hierarchical Reinforcement Learning](/202608/05/2608.02993v1-neurosymbolic-reasoning-with-incremental-knowledge-for-sample-efficient-hierarchical-reinforcement-learning)  
-   标签：评分：8.0/10、query:uav-drl
-   evidence：通过神经符号分层方法解决长程稀疏奖励RL
+   evidence：引入轨迹级后见批评，用于长时间尺度搜索增强强化学习中的信用分配
 
 ### 速读区论文标签
-1. [GORDON: Graph-based Object-centric Rewards for Decomposition of Long-Horizon Manipulation](/202608/05/2608.03753v1-gordon-graph-based-object-centric-rewards-for-decomposition-of-long-horizon-manipulation)  
+1. [SP3O: Reinforcement Learning from Segment Preferences without Reward Modeling](/202608/07/2608.02951v1-sp3o-reinforcement-learning-from-segment-preferences-without-reward-modeling)  
    标签：评分：6.0/10、query:uav-drl
-   evidence：从视频演示中学习长时域任务的稠密奖励
-2. [Enhancing VLM Reward Models Through Structure-Aware Fine-Tuning](/202608/05/2608.03875v1-enhancing-vlm-reward-models-through-structure-aware-fine-tuning)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：利用结构感知微调改进RL奖励模型用于奖励分配
+   evidence：利用片段级偏好进行无奖励模型的信用分配，专门针对长轨迹问题
 
 
 <div class="dpr-home-promo-card">
