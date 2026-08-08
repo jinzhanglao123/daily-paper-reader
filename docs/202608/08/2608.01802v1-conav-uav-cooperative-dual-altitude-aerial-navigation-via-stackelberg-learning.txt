@@ -1,0 +1,659 @@
+Title: CoNav-UAV: Cooperative Dual-Altitude Aerial Navigation via Stackelberg Learning
+
+URL Source: https://arxiv.org/pdf/2608.01802v1
+
+Published Time: Tue, 04 Aug 2026 01:56:36 GMT
+
+Number of Pages: 19
+
+Markdown Content:
+# CoNav-UAV: Cooperative Dual-Altitude Aerial Navigation via Stackelberg Learning 
+
+## Junru Song 1,* , Wenhao Zhang 1,* , Yang Yang 2,* , Xuekai Qiu 2,Feifei Wang 3, Weien Zhou 2, Tingsong Jiang 2, Ying Wen 1,4 , Yang Li 1, †, Wen Yao 2, †
+
+> 1
+
+Shanghai Jiao Tong University 2Intelligent Game and Decision Laboratory 
+
+> 3
+
+Renmin University of China 4Shanghai Innovation Institute 
+
+> *
+
+Equal contribution †Corresponding authors 
+
+Abstract 
+
+Target-oriented vision-and-language navigation (VLN) on aerial platforms is attracting growing attention for missions such as disaster rescue, infrastructure inspection, and security patrol. In this task, an unmanned aerial vehicle (UAV) needs to locate targets given only a concise description of their ap-pearance and surroundings. This requires global exploration and grounding as well as collision-free close-range approach, two interleaved processes difficult to reconcile within a sin-gle agent. Most existing methods transfer the ground VLN paradigm to a low-altitude UAV and compensate for its inef-ficient exploration with external assistance. A recent attempt deploys two UAVs at complementary altitudes yet still relies on privileged information and trains its two agents indepen-dently, precluding any mutual adaptation essential for cooper-ation. Here we propose CoNav-UAV, which explicitly models the task as a Stackelberg game between a high-altitude leader 
+
+and a low-altitude follower , with the system operating on on-board visual and linguistic inputs alone. To solve this game, we introduce Iterative Stackelberg Learning. The leader’s high-level vision-language reasoning is refined via memory-based in-context learning, while the follower’s precise motion con-trol is updated via DAgger-style expert distillation. The alter-nation drives both agents toward a Stackelberg equilibrium. CoNav-UAV consistently outperforms single- and dual-agent baselines across three high-fidelity urban scenes from the AerialVLN benchmark. Success rate improves by up to 30.8 points on the learning scene, and 9.0 points under cross-scene transfer while using about 3× less adaptation data. Further analyses validate the complementary gains of the leader and follower updates and reveal robust gains yet distinct learning dynamics across VLM backbones. Demo, code and data are available at https://github.com/WoodySJR/CoNav-UAV. 
+
+## 1 Introduction 
+
+Vision-and-Language Navigation (VLN) (Anderson et al. 2018) is a fundamental problem in embodied AI, in which agents navigate to language-specified goals in real environ-ments by coupling language understanding, visual ground-ing, and sequential decision making (Chen et al. 2021; An et al. 2024; Zhou, Hong, and Wu 2024). Over the past decade, ground-based VLN has advanced from recurrent architec-tures to cross-modal transformers and LLM-driven agents, 
+
+Copyright © 2027, Association for the Advancement of Artificial Intelligence (www.aaai.org). All rights reserved. 
+
+enabling reliable instruction following in structured envi-ronments (Qi et al. 2020; Krantz et al. 2020). Extending VLN to Unmanned Aerial Vehicles (UAVs) has recently at-tracted growing attention (Liu et al. 2023; Fan et al. 2023; Lee et al. 2025; Gao et al. 2025; Cai et al. 2026), driven by the broad spatial coverage, high motion freedom, and multi-altitude sensing of aerial platforms. Aerial VLN, how-ever, is substantially harder and much less explored. Naviga-tion unfolds over city-scale scenes with trajectories spanning hundreds of meters (Liu et al. 2023; Gao et al. 2025), im-posing much higher demands on global exploration, target grounding, and long-horizon planning. Moreover, practical missions including disaster rescue, infrastructure inspection, and security patrol rarely admit structured step-by-step route instructions, and operators can typically provide only con-cise target-oriented descriptions of a target’s appearance and surroundings (Lee et al. 2025; Xu et al. 2026a). Most existing methods directly transfer the single-agent paradigm of ground VLN to a low-altitude UAV, incurring a global information deficit and inefficient exploration. They therefore compensate with external assistance. AVDN (Fan et al. 2023) engages a human operator in iterative dia-logue, AerialVLN (Liu et al. 2023) and OpenFly (Gao et al. 2025) assume detailed step-by-step route descriptions, Aeri-alVLA (Xu et al. 2026b) injects fuzzy directional hints as privileged cues, UAV-Need-Help (Wang et al. 2024) depends on real-time assistant guidance, and GeoNav (Xu et al. 2026a) imports external landmark priors. Such reliance on privileged or human-provided information limits practical applicability. Deploying two UAVs at complementary altitudes offers a natural alternative. To our knowledge, AeroDuo (Wu et al. 2025) is the only existing attempt of this kind, demonstrating substantial gains over single-UAV baselines yet exhibiting two critical limitations. First, it still relies on privileged in-formation. The high-altitude UAV is steered by ground-truth target coordinates rather than exploring autonomously, and the low-altitude agent requires geometric inputs such as point clouds and depth maps beyond standard onboard cameras. Second, the two agents are trained independently and com-posed only at inference, leaving their interaction unmodeled and precluding mutual adaptation. To date, there is no prin-cipled framework that formalizes dual-altitude cooperation between agents with distinct utilities and jointly optimizes them with onboard information alone. arXiv:2608.01802v1 [cs.AI] 3 Aug 2026 To this end, we propose CoNav-UAV , a cooperative dual-altitude aerial navigation framework. CoNav-UAV formal-izes the cooperation as a general-sum Stackelberg game (von Stackelberg 2011) between a high-altitude leader maximiz-ing scene-level coverage and grounding precision and a low-altitude follower pursuing efficient, collision-free ar-rival at dispatched targets. The leader, a frozen vision-language model (VLM), grounds candidates on bird’s-eye-view (BEV) imagery and repositions autonomously to survey unexplored regions. The follower, a vision-language-action (VLA) model, navigates to each dispatched target from first-person-view (FPV) observations, and the two agents com-municate only through a lightweight coordinate queue with-out shared perception or privileged sensing. To solve this game, we develop Iterative Stackelberg Learning , which matches optimization to each agent’s role. The leader per-forms high-level vision-language reasoning, and is there-fore refined without gradients through episodic memory with value-aware retrieval (Zhang et al. 2026). The follower ex-ecutes precise low-level control, and is accordingly updated through DAgger-style distillation (Ross, Gordon, and Bagnell 2011) from a compact PPO expert (Schulman et al. 2017). The alternation drives both agents toward a Stackelberg equi-librium through mutual adaptation. To support learning and evaluation, we develop a complete data-generation pipeline, comprising annotation and verifi-cation interfaces for high-altitude data and automatic low-altitude trajectory synthesis. Experiments across three high-fidelity urban scenes from the AerialVLN benchmark (Liu et al. 2023) show that CoNav-UAV consistently outperforms single- and dual-agent baselines, improving success rate by up to 30.8 points on the learning scene and 9.0 points under cross-scene transfer while using 2.6–3.7 × less target-scene adaptation data. Further analyses validate the complemen-tary gains of the leader and follower updates and reveal robust gains yet distinct learning dynamics across VLM backbones. In summary, our contributions are threefold. (i) Formu-lation: the first game-theoretic modeling of dual-altitude UAV cooperation, cast as a general-sum Stackelberg game. 
+
+(ii) Method: CoNav-UAV with Iterative Stackelberg Learn-ing, which matches optimization to each agent’s role, pairing gradient-free in-context learning for the leader with expert distillation for the follower. (iii) Experiments: extensive eval-uation in photorealistic simulation demonstrating consistent gains over strong baselines, effective cross-scene generaliza-tion, and robustness across VLM backbones. 
+
+## 2 Related Work 
+
+2.1 Aerial Vision-and-Language Navigation 
+
+Aerial VLN has received growing attention since dedicated benchmarks and baselines were introduced (Fan et al. 2023; Liu et al. 2023; Lee et al. 2025; Gao et al. 2025; Cai et al. 2026). Most methods transfer the single-agent paradigm from ground VLN, from early sequence-to-sequence and cross-modal attention architectures (Anderson et al. 2018; Tan and Bansal 2019) to recent LLM/VLM agents with hierarchical planning (Zhang et al. 2025), spatial reasoning (Gao et al. 2024), and end-to-end vision-language-action models (Xu et al. 2026b; Gao et al. 2025), achieving strong results on instruction-following benchmarks. Recent work turns to the more practical target-oriented setting, where only a description of the target’s visual at-tributes and context is available (Lee et al. 2025; Wang et al. 2024). Here single-agent methods face a system-atic information deficit, since without global scene aware-ness they must search from local observations alone. Ex-isting approaches compensate through human-agent dia-logue (Fan et al. 2023), privileged step-by-step guidance (Liu et al. 2023), downward-facing views with coarse directional hints (Xu et al. 2026b), or LLM-driven geospatial reason-ing over external landmark priors (Xu et al. 2026a). All re-main within the single-agent paradigm, leaving unexploited the multi-altitude cooperation that aerial platforms uniquely afford. AeroDuo (Wu et al. 2025), the sole prior work on dual-altitude cooperation, steers its high-altitude UAV to-ward ground-truth target coordinates instead of exploring autonomously, depends on privileged geometric inputs at low altitude, and trains its two agents independently. CoNav-UAV removes all three limitations with a Stackelberg formulation that co-adapts a VLM leader and a VLA follower using only onboard visual and linguistic inputs. 
+
+2.2 Learning in Stackelberg Games 
+
+Stackelberg learning seeks a Stackelberg equilibrium (SE), in which the leader optimizes in anticipation of the follower’s best response; extending SE computation to dynamic Markov settings has received substantial attention. Gradient-based methods (Fiez, Chasnov, and Ratliff 2020; Goktas and Green-wald 2021; Shen, Yang, and Chen 2024) cast SE as a bilevel or min-max program and update the leader through implicit hypergradients or penalty reformulations, requiring the fol-lower’s objective to be differentiable in the leader’s param-eters. Online methods (Chen, Wang, and Yang 2023) learn quantal Stackelberg equilibria sample-efficiently by jointly estimating value functions and the follower’s quantal re-sponse, but rely on linear function approximation. Neural-operator methods (Alvarez et al. 2024) approximate the follower’s best-response operator directly, but presuppose known follower objectives and dynamics. Our setting satis-fies none of these assumptions: the game is general-sum, the leader is a frozen VLM adapted through natural-language guidelines rather than weight updates, and the follower is a large VLA whose best-response Jacobian is intractable. We adopt an approximate alternating best-response scheme con-sistent with the reduction of Gerstgrasser and Parkes (2023), which decomposes SE computation into alternating leader and follower sub-problems. 
+
+## 3 Problem Formulation 
+
+CoNav-UAV decomposes target-oriented aerial navigation between two cooperating UAVs (Fig. 1(a)): a high-altitude UAV with a frozen VLM that grounds and dispatches candi-date targets on BEV imagery, and a low-altitude UAV with a VLA that executes collision-free navigation from the first-person view (FPV). We model their cooperation as a Stack-elberg game (von Stackelberg 2011). Leader input         
+
+> Find a building with a red billboard on its rooftop.
+> BEV image
+> building with red billboard, conf=0.88
+> Reposition
+> Follower input
+> FPV image
+> Target coordinate ( x,y)
+> Current and history poses
+> Target dispatch
+> (152.36, 97.81)
+> round k → k+1 Follower update (Expert distillation)
+> start-target pairs PPO expert FPV rendering updated VLA every episode Leader update (Memory-augmented in-context learning) VLM reflector — multimodal tool-calling
+> ②Guideline ③Memory bank ④
+> Episode rollout
+> ①
+> target recall target precision scene exploration target dispatch spatial landmark
+
+...     
+
+> Q←Q+α(R
+> －Q)
+> Value update: New memory:
+> Deploy updated follower
+> trajectory on PCD episode stats
+
+... 
+
+(a) Inference-time leader-follower cooperation (b) Iterative Stackelberg learning  
+
+> missed target BEV
+> Target queue (updated and re-ranked)
+> Two-stage retrieval: top-kguidelines → leader prompt
+
+⑤
+
+> Find a building with...
+
+Figure 1: Overview of CoNav-UAV. (a) Inference-time cooperation: the leader performs BEV grounding and maintains a target queue; the follower navigates to dispatched targets via FPV control. (b) Iterative Stackelberg Learning: the leader update evolves the memory bank via multimodal reflection and Q-value learning per episode; the follower update fine-tunes the VLA via DAgger distillation from a PPO expert per round. 
+
+3.1 Preliminaries: Stackelberg Games 
+
+In the classical one-shot Stackelberg game, a leader first commits to an action a ∈ A ; a follower observes the commit-ment and selects b ∈ B to maximize its own utility UF (a, b ).Anticipating this rational response, the leader chooses a to maximize UL(a, b ). Three ingredients characterize the game and distinguish the two roles: the leader commits first and thereby shapes the follower’s decision problem ( sequential commitment ); the leader optimizes in anticipation of the fol-lower’s response ( anticipatory optimization ); and the two agents pursue different objectives ( distinct utilities ). We cast the high-altitude UAV as the leader and the low-altitude UAV as the follower, and extend this one-shot interaction to the sequential navigation setting formalized in Sec. 3.3. 
+
+3.2 Task and Agent Roles 
+
+The task is specified by a target-oriented natural-language instruction ℓ that describes the target’s visual attributes, sur-rounding landmarks, and approximate location, without step-by-step route guidance. 
+
+Leader (high-altitude UAV). Equipped with a VLM, the leader captures BEV imagery and grounds candidates match-ing ℓ into a priority-ordered target queue Q, re-ranked at each step by detection confidence and path efficiency from the follower’s position. It repositions horizontally to explore unsurveyed regions, adjusts altitude to confirm candidates at closer range, and decides when the mission terminates. 
+
+Follower (low-altitude UAV). Equipped with a VLA, the follower navigates at a fixed altitude to the head of Q via collision-free FPV control. Because it always executes to-ward the current queue head, the leader’s dispatch decisions implicitly define its task. 
+
+Correspondence to the Stackelberg structure. The role split follows data availability. Training data for instruction understanding, grounding, and exploration is costly to con-struct, so these capabilities are assigned to a frozen VLM im-proved at runtime through reflection-based in-context learn-ing (Sec. 4.2); point-goal control data can be generated fully automatically, so the follower reduces to a language-free, coordinate-conditioned controller trained via SFT (Sec. 4.3). The interaction instantiates all three ingredients of Sec. 3.1: the leader’s dispatches precede and define the follower’s task, are committed in anticipation of its reachability, and optimize scene-level coverage and grounding precision while the fol-lower pursues efficient, collision-free arrival. 
+
+3.3 Dual-Altitude Stackelberg Navigation Game 
+
+Definition 3.1 (Dual-Altitude Stackelberg Nav-igation Game) . The game is a tuple G =
+
+⟨S , ℓ, OL, OF , AL, AF , P, r L, r F , γ, m ⟩, where S
+
+is the state space, ℓ is the target-oriented instruction, Oi
+
+and Ai are the observation and action spaces of agent 
+
+i ∈ { L, F }, P is the transition kernel, rL and rF are the reward functions, γ is the discount factor, and m is the leader’s decision interval. Each instruction induces one game instance: ℓ specifies the ground-truth target set and thereby shapes both rewards. At each τk := km , k = 0 , . . . , H −1,the leader observes oLk ∈ O L and commits to an action 
+
+aLk ∈ A L that dispatches candidate targets and relocates its viewpoint. Over the following m steps, the follower receives the dispatched target through oFt ∈ O F and responds with motion actions aFt ∈ A F toward it. A policy pair solves G if it constitutes a Stackelberg equilibrium (Definition 3.2). Definition 3.2 (Stackelberg Equilibrium, SE) . For a joint policy (πL, π F ) ∈ ΠL ×ΠF , define the objective        
+
+> Ji(πL, π F) = Es0, π L,π F
+> hPTt=0 γtrit
+> i
+> ,i∈ { L, F }.(1)
+
+For every leader policy πL, the follower’s best response is     
+
+> BR( πL) := arg max
+> πF∈ΠF
+> JF(πL, π F).(2)
+
+A policy pair (π⋆L, π ⋆F ) is a Stackelberg equilibrium of G if       
+
+> π⋆L∈arg max
+> πL∈ΠL
+> JL πL,BR( πL),π⋆F= BR( π⋆L).(3)
+
+Eq. (2) requires the follower to respond optimally to the committed leader policy, and Eq. (3) requires the leader to be optimal in anticipation of that response. We instantiate each component of G below. 
+
+State and observations. The state is st =(M, ℓ, p Lt , p Ft , Qt, Ht), where M is the 3-D scene, 
+
+pLt , p Ft are UAV poses, Qt is the target queue, and Ht
+
+records past detections and dispatch outcomes. Each agent observes a partial projection:               
+
+> oLk= Ibev
+> k, ℓ, p Lτk, p Fτk,Qτk,Hτk
+> ,oFt= Ifpv
+> t, c tgt
+> t, p Ft, h Ft
+> ,
+> (4)
+
+where Ibev  
+
+> k
+
+, I fpv  
+
+> t
+
+are the BEV and FPV images, ctgt  
+
+> t
+
+∈ R2 is the active target coordinate, and hFt = ( pFt−1, . . . , p Ft−w) is a window of recent poses encoding heading and velocity. 
+
+Actions. At decision step k, the leader grounds on Ibev  
+
+> k
+
+,updates Q, and selects an exploration command uLk ∈UL ∪ { done }, where UL comprises fixed-step horizontal translations (±δxy ) and discrete altitude changes (±δz ) of its viewpoint and done terminates the mission. The follower operates at a fixed altitude, reducing navigation to three de-grees of freedom: at step t it outputs planar displacements and a yaw adjustment aF,t = (∆ x, ∆y, ∆ψ) ∈ R3.
+
+Rewards. Let C⋆ = {c⋆
+
+> 1
+
+, . . . , c ⋆N ⋆ } denote the ground-truth (GT) targets satisfying ℓ. Because its decisions take effect only after the follower navigates, the leader receives a single 
+
+sparse reward at termination ( t = T ):             
+
+> rLT=Nhit
+> N⋆−X
+> q∈P
+> αqnq,rLt= 0 for t < T, (5)
+
+where Nhit /N ⋆ is GT recall, P = {fp , coll , waste , osc } col-lects four penalties, false-positive dispatches, collision end-ings, wasted grounding rounds, and oscillations, with weights 
+
+αq > 0. Collisions are charged to the leader, since dispatching an unreachable or hazardous target is a scheduling failure. The follower receives a dense, step-level reward combining target approach and collision avoidance:        
+
+> rFt=βp∆dt−βc1[coll t],(6)
+
+where ∆dt := dt−1−dt is the distance reduction to the active target and coll t flags obstacle proximity below threshold δ.
+
+## 4 Iterative Stackelberg Learning 
+
+4.1 Overview 
+
+Computing the SE (Definition 3.2) is a bilevel problem: the follower must best-respond to the leader (Eq. 2), and the leader must optimize in anticipation of that response (Eq. 3). Neither problem is tractable in our setting. The leader is a frozen VLM whose parameters and gradients are inaccessible; gradient-based bilevel methods do not ap-ply. The follower is a large VLA whose best response cannot be recomputed for every candidate leader policy. Iterative Stackelberg Learning (ISL) approximates this bilevel struc-ture through alternating updates (Fig. 1(b)). For the leader, episodic memory with value-aware retrieval (Zhang et al. 2026) serves as a gradient-free optimizer: the leader policy is conditioned on natural-language guidelines retrieved from memory (Sec. 4.2). For the follower, DAgger-style expert distillation (Ross, Gordon, and Bagnell 2011) provides an approximate best response via fine-tuning (Sec. 4.3). We define a round as one full pass over the learning episodes. The follower update involves trajectory generation and VLA fine-tuning, so it runs once per round. The leader update requires no gradients and evolves its memory after every episode. Fixing the follower lets the leader adapt to the current follower capability; the subsequent follower update re-aligns the policy with the leader’s evolved dispatch be-havior, keeping the training distribution matched to deploy-ment. The alternation drives both agents toward equilibrium through mutual adaptation. 
+
+4.2 Leader Update: Memory-Augmented In-Context Learning 
+
+The leader’s VLM weights remain frozen; behavior im-proves entirely through the prompt via in-context learn-ing (ICL) over an episodic memory (Zhang et al. 2026). A memory bank M = {(ℓi, e i, Q i)}|M|  
+
+> i=1
+
+stores an instruc-tion key ℓi, an experience guideline ei, and a learned utility estimate Qi ∈ [−1, 1] . We describe the per-episode cycle (Fig. 1(b)) in execution order. 
+
+Rollout, reflection, and guideline generation. Upon episode completion, the outcomes of dispatched targets and notable events such as collisions are automatically annotated. A VLM reflector then analyzes them and produces a struc-tured guideline: 
+
+ej = Reflect(ep j ). (7) Rather than ingesting the full episode trace, the reflector iteratively calls a suite of multimodal analysis tools on de-mand, selecting which grounding rounds, navigation seg-ments, BEV images, or other episode artifacts to inspect at each step. This on-demand inspection avoids diluting critical information in lengthy context and focuses reasoning on the most informative evidence (example traces in Appendix I.2). Both successful and failed episodes yield guidelines in a com-mon format: reusable strategies from the former, diagnostic recommendations from the latter. Each guideline covers five dimensions — target recall, precision, scene exploration, tar-get dispatch, and spatial landmarks — designed to align with the components of rLT (Eq. 5), so that in-context adaptation addresses the capabilities the reward evaluates. 
+
+Memory writing and utility learning. For a first-seen in-struction, (ℓj , e j ) is stored as a new entry; otherwise the existing guideline is revised. New entries are initialized with Q0 = 0 .5 if the episode achieves ≥50% GT coverage (suc-cess) and Q0 = −0.2 otherwise, biasing early retrieval toward validated strategies. After each episode with reward R = rLT ,the Q-values of all retrieved memories are updated via expo-nential moving average: 
+
+Qi ← Qi + η (R − Qi), ∀ i ∈ M res , (8) with learning rate η ∈ (0 , 1) . Under stationary conditions, 
+
+Qi converges to the expected leader reward obtained when memory i is included in the retrieved set (Zhang et al. 2026). 
+
+Value-aware retrieval. Given the next instruction ℓ, mem-ories are selected in two phases. First, embedding similarity between ℓ and each stored ℓi yields a candidate pool C(ℓ).Second, within C(ℓ), a composite score balances semantic similarity against learned utility: 
+
+score i = (1 −λ) ˆ si + λ ˆQi, (9) where ˆsi, ˆQi are z-score-normalized similarity and Q-value, and λ ∈ [0 , 1] controls the balance. The top-k2 entries by com-posite score form Mres (ℓ), with ε-greedy exploration to pre-vent premature convergence. These guidelines are injected into the VLM prompt, conditioning πL(· | oL; Mres (ℓ)) and closing the per-episode loop. 
+
+4.3 Follower Update: Expert Distillation 
+
+Coordinate-conditioned collision-free navigation demands fine-grained control, yet end-to-end RL directly on a large VLA is prohibitively sample-intensive. We instead train a lightweight RL expert in a geometric proxy environment and distill its behavior into the VLA via SFT (Fig. 1(b)). 
+
+Start–target pairs. π(0)  
+
+> F
+
+is bootstrapped from randomly sampled start–target pairs, independent of any leader, yield-ing an unbiased initial best response. In subsequent rounds, pairs come from rollout navigation segments, tracking the leader’s evolving dispatch distribution. 
+
+RL expert in the point-cloud twin. The 3-D scene is rep-resented as a point-cloud occupancy grid that preserves col-lision geometry without rendering. A compact CNN policy 
+
+πE is trained via PPO (Schulman et al. 2017) on rFt (Eq. 6), observing a local occupancy patch and the target coordinate and outputting a displacement command, so πE directly ap-proximates BF . We favor RL over classical planners for three reasons: (i) the expert is end-to-end, optimizing the reward directly without hand-crafted heuristics; (ii) it acts on local observations causally consistent with FPV, so the VLA never imitates globally privileged decisions; (iii) the same πE is reused across DAgger rounds to generate new trajectories at negligible cost (Appendix D.2). 
+
+FPV rendering and distillation. Expert rollouts are re-played in the physics simulator to render synchronized FPV images, yielding observation-action pairs (oFt , a ⋆t ). The VLA is initialized from Qwen2.5-VL-7B-Instruct (Bai et al. 2025) and fine-tuned with LoRA (Kim et al. 2024), discretiz-ing each action dimension into 256 autoregressively decoded bins and minimizing token-level cross-entropy. 
+
+4.4 Full Algorithm 
+
+Algorithm A1 in Appendix A summarizes ISL. The pro-cedure begins with an empty memory bank and the boot-strap follower π(0)  
+
+> F
+
+. In each round k, the leader update 
+
+iterates over learning episodes: each episode runs under the current leader πL(Mres ) and the fixed follower π(k) 
+
+> F
+
+,then updates the memory via reflection, Q-value learning, and retrieval (Eqs. 7–9). After the round, the follower up-date collects DAgger data D(k)dag by re-running πE on the round’s navigation segments, and re-trains the follower: 
+
+π(k+1)  
+
+> F
+
+← SFT( π(k) 
+
+> F
+
+, D(0) init ∪ S 
+
+> j≤k
+
+D(j)dag ), where D(0) init is the bootstrap dataset, retained across rounds to prevent for-getting. 
+
+## 5 Experiments 
+
+Our experiments compare CoNav-UAV with single- and dual-agent baselines on the learning scene and under cross-scene transfer (Sec. 5.2), trace how alternating leader and fol-lower updates improve the system across Stackelberg rounds (Sec. 5.2), and ablate cross-scene memory transfer and key components (Sec. 5.3); the leader’s grounding quality and learning dynamics are further analyzed in Appendix E. 
+
+5.1 Experimental Setup 
+
+Simulation environment. All experiments are conducted in AirSim-based photorealistic environments rendered with Unreal Engine on the OpenFly platform (Gao et al. 2025), us-ing three scenes from the AerialVLN dataset (Liu et al. 2023), namely airsim16 (3.7 km 2), airsim26 (9.0 km 2), and 
+
+airsim23 (0.62 km 2), spanning diverse architectural styles and densities. airsim16 serves as the learning scene, and the other two are held out for cross-scene generalization. 
+
+Benchmark dataset. Ground-truth targets and instructions are annotated in-simulator through a two-stage labeling-then-verification pipeline (Appendix D.1), and randomly split into two thirds for learning and one third for held-out testing. Each task instance is a long-horizon, multi-target search episode spanning hundreds of meters, and evaluates the full system from exploration and grounding to close-range approach rather than a single instruction-following behavior. All re-sults are averaged over 3 seeded runs. The benchmark will be released (Appendix J). 
+
+Evaluation metrics. Standard single-endpoint met-rics (Anderson et al. 2018) assume a predetermined goal and are inadequate for target-oriented navigation, which is inherently exploratory, so we measure trajectory-level reach-ability of GT targets under a fixed budget. NE min (Mini-mum Navigation Error, ↓) is the minimum distance between the trajectory and each GT target, averaged over targets. 
+
+OSR (Oracle Success Rate, ↑) is the fraction of GT tar-gets with NE min ≤ ε (ε=20 m), computed as recall over targets. SPL OSR (Success weighted by Path Length, ↑) is OSR weighted by L∗/ max( L∗, P ), where L∗ is the greedy path through all GT targets and P is the trajectory length. The metrics accommodate multi-target instructions and ap-ply symmetrically to single- and multi-agent methods. A tra-Table 1: Comparison with baselines in two evaluation settings: evaluation on the learning scene airsim16 , and cross-scene adaptation to airsim26/23 (budget = 3 L∗, ε=20 m). Results are reported separately for Easy (100 m), Medium (200 m), and Hard (300 m) difficulty tiers, defined by start-to-target straight-line distance. For airsim26/23 , all reported baseline rows use target-scene fine-tuning (FT). CoNav-UAV also uses target-scene data: its follower is adapted with approximately 2K trajectories per scene, while the leader memory learned on airsim16 is transferred directly without target-scene updates. All CoNav-UAV rows report results with memory (iter 2 on airsim16 ). Best and second-best are computed within each scene and tier.                                                                                                                                                                                                                                                                  
+
+> Easy Medium Hard Method OSR ↑NE ↓SPL ↑OSR ↑NE ↓SPL ↑OSR ↑NE ↓SPL ↑
+> airsim16 (learning scene)
+> CMA (Tan and Bansal 2019) 4.3 64.6 .043 1.3 152.8 .013 1.3 234.7 .013 Seq2Seq (Sutskever, Vinyals, and Le 2014) 2.6 69.5 .019 0162.4 00256.0 0OpenFly (Gao et al. 2025) 4.3 71.8 .040 0167.1 02.6 253.6 .022 AerialVLA (Xu et al. 2026b) 25.9 63.0 .255 6.8 148.2 .068 1.3 231.2 .013 AeroDuo (Wu et al. 2025) 24.4 74.8 .172 9.3 142.9 .067 6.4 280.6 .035 CoNav (GPT-5.6-sol) 36.4 43.9 .308 35.7 73.1 .284 37.2 95.1 .309
+> CoNav (GPT-5.4-mini) 40.6 45.0 .334 34.6 80.0 .253 22.6 128.4 .146 CoNav (Qwen3-VL-32B) 32.6 47.5 .280 25.1 91.0 .208 21.3 124.5 .168 CoNav (Qwen3-VL-8B) 26.5 44.8 .225 18.0 80.1 .145 18.0 112.0 .147
+> airsim26 (cross-scene adaptation)
+> CMA 30.4 48.9 .272 13.0 116.5 .112 7.2 177.0 .064 Seq2Seq 11.6 54.6 .103 8.5 135.4 .073 2.2 192.8 .013 OpenFly 17.4 57.1 .170 10.6 138.0 .101 2.9 228.5 .029 AerialVLA 28.3 52.8 .259 13.0 132.0 .121 15.9 193.9 .158
+> AeroDuo 39.9 52.7 .373 0140.2 01.4 228.3 .011 CoNav (GPT-5.6-sol) 43.5 42.3 .383 26.1 94.8 .222 14.5 176.1 .106 CoNav (GPT-5.4-mini) 39.6 47.8 .389 15.9 136.7 .117 11.6 196.5 .086 CoNav (Qwen3-VL-32B) 41.3 47.1 .402 6.5 139.5 .060 15.2 188.3 .113 CoNav (Qwen3-VL-8B) 40.6 49.5 .405 6.5 131.1 .057 10.1 197.1 .082
+> airsim23 (cross-scene adaptation)
+> CMA 12.0 74.6 .110 3.3 137.8 .033 3.0 229.3 .030 Seq2Seq 6.7 75.1 .067 5.3 148.0 .053 0.9 219.6 .008 OpenFly 11.8 75.7 .115 4.4 159.6 .044 2.8 235.3 .028 AerialVLA 21.4 67.8 .210 9.3 151.6 .093 1.9 231.1 .019 AeroDuo 22.2 66.1 .207 1.9 164.0 .010 3.7 235.6 .032 CoNav (GPT-5.6-sol) 27.7 60.2 .233 18.3 126.0 .167 9.2 176.8 .074 CoNav (GPT-5.4-mini) 28.5 65.4 .275 16.7 122.3 .147 6.9 181.6 .056 CoNav (Qwen3-VL-32B) 24.0 61.1 .219 8.0 143.6 .054 10.6 192.0 .093
+> CoNav (Qwen3-VL-8B) 19.9 67.9 .171 8.3 137.2 .077 2.2 204.7 .021
+
+jectory terminates upon collision, full target coverage, or bud-get exhaustion ( B = 3 L∗). Test episodes are partitioned by start-to-target distance into Easy (100 m), Medium (200 m), and Hard (300 m) tiers, where larger distances push targets beyond the leader’s initial BEV view and demand more ex-ploration and longer low-altitude navigation. 
+
+Implementation. The follower VLA is initialized from Qwen2.5-VL-7B-Instruct via SFT on 6K expert trajectories from the PPO pipeline and updated by one DAgger epoch per round. When transferring to a new scene, it is further adapted with ∼2K trajectories from that scene while the leader mem-ory is carried over unchanged; adaptation details and cor-pus statistics are provided in Appendix G and J. As leader we evaluate four frozen VLMs, the proprietary GPT-5.6-sol and GPT-5.4-mini and the open-source Qwen3-VL-32B/8B-Instruct, assisted by GroundingDINO for candidate detection on BEV imagery. Further leader details are in Appendix F. 
+
+Baselines. We compare against three categories of meth-ods. CMA (Tan and Bansal 2019) and Seq2Seq (Sutskever, Vinyals, and Le 2014) are representative lightweight single-agent models widely used in aerial VLN benchmarks. Open-Fly (Gao et al. 2025) is a representative VLA-based single-agent navigator, and AerialVLA (Xu et al. 2026b) is a recent end-to-end aerial VLA with dual-view perception. Aero-Duo (Wu et al. 2025) is the only prior dual-altitude method. All baselines are evaluated under the same protocol, with implementation details in Appendix H. 
+
+5.2 Main Results 
+
+Comparison with Baselines. Table 1 compares CoNav-UAV with all baselines on learning and held-out scenes. Three findings emerge. 
+
+(1) CoNav-UAV is decisively stronger in-distribution. The strongest configuration per tier reaches 40.6% OSR on Easy (GPT-5.4-mini), 35.7% on Medium, and 37.2% on Hard (both GPT-5.6-sol), exceeding the strongest baseline in each tier by +14.7, +26.4, and +30.8 pp, respectively. 
+
+(2) The advantage transfers across scenes at a much lower adaptation cost. CoNav-UAV attains the highest OSR in five of the six cross-scene tier combinations using leader mem-0 .5 1 1.5 2        
+
+> 18 20 22 24 26
+> Iteration OSR (%)  ↑
+> 0.5 11.5 2
+> 90 100
+> Iteration NE (m)  ↓
+> 0.5 11.5 2
+> 0.16 0.18 0.2
+> Iteration SPL  ↑
+
+Figure 2: Performance across Stackelberg rounds, averaged over 4 leader VLMs × 3 difficulty tiers. Half-integer itera-tions update the leader memory via ICL; integer iterations, marked by red squares, update the follower via DAgger. ory transferred from airsim16 . On airsim26 Hard, the strongest CoNav-UAV result is only 0.7 pp below AerialVLA (15.2% vs. 15.9%); on airsim23 , CoNav-UAV leads the strongest baseline by 6.3, 9.0, and 6.9 pp from Easy to Hard. The baselines reach these numbers only after fine-tuning on target-scene data with new instruction annotations, 4.6K tra-jectories on airsim23 and 7.5K on airsim26 , whereas CoNav-UAV adapts its follower with about 2K language-free trajectories, 2.6× and 3.7× fewer, and leaves the leader un-touched (Appendix H). 
+
+(3) Long-range target-oriented navigation remains the main source of difficulty. Baseline OSR generally falls with distance, particularly on airsim16 and airsim23 , while the dual-altitude system preserves a larger fraction of its Easy-tier coverage. The remaining gap on airsim26 Hard also shows that cross-scene transfer does not remove the challenge of long-range grounding and control. Full per-VLM per-distance breakdowns across iterations are provided in Tables A1–A3 in the appendix. Tables A4–A5 additionally report the omitted zero-shot/fine-tuned baseline variants and CoNav-UAV results without memory. Qualita-tive rollout visualizations appear in Appendix I.1. 
+
+Iterative Stackelberg Improvement. To disentangle the two updates’ complementary gains, we evaluate every inter-mediate iteration (Figure 2). Performance improves steadily across rounds, with each pair of leader and follower updates pushing the system to a new peak. The only exception is a transient dip at iter 1.5. By iter 1 the follower has adapted to the dispatch distribution of the iter-0.5 leader, so the leader’s second update breaks this alignment and performance tem-porarily regresses. The subsequent follower update restores alignment and surpasses all previous peaks. Leader improve-ment alone thus does not translate into system-level gains until the follower adapts to the evolving dispatch behavior. 
+
+5.3 Ablations 
+
+Cross-Scene Memory Transfer. We isolate whether the leader guidelines learned on airsim16 remain useful in new scenes. Within each pair in Table 2, the two runs share the same target-scene follower adaptation and differ only in whether the transferred leader memory is used. Transferred memory improves OSR and SPL in all eight paired settings, with average OSR gains of 3.7 pp on airsim26 and 2.5 pp on airsim23 , indicating that the guidelines encode high-level exploration and dispatch strategies that remain valid under new scene geometry and appearance. Complete per-tier results are reported in Appendix C. Table 2: Effect of zero-shot memory transfer. Entries are OSR (%) / NE (m) / SPL, averaged over difficulty tiers; ∆
+
+reports the OSR gain from memory transfer. The best result for each metric and scene is in bold .
+
+Leader w/o memory + memory ∆ OSR 
+
+airsim26 
+
+GPT-5.6-sol 24.3/111.1/.230 28.0 /104.4 /.237 +3.7 GPT-5.4-mini 18.6/123.0/.166 22.4/127.0/.197 +3.8 Qwen3-VL-32B 15.9/123.6/.147 21.0/125.0/.192 +5.1 
+
+Qwen3-VL-8B 16.9/126.2/.162 19.1/125.9/.181 +2.2 
+
+airsim23 
+
+GPT-5.6-sol 12.6/125.9/.117 18.4 /121.0 /.158 +5.8 
+
+GPT-5.4-mini 16.4/122.7/.140 17.3/123.1/ .160 +0.9 Qwen3-VL-32B 12.2/127.3/.098 14.2/132.2/.122 +2.0 Qwen3-VL-8B 9.1/140.2/.080 10.2/136.6/.090 +1.1 
+
+Table 3: Component ablations (GPT-5.4-mini leader, iter 2).                
+
+> OSR (%) / NE (m) / SPL Easy Medium Hard Overall Full system 40.6/45.0/.334 34.6/80.0/.253 22.6/128.4/.146 32.6/84.5/.244 No-DINO 37.6/49.5/.303 18.4/93.9/.141 14.5/142.5/.111 23.5/95.3/.185 Random retr. 44.0/45.8/.374 21.4/98.5/.140 15.4/148.9/.117 26.9/97.7/.210
+
+Component Contributions. We ablate two key compo-nents with GPT-5.4-mini as leader (Table 3). Removing GroundingDINO candidates (grounding directly on raw BEV) costs 9.1 pp of overall OSR, confirming that current VLMs still lack sufficient spatial grounding precision. Re-placing value-aware retrieval with random memory selec-tion costs 5.7 pp, validating utility-based memory ranking. Both degradations concentrate at Medium and Hard, where grounding and guideline quality matter most. 
+
+## 6 Conclusion 
+
+We presented CoNav-UAV, the first framework to formalize dual-altitude UAV cooperation as a Stackelberg game and jointly optimize the agents with onboard information alone. By decoupling the task into vision-language reasoning at the leader and coordinate-conditioned control at the follower, CoNav-UAV matches optimization to each role: gradient-free memory-based ICL for the frozen-VLM leader and DAgger-style distillation for the follower. Iterative Stackelberg Learn-ing alternates the two updates and drives both agents toward equilibrium through mutual adaptation. CoNav-UAV outper-forms single- and dual-agent baselines across difficulty tiers, and ablations confirm the complementary gains of both up-dates. The learned guidelines transfer across scenes and VLM backbones. Future work includes fine-tuning the leader for better grounding, scaling follower training with open-source data, and extending to multi-UAV coordination; limitations are discussed in Appendix K. References 
+
+Alvarez, G.; Ekren, I.; Kratsios, A.; and Yang, X. 2024. Neural Operators Can Play Dynamic Stackelberg Games. 
+
+arXiv preprint arXiv:2411.09644 .An, D.; Wang, H.; Wang, W.; Wang, Z.; Huang, Y.; He, K.; and Wang, L. 2024. ETPNav: Evolving Topological Plan-ning for Vision-Language Navigation in Continuous Envi-ronments. IEEE Transactions on Pattern Analysis and Ma-chine Intelligence .Anderson, P.; Wu, Q.; Teney, D.; Bruce, J.; Johnson, M.; Sünderhauf, N.; Reid, I.; Gould, S.; and van den Hengel, A. 2018. Vision-and-Language Navigation: Interpreting Visually-Grounded Navigation Instructions in Real Environ-ments. In IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) .Bai, S.; et al. 2025. Qwen2.5-VL Technical Report. arXiv preprint arXiv:2502.13923 .Cai, H.; Rao, Y.; Huang, L.; Zhong, Z.; Dong, J.; Tan, J.; Nai, C.; Hou, J.; Lu, W.; and Zhong, R. 2026. Air-Nav: A Large-Scale UAV Vision-and-Language Navigation Dataset with Natural and Diverse Instructions. arXiv preprint arXiv:2601.03707 .Chen, S.; Guhur, P.-L.; Schmid, C.; and Laptev, I. 2021. History Aware Multimodal Transformer for Vision-and-Language Navigation. In Advances in Neural Information Processing Systems (NeurIPS) .Chen, S.; Wang, M.; and Yang, Z. 2023. Actions Speak What You Want: Provably Sample-Efficient Reinforcement Learn-ing of the Quantal Stackelberg Equilibrium from Strategic Feedbacks. arXiv preprint arXiv:2307.14085 .Fan, Y.; Chen, W.; Jiang, T.; Zhou, C.; Zhang, Y.; and Wang, X. E. 2023. Aerial Vision-and-Dialog Navigation. In Find-ings of the Association for Computational Linguistics: ACL 2023 .Fiez, T.; Chasnov, B.; and Ratliff, L. J. 2020. Implicit Learn-ing Dynamics in Stackelberg Games: Equilibria Characteri-zation, Convergence Analysis, and Empirical Study. In In-ternational Conference on Machine Learning (ICML) .Gao, Y.; Wang, Z.; Jing, L.; Wang, D.; Li, X.; and Zhao, B. 2024. Aerial Vision-and-Language Navigation via Semantic-Topo-Metric Representation Guided LLM Reasoning. arXiv preprint arXiv:2410.08500 .Gao, Y.; et al. 2025. OpenFly: A Versatile Toolbox and Large-Scale Benchmark for Aerial Vision-Language Navigation. 
+
+arXiv preprint arXiv:2502.18041 .Gerstgrasser, M.; and Parkes, D. C. 2023. Oracles and Fol-lowers: Stackelberg Equilibria in Deep Multi-Agent Rein-forcement Learning. In International Conference on Ma-chine Learning (ICML) .Goktas, D.; and Greenwald, A. 2021. Convex-Concave Min-Max Stackelberg Games. In Advances in Neural Information Processing Systems (NeurIPS) .Kim, M. J.; Pertsch, K.; Karamcheti, S.; Xiao, T.; Balakr-ishna, A.; Nair, S.; Rafailov, R.; Foster, E.; Lam, G.; San-keti, P.; et al. 2024. OpenVLA: An Open-Source Vision-Language-Action Model. In Conference on Robot Learning (CoRL) .Krantz, J.; Wijmans, E.; Majumdar, A.; Batra, D.; and Lee, S. 2020. Beyond the Nav-Graph: Vision-and-Language Naviga-tion in Continuous Environments. In European Conference on Computer Vision (ECCV) .Lee, J.; Miyanishi, T.; Kurita, S.; Sakamoto, K.; Azuma, D.; Matsuo, Y.; and Inoue, N. 2025. CityNav: A Large-Scale Dataset for Real-World Aerial Navigation. In IEEE/CVF International Conference on Computer Vision (ICCV) .Liu, S.; Zhang, H.; Qi, Y.; Wang, P.; Zhang, Y.; and Wu, Q. 2023. AerialVLN: Vision-and-Language Navigation for UAVs. In IEEE/CVF International Conference on Computer Vision (ICCV) .Qi, Y.; Wu, Q.; Anderson, P.; Wang, X.; Wang, W. Y.; Shen, C.; and van den Hengel, A. 2020. REVERIE: Remote Em-bodied Visual Referring Expression in Real Indoor Environ-ments. In IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) .Ross, S.; Gordon, G. J.; and Bagnell, D. 2011. A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning. In International Conference on Artificial Intelligence and Statistics (AISTATS) .Schulman, J.; Wolski, F.; Dhariwal, P.; Radford, A.; and Klimov, O. 2017. Proximal Policy Optimization Algorithms. 
+
+arXiv preprint arXiv:1707.06347 .Shen, H.; Yang, Z.; and Chen, T. 2024. Principled Penalty-Based Methods for Bilevel Reinforcement Learning and RLHF. In International Conference on Machine Learning (ICML) .Sutskever, I.; Vinyals, O.; and Le, Q. V. 2014. Sequence to Sequence Learning with Neural Networks. In Advances in Neural Information Processing Systems (NeurIPS) .Tan, H.; and Bansal, M. 2019. LXMERT: Learning Cross-Modality Encoder Representations from Transformers. In 
+
+Conference on Empirical Methods in Natural Language Pro-cessing (EMNLP) .von Stackelberg, H. 2011. Market Structure and Equilibrium .Springer. Wang, X.; Yang, D.; Wang, Z.; Kwan, H.; Chen, J.; Wu, W.; Li, H.; Liao, Y.; and Liu, S. 2024. Towards Realis-tic UAV Vision-Language Navigation: Platform, Benchmark, and Methodology. arXiv preprint arXiv:2410.07087 .Wu, R.; Zhang, Y.; Chen, J.; Huang, L.; Zhang, S.; Zhou, X.; Wang, L.; and Liu, S. 2025. AeroDuo: Aerial Duo for UAV-based Vision and Language Navigation. In ACM Inter-national Conference on Multimedia (MM) .Xu, H.; Hu, Y.; Gao, C.; Zhu, Z.; Zhao, Y.; and Yin, Q. 2026a. GeoNav: Empowering MLLMs with Dual-Scale Geospatial Reasoning for Language-Goal Aerial Navigation. Pattern Recognition , 177: 113365. Xu, P.; Deng, Z.; Deng, J.; Gu, Z.; and Wan, S. 2026b. Aeri-alVLA: A Vision-Language-Action Model for UAV Navi-gation via Minimalist End-to-End Control. arXiv preprint arXiv:2603.14363 .Zhang, S.; Wang, J.; Zhou, R.; Liao, J.; Feng, Y.; Li, Z.; Zheng, Y.; Zhang, W.; Wen, Y.; Li, Z.; Xiong, F.; Qi, Y.; Tang, B.; and Wen, M. 2026. MemRL: Self-Evolving Agents via Runtime Reinforcement Learning on Episodic Memory. 
+
+arXiv preprint arXiv:2601.03192 .Zhang, W.; Gao, C.; Yu, S.; Peng, R.; Zhao, B.; Zhang, Q.; Cui, J.; Chen, X.; and Li, Y. 2025. CityNavAgent: Aerial Vision-and-Language Navigation with Hierarchical Seman-tic Planning and Global Memory. In Annual Meeting of the Association for Computational Linguistics (ACL) .Zhou, G.; Hong, Y.; and Wu, Q. 2024. NavGPT: Explicit Reasoning in Vision-and-Language Navigation with Large Language Models. In AAAI Conference on Artificial Intelli-gence .Technical Appendix 
+
+This appendix supplements the main paper with material omitted for space. Appendix A states the full Iterative Stack-elberg Learning procedure, and Appendices B and C report the per-VLM, per-tier results underlying the summary tables in the main text. Appendix E analyzes how leader grounding evolves across iterations and how this differs across VLM backbones. Appendices D–H document the data-generation pipeline and the implementation of the leader, the follower, and every baseline, and Appendix I walks through two rep-resentative episodes. Appendix J describes the assets we re-lease, and Appendix K discusses limitations. 
+
+## A Full ISL Algorithm 
+
+Algorithm A1 gives the complete ISL procedure described in the main text. 
+
+Algorithm A1 Iterative Stackelberg Learning for CoNav-UAV 
+
+Require: Pretrained VLM; point-cloud map; learning set E;rounds K 
+
+> 1:
+
+Train RL expert πE via PPO in point-cloud environment  
+
+> 2:
+
+Train π(0)  
+
+> F
+
+by distilling πE on random start-target pairs  
+
+> (Sec. 4.3) 3:
+
+M ← ∅; D ← D (0) init  
+
+> 4:
+
+for k = 0 , . . . , K −1 do  
+
+> 5:
+
+for each episode (ℓj , C⋆j ) in E (leader update) do  
+
+> 6:
+
+Mres ← Retrieve( ℓj , M) (Eq. 9) 7: Execute under πL(Mres ), π(k) 
+
+> F
+
+; observe Rj = rLT 
+
+> 8:
+
+ej ← Reflect(ep j ) (Eq. 7) 9: Update Qi for i ∈ M res (Eq. 8) 10: if ℓj new to M then  
+
+> 11:
+
+Store (ℓj , e j , Q 0) in M 
+
+> 12:
+
+else  
+
+> 13:
+
+Revise existing guideline for ℓj with ej 
+
+> 14:
+
+end if  
+
+> 15:
+
+end for  
+
+> 16:
+
+Collect DAgger data from round-k nav segments via 
+
+πE ; D ← D ∪ D (k)dag  
+
+> 17:
+
+π(k+1)  
+
+> F
+
+← SFT( π(k) 
+
+> F
+
+, D) (follower update) 18: end for  
+
+> 19:
+
+return (π(K) 
+
+> F
+
+, M)
+
+## B Per-VLM Per-Distance Breakdowns 
+
+Tables A1–A3 provide the full per-VLM per-distance break-downs of OSR, NE, and SPL across all Stackelberg itera-tions. The spiral improvement pattern is consistent across all nine VLM-distance cells. Each DAgger step recovers from the distribution mismatch introduced by the preceding leader update and pushes performance to a new peak. 
+
+## C Full Cross-Scene Generalization Results 
+
+Tables A4 and A5 report the complete per-tier variants un-derlying Tables 1 and 2. They include zero-shot transfer (ZS) and target-scene fine-tuning (FT) for every baseline, together with CoNav-UAV both without and with transferred leader memory. 
+
+## D Data Generation Pipeline 
+
+D.1 High-Altitude Annotation and Verification 
+
+Benchmark construction uses two dedicated interfaces (Fig. A1). 
+
+Annotation interface. The annotator teleoperates a simu-lated UAV through the scene in first-person view and clicks a target object directly in the image. The clicked pixel is back-projected to world coordinates through the rendered depth map, combining camera intrinsics with the current camera pose, so that no manual coordinate entry is required. The annotator then composes a target-oriented instruction, op-tionally starting from a reference-instruction library. Each record stores the target world coordinate, the instruction, the UAV pose at annotation time, a BEV snapshot, and prove-nance metadata. 
+
+Verification interface. A second annotator independently reviews every record. The interface restores the scene, dis-plays the annotated target as an overlay marker, and lets the reviewer freely reposition the camera to inspect the target from new viewpoints. The reviewer either accepts the record, rejects it, or refines the target coordinate by re-clicking the object, which triggers the same depth-based back-projection. Only accepted records enter the benchmark, and the ac-cept/reject decision, any coordinate correction, and the re-view timestamp are logged for auditability. 
+
+D.2 Low-Altitude Expert Trajectory Synthesis 
+
+Low-altitude training data is produced fully automatically in four stages (Fig. A2); the resulting corpus is summarized in Table A8. 
+
+Stage 1: geometric twin construction. The scene point cloud is voxelized into an occupancy grid, and building in-stances are clustered into 2-D contour polygons. The result-ing map preserves collision geometry at a fraction of the rendering cost and serves as the RL training environment. 
+
+Stage 2: start–target pair generation. Collision-free spawn points are annotated on the map, and candidate tar-gets are taken from the building clusters. Start–target pairs (referred to as initials ) are then enumerated and grouped by straight-line distance, with held-out test pairs excluded from training. Initials come from three sources depending on the consumer: (i) bootstrap SFT data pairs random spawn points with random buildings at 400–600 m; (ii) benchmark-target data matches each verified annotation coordinate to its near-est building cluster and samples spawn points at the three Table A1: Per-VLM per-distance OSR (%) across Stackelberg iterations. Gains in green ; declines in red . Start-to-target distance indicates task difficulty tier. 
+
+GPT-5.4-mini Qwen3-32B Qwen3-8B 100 m 200 m 300 m 100 m 200 m 300 m 100 m 200 m 300 m Iter 0 28.2 17.9 11.5 30.8 21.8 14.1 20.5 14.1 7.7 Iter 0.5 29.2 ( +1.0 ) 25.8 ( +7.9 ) 13.5 ( +2.0 ) 30.8 ( +0.0 ) 22.1 (+0.3 ) 9.6 ( −4.5 ) 22.6 ( +2.1 ) 19.2 ( +5.1 ) 11.5 ( +3.8 )Iter 1 30.8 (+1.6 ) 25.0 (−0.8 ) 17.9 (+4.4 ) 32.5 (+1.7 ) 21.4 ( −0.7 ) 15.4 (+5.8 ) 26.1 (+3.5 ) 21.8 (+2.6 ) 12.8 (+1.3 )Iter 1.5 26.9 ( −3.9 ) 23.9 ( −1.1 ) 14.5 ( −3.4 ) 27.1 ( −5.4 ) 17.8 ( −3.6 ) 15.9 ( +0.5 ) 19.2 ( −6.9 ) 14.1 ( −7.7 ) 12.8 ( +0.0 )Iter 2 40.6 ( +13.7 ) 34.6 ( +10.7 ) 22.6 ( +8.1 ) 32.6 ( +5.5 ) 25.1 ( +7.3 ) 21.3 ( +5.4 ) 26.5 ( +7.3 ) 18.0 ( +3.9 ) 18.0 ( +5.2 )
+
+Table A2: Per-VLM per-distance NE (m) across Stackelberg iterations. Improvements in green ; regressions in red .
+
+GPT-5.4-mini Qwen3-32B Qwen3-8B 100 m 200 m 300 m 100 m 200 m 300 m 100 m 200 m 300 m Iter 0 48.3 93.6 146.3 49.2 103.7 160.7 73.1 112.2 148.9 Iter 0.5 53.5 ( +5.2 ) 74.1 ( −19.5 ) 150.7 ( +4.4 ) 52.4 ( +3.2 ) 92.3 ( −11.4 ) 157.3 ( −3.4 ) 53.8 ( −19.3 ) 96.2 ( −16.0 ) 157.7 ( +8.8 )Iter 1 48.3 ( −5.2 ) 66.0 ( −8.1 ) 119.6 ( −31.1 ) 46.1 ( −6.3 ) 92.6 ( +0.3 ) 142.7 ( −14.6 ) 52.4 ( −1.4 ) 87.2 ( −9.0 ) 135.4 ( −22.3 )Iter 1.5 51.9 ( +3.6 ) 100.8 ( +34.8 ) 156.8 ( +37.2 ) 50.4 ( +4.3 ) 103.4 ( +10.8 ) 147.7 ( +5.0 ) 51.5 ( −0.9 ) 91.1 ( +3.9 ) 160.4 ( +25.0 )Iter 2 45.0 ( −6.9 ) 80.0 ( −20.8 ) 128.4 ( −28.4 ) 47.5 ( −2.9 ) 91.0 ( −12.4 ) 124.5 ( −23.2 ) 44.8 ( −6.7 ) 80.1 ( −11.0 ) 112.0 ( −48.4 )
+
+evaluation tiers, providing expert trajectories on the bench-mark targets for baseline training; (iii) DAgger data reuses the start–target pairs of the navigation segments encountered during cooperative rollouts. 
+
+Stage 3: PPO expert training and rollout. The compact CNN expert described in the main text is trained with PPO in the geometric twin and then rolled out on the initials, produc-ing collision-free waypoint sequences. The expert controls planar displacement only. Heading is assigned by rule and always points toward the target, following the intuition that during target approach the obstacles the UAV must observe and avoid lie predominantly between itself and the target. RL is preferred over classical planners for three reasons. The expert acts on local observations causally consistent with FPV, preventing the VLA from imitating globally privileged decisions. The continuous trade-offs among progress, clear-ance, and recovery cannot be captured by fixed heuristics. Once trained, the expert is an inexpensive, reusable teacher for arbitrary start–target pairs. 
+
+Stage 4: filtering and FPV rendering. Rollouts are fil-tered for spatial diversity by dynamic time warping (DTW) distance between trajectories and exported as waypoint files. Each trajectory is replayed pose-by-pose in the AirSim simu-lator at the fixed operating altitude, rendering one FPV image per waypoint. Consecutive waypoint differences provide the action labels, so each trajectory of N waypoints yields N −1
+
+observation-action frames. 
+
+## E Leader Grounding Analysis 
+
+We analyze the direct effect of leader updates on tar-get grounding and compare convergence dynamics across VLMs. We track dispatched-target precision and GT recall across iterations (Figure A3); both metrics assess only leader-issued targets and are independent of follower navigation. First, the gradient-free ICL update converges within one to two rounds. Both precision and recall improve substantially in the first one or two updates. Dispatch quality then declines mildly, indicating incipient overfitting, so the evaluated iter-ations already cover each VLM’s performance peak. Second, both the convergence rate and the attainable ceil-ing depend on backbone capability. The two Qwen models saturate early at a much lower recall ceiling than the GPT models, so the benefit of ICL-based optimization hinges on the backbone’s reasoning and long-context understanding. The GPT models also converge at different rates. GPT-5.6-sol explores the scene effectively from the start and peaks after a single update, whereas GPT-5.4-mini acquires effec-tive scene exploration in its first update and discovers higher-quality guidelines only in the second, producing a delayed recall jump. Supplementary leaders Claude-Sonnet-4.6 and GLM-5V-turbo likewise improve after the first round. Third, the early saturation of Qwen models may stem from converged memory content or the model’s limited ability to exploit it, and transferring memory banks across VLMs sepa-rates the two (Table A6, Appendix F). GPT-5.4-mini reading Qwen iter-1.5 memory exceeds its own iter-0.5 performance in both precision and recall, so the Qwen-written memory keeps improving and the bottleneck lies in the model’s ability to exploit it. VLMs with weaker long-context understanding benefit mainly from the initial introduction of guidelines and remain insensitive to further gains in memory quality, which sets the ceiling of ICL-based optimization. A related pattern appears in cross-scene transfer (Table 2). The weakest backbone, Qwen3-VL-8B, benefits least on both target scenes, consistent with the saturation above, whereas GPT-5.6-sol obtains the largest gain on airsim23 . The Table A3: Per-VLM per-distance SPL across Stackelberg iterations. Gains in green ; declines in red .
+
+GPT-5.4-mini Qwen3-32B Qwen3-8B 100 m 200 m 300 m 100 m 200 m 300 m 100 m 200 m 300 m Iter 0 .268 .152 .098 .281 .170 .114 .191 .118 .068 Iter 0.5 .278 ( +.010 ) .238 ( +.086 ) .119 ( +.021 ) .269 ( −.012 ) .174 ( +.004 ) .085 ( −.029 ) .207 ( +.016 ) .163 ( +.045 ) .098 ( +.030 )Iter 1 .323 ( +.045 ) .278 ( +.040 ) .151 ( +.032 ) .296 ( +.027 ) .149 ( −.025 ) .125 ( +.040 ) .248 ( +.041 ) .190 ( +.027 ) .109 ( +.011 )Iter 1.5 .232 ( −.091 ) .193 ( −.085 ) .096 ( −.055 ) .242 ( −.054 ) .149 ( +.000 ) .130 ( +.005 ) .154 ( −.094 ) .107 ( −.083 ) .109 ( +.000 )Iter 2 .334 ( +.102 ) .253 ( +.060 ) .146 ( +.050 ) .280 ( +.038 ) .208 ( +.059 ) .168 ( +.038 ) .225 ( +.071 ) .145 ( +.038 ) .147 ( +.038 )
+
+Table A4: Full per-tier cross-scene generalization results on airsim26 (budget = 3 L∗, ε=20 m). Metric and tier definitions follow Table 1. Best in bold ; second-best underlined. 
+
+Easy Medium Hard Method OSR ↑ NE ↓ SPL ↑ OSR ↑ NE ↓ SPL ↑ OSR ↑ NE ↓ SPL ↑
+
+CMA (ZS) 6.5 56.8 .053 8.7 154.1 .087 4.3 228.6 .043 CMA (FT) 30.4 48.9 .272 13.0 116.5 .112 7.2 177.0 .064 Seq2Seq (ZS) 21.0 55.6 .203 0 155.7 0 1.4 225.6 .014 Seq2Seq (FT) 11.6 54.6 .103 8.5 135.4 .073 2.2 192.8 .013 OpenFly (ZS) 5.8 64.3 .053 0 166.4 0 0 262.2 0OpenFly (FT) 17.4 57.1 .170 10.6 138.0 .101 2.9 228.5 .029 AerialVLA (ZS) 29.7 52.1 .274 11.6 138.5 .116 9.4 215.2 .079 AerialVLA (FT) 28.3 52.8 .259 13.0 132.0 .121 15.9 193.9 .158 
+
+AeroDuo (ZS) 33.6 53.1 .330 0 146.3 0 0 235.4 0AeroDuo (FT) 39.9 52.7 .373 0 140.2 0 1.4 228.3 .011 CoNav (GPT-5.6-sol) 39.1 49.8 .391 21.7 101.8 .197 12.1 181.8 .102 + memory 43.5 (+4.4) 42.3 .383 26.1 (+4.4) 94.8 .222 14.5 (+2.4) 176.1 .106 CoNav (GPT-5.4-mini) 34.8 48.8 .338 13.0 129.7 .107 8.0 190.4 .054 + memory 39.6 (+4.8) 47.8 .389 15.9 (+2.9) 136.7 .117 11.6 (+3.6) 196.5 .086 CoNav (Qwen3-VL-32B-Instruct) 31.9 48.7 .314 2.9 141.8 .029 13.0 180.2 .097 + memory 41.3 (+9.4) 47.1 .402 6.5 (+3.6) 139.5 .060 15.2 (+2.2) 188.3 .113 CoNav (Qwen3-VL-8B-Instruct) 34.8 49.9 .334 5.8 129.0 .058 10.1 199.6 .094 + memory 40.6 (+5.8) 49.5 .405 6.5 (+0.7) 131.1 .057 10.1 (+0.0) 197.1 .082 
+
+ordering among the stronger leaders nevertheless varies by scene, so transferred guidelines help broadly but how much a leader extracts from them also depends on how well the scene matches the strategies the memory encodes. 
+
+## F Leader Implementation Details 
+
+Memory transfer experiment. Table A6 reports the full memory-transfer results analyzed in the leader grounding analysis, where GPT-5.4-mini reads Qwen iter-1.5 memory banks in read-only mode. 
+
+Grounding pipeline. All evaluated VLMs exhibit limited precise spatial grounding on aerial BEV imagery. Ground-ingDINO therefore first detects candidate objects on each BEV image, and the VLM filters, confirms, and prioritizes these candidates through structured reasoning before updat-ing the target queue. 
+
+Action space and budget. The leader repositions with fixed-step horizontal translations of 150 m along the four cardinal directions and discrete altitude adjustments of 50 m. Each episode allows up to 10 grounding rounds, and the leader may terminate the mission early with done .
+
+Asynchronous scheduling. Because VLM inference la-tency varies across decision steps, the leader and follower run asynchronously. The follower continuously executes to-ward the current head of the coordinate queue, and the leader updates the queue whenever its grounding round completes, so neither agent blocks on the other. 
+
+Value-aware retrieval. Retrieval uses k1=5 , k2=3 , simi-larity threshold ρ=0 .65 , and λ=0 .5. During learning, each retrieved guideline is drawn from the ranked candidates with probability 0.9 and uniformly at random from the memory bank with probability ε=0 .1, while evaluation uses ε=0 .For cross-scene generalization, the memory bank learned on 
+
+airsim16 is transferred to the target scenes without any update. 
+
+## G Follower VLA Fine-Tuning Details 
+
+Model and adaptation. The follower is initialized from Qwen2.5-VL-7B-Instruct and fine-tuned with LoRA ( r=32 ,
+
+α=64 , dropout 0.05 , applied to all linear layers, with the language-model head and token embeddings kept trainable). Training uses bfloat16 with FlashAttention-2 and DeepSpeed ZeRO-2 on 8 ×A100-80GB GPUs. Table A5: Full per-tier cross-scene generalization results on airsim23 (budget = 3 L∗, ε=20 m). Metric and tier definitions follow Table 1. 
+
+Easy Medium Hard Method OSR ↑ NE ↓ SPL ↑ OSR ↑ NE ↓ SPL ↑ OSR ↑ NE ↓ SPL ↑
+
+CMA (ZS) 9.7 79.8 .089 3.0 146.3 .026 0.7 236.8 .007 CMA (FT) 12.0 74.6 .110 3.3 137.8 .033 3.0 229.3 .030 Seq2Seq (ZS) 6.2 81.4 .062 3.0 155.9 .030 1.7 242.0 .017 Seq2Seq (FT) 6.7 75.1 .067 5.3 148.0 .053 0.9 219.6 .008 OpenFly (ZS) 6.1 87.8 .061 0.8 172.0 .008 0.0 250.4 .000 OpenFly (FT) 11.8 75.7 .115 4.4 159.6 .044 2.8 235.3 .028 AerialVLA (ZS) 19.6 69.9 .192 0 171.3 0 0 256.4 0AerialVLA (FT) 21.4 67.8 .210 9.3 151.6 .093 1.9 231.1 .019 AeroDuo (ZS) 18.6 71.0 .163 0.4 177.5 .001 0.9 259.1 .009 AeroDuo (FT) 22.2 66.1 .207 1.9 164.0 .010 3.7 235.6 .032 CoNav (GPT-5.6-sol) 18.4 64.2 .170 12.1 134.3 .119 7.3 179.2 .061 + memory 27.7 (+9.3) 60.2 .233 18.3 (+6.2) 126.0 .167 9.2 (+1.9) 176.8 .074 CoNav (GPT-5.4-mini) 27.9 61.9 .253 8.5 134.5 .065 12.7 171.6 .103 
+
++ memory 28.5 (+0.6) 65.4 .275 16.7 (+8.2) 122.3 .147 6.9 (−5.8) 181.6 .056 CoNav (Qwen3-VL-32B-Instruct) 20.6 71.8 .186 8.0 143.6 .059 8.2 166.4 .051 + memory 24.0 (+3.4) 61.1 .219 8.0 (+0.0) 143.6 .054 10.6 (+2.4) 192.0 .093 CoNav (Qwen3-VL-8B-Instruct) 18.0 72.7 .164 7.4 145.2 .060 1.9 202.7 .016 + memory 19.9 (+1.9) 67.9 .171 8.3 (+0.9) 137.2 .077 2.2 (+0.3) 204.7 .021 
+
+(a) Annotation interface (b) Verification interface 
+
+Figure A1: Interfaces for high-altitude benchmark construction. (a) The annotator clicks a target in the FPV image; the pixel is back-projected through the depth map to world coordinates, and a target-oriented instruction is authored. (b) A second annotator verifies each record by inspecting the marked target from new viewpoints and accepts, rejects, or re-localizes it. Table A6: Memory transfer: dispatch precision and GT recall when GPT-5.4-mini reads Qwen iter 1.5 memory, compared with GPT’s own iter 0.5 and iter 1.5 memory. 
+
+Memory source Prec. Recall GPT iter 0.5 (own) 6.4% 22.7% GPT iter 1.5 (own) 10.6% 46.7% Qwen3-VL-32B-Instruct iter 1.5 (transfer) 8.7% 36.6% Qwen3-VL-8B-Instruct iter 1.5 (transfer) 8.7% 38.9% 
+
+Action representation. Each continuous action 
+
+(∆ x, ∆y, ∆ψ) is clipped to the 1%/99% percentile range computed on the training corpus and discretized into 256 bins per dimension, yielding three action tokens decoded autoregressively. DAgger batches reuse the original 
+
+airsim16 percentiles so that the token-to-action mapping stays fixed across iterations. Expert waypoints are downsam-pled at interval 3 from the 2 m PPO step, bounding per-step follower displacement by 6 m. 
+
+Sample format. Each frame is a single-turn conversation. The user message contains the current FPV image, the current pose, the target coordinate, and a history window of the past 20 poses. The assistant message contains the three action tokens, and the loss is computed on assistant tokens only. Trajectories are split into train/validation at the trajectory level with a 90/10 ratio. 
+
+Training schedule. All stages share the same optimizer settings, namely a constant learning rate of 2 × 10 −5 with warmup ratio 0.03 , effective batch size 112, gradient clip-ping at 1.0, and evaluation every 500 steps with the best checkpoint selected by validation loss. Stage 1 trains a fresh Geometric twin       
+
+> point cloud →occupancy grid + building contours
+> Start–target pairs
+> spawn points ×building clusters, distance-banded (bootstrap / benchmark targets / DAgger segments)
+> PPO expert rollout
+> collision-free waypoint sequences
+> Diversity filtering
+> waypoint export
+> Simulator replay
+> FPV rendering →observation-action frames
+
+Figure A2: Low-altitude expert data generation pipeline.           
+
+> 0.5 1.5 2.5
+> 510 15
+> Iteration Precision (%)  ↑
+> GPT-5.6-sol GPT-5.4-mini Qwen3-VL-32B-Instruct Qwen3-VL-8B-Instruct Claude-Sonnet-4.6 GLM-5V-turbo 0.5 1.5 2.5
+> 20 40
+> Iteration GT recall (%)  ↑
+
+Figure A3: Dispatched-target precision and GT recall (%) across leader iterations. Precision is the fraction of dispatched targets near a GT target; recall is the fraction of GT targets covered by ≥1 dispatch. Dashed lines denote supplementary leaders (first round only). LoRA on the airsim16 corpus (6,516 trajectories, ∼615K frames) for 7 epochs. Each DAgger round continues train-ing the same LoRA for 1 additional epoch on the mixture of the initial corpus and all accumulated DAgger data. For cross-scene adaptation, a new LoRA is trained on the merged 
+
+airsim16 weights using target-scene corpora (1,744 trajec-tories on airsim23 ; 2,000 on airsim26 ). A from-scratch variant trained on the base model serves solely as a reference for the transfer analysis below. 
+
+Cross-scene transfer. Figure A4 compares fine-tuning from the airsim16 checkpoint against training from scratch on the two target scenes. Warm-starting converges markedly faster, reaching 60–62% token accuracy within 500 steps versus 54–55% for scratch, attains a lower best validation loss (1.47 vs. 1.59–1.62), and maintains a 2– 4 pp token-accuracy advantage throughout training (64.2% vs. 61.0% at the final step on airsim23 ; 63.7% vs. 61.0% on airsim26 ). The coordinate-conditioned navigation skill learned on airsim16 therefore transfers across scenes and is not recovered by scratch training on the moderate target-scene corpora alone. This strong transferability is a di-rect consequence of the role decomposition in CoNav-UAV. High-level instruction understanding, cross-modal ground-ing, and reasoning are absorbed by the leader, leaving the follower a responsive, coordinate-conditioned low-level con-troller. The resulting skill is largely scene-agnostic, and adapting to a new scene mainly amounts to accommodat-ing its visual appearance. 
+
+## H Baseline Implementation Details 
+
+Seq2Seq. Instructions are encoded by a frozen BERT-base followed by a BiLSTM, and FPV images by a frozen ResNet-50 whose spatial features are pre-extracted for efficiency. A pose encoder embeds the current state, a GRU aggregates the episode context, and a linear head regresses (∆ x, ∆y, ∆ψ)
+
+under a weighted MSE loss (135.2M parameters, 2.2M train-able). 
+
+CMA. CMA extends the Seq2Seq backbone with two cross-modal attention stages, attending from the recurrent state to instruction tokens and from attended text to spatial visual features, with a second GRU fusing the attended con-text (138.6M parameters, 5.6M trainable). 
+
+OpenFly. The OpenFly agent follows the OpenVLA recipe, pairing frozen DINOv2 and SigLIP visual encoders with a LLaMA-2-7B backbone adapted by LoRA ( r=32 ,
+
+α=64 ). Actions use the same 256-bin tokenization as our follower and are decoded autoregressively. 
+
+AerialVLA. Our reproduction instantiates the reactive pol-icy with Qwen3-VL-8B and LoRA. At each control step, synchronized forward- and downward-facing RGB frames are resized to 224 × 224 and concatenated vertically, and paired with the target description and a coarse directional hint derived from the current pose and target position. The model autoregressively predicts forward displacement, ver-tical displacement, and yaw change, each discretized into 99 bins, together with an optional LAND token for episode termination. We adapt the language backbone with LoRA (r=64 , α=128 ), train the visual-language merger modules, and keep the visual encoder frozen. 
+
+AeroDuo. Our adaptation instantiates the Pilot-LLM with Qwen3-VL-8B and LoRA. At each high-level step, it receives a 100 m × 100 m RGB BEV crop centered on the follower together with the target instruction. Learned segmentation queries and a mask head produce a waypoint probability map, whose high-probability centroid is converted into a global waypoint without A* post-processing. The scene-specific low-altitude PPO follower observes a two-channel local occupancy map derived from the registered point-cloud map and the normalized relative waypoint, and predicts pla-nar displacement commands of at most 2 m for up to 300 steps per waypoint. 
+
+Training protocol. All baselines share the same two-stage recipe. They are first pretrained on the converted OpenFly corpus (Appendix J), which substantially enlarges the train-ing data and supplies the generic competence the task pre-supposes: grounding an aerial view, avoiding obstacles, and mapping a described destination to displacement commands. Since the conversion rewrites route narrations into target-oriented instructions, this stage already operates on our input format. They are then fine-tuned on expert trajectories flown 0 10 k 20 k 30 k 40 k           
+
+> 1.522.5
+> Training step Validation loss (a) Validation loss
+> 010 k20 k30 k40 k
+> 0.55 0.60.65
+> Training step Token accuracy (b) Validation action-token accuracy
+> airsim23 fine-tune airsim23 scratch airsim26 fine-tune airsim26 scratch
+
+Figure A4: Cross-scene VLA adaptation: fine-tuning from the airsim16 checkpoint (solid, filled markers) versus training from scratch (dashed, open markers). Warm-starting reaches a lower validation loss within the first few thousand steps and sustains a consistently higher action-token accuracy throughout adaptation. to the learning-set targets, with start points stratified across the difficulty tiers, aligning them with the target distribution, flight altitude, and action statistics of the benchmark. The two stages are complementary: pretraining provides scale and transferable skill, while fine-tuning aligns the policy with the evaluation distribution. For the cross-scene setting, each baseline starts from its 
+
+airsim16 checkpoint and is fine-tuned on two sources of target-scene data: the converted OpenFly trajectories of that scene, and expert trajectories flown to its annotated learning-set targets. The two sources total 4,593 trajectories (145K frames) on airsim23 and 7,498 trajectories (243K frames) on airsim26 . The CoNav-UAV follower instead consumes only the coordinate-conditioned subsets of Table A8, 1,744 and 2,000 trajectories respectively, which carry no language annotation, and the leader receives no target-scene update at all. 
+
+## I Qualitative Examples 
+
+Figures A5–A6 pair the execution record and evidence-grounded reflection for two representative 200 m search-and-navigation episodes. The first episode achieves complete GT coverage with two dispatches and no collision-marked fol-lower segment. The second exposes a complementary high-recall, low-precision failure mode: all GT instances are cov-ered, but broad grounding produces many false-positive dis-patches and repeated collisions. Together, the examples make concrete how leader grounding decisions affect the follower and how the reflector converts episode evidence into reusable language guidelines. 
+
+I.1 Cooperative Rollouts 
+
+Each execution summary contains three reader-facing views. Panel (a) aggregates the complete episode, including the leader trajectory, all episode-level dispatches, and the re-sulting follower segments. Panel (b) enlarges one grounding round associated with a covered target and reports its index among the ten grounding rounds; its round-specific dispatch should therefore not be confused with the aggregate dispatch set in panel (a). Panel (c) provides the post-mission GT ref-erence used to assess semantic correctness and coverage. 
+
+I.2 Evidence-Grounded Leader Reflection 
+
+Reflection is performed after an episode to generate the struc-tured guideline used by the leader’s episodic memory. For visualization, we run the same evidence-grounded workflow over the saved episode artifacts. In each example, the VLM reflector makes ten function calls to load context, diagnose textual records, and inspect grounding, navigation, and BEV evidence. To keep the figure legible, context-loading and text-only calls are consolidated into the left-column findings, while three representative visual inspections are shown on the right. The bottom band reproduces two selected reusable guidelines from the full final structured reflection, rather than the complete guideline set. Raw prompts, filenames, episode identifiers, and service metadata are omitted. 
+
+## J Data Release and Statistics 
+
+We will publicly release the following assets. 
+
+High-altitude benchmark. Verified instruction–target pairs produced by the annotation and verification interfaces of Appendix D.1. Each item carries an instruction and the co-ordinates of its GT targets in the scene’s NWU world frame, and annotations sharing an instruction within a scene are merged into one multi-target item. Table A7 reports descrip-tive statistics. Each scene is split randomly into two thirds of the instructions for learning and one third for testing, so learning and evaluation never share an instruction. 
+
+Low-altitude navigation corpus. Coordinate-conditioned expert trajectories produced by the pipeline of Appendix D.2, released as waypoint sequences with synchronized FPV ren-derings, all with a waypoint spacing of about 6 m (Table A8). Each scene uses a fixed flight altitude chosen for its build-ing profile, balancing target observability against obstacle-avoidance difficulty. The airsim16 subset covers start– Figure A5: Complete-coverage case for an L-shaped structure at the northeast city corner. Top: In the full 200 m episode, the follower covers the sole GT instance without a collision-marked segment, and one of the two episode dispatches is semantically correct. The enlarged covered-target grounding view is round 2 of 10. Bottom: The ten-call evidence-grounded reflection consolidates the multimodal findings and shows two selected guidelines from its final structured output. Figure A6: High-recall, low-precision case for three elongated coastal low-rise buildings. Top: The episode covers all three GT instances, but only 2 of 21 dispatches are correct and eight follower segments are collision-marked. The enlarged grounding view (round 3 of 10) exposes the broad set of shape-compatible candidates near the coastline bend. Bottom: The ten-call reflection diagnoses insufficient relational verification and over-dispatch, then returns selected grounding and dispatch guidelines. Table A7: High-altitude benchmark statistics. Multi-target denotes instructions matched by more than one ground-truth target; instruction length is counted in words. Each scene is split 2/3 learning and 1/3 test, reported as instructions/targets.                                            
+
+> airsim16 airsim23 airsim26 All Instructions 93 66 93 252 GT targets 132 87 98 317 Multi-target instr. 24 9336 share (%) 25.8 13.6 3.2 14.3 Targets per instr. 1.42 1.32 1.05 1.26 maximum 8548Instr. length (words) 14.2 13.8 15.2 14.4 Vocabulary size 164 207 277 448 Learning (instr./tgt.) 62/87 44/58 62/66 168/211 Test (instr./tgt.) 31/45 22/29 31/32 84/106
+
+Figure A7: Word cloud over all 252 released instruc-tions. Descriptions combine appearance attributes (colour, height, roof shape, rooftop structures), surrounding land-marks (bridge, park, sea, road), and cardinal or relative di-rections. target separations of 400 –600 m and bootstraps the follower, and the two target scenes provide the ∼2K-trajectory adap-tation subsets (Sec. 5.3). Owing to its size, this corpus will be released on Hugging Face upon publication. Table A8: Low-altitude expert trajectory corpus. Frames are consecutive waypoint pairs, each an observation-action train-ing sample; altitude is above ground level (AGL).                     
+
+> Scene Traj. Frames Frames/traj. Altitude (AGL)
+> airsim16 6,516 614,857 94 15 m
+> airsim23 1,744 142,239 82 55 m
+> airsim26 2,000 152,521 76 20 m Total 10,260 909,617 89 –
+
+Target-oriented OpenFly conversion. OpenFly (Gao et al. 2025) supplies large-scale trajectories for our scenes, but its instructions narrate turn-by-turn routes, whereas our task specifies only the destination. We therefore convert each trajectory into our target-oriented format for baseline training (Appendix H), since the baselines learn instruction under-standing jointly with the fine-tuned policy and require large instruction-conditioned corpora. CoNav-UAV itself does not consume this data, as the leader handles instructions via in-context learning and the follower is language-free. Tra-jectories with vertical maneuvers are removed. For each re-     
+
+> (a) airsim16 (b) airsim23 (c) airsim26
+
+Figure A8: Annotation examples, with the ground-truth tar-get marked on the BEV view used at annotation time. 
+
+(a) “The building on the west side of the park with an orange billboard featuring a round red logo on its roof.” (b) “The di-agonally oriented square building with a light-blue flat roof, at the southwest corner of the city.” (c) “A white-roofed build-ing with two symmetrical, C-shaped blue-roofed buildings to the north and a triangular building to the west.” Instructions identify a target by appearance, rooftop structures, neigh-bouring buildings, and orientation rather than by a route. maining trajectory we render two top-down views from the point-cloud slice matching its mean flight altitude, a local crop around the route and a global view of the scene, so the maps show the geometry actually visible at that level. A VLM receives both views with the original narration and returns a concise destination description plus a coarse scene posi-tion, mirroring the appearance-plus-landmark style of our human annotations. Grounding the query in rendered geom-etry keeps spatial relations verifiable. Table A9 reports the resulting corpus, which will likewise be released on Hugging Face upon publication owing to its size. Table A9: Target-oriented OpenFly conversion. Altitude fil-tering removes trajectories with vertical maneuvers; the re-maining trajectories are converted and expanded into per-step samples, with a small fraction dropped for degenerate paths or failed extraction.                      
+
+> Original Converted Scene Traj. Alt.-filtered Traj. Frames
+> airsim16 9,556 8,091 6,000 211,850
+> airsim23 3,429 3,429 3,000 98,201
+> airsim26 9,690 8,500 5,353 180,489 Total 22,675 20,020 14,353 490,540
+
+## K Limitations 
+
+The leader ceiling is set by the frozen backbone. Be-cause the leader is optimized purely in context, its attainable performance is bounded by the backbone’s spatial grounding and long-context reasoning. Appendix E shows that weaker VLMs saturate after the first guideline injection and stay in-sensitive to further improvements in memory quality, and the ablation in Sec. 5.3 shows that removing the detector still costs 9.1 pp of OSR. Raising this ceiling by fine-tuning the leader for aerial grounding, together with the high-altitude grounding supervision this requires, is a direction we intend to explore next. Follower training relies on a reconstructed geometric twin. Deployment uses no privileged information, but gen-erating the expert trajectories that supervise the follower re-quires a point-cloud reconstruction of the scene to train the PPO expert (Appendix D.2), so extending the follower to a new environment presupposes such a reconstruction. The re-quirement is confined to data generation and can be relaxed as reconstruction becomes cheaper, for instance by building the twin from a single high-altitude survey flight, which we view as a practical next step for scaling the pipeline. 
+
+Evaluation covers one cooperation pattern in simulation. 
+
+All experiments run in photorealistic AirSim scenes with a single leader–follower pair and a fixed follower altitude per scene. The formulation itself is not restricted to this setting: the leader’s dispatch queue extends naturally to several fol-lowers, and the Stackelberg structure is unchanged as long as each follower best-responds to the dispatched target. We therefore see scaling to multi-follower teams and to physical platforms, where wind, sensing noise, and control latency enter the follower’s response, as the natural next step, with the low-altitude PPO expert providing a route to domain-randomized training.

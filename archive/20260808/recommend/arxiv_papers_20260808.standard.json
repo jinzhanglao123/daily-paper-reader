@@ -1,0 +1,181 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-08T20:05:15.478916+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 4,
+    "deep_cap": 6,
+    "deep_selected": 4,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2608.04007v1",
+      "source": "arxiv",
+      "title": "TurnSight: Turn-Level Hindsight Self-Distillation for Tool-Integrated Reasoning",
+      "abstract": "Tool-Integrated Reasoning (TIR) enables LLMs to solve complex tasks through iterative tool interactions. However, existing reinforcement learning methods often rely on trajectory-level supervision, limiting fine-grained credit assignment in long-horizon TIR scenarios. On-policy self-distillation offers denser signals through teacher branches with privileged context, but existing approaches typically derive such context from ground-truth answers or retrieved skills, which may not reflect the states actually visited by the agent. Moreover, token-level supervision fails to capture the turn-level structure of tool interactions. To address this, we propose TurnSight, a turn-level hindsight self-distillation framework that derives supervision directly from execution-conditioned hindsight. It then constructs multiple hindsight views with different lookahead horizons and selects reliable supervision through cross-horizon directional agreement. Finally, the selected hindsight signal is normalized across sibling rollouts and used to adaptively modulate RL advantages while preserving their original optimization direction. Extensive experiments on three benchmarks demonstrate the effectiveness of TurnSight. Our codes are available at https://github.com/quchangle1/TurnSight.",
+      "authors": [
+        "Changle Qu",
+        "Sunhao Dai",
+        "Hengyi Cai",
+        "Yuqi Zhou",
+        "Xinran Chen",
+        "Simon",
+        "Jun Xu"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL",
+        "cs.AI"
+      ],
+      "published": "2026-08-04T17:59:21+00:00",
+      "link": "https://arxiv.org/pdf/2608.04007v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "proposes a turn-level hindsight self-distillation for fine-grained credit assignment in long-horizon RL",
+      "llm_evidence_cn": "提出轮次级事后自蒸馏，用于长时序强化学习中的细粒度信用分配",
+      "llm_evidence": "提出轮次级事后自蒸馏，用于长时序强化学习中的细粒度信用分配",
+      "canonical_evidence": "提出轮次级事后自蒸馏，用于长时序强化学习中的细粒度信用分配",
+      "llm_tldr_en": "Addresses long-horizon credit assignment in tool-integrated reasoning RL by deriving turn-level supervision from on-policy exploration, outperforming trajectory-level methods.",
+      "llm_tldr_cn": "针对工具集成推理中长时序信用分配问题，本文提出TurnSight框架，通过从在线探索中推导轮次级监督信号，实现细粒度信用分配。方法利用事后修正和自蒸馏，克服了轨迹级监督的稀疏性。实验表明，TurnSight在复杂工具使用任务上优于现有方法，显著提升了长时序推理的性能。",
+      "llm_tldr": "针对工具集成推理中长时序信用分配问题，本文提出TurnSight框架，通过从在线探索中推导轮次级监督信号，实现细粒度信用分配。方法利用事后修正和自蒸馏，克服了轨迹级监督的稀疏性。实验表明，TurnSight在复杂工具使用任务上优于现有方法，显著提升了长时序推理的性能。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.01802v1",
+      "source": "arxiv",
+      "title": "CoNav-UAV: Cooperative Dual-Altitude Aerial Navigation via Stackelberg Learning",
+      "abstract": "Target-oriented vision-and-language navigation (VLN) on aerial platforms is attracting growing attention for missions such as disaster rescue, infrastructure inspection, and security patrol. In this task, an unmanned aerial vehicle (UAV) needs to locate targets given only a concise description of their appearance and surroundings. This requires global exploration and grounding as well as collision-free close-range approach, two interleaved processes difficult to reconcile within a single agent. Most existing methods transfer the ground VLN paradigm to a low-altitude UAV and compensate for its inefficient exploration with external assistance. A recent attempt deploys two UAVs at complementary altitudes yet still relies on privileged information and trains its two agents independently, precluding any mutual adaptation essential for cooperation. Here we propose CoNav-UAV, which explicitly models the task as a Stackelberg game between a high-altitude leader and a low-altitude follower, with the system operating on onboard visual and linguistic inputs alone. To solve this game, we introduce Iterative Stackelberg Learning. The leader's high-level vision-language reasoning is refined via memory-based in-context learning, while the follower's precise motion control is updated via DAgger-style expert distillation. The alternation drives both agents toward a Stackelberg equilibrium. CoNav-UAV consistently outperforms single- and dual-agent baselines across three high-fidelity urban scenes from the AerialVLN benchmark. Success rate improves by up to 30.8 points on the learning scene, and 9.0 points under cross-scene transfer while using about 3x less adaptation data. Further analyses validate the complementary gains of the leader and follower updates and reveal robust gains yet distinct learning dynamics across VLM backbones.",
+      "authors": [
+        "Junru Song",
+        "Wenhao Zhang",
+        "Yang Yang",
+        "Xuekai Qiu",
+        "Feifei Wang",
+        "Weien Zhou",
+        "Tingsong Jiang",
+        "Ying Wen",
+        "Yang Li",
+        "Wen Yao"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.RO"
+      ],
+      "published": "2026-08-03T07:10:38+00:00",
+      "link": "https://arxiv.org/pdf/2608.01802v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Uses dual-UAV cooperative navigation for infrastructure inspection with learning-based method.",
+      "llm_evidence_cn": "使用双无人机协作导航进行基础设施巡检，基于学习方法",
+      "llm_evidence": "使用双无人机协作导航进行基础设施巡检，基于学习方法",
+      "canonical_evidence": "使用双无人机协作导航进行基础设施巡检，基于学习方法",
+      "llm_tldr_en": "Proposes a cooperative dual-UAV framework for vision-and-language navigation in infrastructure inspection, using Stackelberg learning to balance exploration and close-up approach, improving target localization and safety.",
+      "llm_tldr_cn": "针对单无人机在视觉语言导航任务中全局探索与近距离接近难以兼顾的问题，提出一种基于斯坦克尔伯格学习的双高度协作无人机框架，将任务建模为主从博弈，在基础设施巡检等场景中实现高效目标定位与避障，提升了导航效率和安全性。",
+      "llm_tldr": "针对单无人机在视觉语言导航任务中全局探索与近距离接近难以兼顾的问题，提出一种基于斯坦克尔伯格学习的双高度协作无人机框架，将任务建模为主从博弈，在基础设施巡检等场景中实现高效目标定位与避障，提升了导航效率和安全性。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "deep reinforcement learning for UAV inspection tasks",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.01837v1",
+      "source": "arxiv",
+      "title": "PCSD: Persistent Consistency for Self-Distillation in Agentic Reinforcement Learning",
+      "abstract": "Large language model agents have shown strong potential in complex interactive tasks, yet their reinforcement learning (RL) is often hindered by sparse rewards, as a long multi-turn trajectory may receive only a single outcome-level signal. On-policy self-distillation (OPSD) provides dense token-level supervision from a privileged teacher, but the teacher may not be reliable at every position. Existing methods commonly rely on isolated token-level discrepancies, which can be sensitive to noise, or assign a shared step-level weight that may overlook positional variation. We propose Persistent Consistency Self-Distillation (PCSD), which derives token-level distillation weights from the local persistence of teacher-favoring signals. PCSD combines adaptive windows with exponentially decayed aggregation to capture persistent relative teacher support, applies trend-aware modulation to attenuate locally declining support, and produces continuous weights through sigmoid gating. The resulting objective is jointly optimized with GRPO, combining dense teacher guidance with sparse environmental feedback. Without inference-time skills, PCSD achieves the best ALFWorld Overall results among all baselines on both backbones, exceeding GRPO by 15.6 and 13.3 points and SDAR by 6.2 and 5.5 points, while remaining competitive on WebShop and gaining 15.8 points over GRPO on unseen ALFWorld split.",
+      "authors": [
+        "Chunji Lv",
+        "Yangguang Wei",
+        "Junlin Liu",
+        "Yang Gao",
+        "Ming Liu",
+        "Xinming Wang",
+        "Jinyang Wu",
+        "Guoren Wang",
+        "Changsheng Li"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-08-03T07:47:59+00:00",
+      "link": "https://arxiv.org/pdf/2608.01837v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Persistent consistency self-distillation for dense token-level supervision in long-horizon agentic RL",
+      "llm_evidence_cn": "持久一致性自蒸馏为长程智能体强化学习提供密集令牌级监督",
+      "llm_evidence": "持久一致性自蒸馏为长程智能体强化学习提供密集令牌级监督",
+      "canonical_evidence": "持久一致性自蒸馏为长程智能体强化学习提供密集令牌级监督",
+      "llm_tldr_en": "Proposes PCSD, a method that derives token-level distillation weights from local persistence of teacher-favoring signals to provide dense supervision in long-horizon RL, addressing sparse rewards and unreliable teacher signals.",
+      "llm_tldr_cn": "针对大型语言模型智能体在长程交互任务中稀疏奖励导致学习困难的问题，提出持久一致性自蒸馏方法PCSD。通过教师偏好信号的局部持久性计算令牌级蒸馏权重，替代传统孤立令牌差异或共享步级权重，从而提供更稳健的密集监督。实验表明该方法能有效提升长程任务中的策略学习，为基于强化学习的智慧体训练提供了高效的信用分配机制。",
+      "llm_tldr": "针对大型语言模型智能体在长程交互任务中稀疏奖励导致学习困难的问题，提出持久一致性自蒸馏方法PCSD。通过教师偏好信号的局部持久性计算令牌级蒸馏权重，替代传统孤立令牌差异或共享步级权重，从而提供更稳健的密集监督。实验表明该方法能有效提升长程任务中的策略学习，为基于强化学习的智慧体训练提供了高效的信用分配机制。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.02951v1",
+      "source": "arxiv",
+      "title": "SP3O: Reinforcement Learning from Segment Preferences without Reward Modeling",
+      "abstract": "Preference-based reinforcement learning (PbRL) for general stochastic MDPs often requires training a reward model. Existing reward-model-free methods are either restricted to bandits or deterministic MDPs, such as DPO or P3O, or use zeroth-order, gradient-free optimization, which in general exhibits a slower convergence rate than gradient-based algorithms. Furthermore, existing reward-model-free preference-based RL algorithms almost exclusively use trajectory-level feedback, which can require significant effort from a human evaluator when trajectories are long. On the other hand, segments are much shorter, so they are easier to compare and evaluate. In this paper, we introduce a novel reward-model-free, critic-free, and gradient-based PbRL algorithm compatible with segment preferences named Segment Pairwise Proximal Policy Optimization (SP3O). SP3O utilizes segment-level preference feedback to construct an accurate policy value difference estimator via off-policy importance sampling, and then uses the estimator to compute the policy gradient via a PPO-type loss function. We provide a theoretical basis for the algorithm and analyze the tradeoff in choosing the segment length. We also evaluate it experimentally against other PbRL/RLHF algorithms in robotic control and LLM finetuning settings to show its improved performance, especially in long-horizon tasks.",
+      "authors": [
+        "Evan Assmus",
+        "Qining Zhang",
+        "Lei Ying"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-08-03T23:28:06+00:00",
+      "link": "https://arxiv.org/pdf/2608.02951v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "uses segment-level preferences to address long-horizon reward assignment in RL",
+      "llm_evidence_cn": "使用片段级偏好解决强化学习中的长时域奖励分配问题",
+      "llm_evidence": "使用片段级偏好解决强化学习中的长时域奖励分配问题",
+      "canonical_evidence": "使用片段级偏好解决强化学习中的长时域奖励分配问题",
+      "llm_tldr_en": "Proposes SP3O, a reward-model-free, critic-free, gradient-based PbRL algorithm that uses segment-level preferences to reduce human effort for long-horizon tasks, applicable to long-horizon reward assignment in UAV inspection.",
+      "llm_tldr_cn": "该论文针对传统偏好强化学习在长轨迹任务中依赖轨迹级反馈、人工评估负担重的问题，提出SP3O算法。SP3O无需奖励模型和批评家，采用基于梯度的优化，并创新性地使用片段级偏好替代轨迹级反馈，大幅降低长时域任务的人工评估成本。其片段偏好机制可有效支撑无人机巡检等长时域任务的奖励分配，简化了人类反馈流程。实验验证了其收敛速度优于现有零阶方法。",
+      "llm_tldr": "该论文针对传统偏好强化学习在长轨迹任务中依赖轨迹级反馈、人工评估负担重的问题，提出SP3O算法。SP3O无需奖励模型和批评家，采用基于梯度的优化，并创新性地使用片段级偏好替代轨迹级反馈，大幅降低长时域任务的人工评估成本。其片段偏好机制可有效支撑无人机巡检等长时域任务的奖励分配，简化了人类反馈流程。实验验证了其收敛速度优于现有零阶方法。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}
