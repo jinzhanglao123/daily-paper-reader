@@ -1,0 +1,24 @@
+{
+  "label": "2026-08-10",
+  "date": "2026-08-10",
+  "generated_at": "2026-08-10T21:08:53",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202608/10/2608.07118v1-how-much-then-where-credit-conserving-action-to-token-allocation-for-multi-turn-agent-reinforcement-learning",
+      "section": "deep",
+      "title_en": "How Much, Then Where: Credit-Conserving Action-to-Token Allocation for Multi-Turn Agent Reinforcement Learning",
+      "authors": "Lichao Ma, Yang Sun, Shuaitao Zhao, Yangyi Fang, Cong Qin, Xiaoliang Fu, Yuhang Tian, Yuchen Wei, Junbo Zhu, Yang Wei, Lu Pan, Jiaye Lin",
+      "date": "2026-08-07",
+      "pdf": "https://arxiv.org/pdf/2608.07118v1",
+      "score": "9.0",
+      "evidence": "分离动作和令牌信用分配，用于长时程多轮RL",
+      "tldr": "多轮智能体强化学习中，信用分配需在轨迹级动作和令牌级两级进行，传统方法易混淆。FACTOR将两者解耦，先通过校准TD残差为各动作分配与轨迹优势一致的信用，再利用教师-学生似然差将信用分配到组成动作的令牌上，并结合动作归一化与动作均值约简，确保信用守恒与符号稳定。在ALFWorld、WebShop和ScienceWorld等基准上，FACTOR在所有环境-种子比较中均优于竞争基线，最长视野任务增益最大，且超参数无需调优即可迁移至更大模型。消融实验确认TD动作信用是主要提升来源，令牌分配贡献互补增益。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Credit assignment in multi-turn agent reinforcement learning operates at two levels: assigning trajectory-level credit to actions and distributing each action's credit across its tokens. In this paper, we introduce FACTOR, which separates these decisions. FACTOR uses checkpoint-calibrated TD residuals to assign per-action credits that telescope to the trajectory advantage, and feedback-conditioned teacher-student likelihood gaps to allocate each credit across the realized action tokens. Per-action normalization preserves the action-average coefficient and prevents token-level sign flips. We pair this construction with an action-mean reduction, removing the implicit dependence of an action's scalar surrogate weight on its token length. At the behavior policy and before clipping, each action's inner action-mean surrogate equals its TD credit. FACTOR consistently improves over competitive baselines across ALFWorld, WebShop, and ScienceWorld, with every environment-seed comparison favoring FACTOR and the largest gains emerging on the longest-horizon environment. The same hyperparameters transfer without retuning to a larger backbone and to a different model family. Ablations identify TD action credit as the dominant driver of the improvement, with hindsight token allocation contributing complementary gains.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

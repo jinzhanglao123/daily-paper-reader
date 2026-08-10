@@ -6,19 +6,23 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-09
-- 运行时间：2026-08-09 20:33:58 UTC
+- 最新运行日期：2026-08-10
+- 运行时间：2026-08-10 21:08:42 UTC
 - 运行状态：成功
-- 本次总论文数：0
-- 精读区：0
+- 本次总论文数：1
+- 精读区：1
 - 速读区：0
 
 ### 今日简报（AI）
-> 今日无新推荐，系统未产出可展示论文。
-- 详情：[/202608/09/README](/202608/09/README)
+今日精读：用“先算数量，再定位置”破解多轮对话智能体的动作分配难题  
+最亮结论：把动作分配拆成“多少”和“哪里”两步，能守住宅积分，让智能体学会优雅吐纳  
+下步建议：关注长期对话规划的读者，不妨立刻复现这篇 9 分论文的 Credit-Conserving 机制
+- 详情：[/202608/10/README](/202608/10/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [How Much, Then Where: Credit-Conserving Action-to-Token Allocation for Multi-Turn Agent Reinforcement Learning](/202608/10/2608.07118v1-how-much-then-where-credit-conserving-action-to-token-allocation-for-multi-turn-agent-reinforcement-learning)  
+   标签：评分：9.0/10、query:uav-drl
+   evidence：分离动作和令牌信用分配，用于长时程多轮RL
 
 ### 速读区论文标签
 - 本次无速读推荐。

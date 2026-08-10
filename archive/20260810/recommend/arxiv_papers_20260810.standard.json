@@ -1,0 +1,62 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-10T21:06:29.870198+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2608.07118v1",
+      "source": "arxiv",
+      "title": "How Much, Then Where: Credit-Conserving Action-to-Token Allocation for Multi-Turn Agent Reinforcement Learning",
+      "abstract": "Credit assignment in multi-turn agent reinforcement learning operates at two levels: assigning trajectory-level credit to actions and distributing each action's credit across its tokens. In this paper, we introduce FACTOR, which separates these decisions. FACTOR uses checkpoint-calibrated TD residuals to assign per-action credits that telescope to the trajectory advantage, and feedback-conditioned teacher-student likelihood gaps to allocate each credit across the realized action tokens. Per-action normalization preserves the action-average coefficient and prevents token-level sign flips. We pair this construction with an action-mean reduction, removing the implicit dependence of an action's scalar surrogate weight on its token length. At the behavior policy and before clipping, each action's inner action-mean surrogate equals its TD credit. FACTOR consistently improves over competitive baselines across ALFWorld, WebShop, and ScienceWorld, with every environment-seed comparison favoring FACTOR and the largest gains emerging on the longest-horizon environment. The same hyperparameters transfer without retuning to a larger backbone and to a different model family. Ablations identify TD action credit as the dominant driver of the improvement, with hindsight token allocation contributing complementary gains.",
+      "authors": [
+        "Lichao Ma",
+        "Yang Sun",
+        "Shuaitao Zhao",
+        "Yangyi Fang",
+        "Cong Qin",
+        "Xiaoliang Fu",
+        "Yuhang Tian",
+        "Yuchen Wei",
+        "Junbo Zhu",
+        "Yang Wei",
+        "Lu Pan",
+        "Jiaye Lin"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-08-07T11:22:09+00:00",
+      "link": "https://arxiv.org/pdf/2608.07118v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Separates action and token credit assignment for long-horizon multi-turn RL",
+      "llm_evidence_cn": "分离动作和令牌信用分配，用于长时程多轮RL",
+      "llm_evidence": "分离动作和令牌信用分配，用于长时程多轮RL",
+      "canonical_evidence": "分离动作和令牌信用分配，用于长时程多轮RL",
+      "llm_tldr_en": "FACTOR disentangles trajectory-level and token-level credit assignment using TD residuals and teacher-student gaps, improving credit conservation.",
+      "llm_tldr_cn": "FACTOR将多轮RL中的信用分配分解为动作级和令牌级，利用TD残差和师生似然差实现信用守恒，缓解长时程信用分配问题。",
+      "llm_tldr": "FACTOR将多轮RL中的信用分配分解为动作级和令牌级，利用TD残差和师生似然差实现信用守恒，缓解长时程信用分配问题。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}
