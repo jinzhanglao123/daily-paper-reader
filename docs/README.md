@@ -6,26 +6,40 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-10
-- 运行时间：2026-08-10 21:08:42 UTC
+- 最新运行日期：2026-08-11
+- 运行时间：2026-08-11 21:04:15 UTC
 - 运行状态：成功
-- 本次总论文数：1
-- 精读区：1
-- 速读区：0
+- 本次总论文数：6
+- 精读区：4
+- 速读区：2
 
 ### 今日简报（AI）
-今日精读：用“先算数量，再定位置”破解多轮对话智能体的动作分配难题  
-最亮结论：把动作分配拆成“多少”和“哪里”两步，能守住宅积分，让智能体学会优雅吐纳  
-下步建议：关注长期对话规划的读者，不妨立刻复现这篇 9 分论文的 Credit-Conserving 机制
-- 详情：[/202608/10/README](/202608/10/README)
+1) 今日精读智能体强化学习的跨时间尺度信用分配与动态奖励塑形统一框架，速览机器人奖励修正与无人机容错导航策略。
+2) 最值得关注：从环境反馈中学习跨多时间尺度的信用分配，以及用统一框架动态塑形奖励，为复杂决策带来更稳定的训练。
+3) 若想应用这些进展，建议先从梳理自身任务的奖励信号与时间依赖入手，尝试基于环境反馈的奖励塑形方法。
+- 详情：[/202608/11/README](/202608/11/README)
 
 ### 精读区论文标签
-1. [How Much, Then Where: Credit-Conserving Action-to-Token Allocation for Multi-Turn Agent Reinforcement Learning](/202608/10/2608.07118v1-how-much-then-where-credit-conserving-action-to-token-allocation-for-multi-turn-agent-reinforcement-learning)  
+1. [Learning from Environmental Feedback: Credit Assignment across Multiple Timescales for Agentic Reinforcement Learning](/202608/11/2608.08255v1-learning-from-environmental-feedback-credit-assignment-across-multiple-timescales-for-agentic-reinforcement-learning)  
    标签：评分：9.0/10、query:uav-drl
-   evidence：分离动作和令牌信用分配，用于长时程多轮RL
+   evidence：利用环境反馈的多时间尺度信用分配方法适用于长时域强化学习
+2. [A Unified Framework for Dynamic Reward Shaping in Reinforcement Learning](/202608/11/2608.08158v1-a-unified-framework-for-dynamic-reward-shaping-in-reinforcement-learning)  
+   标签：评分：8.0/10、query:uav-drl
+   evidence：统一动态奖励塑形框架，解决长时序强化学习的稀疏/延迟奖励问题。
+3. [VTO: Visual Tool Orchestration for Video Anomaly Detection](/202608/11/2608.08219v1-vto-visual-tool-orchestration-for-video-anomaly-detection)  
+   标签：评分：8.0/10、query:uav-drl
+   evidence：过程监督强化学习解决长时序任务中的粗粒度奖励问题
+4. [RynnValue: Scaling Robotic Value Foundation Models with Temporal Distance](/202608/11/2608.09853v1-rynnvalue-scaling-robotic-value-foundation-models-with-temporal-distance)  
+   标签：评分：8.0/10、query:uav-drl
+   evidence：使用时序距离作为强化学习中长时域奖励分配的可扩展代理
 
 ### 速读区论文标签
-- 本次无速读推荐。
+1. [TrustRoboReward: Preference-Ordered Isotonic Score Editing for Multi-Paradigm Robot Reward Models](/202608/11/2608.08491v1-trustroboreward-preference-ordered-isotonic-score-editing-for-multi-paradigm-robot-reward-models)  
+   标签：评分：7.0/10、query:uav-drl
+   evidence：长时序机器人奖励模型采用保序分数编辑解决不一致性问题。
+2. [RecoverFly: A Failure-Aware Reinforcement Learning Post-Training Framework for Aerial Vision-Language Navigation](/202608/11/2608.09467v1-recoverfly-a-failure-aware-reinforcement-learning-post-training-framework-for-aerial-vision-language-navigation)  
+   标签：评分：6.0/10、query:uav-drl
+   evidence：将强化学习应用于无人机视觉语言导航，与无人机控制相关
 
 
 <div class="dpr-home-promo-card">

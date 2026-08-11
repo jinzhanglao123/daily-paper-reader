@@ -1,0 +1,505 @@
+Title: VTO: Visual Tool Orchestration for Video Anomaly Detection
+
+URL Source: https://arxiv.org/pdf/2608.08219v1
+
+Published Time: Tue, 11 Aug 2026 00:48:44 GMT
+
+Number of Pages: 10
+
+Markdown Content:
+# VTO: Visual Tool Orchestration for Video Anomaly Detection 
+
+# Rui Wang ∗
+
+State Key Laboratory of Networking and Switching Technology Beijing University of Posts and Telecommunications Beijing, China wr@bupt.edu.cn 
+
+# Yeteng Wu ∗
+
+State Key Laboratory of Networking and Switching Technology Beijing University of Posts and Telecommunications Beijing, China wuyeteng@bupt.edu.cn 
+
+# Xianlin Zhang 
+
+School of Digital Media & Design Art Beijing University of Posts and Telecommunications Beijing, China zxlin@bupt.edu.cn 
+
+# Mengshi Qi †
+
+State Key Laboratory of Networking and Switching Technology Beijing University of Posts and Telecommunications Beijing, China qms@bupt.edu.cn 
+
+## Abstract 
+
+Video anomaly detection (VAD) is a critical yet challenging task due to the complex and diverse nature of real-world scenarios. Tra-ditional deep learning approaches are fundamentally limited by poor generalization across diverse scenarios. While multimodal agents offer a promising tool-learning paradigm for VAD, current systems relying on supervised fine-tuning struggle with complex orchestration, and standard reinforcement learning often causes premature termination due to coarse-grained outcome rewards. To address these challenges, we propose VTO, a process-supervised re-inforcement learning framework. Moving beyond static tool usage, VTO enables the agent to dynamically explore and interact with the environment. Specifically, we introduce a foundation model-driven cognitive evaluator to provide context-aware semantic feedback, which is seamlessly integrated into a Process-Supervised Cogni-tive Alignment that delivers fine-grained, step-wise supervision. By explicitly penalizing logical truncation and rewarding complete causal chains, the agent optimizes its multi-step reasoning pol-icy for interrelated tool orchestration. To support our proposed framework, we meticulously crafted VAD-Tool, a hierarchical vi-sual tool set comprising 12 specialized vision tools spanning from entity tracking to high-stakes hazard detection, and established the corresponding benchmark for rigorous multi-step reasoning evaluation. Extensive experiments on VAD-Tool demonstrate that VTO significantly outperforms baselines, achieving up to a 10.2% absolute accuracy improvement in tool scheduling. Code and data are available at https://github.com/MICLAB-BUPT/VTO. 
+
+## CCS Concepts 
+
+• Computing methodologies → Scene anomaly detection .
+
+> ∗Rui Wang and Yeteng Wu contributed equally to this work.
+> †Corresponding author: Mengshi Qi.
+> This work is licensed under a Creative Commons Attribution 4.0 International License.
+> MM ’26, Rio de Janeiro, Brazil
+> © 2026 Copyright held by the owner/author(s). ACM ISBN 979-8-4007-2213-4/2026/11 https://doi.org/10.1145/3767308.3836202
+
+## Keywords 
+
+Video Anomaly Detection; Tool Learning; Multimodal Agent. 
+
+ACM Reference Format: 
+
+Rui Wang, Yeteng Wu, Xianlin Zhang, and Mengshi Qi. 2026. VTO: Visual Tool Orchestration for Video Anomaly Detection. In Proceedings of the 34th ACM International Conference on Multimedia (MM ’26), November 10–14, 2026, Rio de Janeiro, Brazil. ACM, New York, NY, USA, 10 pages. https: //doi.org/10.1145/3767308.3836202 
+
+## 1 Introduction 
+
+Video Anomaly Detection (VAD) is a fundamental yet challenging task in computer vision, playing a pivotal role in applications rang-ing from public safety to intelligent urban surveillance [6, 32]. In real-world environments, anomaly events are rarely isolated inci-dents; they are inherently complex, diverse, and heavily dependent on specific physical contexts. For instance, a local altercation can rapidly escalate into a weaponized assault, eventually triggering crowd panic and stampedes. Deciphering such composite events requires a comprehensive analysis combining multiple perceptual capabilities, such as recognizing human actions, tracking specific entities, and assessing crowd density [11, 21]. However, as con-ceptualized in Figure 1(a), traditional VAD paradigms primarily formulate this problem as a close-set classification or anomaly scor-ing task. While these methods can mathematically identify pattern deviations or predefined anomaly categories, they are fundamen-tally limited by poor generalization across open-world scenarios. These severe limitations highlight the urgent need for a more gen-eralizable and interactive anomaly reasoning paradigm capable of verbally reasoning about what the anomaly is and how it unfolds. Recently, the community has rapidly pivoted towards leverag-ing Large Language Models (LLMs) and Vision-Language Mod-els (VLMs) for explainable VAD. Pioneering works have explored training-free paradigms [48], rule-based reasoning [42], hybrid SSL-LLM architectures [11], and verbalized learning via VLM dialogues [46]. Furthermore, early agentic systems like PANDA [43] have attempted to invoke external tools for anomaly analysis. However, these paradigms predominantly rely on Supervised Fine-Tuning (SFT) or heuristic behavior cloning, treating tools as isolated problem-solving capsules. Because they depend entirely on imitation, they arXiv:2608.08219v1 [cs.CV] 8 Aug 2026 MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil Wang et al. (a)  Training-Dependent VAD          
+
+> (b) Training -Free LLM /VLM
+> (c) Our VTO
+> Any Sce narios  Any Anomaly Categories
+> Domain-specific
+> Training
+> Training
+> Data
+> VAD Model
+> 1.0
+> Anomaly Score
+> Agent
+> VTO
+> Final Answer ：
+> Based on the visual
+> tracking… Violent
+> behavior detected .
+> Analysis
+> Low Generalization No descriptive details
+> Goal -Driven Causal Chain
+> Causal Incompleteness Premature Termination
+> Process -Supervised
+> Fighting
+> Arson
+> Shooting
+> Final Answer ：No
+> significant anomaly
+> is detected.
+> Detect Human Fall
+> Missing Tool Anomaly Detection
+> Missing Tool
+> Scene Recognition Anomaly Detection
+> Home
+> Street
+> Shopping Mall
+
+Figure 1: Comparison of VAD paradigms. (a) Traditional VAD yields low generalization. (b) Training-Free LLM/VLM agents suffer from premature termination and causal incom-pleteness. (c) Our VTO autonomously constructs goal-driven causal chains through process-supervised cognitive align-ment, enabling accurate multi-step reasoning across diverse scenarios. 
+
+struggle to dynamically orchestrate distinct visual expert models to collaboratively decipher the intricate causal dependencies inherent in complex anomaly scenes. To transcend these limitations, one might intuitively apply standard Reinforcement Learning (RL) for dynamic policy optimization. Yet, directly applying outcome-based RL introduces a critical flaw in VAD scenarios: premature termi-nation. Constrained by coarse-grained, delayed rewards, standard RL agents tend to halt tool execution immediately after detecting a primary, isolated anomaly. Without fine-grained, step-wise super-vision, they are implicitly encouraged to conclude their analysis early, thereby ignoring cascading secondary hazards and failing to complete the necessary multi-step causal chain. To address these limitations, we redefine Video Anomaly Detec-tion as a complex, multi-step cognitive tool orchestration problem. We propose VTO , a process-supervised reinforcement learning framework explicitly designed for rigorous anomaly reasoning. In-stead of solving isolated sub-tasks via static mapping, our agent actively interacts with video environments by iteratively gener-ating reasoning thoughts, invoking specific visual tools, and up-dating its state based on multi-modal observations. To break the performance upper bound of static behavior cloning and standard outcome-based RL, VTO introduces Process-Supervised Cognitive Alignments. Rather than relying on a delayed, generic final reward, this alignment mechanism provides fine-grained, step-wise super-vision to strictly synchronize the agent’s reasoning trajectory with expert logic. It dynamically aligns each reasoning step by syner-gizing rule-based objective metrics ( e.g. , exact tool match) with foundation model-driven evaluations ( e.g. , logicality and causal completeness). Driven by these dense signals, the agent optimizes its policy via Group Relative Policy Optimization (GRPO). VTO ef-fectively overcomes premature termination, successfully mastering the detection of cascading secondary hazards before concluding its safety assessment. To support and rigorously evaluate this framework, we establish a comprehensive infrastructure and benchmark named VAD-Tool .First, VAD-Tool incorporates a hierarchical visual tool set integrat-ing 12 distinct expert models that span from spatiotemporal entity tracking and counting to high-stakes hazard detection. Second, to overcome the limitations of traditional outcome-driven datasets [57], VAD-Tool provides a rich collection of interrelated anom-aly queries. This establishes a rigorous testing ground specifically designed to evaluate the multi-step reasoning and dynamic tool orchestration capabilities of MLLM agents in complex, cascading hazard scenarios. The main contributions of our work are summarized as follows: 
+
+• We introduce VTO , a dynamic multimodal agent framework powered by process-supervised reinforcement learning. It addresses complex cognitive tool orchestration and explic-itly overcomes the premature termination problem in Video Anomaly Detection. 
+
+• We construct VAD-Tool , a comprehensive benchmark that integrates 12 specialized vision models and serves as a rigor-ous evaluation platform tailored for single-step and multi-step interrelated anomaly reasoning. 
+
+• Extensive quantitative experiments demonstrate that VTO achieves substantial accuracy improvements over static SFT baselines and also remarkably surpasses the performance of 72B-parameter models. 
+
+## 2 Related Work 
+
+Video Anomaly Detection. Conventional Video Anomaly De-tection (VAD) primarily formulates the problem as a dedicated, single-task objective. These approaches traditionally focus on mod-eling spatial-temporal patterns to detect and localize specific ab-normal events within video sequences [8, 9, 24, 26, 27, 29, 32, 57]. Recently, the community has pivoted towards leveraging Large Language Models (LLMs) and Vision-Language Models (VLMs) to generate textual anomaly descriptions. Pioneering works have explored training-free paradigms [48], rule-based reasoning [42], and verbalized learning via VLM dialogues [46]. PANDA [43] at-tempts to invoke external tools for VAD. However, these existing multimodal and early agentic systems predominantly operate un-der static paradigms, either acting as rigid end-to-end mappers or treating tools as isolated problem-solving capsules. Breaking away from these imitation-based limitations, VTO introduces Process-Supervised Cognitive Alignment to dynamically orchestrate real-world visual expert models, ensuring the construction of observable, multi-step causal chains without premature termination. 
+
+Tool Learning. Tool-augmented agents offer a promising paradigm to address this attribution gap by delegating perceptual sub-tasks to specialized models [2, 7, 16, 18, 23, 25, 28, 58]. Early tool-augmented agents predominantly relied on static Supervised Fine-Tuning (SFT). However, as highlighted by retrospective studies [2], relying solely on SFT constrains agents from dynamically adapting their rea-soning paths, halting execution immediately after identifying a primary anomaly and fatally ignoring cascading secondary hazards [22]. To transcend these rigid boundaries, recent paradigms have VTO: Visual Tool Orchestration for Video Anomaly Detection MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil 
+
+rapidly shifted towards dynamic task planning [16] and training tool-augmented LLMs via pure Reinforcement Learning (RL) [50]. Furthermore, the latest state-of-the-art methods advocate for as-signing fine-grained rewards to individual tool calls [23] to alleviate gradient conflicts during complex multi-step execution. Despite algorithmic leaps in structured domains, applying these dynamic reward mechanisms to real-world physical environments remains a formidable challenge. Our work bridges this gap by dynamically orchestrating real-world VAD tools, empowering agents to tackle unpredictable, cascading hazards without premature termination. 
+
+Reinforcement Learning for Agents. To break free from the rigid constraints of static Supervised Fine-Tuning (SFT), recent approaches leverage reinforcement learning (RL) to dynamically optimize multi-step reasoning policies through continuous envi-ronmental feedback [4, 19, 20, 31, 36, 37, 45, 47, 49]. Recent lit-erature has extensively explored policy refinement via language feedback [38], multi-turn reinforcement learning [39], and trajec-tory optimization in multi-step reasoning [47]. These RL-driven architectures have demonstrated remarkable success in iterative tasks, such as automated agentic workflows for code generation [13]. While successful in structured domains, applying standard RL to the cascading complexities of video anomaly detection often leads to premature termination. Bridging this gap, VTO pioneers process-supervised RL in VAD, explicitly overcoming this limitation to dynamically refine multi-step tool orchestration. 
+
+## 3 VAD-Tool: A Benchmark for Video Anomaly Detection. 3.1 Problem Formulation 
+
+For the VTO agent task, a hierarchical visual toolset is utilized to analyze the physical semantics of a specific, user-provided visual scene. In this paradigm, the input video or image directly serves as the dynamic physical environment, while the specialized visual models constitute the agent’s action space. Formally, as depicted in our overall framework in Figure 2, given a multi-modal user query consisting of a natural language instruction 𝑞 𝑖 and an ac-companying visual input 𝑣 𝑖 , alongside a predefined visual toolset 
+
+T = {𝑇 1,𝑇 2, . . . ,𝑇 𝑚 }, the task involves iteratively generating a se-quence of reasoning actions 𝐴 𝑖,𝑡 to interact with 𝑣 𝑖 and obtain mul-timodal observations 𝑜 𝑖,𝑡 . This process yields a reasoning trajectory 
+
+𝐶 𝑖,𝐿 = {( 𝐴 𝑖, 1, 𝑜 𝑖, 1), . . . , (𝐴 𝑖,𝐿 , 𝑜 𝑖,𝐿 )} and a final integrated response 𝑓 𝑖 ,where 𝐿 denotes the total number of interactive steps. Specifically, each action 𝐴 𝑖,𝑡 = ⟨𝑛 𝑖,𝑡 , 𝑎 𝑖,𝑡 , 𝑝 𝑖,𝑡 ⟩ consists of a cognitive decision token (or thought) 𝑛 𝑖,𝑡 , a selected tool 𝑎 𝑖,𝑡 ∈ T , and the formulated tool parameters 𝑝 𝑖,𝑡 grounded within the input 𝑣 𝑖 . Consequently, this cognitive orchestration task requires the model to dynamically schedule fine-grained, interrelated tools and process multi-step multimodal feedback, posing significantly greater challenges than static instruction following. 
+
+## 3.2 Fine-grained and Interrelated Tools 
+
+To support complex multi-step reasoning, VAD-Tool encapsulates 12 distinct visual expert models as its action space T , as shown in Table 1. Inspired by the insights from [55], the vast majority of pub-lic security incidents fundamentally revolve around tracing critical targets, interpreting abnormal behaviors, and identifying severe Detect and describe any strange behavior in the video. 
+
+> Task Instruction
+> An anomaly has been detected involving a physical altercation between several
+> individuals. The incident occurred inside an internet cafe and escalated rapidly…
+> Response
+> Tool Execution Loop
+
+… 
+
+> VAD -Tool
+> Behavior & Scene
+> Understanding
+> Entity Identity
+> & Tracking
+> Security Event &
+> Hazard Detection
+> Person Re -ID
+> Fall Detection
+> Crowd Counting
+> Gait Recognition
+> Weapon Detection
+> Fire Detection
+
+…… 
+
+…… 
+
+……   
+
+> Dialogue
+> History
+> Agent
+> Execution
+> Thought: Do I need to use a tool? ...
+> Action: the action to take…
+> Action Input: the input to the action…
+> Input Prompt
+> & History
+> Append
+> <Thought,
+> Action…>
+> Tool Call
+> Return <Observation>
+> Trajectory 1: Thought… Action… Observation…
+> Trajectory 2: Thought… Action… Observation…
+
+…
+
+Figure 2: The inference pipeline of the proposed framework. The agent processes user queries and videos through a dy-namic tool execution loop, orchestrating VAD-Tool experts to generate an explainable anomaly report. Table 1: Taxonomy of tools in VAD-Tool. The tools are cate-gorized based on the practical security governance pipeline: from entity tracking and behavior understanding to hazard detection. Primary Categories Secondary Categories Tool Inputs 
+
+Entity Identity & Tracking Person Re-identification Image, Video Gait Recognition Video License Plate Recognition Image, Video Car Re-identification Image, Video Behavior & Scene Understanding Pose Estimation Video, Image Human Fall Detection Video Crowd Counting Image Scene Recognition Video Security Event & Hazard Detection Violence Detection Video Weapon Detection Image, Text Fire and Smoke Detection Video Anomaly Detection Video, Text environmental hazards. Grounded in this practical taxonomy, we systematically organize our visual tools into three corresponding functional groups. This structured design comprehensively cov-ers the essential dimensions of real-world video security analysis while rigorously testing the agent’s fine-grained differentiation capabilities during interrelated events. MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil Wang et al. 
+
+Entity Identity & Tracking: This category targets the identifica-tion and continuous tracking of critical subjects and vehicles. It in-cludes Person Re-identification (utilizing Fast-ReID [10] on Market-1501 [53]), Gait Recognition (based on OpenGait [5], evaluated on CASIA-B [54]), License Plate Recognition (evaluated using the Chi-nese City Parking Dataset, CCPD [41]), and Car Re-identification (evaluated on the VeRi dataset [15]). 
+
+Behavior & Scene Understanding: Designed for dense spatial analysis and human action interpretation, this suite comprises Pose Estimation (RTMO [17]), Human Fall Detection (adapted from a YOLOv7-POSE-based model [35]), Crowd Counting (employing CLTR [12] on the ShanghaiTech dataset [52]), and Scene Recogni-tion (pre-trained Places365 [56] mapped to UCF-Crime [32]). 
+
+Security Event & Hazard Detection: This group focuses on identifying high-stakes, critical scenarios and secondary hazards. It encompasses Violence Detection (adapting contrastive vision-language models for fine-grained recognition [40]), a general Weapon Detection tool (powered by open-vocabulary grounding [14]), Fire & Smoke Detection (based on YOLOv8 [34]), and an overarching Anomaly Detection expert [51] that leverages multi-modal large language models for comprehensive explanations. To address the complexity of real-world VAD tasks,we explic-itly design two interrelated scenarios to evaluate multi-tool syn-ergy: Pose-based Violence Detection and Scene Anomaly Detection. Specifically, Pose-based Violence Detection integrates human pose estimation with violence recognition, whereas Scene Anomaly De-tection combines spatial scene understanding with general anomaly identification. 
+
+## 3.3 Human-in-the-Loop Data Annotation 
+
+The instruction data and reasoning trajectories are collected via a rigorous, four-step human-in-the-loop (HITL) pipeline: Defining Visual Tool Categories, Collecting Raw Data, Generating ReAct Annotations, and Expert Review. To ensure reasoning practicability, we utilize strong vision-language models (specifically Qwen2.5-VL) to formulate the initial multi-step ground-truth trajectories into the standard ReAct format [44], encompassing step-by-step Thought, Action, Action Input, and Observation. Subsequently, Large Lan-guage Models ( e.g. , Qwen2.5-VL) are employed to semantically augment the human linguistic queries 𝑞 𝑖 . This ensures extreme linguistic diversity in user inputs (as evidenced by our diverse word cloud of expressions), while strictly preserving the underly-ing causal tool-call trajectories. Finally, domain experts thoroughly review the generated pairs as the crucial "human-in-the-loop" to ensure zero-tolerance logical correctness. 
+
+## 3.4 Dataset Statistics 
+
+Through meticulous annotation and augmentation, the VAD-Tool benchmark comprises a large-scale training dataset containing ap-proximately 15.48 million tokens. As illustrated in our data sta-tistics (Figure 3), the dataset features a well-balanced and highly diverse distribution of training instructions across various high-stakes scenarios. Specific categories include Fire and Smoke De-tection ( ∼14.8k instructions), Weapon Detection ( ∼14.0k), Crowd Counting ( ∼13.5k), Person Re-ID ( ∼12.4k), Vehicle Re-ID ( ∼9.7k), Human Fall Detection ( ∼9.4k), Gait Recognition ( ∼9.4k), general a) Statistics of training data 
+
+b) Word cloud of expressions 
+
+Figure 3: Overview of VAD-Tool dataset construction and statistics. (a) Training data distribution across tool categories. (b) Word cloud of instruction queries. 
+
+Anomaly Detection ( ∼9.1k), Violence Detection ( ∼8.9k), License Plate Recognition ( ∼8.8k), Scene Anomaly Detection ( ∼8.5k), and fine-grained Pose-based Violence Detection ( ∼4.8k), cumulatively scaling to over 120k instruction-trajectory pairs. For rigorous evaluation, we construct a corresponding testing dataset of 1,841 multi-step reasoning samples. To prevent data leak-age and evaluate true cognitive generalization, the physical video scenes and the linguistic semantics in the testing benchmark are strictly distinct from those in the training dataset, while maintain-ing a consistent overall tool-call distribution to eliminate evaluation bias. 
+
+## 4 VTO Framework 4.1 Overview 
+
+As illustrated in Figure 4, the VTO framework operates in two stages: Supervised Fine-Tuning (SFT) and Process-Supervised Cog-nitive Alignment. While Step 1 (SFT) establishes the foundational ReAct formatting for basic tool invocation, it inherently relies on static behavior cloning. This static paradigm suffers from exposure VTO: Visual Tool Orchestration for Video Anomaly Detection MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil Step 1: Supervised Fine-Tuning  
+
+> Thought: …
+> Action: …
+> Action Input: …
+> Observation: …
+> Query: … Thought: …
+> Action: …
+> Observation: …
+
+## Step 2:  Rollout 
+
+𝒙 𝟏 
+
+𝒙 𝟐 
+
+𝒙 𝟑 
+
+𝒙 𝒏 
+
+Samples  （G=n ）
+
+> …
+> Thought: …
+> Action: …
+> Observation: …
+> Thought: …
+> Action: …
+> Observation: …
+> Thought: …
+> Action: …
+> Observation: …
+
+## Step 3:  Reward  Calculation 
+
+## Ⅰ.  Rule -Based  Rewards 
+
+## Ⅱ.  LLM -as -a-Judge  Rewards 
+
+Task  Completion  Tool Name Match 
+
+Efficiency Penalty Parameter Match 
+
+Judge Prompt 
+
+ReAct-formatted 
+
+SFT Data 
+
+You are an expert AI assistant 
+
+responsible for evaluating... 
+
+Logicality  Relevance  Completeness 
+
+## Policy Optimization SFT Model 
+
+Base Model 
+
+VAD -Tool 
+
+> This scene
+> depicts a fight
+> ……
+
+## …… 
+
+## …… 
+
+# ＋
+
+## …… 
+
+SFT Loop 
+
+Policy 
+
+Model    
+
+> An error occurred
+> Successfully complete...
+> Exact Match
+> Pred: Detect
+> Anomalies
+> GT: Detect
+> Anomalies
+> Mismatch
+> Pred:
+> ‘warehouse ’
+> GT:
+> ‘gym ’
+> Penalty based on steps
+> Detected
+> Violence! Step by Step All Steps covered
+
+Videos 
+
+Images 
+
+Text 
+
+Figure 4: The overall pipeline of the VTO framework. Step 1: Supervised Fine-Tuning equips the base model with foundational tool-use capabilities via ReAct-formatted data. To achieve process-supervised cognitive alignment, the agent enters a continuous learning loop. In Step 2 (Rollout), the policy model explores multiple reasoning trajectories in parallel. In Step 3 (Reward Calculation), these trajectories are dynamically evaluated by synergizing Rule-Based Rewards and LLM-as-a-Judge Rewards, providing comprehensive cognitive supervision for final Policy Optimization. 
+
+bias and struggles to maintain the strict logical interdependen-cies and multi-step causal constraints required in complex VAD scenarios. To overcome this, Step 2 formulates the interrelated tool scheduling as a reinforcement learning problem optimized via Group Relative Policy Optimization (GRPO) [30]. During the rollout phase, the agent explores diverse reasoning trajectories by dynamically interacting with the visual environment. To address the unique zero-tolerance safety requirements of security events, we design a Process-Supervised Cognitive Alignment method that jointly leverages deterministic rule-based metrics and LLM-as-a-Judge evaluations. Rather than treating RL as a generic black box, this dual-reward framework is explicitly tailored to penalize pre-mature termination and hallucinated tool routing, thereby guiding the policy to converge on robust and interrelated causal chains. 
+
+## 4.2 Supervised Fine-Tuning (SFT) 
+
+To bridge the gap between general-purpose base models and spe-cialized security agents, we first perform Supervised Fine-Tuning (SFT) on our meticulously annotated VAD-Tool dataset. Beyond mere behavior cloning, this stage is essential to endow the policy model with three critical domain-specific capabilities: (1) Syntac-tic Tool Invocation : Conditioning the agent to strictly adhere to valid, parsable ReAct formatting for complex visual tool schedul-ing. (2) Anomaly Event Modeling : Adapting the model’s internal representations to understand and reason over complex physical anomalies and high-stakes security events, which are severely un-derrepresented in general pre-training corpora. (3) Observation Integration : Learning to comprehend and contextualize the highly specific, and potentially unfamiliar, observations returned by these visual experts ( e.g. , tracking IDs, spatial coordinates, or raw pose keypoints). The SFT process formulates multi-step trajectory generation as a standard auto-regressive next-token prediction task. Specifically, the policy 𝜋 𝜃 is optimized by minimizing the standard negative log-likelihood loss: 
+
+Lsft = −∑︁ 
+
+> 𝑖
+
+∑︁ 𝑡 
+
+log 𝑃 𝜃 (𝐴 𝑖,𝑡 |𝑞 𝑖 , 𝑣 𝑖 , 𝐶 𝑖,𝑡 −1), (1) where 𝑖 and 𝑡 denote the indices of the training sample and the current reasoning step, respectively. 𝑃 𝜃 represents the probabil-ity distribution predicted by the model parameterized with 𝜃 . At each step 𝑡 , the model is trained to generate the target action 𝐴 𝑖,𝑡 
+
+(comprising the cognitive thought, selected tool, and formulated parameters) conditioned on the natural language query 𝑞 𝑖 , the phys-ical visual environment 𝑣 𝑖 , and the accumulated historical reasoning trajectory 𝐶 𝑖,𝑡 −1.MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil Wang et al. 
+
+## 4.3 Process-Supervised Cognitive Alignment 
+
+While Supervised Fine-Tuning (SFT) provides a necessary initial-ization for tool usage, it fundamentally relies on static behavior cloning. This static paradigm struggles to generalize to the complex logical interdependencies and stringent safety constraints inherent in VAD scenarios. To break this performance upper bound and align the agent’s reasoning process with expert-level logical rigor, we transition the training paradigm to a dynamic, process-supervised cognitive alignment method. As illustrated in Figure 4, our proposed VTO framework es-tablishes a continuous alignment loop comprising three primary phases: Rollout, Reward Calculation, and Policy Optimization. 
+
+Rollout. In this phase, the policy model actively explores the action space by sampling multiple diverse reasoning trajectories (denoted as 𝑥 1, . . . , 𝑥 𝑛 ) for a given visual query. Instead of following a single fixed ground-truth path, the agent iteratively generates cognitive Thoughts, selects Actions, formulates Action Inputs, and receives dynamic Observations from the VAD-Tool environment. This con-tinuous interaction allows the model to accumulate rich, multi-step experiences for subsequent evaluation. The detailed mathematical formulations of the Process-Supervised Cognitive Alignment and the GRPO objective are elaborated subse-quently in Section 4.3.1 and Section 4.3.2. 
+
+4.3.1 Process-Supervised Cognitive Alignment. While Supervised Fine-Tuning equips the agent with basic tool-invocation abilities, it suffers from exposure bias and fails to explicitly penalize critical logical errors ( e.g. , premature termination) in multi-step scenarios. To provide dense, step-wise cognitive supervision, we propose a comprehensive Process-Supervised Cognitive Alignment method. As illustrated in Step 3 of Figure 4, this method evaluates the sam-pled trajectories using a dual-reward system: Rule-Based Objective Rewards and LLM-as-a-Judge Rewards. Formally, at each reasoning step 𝑡 (or upon trajectory comple-tion), the overall reward 𝑟 𝑡 is a combination of rules and LLM evaluations: 
+
+𝑟 𝑡 = Rrule + R LLM . (2) 
+
+I. Rule-Based Rewards ( Rrule ): This component provides strict, deterministic feedback based on ground-truth alignments and exe-cution efficiency. It is defined as: 
+
+Rrule = Rcomp + R tool + R param + R eff . (3) Here, Rcomp assigns positive scores for successful task completion and negative penalties for execution errors. Rtool and Rparam en-force exact matches between the predicted tool names/parameters and the ground truth. Finally, Reff applies an efficiency penalty proportional to the number of steps taken, explicitly discouraging redundant tool invocations. 
+
+II. LLM-as-a-Judge Rewards ( RLLM ): To assess the qualita-tive aspects of the reasoning chain that rigid rules might miss, we employ Qwen2.5-VL-72B, a 72B-parameter model selected for its instruction-following and reasoning capabilities, as the expert eval-uator. Guided by a specific "Judge Prompt", it scores the trajectory based on three cognitive dimensions: 
+
+RLLM = Rlogic + R rel + R complete . (4) Specifically, Logicality ( Rlogic ) evaluates the step-by-step causal reasoning; Relevance ( Rrel ) measures how well the chosen actions and visual observations align with the user’s initial query; and Completeness ( Rcomplete ) ensures that all necessary logical steps are fully covered before generating the final response, thereby penalizing premature termination. This dual-reward structure ensures that early logical mistakes and inefficient explorations are immediately penalized, preventing the agent from exploiting flawed trajectories. The cumulative return for a trajectory of length 𝐿 is given by 𝑅 (𝜏 ) = Í𝐿 𝑡 =1 𝛾 𝑡 −1𝑟 𝑡 , where 𝛾 
+
+is the discount factor. 
+
+4.3.2 Policy Optimization via GRPO. Driven by the comprehensive reward signals from the process reward mechanism (PRM), we op-timize the LLM agent 𝜋 𝜃 using Group Relative Policy Optimization (GRPO). Unlike standard PPO that requires a memory-intensive value network, GRPO significantly reduces training overhead by es-timating the baseline directly from a group of sampled trajectories. This memory efficiency is particularly crucial in our multimodal VAD domain, where processing long visual contexts and accumu-lating multi-step tool observations inherently consumes substantial computational resources. During the rollout phase, for each human query 𝑞 𝑖 and visual input 𝑣 𝑖 , the agent 𝜋 𝜃 samples a group of 𝐺 distinct reasoning trajectories {𝐶 𝑔 𝑖,𝐿 }𝐺 𝑔 =1 according to the policy 𝜋 𝜃 (·| 𝑞 𝑖 , 𝑣 𝑖 , T ) . For each trajectory 𝐶 𝑔 𝑖,𝐿 , we calculate its cumulative process reward 𝑅 𝑔 =
+
+Í𝐿 𝑔  
+
+> 𝑡 =1
+
+𝛾 𝑡 −1𝑟 𝑡 using the PRM evaluations. Instead of relying on a value network to estimate the baseline, GRPO computes the advantage ˆ𝐴 𝑔 by normalizing the rewards within the group: ˆ𝐴 𝑔 = 𝑅 𝑔 − mean ({ 𝑅 1, . . . , 𝑅 𝐺 }) 
+
+std ({ 𝑅 1, . . . , 𝑅 𝐺 }) + 𝜖 𝑠𝑡𝑑 
+
+. (5) This group-relative advantage effectively indicates whether a spe-cific tool-scheduling trajectory performs better or worse than the average exploration attempt for that specific query. To ensure stable policy updates and prevent catastrophic degra-dation during exploration, we maximize the clipped surrogate ob-jective combined with a Kullback-Leibler (KL) divergence penalty. The objective function for GRPO is formulated as: 
+
+LGRPO (𝜃 ) = ˆE𝑞 ∼Q ,𝜏 ∼𝜋 𝜃 𝑜𝑙𝑑 
+
+"
+
+1
+
+𝐺 
+
+> 𝐺
+
+∑︁ 
+
+> 𝑔 =1
+> 𝐿 𝑔
+
+∑︁  
+
+> 𝑡 =1
+
+min 
+
+
+
+𝜌 𝑡 (𝜃 ) ˆ𝐴 𝑔 ,
+
+clip (𝜌 𝑡 (𝜃 ), 1 − 𝜖, 1 + 𝜖 ) ˆ𝐴 𝑔 
+
+
+
+− 𝛽 D𝐾𝐿 (𝜋 𝜃 ∥𝜋 𝑟𝑒 𝑓 )
+
+#
+
+, (6) where 𝜌 𝑡 (𝜃 ) = 𝜋 𝜃 (𝐴 𝑖,𝑡 |𝐶 𝑖,𝑡 −1 )     
+
+> 𝜋 𝜃 𝑜𝑙𝑑 (𝐴 𝑖,𝑡 |𝐶 𝑖,𝑡 −1)
+
+is the probability ratio between the current policy and the old policy, 𝜖 is the clipping hyperparameter. 
+
+𝜋 𝑟𝑒 𝑓 is the reference model (typically the initial SFT model), and 𝛽 
+
+is the KL penalty coefficient used to constrain the policy drift. By iteratively updating 𝜃 via Equation (6), VTO breaks the per-formance upper bound of static behavior cloning without the mas-sive memory footprint of a critic model. The dual-reward process-supervised reinforcement learning mechanism forces the LLM to strictly align its internal reasoning states with the complex logical interdependencies required by intelligent Social Security Gover-nance. VTO: Visual Tool Orchestration for Video Anomaly Detection MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil 
+
+Table 2: Quantitative results on VAD-Tool. "Decis" represents the accuracy of decisions of whether to use tools 𝐴𝑐𝑐 𝑛 𝑖,𝑡 . "Tool" represents the accuracy of chosen tool names 𝐴𝑐𝑐 𝑎 𝑖,𝑡 . "Input" represents the accuracy of input information of tools 𝐴𝑐𝑐 𝑝 𝑖,𝑡 ."Whole" represents the accuracy of the whole response 𝐴𝑐𝑐 𝐴 𝑖,𝑡 . Best results are in bold and the second best are underlined. Models Prompt Single Tool Responses Interrelated Tools Responses All Responses Decis(%) Tool(%) Input(%) Whole(%) Decis(%) Tool(%) Input(%) Whole(%) Decis(%) Tool(%) Input(%) Whole(%)                                                                                                                                                                          
+
+> Vicuna-7B Zero-shot 74.52 54.03 22.93 20.66 000066.43 48.16 20.44 18.42 Vicuna-7B Few-shot 18.85 1.62 00000016.80 1.44 0.00 0.00 Vicuna-7B (SFT) Zero-shot 75.00 55.65 40.63 39.84 000066.86 49.61 36.22 35.51 Llama-3-8B Zero-shot 28.78 29.08 24.33 24.33 16.58 18.59 5.53 4.52 27.46 27.94 22.29 22.18 Llama-3-8B Few-shot 24.49 22.80 20.66 20.53 69.59 68.13 43.22 42.85 29.39 27.72 23.11 22.95 Llama-3-8B (SFT) Zero-shot 95.45 95.45 82.91 82.90 92.67 92.67 65.93 65.93 95.15 95.15 81.07 81.06 Qwen3-VL-8B Zero-shot 98.03 89.96 77.68 77.41 80.58 80.58 64.46 63.73 96.14 88.94 76.24 75.92 Qwen3-VL-8B Few-shot 100.00 91.92 74.43 74.43 89.01 89.01 63.73 63.00 98.81 91.60 73.27 73.19 Qwen3-VL-8B (SFT) Zero-shot 98.97 98.84 85.76 85.76 99.26 99.26 90.47 89.74 99.00 98.89 86.27 86.19 Qwen2.5-VL-72B Zero-shot 96.42 98.58 81.86 81.49 88.64 97.80 76.58 67.40 95.58 98.50 81.29 79.96 Qwen2.5-VL-72B Few-shot 99.06 90.45 72.58 72.43 80.95 93.41 78.02 66.30 97.09 90.77 73.17 71.76 VTO (Llama-3-8B) Zero-shot 99.02 99.02 87.82 87.82 100.00 100.00 73.26 72.16 99.13 99.13 86.24 86.12 VTO (Qwen3-VL-8B) Zero-shot 100.00 100.00 96.54 96.54 100.00 100.00 95.60 95.14 100.00 100.00 96.44 96.39
+
+## 5 Experiments 5.1 Experimental Settings 
+
+Baselines. With limited computing resources, we mainly inves-tigate how to leverage LLMs with tens of billions of parameters effectively. We use Llama-3-8B [33], Vicuna-7B [3], and Qwen3-VL-8B [1] as base models for the following fine-tuning. Corre-spondingly, Llama-3-8B, Vicuna-7B, and Qwen3-VL-8B without fine-tuning are used as baselines, which rely on the in-context abil-ity with the same prompt. Qwen2.5-VL-72B is also included as a strong large-scale baseline for comparison on VAD-Tool. 
+
+Evaluation Metrics. We employ four metrics to evaluate the agent’s performance. For the intermediate reasoning tuple 𝐴 𝑖,𝑡 =
+
+⟨𝑛 𝑖,𝑡 , 𝑎 𝑖,𝑡 , 𝑝 𝑖,𝑡 ⟩ at step 𝑡 of query 𝑖 , let ˆ 𝐴 𝑖,𝑡 = ⟨ ˆ𝑛 𝑖,𝑡 , ˆ𝑎 𝑖,𝑡 , ˆ𝑝 𝑖,𝑡 ⟩ denote the corresponding prediction. The tuple components represent the decision of whether to use tools ( e.g. , "Thought: Do I need to use a tool? Yes/No") 𝑛 𝑖,𝑡 , the tool selection 𝑎 𝑖,𝑡 , and the input parameter 
+
+𝑝 𝑖,𝑡 . We evaluate the exact match accuracy for these three step-level metrics: decision accuracy ( Decis , 𝐴𝑐𝑐 𝑛 𝑖,𝑡 ), tool selection accuracy (Tool , 𝐴𝑐𝑐 𝑎 𝑖,𝑡 ), and input parameter accuracy ( Input , 𝐴𝑐𝑐 𝑝 𝑖,𝑡 ). For any given component 𝑥 ∈ { 𝑛, 𝑎, 𝑝 }, its accuracy is formally unified as: 
+
+𝐴𝑐𝑐 𝑥 𝑖,𝑡 = 1
+
+𝑁 
+
+> 𝑁
+
+∑︁ 
+
+> 𝑖 =1
+
+I ∀𝑡 ∈ { 1, . . . ,𝑇 𝑖 }, ˆ𝑥 𝑖,𝑡 = 𝑥 𝑖,𝑡 
+
+, (7) where 𝑁 is the total number of evaluation queries, 𝑇 𝑖 is the total number of reasoning steps for query 𝑖 , and I(·) is the indicator function. 
+
+Implementation Details. Our models are trained on NVIDIA RTX 4090 GPUs via a two-stage pipeline. Initially, we perform Supervised Fine-Tuning (SFT) for 1 epoch using parameter-efficient LoRA ( 𝑟 =
+
+8, 𝛼 = 16 , dropout = 0.05) with a learning rate of 5e-5 and a batch size of 64. Subsequently, for the Cognitive Alignment stage via GRPO, we transition to full-parameter tuning for 5 epochs. During this RL phase, we employ SGLang for asynchronous rollout ( 𝐺 = 8), applying a batch size of 16, a strictly lower learning rate of 1e-6, and a KL penalty 𝛽 = 0.001 with maximum prompt and response lengths capped at 2048 and 1024 tokens respectively. The overall framework yields an average inference time of approximately 30 seconds per sample. 
+
+## 5.2 Quantitative Results 
+
+Response Results. We first evaluate the fundamental capability of different paradigms in orchestrating visual tools under strict physical constraints. As reported in Table 2, while early baselines achieve marginal success on isolated single-tool tasks, they experi-ence catastrophic performance degradation when confronted with Interrelated Tools. For instance, the interrelated whole-response accuracy of Vicuna-7B plummets to 0%, and Llama-3-8B (Zero-shot) drops to a mere 4.52%. Even a massive model like Qwen2.5-VL-72B hits a upper bound around 67.40% on interrelated tasks. Al-though standard supervised fine-tuning (SFT) partially mitigates format errors and significantly improves the 𝐷𝑒𝑐𝑖𝑠 and 𝑇𝑜𝑜𝑙 selec-tion metrics, it still hits a severe bottleneck. For example, while Qwen3-VL-8B (SFT) performs well on single tools, it plateaus at 89.74% in the interrelated 𝑊 ℎ𝑜𝑙𝑒 metric. This indicates that purely mimicking trajectories via static behavior cloning is insufficient for complex spatial-temporal orchestration. In contrast, our proposed VTO framework demonstrates a decisive breakthrough. By formu-lating tool scheduling as a process-supervised cognitive alignment, VTO significantly outperforms both zero-shot baselines and SFT models. Specifically, on the Qwen3-VL-8B backbone, this paradigm pushes the interrelated 𝑊 ℎ𝑜𝑙𝑒 accuracy to an impressive 95.14% (achieving a perfect 100% in Decis and Tool selection). Similarly, VTO based on Llama-3-8B improves the interrelated performance from 65.93% to 72.16%. By leveraging the Process Reward Mech-anism, VTO effectively reduces critical tool-orchestration errors and better aligns the agent’s behavior with the stringent safety requirements of real-world surveillance scenarios. 
+
+Ablation Study. To verify the indispensability of our Process-Supervised Cognitive Alignment, we conduct a rigorous ablation study on Qwen3-VL-8B (Table 3). Compared to the SFT baseline MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil Wang et al. Behavior & Scene Understanding  Entity Identity & Tracking  Security Event & Hazard Detection              
+
+> Task: Human Fall Detection Task: Vehicle Re -ID Task: Anomaly Detection
+> User Input: Is there anyone who stumbles
+> and collapses onto the ground?
+> Thought: Do I need to use a tool? Yes.
+> Action: Detect Human Fall
+> Action Input: < input_video >
+> Observation: Fall event detected at 4.09s.
+> Final Answer: Yes, a human fall event was
+> detected at approximately 4.09 seconds.
+> User Input: Can you find any trace of the
+> uploaded image's vehicle within this video?
+> Thought: Do I need to use a tool? Yes.
+> Action: Recognize the Vehicle by Appearance
+> Action Input: < query_image >, < target_video >
+> Observation: Target vehicle features detected in
+> video segments.
+> Final Answer: Based on the analysis, the target
+> vehicle from < query_image > was successfully
+> tracked in < target_video > across frames
+> [5... 127 ].
+> User Input: Please analyze this video for any
+> anomalies.
+> Thought: Do I need to use a tool? Yes.
+> Action: Detect and Analyze Anomalies in Video
+> Action Input: < input_video >
+> Observation: Two individuals involved in a
+> physical struggle……
+> Final Answer: An anomaly was detected . The
+> scene shows a physical altercation where one
+> man is attempting to restrain another ……
+
+… … …   
+
+> Prompt:
+> Reasoning Trajectory:
+> Result:
+> Reasoning Trajectory: Reasoning Trajectory:
+> Result: Result:
+> Prompt: Prompt:
+
+Figure 5: Qualitative examples from the VAD-Tool benchmark illustrating structured reasoning trajectories across three diverse domains: Behavior & Scene Understanding, Entity Identity & Tracking, and Security Event & Hazard Detection. Notably, the red highlighted text in the final answers directly corresponds to the red bounding boxes in the visual frames. Table 3: Ablation study on the Process-Supervised Cognitive Alignment using Qwen3-VL-8B. The evaluation is conducted on Interrelated Tools Responses to highlight the impact of different reward granularity. Best results are in bold and the second best are underlined. Paradigm Interrelated Tools Responses Decis(%) Tool(%) Input(%) Whole(%)                             
+
+> Baseline (SFT Only) 99.26 99.26 90.47 89.74
+> Rule-Based Rewards
+> w/o Task Completion Reward 100.00 100.00 29.92 29.92 w/o Tool Name Match Reward 100.00 94.66 98.04 93.01 w/o Tool Param Match Reward 100.00 100.00 78.02 77.66 w/o Efficiency Reward 100.00 100.00 94.48 94.48
+> LLM-as-a-Judge Reward
+> w/o LLM Judge Reward 100.00 100.00 94.97 93.70
+> VTO (Ours) 100.00 100.00 95.60 95.14
+
+(89.74%), our VTO achieves a substantial performance leap in over-all multi-step execution accuracy (95.14%). Decomposing VTO re-veals that fine-grained objective anchors are critical for environmen-tal grounding. Notably, removing the Rcomp causes a catastrophic performance collapse (29.92%), indicating that a strict global signal is essential to prevent the agent from trapping in endless tool-use loops. Similarly, without the Rparam , input accuracy drops sharply to 78.02%, proving explicit parameter supervision prevents halluci-natory video frame or spatial coordinate grounding. Finally, while rule-based metrics ensure syntactic correctness, ablating the RLLM 
+
+also degrades overall performance (93.70%). This confirms the LLM evaluator’s important role in maintaining the logical relevance and causal completeness of the reasoning chains. 
+
+## 5.3 Qualitative Results 
+
+VAD-Tool Benchmark Demonstration. Figure 5 illustrates the VAD-Tool benchmark’s structured reasoning trajectories across diverse domains: Human-centric , Vehicle & Traffic , and En-vironment & Hazard Analysis . Each category displays a full reasoning cycle from multimodal user query to final integrated linguistic response. These examples highlight the benchmark’s capability to validate an agent’s fundamental grounding and single-step tool interaction skills in unconstrained physical environments, establishing a robust foundation. 
+
+## 6 Conclusion 
+
+In this paper, we presented VTO, a dynamic multimodal agent pow-ered by process-supervised reinforcement learning for explainable Video Anomaly Detection (VAD), alongside VAD-Tool, a compre-hensive benchmark for interrelated anomaly reasoning. To over-come the imitation-based limitations of Supervised Fine-Tuning (SFT) and explicitly address the premature termination problem inherent in standard outcome-based RL, VTO formulated visual tool scheduling as a dynamic policy optimization process. Our frame-work provided fine-grained, step-wise cognitive supervision across logical thoughts, tool selections, and parameter formulations. VTO: Visual Tool Orchestration for Video Anomaly Detection MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil 
+
+## Acknowledgments 
+
+This work is partly supported by the Funds for the National Natural Science Foundation of China under Grant 62572072 and Beijing Natural Science Foundation (L243027). 
+
+## References 
+
+[1] Shuai Bai, Yuxuan Cai, Ruizhe Chen, Keqin Chen, Xionghui Chen, Zesen Cheng, Lianghao Deng, Wei Ding, Chang Gao, Chunjiang Ge, et al. 2025. Qwen3-vl technical report. arXiv preprint arXiv:2511.21631 (2025). [2] Sijia Chen, Yibo Wang, Yi-Feng Wu, Zhao Xu, Weihua Luo, Kaifu Zhang, and Lijun Zhang. 2024. Advancing Tool-Augmented Large Language Models: Inte-grating Insights from Errors in Inference Trees. In Advances in Neural Information Processing Systems (NeurIPS) .[3] Wei-Lin Chiang, Zhuohan Li, Ziqing Lin, Ying Sheng, Zhanghao Wu, Hao Zhang, Lianmin Zheng, Siyuan Zhuang, Yonghao Zhuang, Joseph E Gonzalez, et al. 2023. Vicuna: An open-source chatbot impressing gpt-4 with 90%* chatgpt quality. See https://vicuna. lmsys. org (accessed 14 April 2023) 2, 3 (2023), 6. [4] Wei Deng, Mengshi Qi, and Huadong Ma. 2025. Global-local tree search in vlms for 3d indoor scene generation. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition . 8975–8984. [5] Chao Fan, Junjie Liang, Chuanfu Shen, et al. 2023. OpenGait: Revisiting Gait Recognition Towards Better Practicality. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) .[6] Shibo Gao, Peng Yang, Hui Guo, Yuan Liu, Yifei Chen, Shuo Li, Haoran Zhu, Jiajun Xu, and Xiaoyun Zhang. 2025. The Evolution of Video Anomaly Detection: A Unified Framework from DNN to MLLM. arXiv preprint arXiv:2507.21649 (2025). [7] Zhi Gao, Bofei Zhang, Pengxiang Li, Xiaojian Ma, Tao Yuan, Yue Fan, Yuwei Wu, Yunde Jia, Song-Chun Zhu, and Qing Li. 2025. Multi-modal agent tuning: Building a vlm-driven agent for efficient tool usage. In International Conference on Learning Representations (ICLR) .[8] Dong Gong, Lingqiao Liu, Vuong Le, Budhaditya Saha, Moussa Reda Mansour, Svetha Venkatesh, and Anton van den Hengel. 2019. Memorizing normality to detect anomaly: Memory-augmented deep autoencoder for unsupervised anomaly detection. In Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV) .[9] Mahmudul Hasan, Jonghyun Choi, Jan Neumann, Amit K Roy-Chowdhury, and Larry S Davis. 2016. Learning temporal regularity in video sequences. In Proceed-ings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR) .[10] Lingxiao He, Xingyu Liao, Wu Liu, et al. 2023. FastReID: A Pytorch Toolbox for General Instance Re-identification. In Proceedings of the 31st ACM International Conference on Multimedia (ACMMM) .[11] Mohammad Mahdi Hemmatyar, Mohammad Jafari, Mohammad Amin Yousefi, Mohammad Reza Nemati, Mahdi Azadani, and Hamid Reza Rastad. 2025. HyCo-VAD: A Hybrid SSL-LLM Model for Complex Video Anomaly Detection. arXiv preprint arXiv:2509.22544 (2025). [12] Dingkang Liang, Wei Xu, and Xiang Bai. 2022. An end-to-end transformer model for crowd localization. In European Conference on Computer Vision (ECCV) .[13] Siwei Liu, Jinyuan Fang, Han Zhou, Yingxu Wang, and Zaiqiao Meng. 2025. SEW: Self-Evolving Agentic Workflows for Automated Code Generation. arXiv preprint arXiv:2505.18646 (2025). [14] Shilong Liu, Zhaoyang Zeng, Tianhe Ren, Feng Li, Hao Zhang, Jie Yang, Qing Jiang, Chunyuan Li, Jianwei Yang, Hang Su, et al. 2024. Grounding dino: Marry-ing dino with grounded pre-training for open-set object detection. In European conference on computer vision (ECCV) .[15] Xinchen Liu, Wu Liu, Huadong Ma, et al. 2016. Large-Scale Vehicle Re-Identification in Urban Surveillance Videos. In IEEE International Conference on Multimedia and Expo (ICME) .[16] Yanming Liu, Xinyue Peng, Jiannan Cao, Yuwei Zhang, Xuhong Zhang, Sheng Cheng, Xun Wang, Jianwei Yin, and Tianyu Du. 2025. Tool-Planner: Task Plan-ning with Clusters across Multiple Tools. In Proceedings of the International Conference on Learning Representations (ICLR) .[17] Peng Lu, Tao Jiang, Yining Li, Xiangtai Li, Kai Chen, and Wenming Yang. 2024. Rtmo: Towards high-performance one-stage real-time multi-person pose estima-tion. In Proceedings of the IEEE/CVF conference on computer vision and pattern recognition (CVPR) .[18] Changsheng Lv, Zijian Fu, and Mengshi Qi. 2026. Robo-SGG: Exploiting Layout-Oriented Normalization and Restitution Can Improve Robust Scene Graph Gen-eration. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) . 39282–39292. [19] Changsheng Lv, Mengshi Qi, Xia Li, Zhengyuan Yang, and Huadong Ma. 2024. Sgformer: Semantic graph transformer for point cloud-based 3d scene graph generation. In Proceedings of the AAAI Conference on Artificial Intelligence , Vol. 38. 4035–4043. [20] Changsheng Lv, Mengshi Qi, Liang Liu, and Huadong Ma. 2025. T2sg: Traffic topology scene graph for topology reasoning in autonomous driving. In Proceed-ings of the Computer Vision and Pattern Recognition Conference . 17197–17206. [21] Hui Lv and Qianru Sun. 2024. Video Anomaly Detection and Explanation via Large Language Models. arXiv preprint arXiv:2401.05702 (2024). [22] Chang Ma, Junlei Zhang, Zhihao Zhu, Cheng Yang, Yujiu Yang, Yaohui Jin, Zhen-zhong Lan, Lingpeng Kong, and Junxian He. 2024. Agentboard: An analytical evaluation board of multi-turn llm agents. Advances in neural information pro-cessing systems (NeurIPS) (2024). [23] Da Ma, Ziyue Yang, Hongshen Xu, Haotian Fang, Kai Yu, and Lu Chen. 2026. Empowering LLM Tool Invocation with Tool-call Reward Model. In Proceedings of the International Conference on Learning Representations (ICLR) .[24] Mengshi Qi, Changsheng Lv, and Huadong Ma. 2025. Robust disentangled counterfactual learning for physical audiovisual commonsense reasoning. IEEE Transactions on Pattern Analysis and Machine Intelligence (2025). [25] Mengshi Qi, Jiaxuan Peng, Jie Zhang, Juan Zhu, Yong Li, and Huadong Ma. 2026. Synergistic tensor and pipeline parallelism. Advances in Neural Information Processing Systems 38 (2026), 157997–158022. [26] Mengshi Qi, Jie Qin, Yi Yang, Yunhong Wang, and Jiebo Luo. 2021. Semantics-aware spatial-temporal binaries for cross-modal video retrieval. IEEE Transactions on Image Processing 30 (2021), 2989–3004. [27] Mengshi Qi, Yeteng Wu, Wulian Yun, Xianlin Zhang, and Huadong Ma. 2026. Explainable action form assessment by exploiting multimodal chain-of-thoughts reasoning. IEEE Transactions on Image Processing (2026). [28] Mengshi Qi, Hao Ye, Jiaxuan Peng, and Huadong Ma. 2025. Action quality assessment via hierarchical pose-guided multi-stage contrastive regression. IEEE Transactions on Image Processing (2025). [29] Mengshi Qi, Pengfei Zhu, Xiangtai Li, Xiaoyang Bi, Lu Qi, Huadong Ma, and Ming-Hsuan Yang. 2025. DC-SAM: In-Context Segment Anything in Images and Videos via Dual Consistency. IEEE Transactions on Pattern Analysis and Machine Intelligence (2025). [30] Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Xiao Bi, Haowei Zhang, Mingchuan Zhang, YK Li, et al. 2024. Deepseekmath: Pushing the limits of mathematical reasoning in open language models. arXiv preprint arXiv:2402.03300 
+
+(2024). [31] Noah Shinn, Federico Cassano, Ashwin Gopinath, Karthik Narasimhan, and Shunyu Yao. 2023. Reflexion: Language agents with verbal reinforcement learning. 
+
+Advances in neural information processing systems (NeurIPS) (2023). [32] Waqas Sultani, Chen Chen, and Mubarak Shah. 2018. Real-world anomaly detec-tion in surveillance videos. In Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR) .[33] Hugo Touvron, Louis Martin, Kevin Stone, et al. 2023. Llama 2: Open Foundation and Fine-Tuned Chat Models. arXiv preprint arXiv:2307.09288 (2023). [34] Rejin Varghese and M Sambath. 2024. Yolov8: A novel object detection algorithm with enhanced performance and robustness. In 2024 International conference on advances in data engineering and intelligent computing systems (ADICS) . IEEE, 1–6. [35] Chien-Yao Wang, Alexey Bochkovskiy, and Hong-Yuan Mark Liao. 2023. YOLOv7: Trainable bag-of-freebies sets new state-of-the-art for real-time object detectors. In Proceedings of the IEEE/CVF conference on computer vision and pattern recogni-tion . 7464–7475. [36] Huacan Wang, Ronghao Chen, et al. 2025. SE-Agent: Self-Evolution Trajectory Optimization in Multi-Step Reasoning with LLM-Based Agents. In Advances in Neural Information Processing Systems (NeurIPS) .[37] Rui Wang, Mengshi Qi, Yingxia Shao, Anfu Zhou, and Huadong Ma. 2025. PITN: Physics-Informed Temporal Networks for Cuffless Blood Pressure Estimation. 
+
+IEEE Transactions on Mobile Computing (2025). [38] Xingyao Wang et al. 2024. SELF: Language-Driven Self-Evolution for Large Language Model. In Proceedings of the International Conference on Learning Rep-resentations (ICLR) .[39] Zihan Wang, Kangrui Wang, et al. 2025. RAGEN: Understanding Self-Evolution in LLM Agents via Multi-Turn Reinforcement Learning. arXiv preprint arXiv:2504.20073 (2025). [40] Peng Wu, Xuerong Zhou, Guansong Pang, Lingru Zhou, Qingsen Yan, Peng Wang, and Yanning Zhang. 2024. Vadclip: Adapting vision-language models for weakly supervised video anomaly detection. In Proceedings of the AAAI conference on artificial intelligence (AAAI) .[41] Zhenbo Xu, Wei Yang, Ajin Meng, et al. 2018. Towards End-to-End License Plate Detection and Recognition: A Large Dataset and Baseline. In European Conference on Computer Vision (ECCV) .[42] Yuchen Yang, Kwonjoon Lee, Behzad Dariush, Yinzhi Cao, and Shao-Yuan Lo. 2024. Follow the Rules: Reasoning for Video Anomaly Detection with Large Language Models. In Proceedings of the European Conference on Computer Vision (ECCV) .[43] Zhiwei Yang, Chen Gao, and Mike Zheng Shou. 2025. PANDA: Towards Gener-alist Video Anomaly Detection via Agentic AI Engineer. In Advances in Neural Information Processing Systems (NeurIPS) .MM ’26, November 10–14, 2026, Rio de Janeiro, Brazil Wang et al. 
+
+[44] Shunyu Yao, Jeffrey Zhao, Dian Yu, et al. 2023. ReAct: Synergizing Reason-ing and Acting in Language Models. In International Conference on Learning Representations (ICLR) .[45] Hao Ye, Mengshi Qi, Zhaohong Liu, Liang Liu, and Huadong Ma. 2025. Safedriverag: Towards safe autonomous driving with knowledge graph-based retrieval-augmented generation. In Proceedings of the 33rd ACM International Conference on Multimedia . 11170–11178. [46] Muchao Ye, Weiyang Liu, and Pan He. 2025. VERA: Explainable Video Anomaly Detection via Verbalized Learning of Vision-Language Models. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) .[47] Siyu Yuan, Kaitao Song, Jiangjie Chen, Xu Tan, Dongsheng Li, and Deqing Yang. 2025. Evoagent: Towards automatic multi-agent generation via evolutionary algorithms. In Proceedings of the Annual Conference of the North American Chapter of the Association for Computational Linguistics (NAACL)) .[48] Francesco Zanella et al. 2024. Harnessing Large Language Models for Training-free Video Anomaly Detection. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) .[49] Aohan Zeng, Mingdao Liu, Rui Lu, Bowen Wang, Xiao Liu, Yuxiao Dong, and Jie Tang. 2024. Agenttuning: Enabling generalized agent abilities for llms. In 
+
+Findings of the Association for Computational Linguistics (ACL) .[50] Yirong Zeng et al. 2025. Tool Zero: Training Tool-Augmented LLMs via Pure RL from Scratch. In Findings of the Association for Computational Linguistics (EMNLP) .[51] Huaxin Zhang, Xiaohao Xu, Xiang Wang, Jialong Zuo, Xiaonan Huang, Changxin Gao, Shanjun Zhang, Li Yu, and Nong Sang. 2025. Holmes-vau: Towards long-term video anomaly understanding at any granularity. In Proceedings of the computer vision and pattern recognition conference (CVPR) .[52] Yingying Zhang, Desen Zhou, Siqin Chen, Shenghua Gao, and Yi Ma. 2016. Single-image crowd counting via multi-column convolutional neural network. In Proceedings of the IEEE conference on computer vision and pattern recognition (CVPR) .[53] Liang Zheng, Liyue Shen, Lu Tian, et al. 2015. Scalable Person Re-Identification: A Benchmark. In Proceedings of the IEEE International Conference on Computer Vision (ICCV) .[54] Shu-Qing Zheng, Jian-Huang Zhang, Kai-Qi Huang, et al. 2011. Robust view transformation model for gait recognition. In IEEE International Conference on Image Processing (ICIP) .[55] Yaoyao Zhong, Mengshi Qi, Rui Wang, Yuhan Qiu, Yang Zhang, and Huadong Ma. 2025. Viotgpt: Learning to schedule vision tools towards intelligent video internet of things. In Proceedings of the AAAI Conference on Artificial Intelligence ,Vol. 39. 10680–10688. [56] Bolei Zhou, Agata Lapedriza, Aditya Khosla, et al. 2017. Places: A 10 Million Image Database for Scene Recognition. IEEE Transactions on Pattern Analysis and Machine Intelligence (TPAMI) 40, 6 (2017), 1452–1464. [57] Liyun Zhu, Lei Wang, Arjun Raj, Tom Gedeon, and Chen Chen. 2024. Advancing Video Anomaly Detection: A Concise Review and a New Dataset. In Advances in Neural Information Processing Systems (NeurIPS) .[58] Xuanyu Zhu, Yuhao Dong, Rundong Wang, Yang Shi, Zhipeng Wu, Yinlun Peng, YiFan Zhang, Yihang Lou, Yuanxing Zhang, Ziwei Liu, et al. 2026. VTC-Bench: Evaluating Agentic Multimodal Models via Compositional Visual Tool Chaining. 
+
+arXiv preprint arXiv:2603.15030 (2026).

@@ -1,0 +1,280 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-11T20:56:43.190548+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 4,
+    "deep_cap": 6,
+    "deep_selected": 4,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2608.08255v1",
+      "source": "arxiv",
+      "title": "Learning from Environmental Feedback: Credit Assignment across Multiple Timescales for Agentic Reinforcement Learning",
+      "abstract": "Agentic reinforcement learning (RL) often suffers from delayed and sparse rewards in real-world environments. A promising solution to this challenge is credit assignment, which aims to decompose trajectory-level rewards and provide more fine-grained supervision for intermediate decisions. However, existing credit assignment approaches ignore the rich process information naturally generated during environment interaction, e.g., interaction history. We argue that such information provides valuable supervision for identifying the contribution of individual actions. To this end, we propose Environmental Feedback-based Credit Assignment (EFCA), a multi-timescale credit assignment approach for long-horizon agentic RL. EFCA complements the long-term outcome signal with two environment-grounded process signals: a short-term feedback signal that captures the immediate effect of the current action and a medium-term state-history signal that identifies ineffective patterns from recent interactions. Both signals are directly extracted from environment feedback and integrated through a return reweighting mechanism. Experiments on ALFWorld and WebShop demonstrate that EFCA consistently improves both task success and task quality over strong baselines, highlighting the effectiveness of environment-grounded multi-timescale credit assignment for long-horizon agentic RL.",
+      "authors": [
+        "Yifu Huo",
+        "Shunjie Xing",
+        "Chenglong Wang",
+        "Peinan Feng",
+        "Qiaozhi He",
+        "Yan Ding",
+        "Anxiang Ma",
+        "Yuxin Gao",
+        "Tongran Liu",
+        "Tong Xiao",
+        "Jingbo Zhu"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.CL"
+      ],
+      "published": "2026-08-08T17:32:34+00:00",
+      "link": "https://arxiv.org/pdf/2608.08255v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "introduces multi-timescale credit assignment for long-horizon RL using environmental feedback",
+      "llm_evidence_cn": "利用环境反馈的多时间尺度信用分配方法适用于长时域强化学习",
+      "llm_evidence": "利用环境反馈的多时间尺度信用分配方法适用于长时域强化学习",
+      "canonical_evidence": "利用环境反馈的多时间尺度信用分配方法适用于长时域强化学习",
+      "llm_tldr_en": "EFCA proposes a multi-timescale credit assignment method that leverages environmental interaction history to provide fine-grained supervision for long-horizon agentic RL tasks, improving performance.",
+      "llm_tldr_cn": "针对长时域智能体强化学习中延迟稀疏奖励问题，本文提出EFCA，一种利用环境交互历史的多时间尺度信用分配方法，通过解析环境过程信息为中间决策提供细粒度监督，实验证明其能有效提升长时域任务性能，为信用分配提供了新的信息源。",
+      "llm_tldr": "针对长时域智能体强化学习中延迟稀疏奖励问题，本文提出EFCA，一种利用环境交互历史的多时间尺度信用分配方法，通过解析环境过程信息为中间决策提供细粒度监督，实验证明其能有效提升长时域任务性能，为信用分配提供了新的信息源。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.08158v1",
+      "source": "arxiv",
+      "title": "A Unified Framework for Dynamic Reward Shaping in Reinforcement Learning",
+      "abstract": "Sparse, delayed, and weakly informative rewards remain central obstacles to efficient reinforcement learning. Reward shaping addresses these limitations by supplementing the task reward with an auxiliary signal that can accelerate learning while, in the classical setting, the original objective remains the evaluation criterion. Established theory guarantees safety for fixed shaping signals: potential-based reward shaping preserves optimal policies when the auxiliary term is the discounted difference of a time-invariant potential. In contemporary reinforcement learning systems, however, both the learner and the information available for guidance evolve during training: value estimates improve, novelty diminishes, feedback shifts, and predictive models are refined. Adaptive reward mechanisms occur across exploration, Bayesian inference, human-in-the-loop learning, automated reward design, and foundation-model-based approaches. This study introduces a unified analytical framework for comparing dynamic reward shaping and neighbouring adaptive reward mechanisms. The proposed framework distinguishes parametric revision from state-dependent variation, separates additive shaping from reward replacement and reward-adjacent guidance, and organises existing methods along temporal, informational, and theoretical dimensions. Using this framework, twelve method families are comparatively analysed. The framework further highlights the conditions under which optimality guarantees survive contemporary deep reinforcement learning pipelines, replay buffers, bootstrapped critics, and reward normalisation, while exposing the unresolved relationship between adaptation rate and learner stability.",
+      "authors": [
+        "Fouad Bahrpeyma"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.LG"
+      ],
+      "published": "2026-08-08T14:35:29+00:00",
+      "link": "https://arxiv.org/pdf/2608.08158v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Unified dynamic reward shaping to address sparse/delayed rewards in long-horizon RL.",
+      "llm_evidence_cn": "统一动态奖励塑形框架，解决长时序强化学习的稀疏/延迟奖励问题。",
+      "llm_evidence": "统一动态奖励塑形框架，解决长时序强化学习的稀疏/延迟奖励问题。",
+      "canonical_evidence": "统一动态奖励塑形框架，解决长时序强化学习的稀疏/延迟奖励问题。",
+      "llm_tldr_en": "Proposes a unified framework for dynamic reward shaping that adapts auxiliary rewards over time, accelerating learning in tasks with sparse or delayed rewards.",
+      "llm_tldr_cn": "针对强化学习中稀疏、延迟奖励的挑战，提出动态奖励塑形统一框架，在训练过程中自适应调整辅助奖励，既保持最优策略不变性又加速学习，适用于长时序任务。",
+      "llm_tldr": "针对强化学习中稀疏、延迟奖励的挑战，提出动态奖励塑形统一框架，在训练过程中自适应调整辅助奖励，既保持最优策略不变性又加速学习，适用于长时序任务。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.08219v1",
+      "source": "arxiv",
+      "title": "VTO: Visual Tool Orchestration for Video Anomaly Detection",
+      "abstract": "Video anomaly detection (VAD) is a critical yet challenging task due to the complex and diverse nature of real-world scenarios. Traditional deep learning approaches are fundamentally limited by poor generalization across diverse scenarios. While multimodal agents offer a promising tool-learning paradigm for VAD, current systems relying on supervised fine-tuning struggle with complex orchestration, and standard reinforcement learning often causes premature termination due to coarse-grained outcome rewards. To address these challenges, we propose VTO, a process-supervised reinforcement learning framework. Moving beyond static tool usage, VTO enables the agent to dynamically explore and interact with the environment. Specifically, we introduce a foundation model-driven cognitive evaluator to provide context-aware semantic feedback, which is seamlessly integrated into a Process-Supervised Cognitive Alignment that delivers fine-grained, step-wise supervision. By explicitly penalizing logical truncation and rewarding complete causal chains, the agent optimizes its multi-step reasoning policy for interrelated tool orchestration. To support our proposed framework, we meticulously crafted VAD-Tool, a hierarchical visual tool set comprising 12 specialized vision tools spanning from entity tracking to high-stakes hazard detection, and established the corresponding benchmark for rigorous multi-step reasoning evaluation. Extensive experiments on VAD-Tool demonstrate that VTO significantly outperforms baselines, achieving up to a 10.2\\% absolute accuracy improvement in tool scheduling. Code and data are available at https://github.com/MICLAB-BUPT/VTO.",
+      "authors": [
+        "Rui Wang",
+        "Yeteng Wu",
+        "Xianling Zhang",
+        "Mengshi Qi"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-08-08T16:28:36+00:00",
+      "link": "https://arxiv.org/pdf/2608.08219v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "process-supervised RL to address coarse-grained outcome rewards in long-horizon tasks",
+      "llm_evidence_cn": "过程监督强化学习解决长时序任务中的粗粒度奖励问题",
+      "llm_evidence": "过程监督强化学习解决长时序任务中的粗粒度奖励问题",
+      "canonical_evidence": "过程监督强化学习解决长时序任务中的粗粒度奖励问题",
+      "llm_tldr_en": "Proposes a process-supervised reinforcement learning framework, VTO, for video anomaly detection to address premature termination caused by coarse-grained outcome rewards, enabling dynamic tool orchestration and fine-grained reward assignment.",
+      "llm_tldr_cn": "现有视频异常检测方法泛化性差，基于工具学习的智能体虽具潜力，但受限于粗粒度结局奖励导致提前终止。本文提出过程监督强化学习框架VTO，通过细粒度的过程奖励指导代理动态选择与编排视觉工具。实验证明该方法能够有效避免早停，提升在多样化场景下的异常检测准确性，为长时序任务的奖励设计提供了可行方案。",
+      "llm_tldr": "现有视频异常检测方法泛化性差，基于工具学习的智能体虽具潜力，但受限于粗粒度结局奖励导致提前终止。本文提出过程监督强化学习框架VTO，通过细粒度的过程奖励指导代理动态选择与编排视觉工具。实验证明该方法能够有效避免早停，提升在多样化场景下的异常检测准确性，为长时序任务的奖励设计提供了可行方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.09853v1",
+      "source": "arxiv",
+      "title": "RynnValue: Scaling Robotic Value Foundation Models with Temporal Distance",
+      "abstract": "General-purpose reward models are increasingly the bottleneck for scaling robot learning, yet the recipe for learning value-related capabilities from large-scale heterogeneous corpora remains underexplored. Existing approaches tie supervision to task-internal anchors such as preferences or normalized progress, none of which transfer cleanly across embodiments and data sources. We introduce RynnValue, an open-source value foundation model for robotic manipulation that replaces these anchors with temporal distance, the directed cost-to-go from an observation to the language-specified goal. Because temporal-distance labels can be derived directly from timestamps, RynnValue scales to over 7,000 hours and roughly 3M instruction-conditioned clips without preference or progress annotations. To make temporal-value learning reliable at scale, we combine random temporal sampling, temporal-order shuffling, and value-isolation attention, suppressing shortcuts that would leave predictions insensitive to failures and regressions. Trained without preference labels, RynnValue attains an average Kendall's tau_a of 0.675 on RBM-EVAL-OOD, surpassing the fully preference-supervised state of the art (0.655) and more than doubling a progress-only counterpart (0.292), while generalizing zero-shot to unseen tasks, embodiments, and viewpoints. Converted into dense rewards via potential-based shaping, it raises real-world policy success from 52.5% to 72.5% online and from 63.8% to 82.5% offline. These results establish temporal distance as a scalable supervision target and practical reward interface for generalist robot policies.",
+      "authors": [
+        "Dongchi Huang",
+        "Hongyin Zhang",
+        "Bohan Hou",
+        "Siteng Huang",
+        "Zhian Su",
+        "Hang Guo",
+        "Tong Lu",
+        "Zhaofeng Xu",
+        "Jiahao Tang",
+        "Jianfei Yang",
+        "Donglin Wang",
+        "Peixi Peng",
+        "Mingxiu Chen",
+        "Deli Zhao",
+        "Xin Li"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.CV",
+        "cs.LG"
+      ],
+      "published": "2026-08-10T17:09:37+00:00",
+      "link": "https://arxiv.org/pdf/2608.09853v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Uses temporal distance as a scalable proxy for long-horizon reward assignment in RL",
+      "llm_evidence_cn": "使用时序距离作为强化学习中长时域奖励分配的可扩展代理",
+      "llm_evidence": "使用时序距离作为强化学习中长时域奖励分配的可扩展代理",
+      "canonical_evidence": "使用时序距离作为强化学习中长时域奖励分配的可扩展代理",
+      "llm_tldr_en": "Proposes RynnValue, a value foundation model that uses temporal distance as a cost-to-go proxy, enabling efficient reward assignment for long-horizon robotic manipulation tasks from timestamps alone",
+      "llm_tldr_cn": "现有机器人价值模型依赖任务内部锚点，难以跨实施例和跨数据源迁移。该工作提出RynnValue，用时序距离替代这些锚点，直接从时间戳推导成本到目标的代价，从而在超过7000小时的大规模异质数据上训练价值基础模型。实验表明，该方法能在长时域任务中提供有效奖励信号，无需手工设计奖励函数，为通用型机器人学习奖励模型提供了新思路。",
+      "llm_tldr": "现有机器人价值模型依赖任务内部锚点，难以跨实施例和跨数据源迁移。该工作提出RynnValue，用时序距离替代这些锚点，直接从时间戳推导成本到目标的代价，从而在超过7000小时的大规模异质数据上训练价值基础模型。实验表明，该方法能在长时域任务中提供有效奖励信号，无需手工设计奖励函数，为通用型机器人学习奖励模型提供了新思路。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.08491v1",
+      "source": "arxiv",
+      "title": "TrustRoboReward: Preference-Ordered Isotonic Score Editing for Multi-Paradigm Robot Reward Models",
+      "abstract": "Reward models are a bottleneck for reinforcement learning in embodied AI. Long-horizon robotic manipulation requires scalable vision feedback beyond handcrafted rewards or task-specific annotations. Existing open-source VLM reward judges like RoboReward adopt simple 1--5 trajectory progress scoring, lacking pairwise preferences for RLHF, DPO and Bradley-Terry frameworks, while failing to optimize video scene understanding. Augmenting RoboReward with pairwise comparison and video-QA supervision causes inconsistency between pairwise preferences and pointwise scores, introducing training noise and hurting downstream performance---an issue aggregation methods such as TrustJudge cannot resolve. To address this, we propose TrustRoboReward, a multi-paradigm reward modeling framework equipped with Preference-Ordered Isotonic Score Editing (POISE). We construct a unified four-paradigm dataset with trajectory progress scoring (Score-A), video-QA answer quality scoring (Score-B), and their pairwise counterparts (Pair-A, Pair-B). Pairwise labels align better with human judgment than pointwise scores, inspiring us to calibrate pointwise scores to avoid score-pair reversals against pairwise preferences. POISE rectifies pointwise scores and eliminates cross-paradigm reversal conflicts unresolved by TrustJudge. Theoretically, POISE reduces score-pair reversal conflicts from 20.15% to 0%, whereas TrustJudge retains 20.46% conflicts on the same corpus. Evaluated on our benchmark, Qwen3-VL-4B trained with POISE achieves an overall reward score of 77.96%, nearly matching GPT-5-mini (78.09%, gap 0.13%) and outperforming the strongest RoboReward-4B baseline by 10.13%. It also lifts test-time score-pair consistency to 71.90%, exceeding RoboReward-4B (57.26%) and GPT-5-mini (68.09%). Integrating TrustJudge aggregation during inference boosts the overall score to 78.57%, surpassing the GPT-5-mini teacher model.",
+      "authors": [
+        "Yidong Wang",
+        "Yan Zhan",
+        "Ziteng Feng",
+        "Zhenyu Cui",
+        "Ziyi Zhou",
+        "Renzhao Liang",
+        "Jiaxuan Zhu",
+        "Zilei Yang",
+        "Yiran Zhao",
+        "Zhongkuan Mao",
+        "Bo Jia",
+        "Hanchu Ni",
+        "Chenggang Xie",
+        "Biao Liu",
+        "Yi Zhang",
+        "Yong Dai",
+        "Xiaozhu Ju",
+        "Wei Ye",
+        "Shikun Zhang"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-08-09T05:25:22+00:00",
+      "link": "https://arxiv.org/pdf/2608.08491v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Long-horizon robot reward model with isotonic score editing to resolve inconsistency.",
+      "llm_evidence_cn": "长时序机器人奖励模型采用保序分数编辑解决不一致性问题。",
+      "llm_evidence": "长时序机器人奖励模型采用保序分数编辑解决不一致性问题。",
+      "canonical_evidence": "长时序机器人奖励模型采用保序分数编辑解决不一致性问题。",
+      "llm_tldr_en": "Proposes TrustRoboReward to improve long-horizon robot reward models by enforcing isotonic consistency between pointwise scores and pairwise preferences.",
+      "llm_tldr_cn": "针对长时序机器人操作中奖励模型的不一致性，提出TrustRoboReward，通过偏好排序保序分数编辑，在点式评分与成对偏好之间实现一致性，从而提升长时序任务的奖励信号质量和下游性能。",
+      "llm_tldr": "针对长时序机器人操作中奖励模型的不一致性，提出TrustRoboReward，通过偏好排序保序分数编辑，在点式评分与成对偏好之间实现一致性，从而提升长时序任务的奖励信号质量和下游性能。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.09467v1",
+      "source": "arxiv",
+      "title": "RecoverFly: A Failure-Aware Reinforcement Learning Post-Training Framework for Aerial Vision-Language Navigation",
+      "abstract": "Unmanned aerial vehicle vision-language navigation (UAV-VLN) requires agents to translate visual observations and language instructions into reliable flight actions in complex environments. Although recent end-to-end UAV vision-language-action (UAV-VLA) policies reduce reliance on separately designed perception, planning, and control modules, their behavior-cloning objectives provide limited corrective supervision for interactive closed-loop execution. Reinforcement learning (RL) offers a promising solution, while its effectiveness is constrained by inefficient use of samples, long-tailed scene distributions, and policy distribution shift during optimization. To this end, we propose RecoverFly, a failure-aware RL post-training framework for end-to-end UAV-VLA policies. Specifically, RecoverFly adapts token-level RL for stable optimization of grammar-constrained autoregressive UAV actions, revisits unresolved failure cases to strengthen corrective learning and sample utilization, and combines a two-stage long-tail scene curriculum with reference-policy regularization to improve scene adaptation while preserving acquired capabilities. Experiments on the TravelUAV benchmark demonstrate that RecoverFly achieves the best performance on the seen, unseen-map, and unseen-object splits. Moreover, compared to the AerialVLA initialization, RecoverFly improves success rate by 3.12 to 8.37 percentage points under a total rollout budget of about 30\\% of the training-set size, validating its effectiveness, robustness, and generalization capabilities.",
+      "authors": [
+        "Boxiong Wang",
+        "Hui Kang",
+        "Geng Sun",
+        "Jiahui Li",
+        "Chao Yu",
+        "Daxin Tian"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-08-10T11:37:46+00:00",
+      "link": "https://arxiv.org/pdf/2608.09467v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "applies RL post-training for aerial VLN, relevant to UAV control",
+      "llm_evidence_cn": "将强化学习应用于无人机视觉语言导航，与无人机控制相关",
+      "llm_evidence": "将强化学习应用于无人机视觉语言导航，与无人机控制相关",
+      "canonical_evidence": "将强化学习应用于无人机视觉语言导航，与无人机控制相关",
+      "llm_tldr_en": "RecoverFly proposes a failure-aware RL post-training framework to improve UAV vision-language navigation, addressing sample inefficiency and distribution shift through corrective supervision.",
+      "llm_tldr_cn": "针对无人机视觉语言导航中行为克隆缺乏闭环纠正监督的问题，本文提出RecoverFly，一种故障感知的强化学习后训练框架，通过利用失败样本提供额外监督，提升策略的鲁棒性和泛化能力，实验表明其在复杂环境中有效提高了导航成功率。",
+      "llm_tldr": "针对无人机视觉语言导航中行为克隆缺乏闭环纠正监督的问题，本文提出RecoverFly，一种故障感知的强化学习后训练框架，通过利用失败样本提供额外监督，提升策略的鲁棒性和泛化能力，实验表明其在复杂环境中有效提高了导航成功率。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "deep reinforcement learning for UAV inspection tasks",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
