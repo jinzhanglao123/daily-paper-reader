@@ -1,0 +1,56 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-12T21:24:08.244081+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 1,
+    "quick_skim_target": 11,
+    "quick_selected": 1
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2608.10357v1",
+      "source": "arxiv",
+      "title": "Efficient Reinforcement Learning for Long-Horizon Tool-Use Agentic Tasks",
+      "abstract": "Long-horizon tool-using agents must reason over user goals, domain policies, tool calls, simulator state, and delayed verifiable rewards. Reinforcement learning (RL) is a natural fit for this setting, but multi-turn on-policy rollouts create long contexts, while model-specific attention layers may require custom masks and learned sink normalization. We present SINKFLEX-RL, a modular training system for RL in dual-control tool-use environments. The system combines a Gymnasium-compatible environment wrapper, a VERL-style rollout dataflow, group-relative policy optimization without a separate value model, and a sink-aware FlexAttention path designed to preserve model-specific sink scaling under causal and sliding-window masks. In a preliminary Tau2Bench retail run, validation reward (mean@1) rises from 0.25 early in training to $0.44$ later in the observed training window, while training-score and trajectory-reward proxies also trend upward. In a fixed-configuration memory benchmark, the optimized attention path reduces peak VRAM from 28.06GB to 22.52GB at 4096 tokens, a $19.7\\%$ reduction, and runs the measured 8192-token configuration using $25.53$~GB where the eager baseline runs out of memory. These results illustrate the value of integrating environment interfaces, RL dataflow, and attention-kernel design for memory-feasible long-horizon agent training.",
+      "authors": [
+        "Zelei Cheng",
+        "Amritansh Mishra",
+        "Sambit Sahu",
+        "William Campbell"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-08-11T01:30:56+00:00",
+      "link": "https://arxiv.org/pdf/2608.10357v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "efficient reinforcement learning for long-horizon tool-use tasks with delayed verifiable rewards",
+      "llm_evidence_cn": "面向长时程工具使用任务的高效强化学习，包含延迟可验证奖励",
+      "llm_evidence": "面向长时程工具使用任务的高效强化学习，包含延迟可验证奖励",
+      "canonical_evidence": "面向长时程工具使用任务的高效强化学习，包含延迟可验证奖励",
+      "llm_tldr_en": "SINKFLEX-RL is a modular training system for RL in long-horizon tool-use environments, handling multi-turn on-policy rollouts with sink-aware FlexAttention and group-relative policy optimization.",
+      "llm_tldr_cn": "该论文针对长时程工具使用智能体在强化学习中面临的长上下文、多轮在线采样和延迟奖励问题，提出模块化训练系统SINKFLEX-RL。该系统集成Gymnasium环境包装、VERL风格数据流、无价值模型的组相对策略优化和sink感知的FlexAttention路径。初步实验表明其在工具使用基准上具备高效训练能力。",
+      "llm_tldr": "该论文针对长时程工具使用智能体在强化学习中面临的长上下文、多轮在线采样和延迟奖励问题，提出模块化训练系统SINKFLEX-RL。该系统集成Gymnasium环境包装、VERL风格数据流、无价值模型的组相对策略优化和sink感知的FlexAttention路径。初步实验表明其在工具使用基准上具备高效训练能力。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

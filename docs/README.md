@@ -6,40 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-11
-- 运行时间：2026-08-11 21:04:15 UTC
+- 最新运行日期：2026-08-12
+- 运行时间：2026-08-12 21:25:44 UTC
 - 运行状态：成功
-- 本次总论文数：6
-- 精读区：4
-- 速读区：2
+- 本次总论文数：1
+- 精读区：0
+- 速读区：1
 
 ### 今日简报（AI）
-1) 今日精读智能体强化学习的跨时间尺度信用分配与动态奖励塑形统一框架，速览机器人奖励修正与无人机容错导航策略。
-2) 最值得关注：从环境反馈中学习跨多时间尺度的信用分配，以及用统一框架动态塑形奖励，为复杂决策带来更稳定的训练。
-3) 若想应用这些进展，建议先从梳理自身任务的奖励信号与时间依赖入手，尝试基于环境反馈的奖励塑形方法。
-- 详情：[/202608/11/README](/202608/11/README)
+今日速读：长程工具使用智能体任务的高效强化学习研究（6.0/10）。
+值得关注的方向是长程、多步工具调用场景下如何提升强化学习的学习效率与策略稳定性。
+普通读者若关注 AI Agent 落地，建议先看其问题定义和实验对比，再决定是否精读。
+- 详情：[/202608/12/README](/202608/12/README)
 
 ### 精读区论文标签
-1. [Learning from Environmental Feedback: Credit Assignment across Multiple Timescales for Agentic Reinforcement Learning](/202608/11/2608.08255v1-learning-from-environmental-feedback-credit-assignment-across-multiple-timescales-for-agentic-reinforcement-learning)  
-   标签：评分：9.0/10、query:uav-drl
-   evidence：利用环境反馈的多时间尺度信用分配方法适用于长时域强化学习
-2. [A Unified Framework for Dynamic Reward Shaping in Reinforcement Learning](/202608/11/2608.08158v1-a-unified-framework-for-dynamic-reward-shaping-in-reinforcement-learning)  
-   标签：评分：8.0/10、query:uav-drl
-   evidence：统一动态奖励塑形框架，解决长时序强化学习的稀疏/延迟奖励问题。
-3. [VTO: Visual Tool Orchestration for Video Anomaly Detection](/202608/11/2608.08219v1-vto-visual-tool-orchestration-for-video-anomaly-detection)  
-   标签：评分：8.0/10、query:uav-drl
-   evidence：过程监督强化学习解决长时序任务中的粗粒度奖励问题
-4. [RynnValue: Scaling Robotic Value Foundation Models with Temporal Distance](/202608/11/2608.09853v1-rynnvalue-scaling-robotic-value-foundation-models-with-temporal-distance)  
-   标签：评分：8.0/10、query:uav-drl
-   evidence：使用时序距离作为强化学习中长时域奖励分配的可扩展代理
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [TrustRoboReward: Preference-Ordered Isotonic Score Editing for Multi-Paradigm Robot Reward Models](/202608/11/2608.08491v1-trustroboreward-preference-ordered-isotonic-score-editing-for-multi-paradigm-robot-reward-models)  
-   标签：评分：7.0/10、query:uav-drl
-   evidence：长时序机器人奖励模型采用保序分数编辑解决不一致性问题。
-2. [RecoverFly: A Failure-Aware Reinforcement Learning Post-Training Framework for Aerial Vision-Language Navigation](/202608/11/2608.09467v1-recoverfly-a-failure-aware-reinforcement-learning-post-training-framework-for-aerial-vision-language-navigation)  
+1. [Efficient Reinforcement Learning for Long-Horizon Tool-Use Agentic Tasks](/202608/12/2608.10357v1-efficient-reinforcement-learning-for-long-horizon-tool-use-agentic-tasks)  
    标签：评分：6.0/10、query:uav-drl
-   evidence：将强化学习应用于无人机视觉语言导航，与无人机控制相关
+   evidence：面向长时程工具使用任务的高效强化学习，包含延迟可验证奖励
 
 
 <div class="dpr-home-promo-card">
