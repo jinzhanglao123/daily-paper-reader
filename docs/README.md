@@ -6,26 +6,32 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-12
-- 运行时间：2026-08-12 21:25:44 UTC
+- 最新运行日期：2026-08-13
+- 运行时间：2026-08-13 21:14:25 UTC
 - 运行状态：成功
-- 本次总论文数：1
-- 精读区：0
-- 速读区：1
+- 本次总论文数：3
+- 精读区：1
+- 速读区：2
 
 ### 今日简报（AI）
-今日速读：长程工具使用智能体任务的高效强化学习研究（6.0/10）。
-值得关注的方向是长程、多步工具调用场景下如何提升强化学习的学习效率与策略稳定性。
-普通读者若关注 AI Agent 落地，建议先看其问题定义和实验对比，再决定是否精读。
-- 详情：[/202608/12/README](/202608/12/README)
+- 今日共生成 3 篇推荐（精读 1 篇，速读 2 篇）
+- 精读：《Redistribution-based Cost Inference Improves Sparse Safe Offline RL》（9.0/10）
+- 速读：《LoongReflect: Boosting Long-Horizon Reflection in Search Agents via Global Perspective Distillation》（7.0/10）, 《Learning Loco-Manipulation From SMPC Demonstrations With Sparse Offline-to-Online RL》（6.0/10）
+- 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
+- 详情：[/202608/13/README](/202608/13/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [Redistribution-based Cost Inference Improves Sparse Safe Offline RL](/202608/13/2608.12306v1-redistribution-based-cost-inference-improves-sparse-safe-offline-rl)  
+   标签：评分：9.0/10、query:uav-drl
+   evidence：通过回报分解将稀疏轨迹级反馈转化为逐步代价
 
 ### 速读区论文标签
-1. [Efficient Reinforcement Learning for Long-Horizon Tool-Use Agentic Tasks](/202608/12/2608.10357v1-efficient-reinforcement-learning-for-long-horizon-tool-use-agentic-tasks)  
+1. [LoongReflect: Boosting Long-Horizon Reflection in Search Agents via Global Perspective Distillation](/202608/13/2608.11967v1-loongreflect-boosting-long-horizon-reflection-in-search-agents-via-global-perspective-distillation)  
+   标签：评分：7.0/10、query:uav-drl
+   evidence：具有稀疏延迟强化学习监督的长时程反思
+2. [Learning Loco-Manipulation From SMPC Demonstrations With Sparse Offline-to-Online RL](/202608/13/2608.12063v1-learning-loco-manipulation-from-smpc-demonstrations-with-sparse-offline-to-online-rl)  
    标签：评分：6.0/10、query:uav-drl
-   evidence：面向长时程工具使用任务的高效强化学习，包含延迟可验证奖励
+   evidence：利用稀疏奖励和离线演示解决长程强化学习任务
 
 
 <div class="dpr-home-promo-card">

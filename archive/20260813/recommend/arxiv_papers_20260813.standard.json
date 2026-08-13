@@ -1,0 +1,142 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-13T21:09:45.647347+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2608.12306v1",
+      "source": "arxiv",
+      "title": "Redistribution-based Cost Inference Improves Sparse Safe Offline RL",
+      "abstract": "Safe offline RL typically assumes access to dense per-step cost annotations, but in practice supervisors provide only trajectory-level stop-feedback: a binary signal at the first unsafe transition, with no per-step attribution. We frame this as a temporal credit assignment problem and propose the Redistribution-based Cost Inference (RCI) framework, which converts sparse stop-feedback into dense per-step costs via return decomposition, then trains a constrained offline policy on the augmented dataset. We show that return-equivalent redistribution preserves the feasible policy set and the optimal Lagrangian in a CMDP, establishing that the transformation is lossless in theory while yielding better-conditioned cost critic learning in practice. Experiments on highway driving and robotic manipulation demonstrate substantially lower violation rates than sparse and classifier-based baselines, with robustness to heterogeneous dataset compositions and label noise.",
+      "authors": [
+        "Ebenezer Gelo",
+        "Geraud Nangue Tasse",
+        "Steven James",
+        "Benjamin Rosman"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-08-12T17:53:15+00:00",
+      "link": "https://arxiv.org/pdf/2608.12306v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "temporal credit assignment from sparse trajectory-level feedback via return decomposition",
+      "llm_evidence_cn": "通过回报分解将稀疏轨迹级反馈转化为逐步代价",
+      "llm_evidence": "通过回报分解将稀疏轨迹级反馈转化为逐步代价",
+      "canonical_evidence": "通过回报分解将稀疏轨迹级反馈转化为逐步代价",
+      "llm_tldr_en": "Frames sparse stop-feedback as temporal credit assignment, proposes redistribution-based cost inference converting trajectory-level feedback to dense per-step costs for safe offline RL.",
+      "llm_tldr_cn": "针对安全离线强化学习中缺乏逐步代价标注、仅提供轨迹级停止反馈的问题，提出基于再分配的代价推断框架RCI。该框架将稀疏停止反馈通过回报分解转换为密集的逐步代价，再在增强数据集上训练约束离线策略。理论上证明了回报等价再分配保持可行策略集和最优拉格朗日，实验表明能改善代价评论家学习。该工作为长时程奖励/代价分配问题提供了有效方法，与需求中的长时程奖励分配高度相关。",
+      "llm_tldr": "针对安全离线强化学习中缺乏逐步代价标注、仅提供轨迹级停止反馈的问题，提出基于再分配的代价推断框架RCI。该框架将稀疏停止反馈通过回报分解转换为密集的逐步代价，再在增强数据集上训练约束离线策略。理论上证明了回报等价再分配保持可行策略集和最优拉格朗日，实验表明能改善代价评论家学习。该工作为长时程奖励/代价分配问题提供了有效方法，与需求中的长时程奖励分配高度相关。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.11967v1",
+      "source": "arxiv",
+      "title": "LoongReflect: Boosting Long-Horizon Reflection in Search Agents via Global Perspective Distillation",
+      "abstract": "Large language model agents increasingly rely on long-horizon reasoning to solve complex tasks involving planning, tool use, and memory. A critical capability in such settings is reflection: assessing trajectory progress, identifying missing evidence and unreliable intermediate states, and deciding whether to continue, revise, or abandon the current branch. Learning effective reflection, however, is challenging because reflection is performed locally within the current branch, whereas its utility can only be determined by its contribution to the final trajectory outcome. This local-global mismatch makes outcome-based reinforcement learning provide only local, sparse and delayed supervision for reflective decisions. To solve these, we propose LoongReflect, a training framework that formulates reflection as a memory-control policy. The agent operates over a reversible trajectory tree using explicit reflect and backtrack actions. Reflection consolidates verified facts, missing evidence, and branch-specific risks into working memory, while backtracking removes an unreliable branch from the active context and preserves a concise corrective lesson. To learn this policy, LoongReflect combines two complementary signals through a look-ahead, extragradient-style coordination mechanism. A fast channel distills globally informed reflective behavior from a privileged teacher, with supervision restricted to reflection and backtracking tokens. A slow channel optimizes complete trajectories using outcome-based GRPO, aligning local control decisions with final task success. Experiments on multi-hop retrieval-augmented generation and mathematical reasoning benchmarks demonstrate consistent improvements over outcome-only reinforcement learning and self-distillation baselines.",
+      "authors": [
+        "Zhixin Zhang",
+        "Xinke Jiang",
+        "Zhibang Yang",
+        "Weixuan Xu",
+        "Guohong Qiu",
+        "Xu Chu",
+        "Junfeng Zhao",
+        "Yasha Wang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-08-12T11:56:03+00:00",
+      "link": "https://arxiv.org/pdf/2608.11967v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "long-horizon reflection with sparse delayed RL supervision",
+      "llm_evidence_cn": "具有稀疏延迟强化学习监督的长时程反思",
+      "llm_evidence": "具有稀疏延迟强化学习监督的长时程反思",
+      "canonical_evidence": "具有稀疏延迟强化学习监督的长时程反思",
+      "llm_tldr_en": "Addresses local-global mismatch in long-horizon reflection for search agents by distilling global perspective into local reflection decisions, improving outcome-based RL with sparse delayed rewards.",
+      "llm_tldr_cn": "针对搜索智能体在长时程任务中反思决策仅获得局部、稀疏和延迟监督的问题，本文提出LoongReflect方法。该方法通过全局视角蒸馏，将最终轨迹结果的全局信息注入局部反思决策，从而缓解局部-全局不匹配。实验表明该方法能有效提升长时程反思能力。其思路对长时程奖励分配与强化学习监督具有借鉴意义。",
+      "llm_tldr": "针对搜索智能体在长时程任务中反思决策仅获得局部、稀疏和延迟监督的问题，本文提出LoongReflect方法。该方法通过全局视角蒸馏，将最终轨迹结果的全局信息注入局部反思决策，从而缓解局部-全局不匹配。实验表明该方法能有效提升长时程反思能力。其思路对长时程奖励分配与强化学习监督具有借鉴意义。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.12063v1",
+      "source": "arxiv",
+      "title": "Learning Loco-Manipulation From SMPC Demonstrations With Sparse Offline-to-Online RL",
+      "abstract": "Integrating locomotion and manipulation is essential for robot autonomy, but scaling standard Reinforcement Learning (RL) to complex tasks is severely bottlenecked by the slow, manual process of dense reward shaping. To bypass this limitation, we leverage Sample-based Model Predictive Control (SMPC) entirely in simulation as an automated, rapidly tunable expert to generate massive offline datasets. Because this data solves the fundamental exploration problem, we can train an off-policy RL agent using purely sparse task rewards, drastically reducing the time required to learn new skills and eliminating the need for manual tuning. Integrating this high-level agent with a low-level dynamic stability controller yields more optimal behaviors that strictly align with true task objectives, ultimately allowing the learned policies to surpass the original optimal control teacher. We validate the robustness of this sim-to-real framework by successfully deploying complex loco-manipulation skills across different morphologies, including an arm-equipped Spot quadruped and a G1 humanoid.",
+      "authors": [
+        "Martin Schuck",
+        "Maks Sorokin",
+        "Simone Manni",
+        "Duy Ta",
+        "Angela P. Schoellig",
+        "Marco Hutter",
+        "Simon Le Cleac'H",
+        "Jan Brüdigam"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "published": "2026-08-12T13:48:56+00:00",
+      "link": "https://arxiv.org/pdf/2608.12063v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "uses sparse rewards and offline demonstrations for long-horizon RL tasks",
+      "llm_evidence_cn": "利用稀疏奖励和离线演示解决长程强化学习任务",
+      "llm_evidence": "利用稀疏奖励和离线演示解决长程强化学习任务",
+      "canonical_evidence": "利用稀疏奖励和离线演示解决长程强化学习任务",
+      "llm_tldr_en": "Addresses slow manual reward shaping in RL for loco-manipulation by using SMPC demonstrations offline and training with sparse rewards, reducing tuning time and enabling more optimal behaviors.",
+      "llm_tldr_cn": "针对机器人在运动操作任务中强化学习奖励塑形繁琐、难以扩展的问题，本文提出利用基于采样的模型预测控制（SMPC）在仿真中自动生成大规模离线演示数据，然后使用纯稀疏任务奖励训练离线到在线的强化学习智能体。实验表明该方法大幅减少了新技能学习时间，无需手动调参，并且与底层动态稳定控制器集成后获得了更优行为。该工作为长时序机器人任务中的稀疏奖励学习提供了有效范式。",
+      "llm_tldr": "针对机器人在运动操作任务中强化学习奖励塑形繁琐、难以扩展的问题，本文提出利用基于采样的模型预测控制（SMPC）在仿真中自动生成大规模离线演示数据，然后使用纯稀疏任务奖励训练离线到在线的强化学习智能体。实验表明该方法大幅减少了新技能学习时间，无需手动调参，并且与底层动态稳定控制器集成后获得了更优行为。该工作为长时序机器人任务中的稀疏奖励学习提供了有效范式。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

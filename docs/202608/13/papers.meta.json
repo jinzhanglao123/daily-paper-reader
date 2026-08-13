@@ -1,0 +1,54 @@
+{
+  "label": "2026-08-13",
+  "date": "2026-08-13",
+  "generated_at": "2026-08-13T21:14:52",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202608/13/2608.12306v1-redistribution-based-cost-inference-improves-sparse-safe-offline-rl",
+      "section": "deep",
+      "title_en": "Redistribution-based Cost Inference Improves Sparse Safe Offline RL",
+      "authors": "Ebenezer Gelo, Geraud Nangue Tasse, Steven James, Benjamin Rosman",
+      "date": "2026-08-12",
+      "pdf": "https://arxiv.org/pdf/2608.12306v1",
+      "score": "9.0",
+      "evidence": "通过回报分解将稀疏轨迹级反馈转化为逐步代价",
+      "tldr": "安全离线强化学习常假设有稠密每步成本，然而实际仅获轨迹级停止反馈，造成时间信用分配难题。本文提出基于再分配的成本推断框架RCI，利用回报分解把稀疏停止反馈转换为稠密每步成本，再训练约束离线策略。理论上该转换在CMDP中无损，保留可行策略集和最优拉格朗日，并改善成本评论家学习；在高速公路驾驶与机器人操作中，RCI较稀疏和分类器基线大幅降低违规率，且对数据异质和标签噪声具有鲁棒性。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Safe offline RL typically assumes access to dense per-step cost annotations, but in practice supervisors provide only trajectory-level stop-feedback: a binary signal at the first unsafe transition, with no per-step attribution. We frame this as a temporal credit assignment problem and propose the Redistribution-based Cost Inference (RCI) framework, which converts sparse stop-feedback into dense per-step costs via return decomposition, then trains a constrained offline policy on the augmented dataset. We show that return-equivalent redistribution preserves the feasible policy set and the optimal Lagrangian in a CMDP, establishing that the transformation is lossless in theory while yielding better-conditioned cost critic learning in practice. Experiments on highway driving and robotic manipulation demonstrate substantially lower violation rates than sparse and classifier-based baselines, with robustness to heterogeneous dataset compositions and label noise.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/13/2608.11967v1-loongreflect-boosting-long-horizon-reflection-in-search-agents-via-global-perspective-distillation",
+      "section": "quick",
+      "title_en": "LoongReflect: Boosting Long-Horizon Reflection in Search Agents via Global Perspective Distillation",
+      "authors": "Zhixin Zhang, Xinke Jiang, Zhibang Yang, Weixuan Xu, Guohong Qiu, Xu Chu, Junfeng Zhao, Yasha Wang",
+      "date": "2026-08-12",
+      "pdf": "https://arxiv.org/pdf/2608.11967v1",
+      "score": "7.0",
+      "evidence": "具有稀疏延迟强化学习监督的长时程反思",
+      "tldr": "长程搜索代理的反思能力受局部执行与全局效用不匹配制约，基于结果的强化学习只能提供稀疏延迟监督。LoongReflect将反思建模为记忆控制策略，在可逆轨迹树上引入显式反思和回溯动作，并利用快慢双通道协调学习。快通道从特权教师蒸馏全局知情反思，慢通道用GRPO优化完整轨迹。实验在多跳检索增强生成和数学推理上一致优于结果强化学习和自蒸馏基线。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Large language model agents increasingly rely on long-horizon reasoning to solve complex tasks involving planning, tool use, and memory. A critical capability in such settings is reflection: assessing trajectory progress, identifying missing evidence and unreliable intermediate states, and deciding whether to continue, revise, or abandon the current branch. Learning effective reflection, however, is challenging because reflection is performed locally within the current branch, whereas its utility can only be determined by its contribution to the final trajectory outcome. This local-global mismatch makes outcome-based reinforcement learning provide only local, sparse and delayed supervision for reflective decisions. To solve these, we propose LoongReflect, a training framework that formulates reflection as a memory-control policy. The agent operates over a reversible trajectory tree using explicit reflect and backtrack actions. Reflection consolidates verified facts, missing evidence, and branch-specific risks into working memory, while backtracking removes an unreliable branch from the active context and preserves a concise corrective lesson. To learn this policy, LoongReflect combines two complementary signals through a look-ahead, extragradient-style coordination mechanism. A fast channel distills globally informed reflective behavior from a privileged teacher, with supervision restricted to reflection and backtracking tokens. A slow channel optimizes complete trajectories using outcome-based GRPO, aligning local control decisions with final task success. Experiments on multi-hop retrieval-augmented generation and mathematical reasoning benchmarks demonstrate consistent improvements over outcome-only reinforcement learning and self-distillation baselines.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/13/2608.12063v1-learning-loco-manipulation-from-smpc-demonstrations-with-sparse-offline-to-online-rl",
+      "section": "quick",
+      "title_en": "Learning Loco-Manipulation From SMPC Demonstrations With Sparse Offline-to-Online RL",
+      "authors": "Martin Schuck, Maks Sorokin, Simone Manni, Duy Ta, Angela P. Schoellig, Marco Hutter, Simon Le Cleac'H, Jan Brüdigam",
+      "date": "2026-08-12",
+      "pdf": "https://arxiv.org/pdf/2608.12063v1",
+      "score": "6.0",
+      "evidence": "利用稀疏奖励和离线演示解决长程强化学习任务",
+      "tldr": "集成移动与操控对机器人自主性至关重要，但标准强化学习受限于密集奖励的手工塑造瓶颈。利用仿真中的样本模型预测控制自动生成大规模离线数据，以解决探索问题，并以纯稀疏任务奖励训练离线到在线强化学习智能体。结合低层动态稳定控制器，学习策略超越了原始最优控制教师，并成功迁移到带臂Spot四足和G1人形。该框架大幅减少新技能学习时间，免去人工调优。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Integrating locomotion and manipulation is essential for robot autonomy, but scaling standard Reinforcement Learning (RL) to complex tasks is severely bottlenecked by the slow, manual process of dense reward shaping. To bypass this limitation, we leverage Sample-based Model Predictive Control (SMPC) entirely in simulation as an automated, rapidly tunable expert to generate massive offline datasets. Because this data solves the fundamental exploration problem, we can train an off-policy RL agent using purely sparse task rewards, drastically reducing the time required to learn new skills and eliminating the need for manual tuning. Integrating this high-level agent with a low-level dynamic stability controller yields more optimal behaviors that strictly align with true task objectives, ultimately allowing the learned policies to surpass the original optimal control teacher. We validate the robustness of this sim-to-real framework by successfully deploying complex loco-manipulation skills across different morphologies, including an arm-equipped Spot quadruped and a G1 humanoid.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
