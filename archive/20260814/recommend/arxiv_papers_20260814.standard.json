@@ -1,0 +1,132 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-14T20:00:09.158248+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 3,
+    "deep_cap": 6,
+    "deep_selected": 3,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2608.12764v1",
+      "source": "arxiv",
+      "title": "Beyond Outcome Rewards: Step-Level Self-Distilled Policy Optimization for Deep Search Agents",
+      "abstract": "Deep search agents operate over trajectories spanning dozens of steps, yet standard reinforcement learning provides only a single outcome reward per trajectory, which is far too sparse for effective credit assignment. On-policy self-distillation (OPSD) addresses this by using the model's own logits as dense token-level teachers, but extending it to search agents introduces a fundamental tension: the teacher, having access to privileged information such as the correct answer, produces a distribution that differs systematically from the student's exploration-based reasoning, and naive distillation causes the student to inherit this information asymmetry rather than learn better search strategies. We resolve this tension through two contributions. First, we construct Evidence Anchors, which are concise, step-level evidence snippets extracted from the web, as privileged information that captures key reasoning steps without revealing the entire answer path. Second, we propose Step-Level Self-Distilled Policy Optimization (SSPO), which converts teacher-student disagreement into step-level advantage weights within GRPO, applied exclusively to incorrect trajectories. This design decouples what to update from how much to update: the outcome reward determines the direction of policy change, while the teacher modulates its magnitude at each step. Correct trajectories are left untouched, preserving their diversity. On Qwen3-8B, SSPO consistently outperforms GRPO across BrowseComp, GAIA, and FRAMES, surpassing or matching GRPO trained with twice as many gradient steps while adding only about 5 percent overhead per step from a single additional forward pass.",
+      "authors": [
+        "Haoze Wu",
+        "Chuqiao Kuang",
+        "Tianyi Zhuang",
+        "Xiaoguang Li"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-08-13T03:13:18+00:00",
+      "link": "https://arxiv.org/pdf/2608.12764v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "step-level credit assignment beyond outcome rewards via self-distilled policy optimization",
+      "llm_evidence_cn": "通过自蒸馏策略优化实现超越结果奖励的步级信用分配",
+      "llm_evidence": "通过自蒸馏策略优化实现超越结果奖励的步级信用分配",
+      "canonical_evidence": "通过自蒸馏策略优化实现超越结果奖励的步级信用分配",
+      "llm_tldr_en": "Proposes step-level self-distilled policy optimization for deep search agents to overcome sparse outcome rewards, resolving information asymmetry between teacher and student.",
+      "llm_tldr_cn": "该论文针对深度搜索智能体中标准强化学习仅提供单一结果奖励导致信用分配过于稀疏的问题，提出步级自蒸馏策略优化方法。该方法利用模型自身逻辑值作为密集教师信号，并通过修正教师与探索推理之间的信息不对称，使步级自蒸馏适用于搜索智能体。实验表明该方法能有效改进长时程任务的策略学习。该工作为强化学习中的长时程奖励分配提供了新的思路。",
+      "llm_tldr": "该论文针对深度搜索智能体中标准强化学习仅提供单一结果奖励导致信用分配过于稀疏的问题，提出步级自蒸馏策略优化方法。该方法利用模型自身逻辑值作为密集教师信号，并通过修正教师与探索推理之间的信息不对称，使步级自蒸馏适用于搜索智能体。实验表明该方法能有效改进长时程任务的策略学习。该工作为强化学习中的长时程奖励分配提供了新的思路。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.13026v1",
+      "source": "arxiv",
+      "title": "Temporal GRPO: Beyond Trajectory-Level Credit in Vision-Language-Action Reinforcement Learning",
+      "abstract": "Outcome-driven reinforcement learning offers a scalable way to post-train vision-language-action (VLA) policies from sparse task-success feedback. In common GRPO-based VLA post-training, one rollout-level advantage is applied to every action in the trajectory. A rollout that completes several valid stages but fails later can therefore penalize the actions that produced its earlier progress. We call this trajectory-level credit aliasing. Temporal GRPO addresses this problem by constructing detectable task stages, aligning each rollout with stage-specific action intervals, and comparing only rollouts that have entered the same stage. The resulting stage advantages are applied to their corresponding intervals in a single policy update. On RoboTwin 2.0, Temporal GRPO improves task success and sample efficiency, with consistent gains across task horizons. Controlled updates on LIBERO-Long preserve shared prerequisite stages and concentrate improvement at the first stage where rollout outcomes diverge.",
+      "authors": [
+        "Yao Zhou",
+        "Hang Gao",
+        "Fengge Wu",
+        "Changwen Zheng",
+        "Wenwen Qiang"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-08-13T09:54:14+00:00",
+      "link": "https://arxiv.org/pdf/2608.13026v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "stage-specific credit assignment to avoid trajectory-level credit aliasing in VLA RL",
+      "llm_evidence_cn": "阶段特定信用分配，避免轨迹级信用混叠",
+      "llm_evidence": "阶段特定信用分配，避免轨迹级信用混叠",
+      "canonical_evidence": "阶段特定信用分配，避免轨迹级信用混叠",
+      "llm_tldr_en": "Proposes Temporal GRPO to overcome trajectory-level credit aliasing in VLA reinforcement learning by constructing detectable task stages and comparing only rollouts that entered the same stage.",
+      "llm_tldr_cn": "该工作针对VLA强化学习中常用GRPO的轨迹级信用混叠问题，提出时间GRPO方法。该方法构造可检测任务阶段，对齐阶段特定动作区间，并仅比较进入相同阶段的轨迹，将阶段优势应用于对应区间。实验表明该方法避免了对早期有效动作的误惩罚，提升长期任务学习效果，为视觉语言动作模型的后期训练提供更细粒度信用分配。",
+      "llm_tldr": "该工作针对VLA强化学习中常用GRPO的轨迹级信用混叠问题，提出时间GRPO方法。该方法构造可检测任务阶段，对齐阶段特定动作区间，并仅比较进入相同阶段的轨迹，将阶段优势应用于对应区间。实验表明该方法避免了对早期有效动作的误惩罚，提升长期任务学习效果，为视觉语言动作模型的后期训练提供更细粒度信用分配。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.13179v1",
+      "source": "arxiv",
+      "title": "Teach the Magnitude, Not the Direction: Verifier-Bounded Credit Assignment for Multi-Turn Multi-step LLM Agents",
+      "abstract": "Reinforcement learning with verifiable rewards (RLVR) offers a verifier-bounded performance ceiling for training multi-turn tool-use agents, yet its trajectory-level credit assignment conflates heterogeneous per-turn outcomes into a single reward signal. On-policy distillation provides dense per-token supervision but is either teacher-bounded or prone to gradient concentration collapse. We introduce $\\textbf{CrEST}$, a hierarchical credit assignment framework that retains RL's verifier-bounded ceiling while incorporating dense token-level signals from a privileged self-teacher. $\\textbf{CrEST}$ resolves credit at two levels: turn-segmented verified advantages address inter-turn dilution, while entropy-gated self-teacher modulation refines intra-turn token contributions. Experiments on BFCL V3 and WildToolBench show that $\\textbf{CrEST}$ consistently outperforms both RL and distillation baselines across two model scales, with the largest gains on long-trajectory and strict session-level metrics. Our work demonstrates that the teacher's role in policy optimization can be reduced from determining update directions to modulating update magnitudes, unlocking dense credit assignment without sacrificing the verifier-bounded ceiling.",
+      "authors": [
+        "Zechuan Wang",
+        "Siyuan Lu",
+        "Hongxuan Zhang",
+        "Linjian Mo",
+        "Chenyi Zhuang",
+        "Leilei Gan"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-08-13T12:44:37+00:00",
+      "link": "https://arxiv.org/pdf/2608.13179v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "hierarchical credit assignment for multi-turn RL agents",
+      "llm_evidence_cn": "多轮RL智能体的分层信用分配",
+      "llm_evidence": "多轮RL智能体的分层信用分配",
+      "canonical_evidence": "多轮RL智能体的分层信用分配",
+      "llm_tldr_en": "CrEST proposes hierarchical credit assignment for multi-turn multi-step LLM agents, addressing trajectory-level reward dilution with turn-segmented advantages and entropy-gated self-teaching, relevant to long-horizon reward assignment.",
+      "llm_tldr_cn": "现有RLVR对多轮工具使用智能体使用轨迹级奖励，导致异构回合结果混杂。论文提出CrEST分层信用分配框架，结合回合分段验证优势与熵门控自蒸馏，在保留验证器上限的同时提供密集令牌级监督。实验表明该方法有效缓解回合间稀释，为长时程奖励分配提供通用方法。",
+      "llm_tldr": "现有RLVR对多轮工具使用智能体使用轨迹级奖励，导致异构回合结果混杂。论文提出CrEST分层信用分配框架，结合回合分段验证优势与熵门控自蒸馏，在保留验证器上限的同时提供密集令牌级监督。实验表明该方法有效缓解回合间稀释，为长时程奖励分配提供通用方法。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}

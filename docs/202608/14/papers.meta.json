@@ -1,0 +1,54 @@
+{
+  "label": "2026-08-14",
+  "date": "2026-08-14",
+  "generated_at": "2026-08-14T20:08:12",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202608/14/2608.12764v1-beyond-outcome-rewards-step-level-self-distilled-policy-optimization-for-deep-search-agents",
+      "section": "deep",
+      "title_en": "Beyond Outcome Rewards: Step-Level Self-Distilled Policy Optimization for Deep Search Agents",
+      "authors": "Haoze Wu, Chuqiao Kuang, Tianyi Zhuang, Xiaoguang Li",
+      "date": "2026-08-13",
+      "pdf": "https://arxiv.org/pdf/2608.12764v1",
+      "score": "9.0",
+      "evidence": "通过自蒸馏策略优化实现超越结果奖励的步级信用分配",
+      "tldr": "深度搜索智能体通常只获得稀疏的结果奖励，难以对多步轨迹进行有效信用分配；现有自蒸馏方法引入特权信息导致师生分布不一致，学生易继承信息不对称。为此提取Evidence Anchors作为步骤级特权证据，提出SSPO将师生不一致转化为错误轨迹的步骤级优势权重，由结果奖励决定方向、教师调节幅度，正确轨迹保持不变。在Qwen3-8B上SSPO在BrowseComp、GAIA、FRAMES上一致超越GRPO，且仅需约5%额外开销。该方法兼顾信用分配效率与探索多样性。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Deep search agents operate over trajectories spanning dozens of steps, yet standard reinforcement learning provides only a single outcome reward per trajectory, which is far too sparse for effective credit assignment. On-policy self-distillation (OPSD) addresses this by using the model's own logits as dense token-level teachers, but extending it to search agents introduces a fundamental tension: the teacher, having access to privileged information such as the correct answer, produces a distribution that differs systematically from the student's exploration-based reasoning, and naive distillation causes the student to inherit this information asymmetry rather than learn better search strategies. We resolve this tension through two contributions. First, we construct Evidence Anchors, which are concise, step-level evidence snippets extracted from the web, as privileged information that captures key reasoning steps without revealing the entire answer path. Second, we propose Step-Level Self-Distilled Policy Optimization (SSPO), which converts teacher-student disagreement into step-level advantage weights within GRPO, applied exclusively to incorrect trajectories. This design decouples what to update from how much to update: the outcome reward determines the direction of policy change, while the teacher modulates its magnitude at each step. Correct trajectories are left untouched, preserving their diversity. On Qwen3-8B, SSPO consistently outperforms GRPO across BrowseComp, GAIA, and FRAMES, surpassing or matching GRPO trained with twice as many gradient steps while adding only about 5 percent overhead per step from a single additional forward pass.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/14/2608.13026v1-temporal-grpo-beyond-trajectory-level-credit-in-vision-language-action-reinforcement-learning",
+      "section": "deep",
+      "title_en": "Temporal GRPO: Beyond Trajectory-Level Credit in Vision-Language-Action Reinforcement Learning",
+      "authors": "Yao Zhou, Hang Gao, Fengge Wu, Changwen Zheng, Wenwen Qiang",
+      "date": "2026-08-13",
+      "pdf": "https://arxiv.org/pdf/2608.13026v1",
+      "score": "8.0",
+      "evidence": "阶段特定信用分配，避免轨迹级信用混叠",
+      "tldr": "在基于GRPO的视觉-语言-动作策略后训练中，轨迹级信用分配会将整体结果优势平均到每个动作，导致早期有效阶段因后续失败而被错误惩罚。Temporal GRPO通过构建可检测任务阶段、对齐阶段动作区间，并仅比较进入相同阶段的候选轨迹，得到阶段级优势并应用于对应区间。在RoboTwin 2.0上显著提升任务成功率和样本效率，在LIBERO-Long上保留共享前提阶段并集中改进首个分歧阶段。该方法有效缓解信用混叠，为长时任务强化学习提供更精细的信号。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Outcome-driven reinforcement learning offers a scalable way to post-train vision-language-action (VLA) policies from sparse task-success feedback. In common GRPO-based VLA post-training, one rollout-level advantage is applied to every action in the trajectory. A rollout that completes several valid stages but fails later can therefore penalize the actions that produced its earlier progress. We call this trajectory-level credit aliasing. Temporal GRPO addresses this problem by constructing detectable task stages, aligning each rollout with stage-specific action intervals, and comparing only rollouts that have entered the same stage. The resulting stage advantages are applied to their corresponding intervals in a single policy update. On RoboTwin 2.0, Temporal GRPO improves task success and sample efficiency, with consistent gains across task horizons. Controlled updates on LIBERO-Long preserve shared prerequisite stages and concentrate improvement at the first stage where rollout outcomes diverge.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/14/2608.13179v1-teach-the-magnitude-not-the-direction-verifier-bounded-credit-assignment-for-multi-turn-multi-step-llm-agents",
+      "section": "deep",
+      "title_en": "Teach the Magnitude, Not the Direction: Verifier-Bounded Credit Assignment for Multi-Turn Multi-step LLM Agents",
+      "authors": "Zechuan Wang, Siyuan Lu, Hongxuan Zhang, Linjian Mo, Chenyi Zhuang, Leilei Gan",
+      "date": "2026-08-13",
+      "pdf": "https://arxiv.org/pdf/2608.13179v1",
+      "score": "8.0",
+      "evidence": "多轮RL智能体的分层信用分配",
+      "tldr": "多轮工具智能体的强化学习（RLVR）虽有验证器上限，但轨迹级奖励混淆了各轮异质结果，导致信用分配粗糙。为此，提出分层框架CrEST，通过轮次分段验证优势缓解轮间稀释，并用熵门控自我教师调制细化轮内token贡献。在BFCL V3与WildToolBench上，CrEST在两个模型规模上一致优于RL与蒸馏基线，长轨迹和严格会话指标增益最大。该工作将教师角色从决定更新方向降为调制更新幅度，在不牺牲验证器上限下实现密集信用分配。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Reinforcement learning with verifiable rewards (RLVR) offers a verifier-bounded performance ceiling for training multi-turn tool-use agents, yet its trajectory-level credit assignment conflates heterogeneous per-turn outcomes into a single reward signal. On-policy distillation provides dense per-token supervision but is either teacher-bounded or prone to gradient concentration collapse. We introduce $\\textbf{CrEST}$, a hierarchical credit assignment framework that retains RL's verifier-bounded ceiling while incorporating dense token-level signals from a privileged self-teacher. $\\textbf{CrEST}$ resolves credit at two levels: turn-segmented verified advantages address inter-turn dilution, while entropy-gated self-teacher modulation refines intra-turn token contributions. Experiments on BFCL V3 and WildToolBench show that $\\textbf{CrEST}$ consistently outperforms both RL and distillation baselines across two model scales, with the largest gains on long-trajectory and strict session-level metrics. Our work demonstrates that the teacher's role in policy optimization can be reduced from determining update directions to modulating update magnitudes, unlocking dense credit assignment without sacrificing the verifier-bounded ceiling.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
