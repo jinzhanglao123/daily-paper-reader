@@ -1,0 +1,24 @@
+{
+  "label": "2026-08-16",
+  "date": "2026-08-16",
+  "generated_at": "2026-08-16T20:22:42",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202608/16/2608.08326v1-structreward-efficient-structured-process-rewards-for-self-correcting-multimodal-reasoning",
+      "section": "quick",
+      "title_en": "StructReward: Efficient Structured Process Rewards for Self-Correcting Multimodal Reasoning",
+      "authors": "Yifan Li, Ruxin Sun, Tongzhou Zhao",
+      "date": "2026-08-08",
+      "pdf": "https://arxiv.org/pdf/2608.08326v1",
+      "score": "7.0",
+      "evidence": "结构化逐步奖励用于强化学习信用分配",
+      "tldr": "现有基于可验证奖励的强化学习（RLVR）通常只根据最终答案正确性给出二值奖励，浪费了中间推理步骤的监督信息。StructReward 通过轻量数值、符号和词汇匹配规则将生成步骤与参考步骤对齐，聚合为密集过程奖励，并与最终答案一致性及输出有效性奖励结合，利用门控 GRPO 优化。该方法还回收策略 rollout 用于响应比较和自校正，并利用强 LLM 重写正确轨迹生成反思训练实例。实验表明，结构化过程监督和 rollout 回收以较低计算开销实现了多模态推理的自改进。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Reinforcement learning with verifiable rewards (RLVR) has emerged as an effective approach for improving multimodal reasoning. However, most existing methods evaluate an entire response using a binary reward based only on final-answer correctness, thereby discarding the supervision available in intermediate reasoning steps. Process reward models offer finer-grained feedback, but they typically rely on separately trained verifiers, costly chain-of-thought annotations, or online judging by large language models (LLMs). In this work, we introduce StructReward, a compute-efficient framework that provides dense reinforcement signals through structured step-level reward alignment. StructReward represents each generated solution as a sequence of reasoning steps and aligns them with process-labeled reference steps using lightweight numerical, symbolic, and lexical matching rules. The aligned labels are aggregated into a dense process reward and combined with final-answer consistency and output-validity rewards through a gated Group Relative Policy Optimization (GRPO) objective. We further recycle policy rollouts into complementary supervision for response comparison and reflective self-correction, rather than discarding them after policy updates. Separately, we use a strong LLM to rewrite sampled correct trajectories into reflection-oriented training instances, further strengthening the policy's ability to evaluate and refine its reasoning. Since reward computation is performed online without an additional learned verifier or external LLM judge, StructReward substantially reduces the computational overhead of multimodal reinforcement learning. Experimental results show that structured process supervision and rollout recycling provide an efficient path toward self-improving multimodal reasoning.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
