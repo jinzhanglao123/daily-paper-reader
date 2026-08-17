@@ -1,0 +1,39 @@
+{
+  "label": "2026-08-17",
+  "date": "2026-08-17",
+  "generated_at": "2026-08-17T19:36:02",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202608/17/2608.13878v1-knowledge-data-dual-driven-reinforcement-learning-for-autonomous-vehicle-control-in-mixed-traffic",
+      "section": "deep",
+      "title_en": "Knowledge-Data-Dual-Driven Reinforcement Learning for Autonomous Vehicle Control in Mixed Traffic",
+      "authors": "Jie Fang, Wei Zheng, Mengyun Xu, Eui-Jin Kim",
+      "date": "2026-08-14",
+      "pdf": "https://arxiv.org/pdf/2608.13878v1",
+      "score": "9.0",
+      "evidence": "明确处理自动驾驶控制中强化学习的混合动作空间（连续与离散）",
+      "tldr": "混合交通中自动驾驶决策面临物理先验难以捕捉交互意图、非平稳长尾事件探索不足及混合动作空间训练不稳定等挑战。KDDRL方法通过条件深度生成模型生成意图感知轨迹，融合知识数据双驱动范式与物理约束，并利用耦合模块压缩共享嵌入以实现异步优化。在数据集校准仿真中，KDDRL有效处理意图不确定性，加速收敛，并在安全性、效率和舒适性上超越基线。该工作为复杂混合交通下的AV控制提供了新型双驱动学习框架。",
+      "tags": "query:uav-drl",
+      "abstract_en": "In mixed traffic, decision-making for autonomous vehicles (AVs) confronts three interrelated challenges. First, physics-based priors incorporated into reinforcement learning (RL) models fail to capture latent interactive vehicle intentions and diverse driver behaviors, limiting the proactive reasoning capabilities. Second, abrupt maneuvers by surrounding vehicles cause non-stationarity, leaving long-tail safety events under-explored. Third, hybrid action spaces destabilize unified RL training due to the different temporal scales of continuous car-following and discrete lane-changing maneuvers. To address these issues, we propose Knowledge-Data Dual-driven Reinforcement Learning (KDDRL). First, a conditional deep generative model synthesizes intention-aware future trajectories, converting passive perception into proactive predictive states. Second, a knowledge-data dual-driven paradigm operates on these predictive states, fusing probabilistic data-driven insights with physical constraints to guide safe exploration through safety-critical scenarios. Third, a coupling module compresses both intention-aware trajectories and physical constraints into compact shared embeddings. This unified representation enables asynchronous multi-timescale optimization of continuous car-following and discrete lane-changing while preserving mutual information. Evaluations on dataset-calibrated simulations demonstrate that KDDRL effectively handles intention uncertainty, accelerates training convergence, and outperforms conventional baseline methods in terms of safety, efficiency, and comfort.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/17/2608.13625v1-reward-machines-for-signal-temporal-logic",
+      "section": "deep",
+      "title_en": "Reward Machines for Signal Temporal Logic",
+      "authors": "Alper Kamil Bozkurt, Shangtong Zhang, Yuichi Motai",
+      "date": "2026-08-13",
+      "pdf": "https://arxiv.org/pdf/2608.13625v1",
+      "score": "8.0",
+      "evidence": "使用奖励机处理信号时序逻辑下的长时程奖励问题",
+      "tldr": "针对模型未知场景下信号时序逻辑（STL）规范的控制综合，现有基于鲁棒性奖励的强化学习方法因执行历史依赖导致状态空间爆炸。本文提出将 STL 规范转换为定时交替自动机，用自动机位置和时钟估值扩充状态空间，并推导马尔可夫奖励。实验表明，该方法学习到的策略在鲁棒性分数和满足率上均优于基于鲁棒性奖励的方法。该工作为长时域嵌套时序规范的强化学习控制提供了高效记忆机制，避免了状态空间膨胀。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Signal temporal logic (STL) provides a formal language for specifying real-time properties of real-valued observations, along with a quantitative robustness score for monitoring satisfaction. Control synthesis from STL specifications is of interest since manual controller design becomes infeasible as real-world systems grow in complexity. Moreover, many modern autonomous and AI-enabled systems lack accurate and complete system models, which makes optimization-based synthesis approaches unsuitable and motivates learning-based control. Prior work uses STL robustness scores as rewards in reinforcement learning (RL) to obtain control policies satisfying given specifications; however, robustness depends on execution history, leading to intractable state space expansion for general long-horizon specifications with arbitrarily nested temporal operators. This work introduces a novel automata-based approach that provides an efficient memory mechanism and associated Markovian rewards suitable for RL frameworks. Our approach constructs a timed alternating automaton from the given STL specifications, augments the state space with automaton locations and clock valuations, and derives rewards from the automaton acceptance condition. We empirically demonstrate that our approach learns policies that achieve higher robustness scores and satisfaction rates than those learned by existing approaches using robustness-based rewards.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

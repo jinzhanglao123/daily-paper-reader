@@ -6,25 +6,29 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-16
-- 运行时间：2026-08-16 20:22:19 UTC
+- 最新运行日期：2026-08-17
+- 运行时间：2026-08-17 19:35:33 UTC
 - 运行状态：成功
-- 本次总论文数：1
-- 精读区：0
-- 速读区：1
+- 本次总论文数：2
+- 精读区：2
+- 速读区：0
 
 ### 今日简报（AI）
-今日只速读一篇 7.0 分论文，主题是用结构化过程奖励提升多模态推理的自校正效率。  
-最值得看的是“结构化奖励”思路：把过程性反馈做得更细、更省，让多模态模型能边推理边自我
-- 详情：[/202608/16/README](/202608/16/README)
+- 今日共生成 2 篇推荐（精读 2 篇，速读 0 篇）
+- 精读：《Knowledge-Data-Dual-Driven Reinforcement Learning for Autonomous Vehicle Control in Mixed Traffic》（9.0/10）, 《Reward Machines for Signal Temporal Logic》（8.0/10）
+- 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
+- 详情：[/202608/17/README](/202608/17/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [Knowledge-Data-Dual-Driven Reinforcement Learning for Autonomous Vehicle Control in Mixed Traffic](/202608/17/2608.13878v1-knowledge-data-dual-driven-reinforcement-learning-for-autonomous-vehicle-control-in-mixed-traffic)  
+   标签：评分：9.0/10、query:uav-drl
+   evidence：明确处理自动驾驶控制中强化学习的混合动作空间（连续与离散）
+2. [Reward Machines for Signal Temporal Logic](/202608/17/2608.13625v1-reward-machines-for-signal-temporal-logic)  
+   标签：评分：8.0/10、query:uav-drl
+   evidence：使用奖励机处理信号时序逻辑下的长时程奖励问题
 
 ### 速读区论文标签
-1. [StructReward: Efficient Structured Process Rewards for Self-Correcting Multimodal Reasoning](/202608/16/2608.08326v1-structreward-efficient-structured-process-rewards-for-self-correcting-multimodal-reasoning)  
-   标签：评分：7.0/10、query:uav-drl
-   evidence：结构化逐步奖励用于强化学习信用分配
+- 本次无速读推荐。
 
 
 <div class="dpr-home-promo-card">

@@ -1,0 +1,93 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-17T19:32:23.271426+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2608.13878v1",
+      "source": "arxiv",
+      "title": "Knowledge-Data-Dual-Driven Reinforcement Learning for Autonomous Vehicle Control in Mixed Traffic",
+      "abstract": "In mixed traffic, decision-making for autonomous vehicles (AVs) confronts three interrelated challenges. First, physics-based priors incorporated into reinforcement learning (RL) models fail to capture latent interactive vehicle intentions and diverse driver behaviors, limiting the proactive reasoning capabilities. Second, abrupt maneuvers by surrounding vehicles cause non-stationarity, leaving long-tail safety events under-explored. Third, hybrid action spaces destabilize unified RL training due to the different temporal scales of continuous car-following and discrete lane-changing maneuvers. To address these issues, we propose Knowledge-Data Dual-driven Reinforcement Learning (KDDRL). First, a conditional deep generative model synthesizes intention-aware future trajectories, converting passive perception into proactive predictive states. Second, a knowledge-data dual-driven paradigm operates on these predictive states, fusing probabilistic data-driven insights with physical constraints to guide safe exploration through safety-critical scenarios. Third, a coupling module compresses both intention-aware trajectories and physical constraints into compact shared embeddings. This unified representation enables asynchronous multi-timescale optimization of continuous car-following and discrete lane-changing while preserving mutual information. Evaluations on dataset-calibrated simulations demonstrate that KDDRL effectively handles intention uncertainty, accelerates training convergence, and outperforms conventional baseline methods in terms of safety, efficiency, and comfort.",
+      "authors": [
+        "Jie Fang",
+        "Wei Zheng",
+        "Mengyun Xu",
+        "Eui-Jin Kim"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "eess.SY"
+      ],
+      "published": "2026-08-14T02:07:13+00:00",
+      "link": "https://arxiv.org/pdf/2608.13878v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "Explicitly addresses hybrid action spaces (continuous and discrete) in AV control RL",
+      "llm_evidence_cn": "明确处理自动驾驶控制中强化学习的混合动作空间（连续与离散）",
+      "llm_evidence": "明确处理自动驾驶控制中强化学习的混合动作空间（连续与离散）",
+      "canonical_evidence": "明确处理自动驾驶控制中强化学习的混合动作空间（连续与离散）",
+      "llm_tldr_en": "Proposes KDDRL to handle hybrid action spaces and long-tail safety events in mixed traffic AV control.",
+      "llm_tldr_cn": "针对混合交通中自动驾驶决策面临的物理先验不足、非平稳性和混合动作空间不稳定性问题，本文提出知识数据双驱动强化学习框架。通过条件深度生成模型捕捉驾驶意图，并设计混合动作空间下的统一训练机制。实验表明该方法能提升自动驾驶在混合交通中的安全性和决策性能，为复杂交通决策提供新思路。该框架结合物理先验与数据驱动，有效处理连续与离散动作的混合，并探索长尾安全事件。",
+      "llm_tldr": "针对混合交通中自动驾驶决策面临的物理先验不足、非平稳性和混合动作空间不稳定性问题，本文提出知识数据双驱动强化学习框架。通过条件深度生成模型捕捉驾驶意图，并设计混合动作空间下的统一训练机制。实验表明该方法能提升自动驾驶在混合交通中的安全性和决策性能，为复杂交通决策提供新思路。该框架结合物理先验与数据驱动，有效处理连续与离散动作的混合，并探索长尾安全事件。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "reinforcement learning with hybrid action space",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.13625v1",
+      "source": "arxiv",
+      "title": "Reward Machines for Signal Temporal Logic",
+      "abstract": "Signal temporal logic (STL) provides a formal language for specifying real-time properties of real-valued observations, along with a quantitative robustness score for monitoring satisfaction. Control synthesis from STL specifications is of interest since manual controller design becomes infeasible as real-world systems grow in complexity. Moreover, many modern autonomous and AI-enabled systems lack accurate and complete system models, which makes optimization-based synthesis approaches unsuitable and motivates learning-based control. Prior work uses STL robustness scores as rewards in reinforcement learning (RL) to obtain control policies satisfying given specifications; however, robustness depends on execution history, leading to intractable state space expansion for general long-horizon specifications with arbitrarily nested temporal operators. This work introduces a novel automata-based approach that provides an efficient memory mechanism and associated Markovian rewards suitable for RL frameworks. Our approach constructs a timed alternating automaton from the given STL specifications, augments the state space with automaton locations and clock valuations, and derives rewards from the automaton acceptance condition. We empirically demonstrate that our approach learns policies that achieve higher robustness scores and satisfaction rates than those learned by existing approaches using robustness-based rewards.",
+      "authors": [
+        "Alper Kamil Bozkurt",
+        "Shangtong Zhang",
+        "Yuichi Motai"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.LG",
+        "cs.RO"
+      ],
+      "published": "2026-08-13T04:25:07+00:00",
+      "link": "https://arxiv.org/pdf/2608.13625v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Uses reward machines for STL to address long-horizon reward in RL",
+      "llm_evidence_cn": "使用奖励机处理信号时序逻辑下的长时程奖励问题",
+      "llm_evidence": "使用奖励机处理信号时序逻辑下的长时程奖励问题",
+      "canonical_evidence": "使用奖励机处理信号时序逻辑下的长时程奖励问题",
+      "llm_tldr_en": "Proposes reward machines for signal temporal logic to enable RL with history-dependent rewards, addressing long-horizon state expansion and reward assignment.",
+      "llm_tldr_cn": "该文针对基于信号时序逻辑的强化学习控制中，鲁棒性奖励依赖完整执行历史、长时程任务下状态空间爆炸的问题，提出使用奖励机将时序逻辑规范自动编译为可追踪历史有限状态的自动机。这样智能体可以在不存储冗长历史的情况下获得满足规范的奖励信号。实验验证了该方法在多种时序任务上的有效性和学习效率，为长时程奖励分配提供了一种形式化且可扩展的方案。",
+      "llm_tldr": "该文针对基于信号时序逻辑的强化学习控制中，鲁棒性奖励依赖完整执行历史、长时程任务下状态空间爆炸的问题，提出使用奖励机将时序逻辑规范自动编译为可追踪历史有限状态的自动机。这样智能体可以在不存储冗长历史的情况下获得满足规范的奖励信号。实验验证了该方法在多种时序任务上的有效性和学习效率，为长时程奖励分配提供了一种形式化且可扩展的方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}
