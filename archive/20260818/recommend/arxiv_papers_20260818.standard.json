@@ -1,0 +1,138 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-18T19:39:54.195808+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 0,
+    "deep_cap": 6,
+    "deep_selected": 0,
+    "quick_candidates": 3,
+    "quick_skim_target": 11,
+    "quick_selected": 3
+  },
+  "deep_dive": [],
+  "quick_skim": [
+    {
+      "id": "2608.09564v1",
+      "source": "arxiv",
+      "title": "From Semantic Grounding to Decision Optimization: A Unified Framework for Long-Horizon UAV Vision-Language Navigation",
+      "abstract": "UAV vision-language navigation (UAV-VLN) focuses on enabling an aerial agent to follow natural-language instructions in open 3D environments from egocentric visual observations. Current approaches suffer from three coupled issues: weak grounding of instruction-relevant landmarks in visual observations, insufficient exploitation of long-horizon history, and unstable decisions under local traps or repeated exploration. To address these issues, we propose a unified semantic-to-decision framework. First, we present an instruction-grounded semantic enhancement module that injects object-level semantics and relative spatial cues into the current observation state. Subsequently, we develop a relevance-aware dynamic temporal aggregation strategy that reweights the full history buffer while converting a few high-relevance frames into structured landmark prompts for the decoder. Finally, we devise a topology-aware decision method that combines local-optimum cognition with group-relative policy optimization under progress, goal, semantic, and path-compliance rewards. Experiments on the widely used AerialVLN and OpenFly benchmarks clearly demonstrate that our method achieves state-of-the-art performance.",
+      "authors": [
+        "Zeyuan Ma",
+        "Jiaxin Chen",
+        "Di Huang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI"
+      ],
+      "published": "2026-08-10T12:59:50+00:00",
+      "link": "https://arxiv.org/pdf/2608.09564v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Unified framework for long-horizon UAV navigation decisions",
+      "llm_evidence_cn": "面向长程无人机导航决策的统一框架",
+      "llm_evidence": "面向长程无人机导航决策的统一框架",
+      "canonical_evidence": "面向长程无人机导航决策的统一框架",
+      "llm_tldr_en": "Proposes a unified semantic-to-decision framework for UAV vision-language navigation, integrating instruction-grounded semantic enhancement and relevance-aware dynamic modules to improve long-horizon decision stability.",
+      "llm_tldr_cn": "该论文针对无人机视觉语言导航中指令地标接地弱、长程历史利用不足和局部决策不稳定三个问题，提出统一语义到决策框架。通过指令接地的语义增强模块注入物体级语义与空间线索，并开发相关性感知动态模块优化长程决策。实验证明该方法提升导航稳定性与效率，为长程无人机导航的语义理解和决策优化提供了新方案。",
+      "llm_tldr": "该论文针对无人机视觉语言导航中指令地标接地弱、长程历史利用不足和局部决策不稳定三个问题，提出统一语义到决策框架。通过指令接地的语义增强模块注入物体级语义与空间线索，并开发相关性感知动态模块优化长程决策。实验证明该方法提升导航稳定性与效率，为长程无人机导航的语义理解和决策优化提供了新方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "deep reinforcement learning for UAV inspection tasks",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.11052v1",
+      "source": "arxiv",
+      "title": "Efficient Hypergradient Descent for Inverse Reinforcement Learning",
+      "abstract": "Inverse reinforcement learning (IRL) aims to recover a reward function under which the resulting policy reproduces the behavior observed in expert demonstrations. A natural approach is to formulate IRL as a bilevel optimization problem, in which the inner level corresponds to policy optimization under the learned reward and the outer level measures the discrepancy between the induced policy and expert data. However, this formulation is computationally challenging in practice because the outer update requires a hypergradient involving an inverse-Hessian-vector product for the inner objective. We address this challenge by showing that, at the inner optimum, the Hessian of the inner objective is proportional to the Fisher information matrix of the policy, yielding a structured Fisher-based hypergradient closely related to Natural Hypergradient Descent. To address the resulting scalability bottleneck associated with large Fisher matrices, we approximate the required inverse-Fisher-vector product using a streaming spectral sketch, avoiding explicit construction of the Fisher matrix. We evaluate our approach against a first-order stochastic bilevel baseline across discrete- and continuous-control environments. The results demonstrate competitive policy performance and strong reward-ranking quality, while Fisher sketching reduces curvature-storage complexity and can improve computational efficiency relative to an explicit Fisher solver.",
+      "authors": [
+        "Nikita Sevriukov",
+        "Anna Barabanova",
+        "Uliana Gagarina",
+        "Karina Ivanova",
+        "Sofiia Kasaeva",
+        "Ilya Levin",
+        "Marina Sheshukova"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "stat.ML"
+      ],
+      "published": "2026-08-11T15:22:16+00:00",
+      "link": "https://arxiv.org/pdf/2608.11052v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Efficient IRL via hypergradient descent directly learns reward functions, relevant to reward assignment in RL",
+      "llm_evidence_cn": "通过超梯度下降的高效逆强化学习直接学习奖励函数，与强化学习奖励分配相关",
+      "llm_evidence": "通过超梯度下降的高效逆强化学习直接学习奖励函数，与强化学习奖励分配相关",
+      "canonical_evidence": "通过超梯度下降的高效逆强化学习直接学习奖励函数，与强化学习奖励分配相关",
+      "llm_tldr_en": "Proposes an efficient hypergradient descent method for inverse reinforcement learning, leveraging the Fisher information property at the inner optimum. This reduces computational cost of learning reward functions from demonstrations. Although not focused on long-horizon settings specifically, IRL is a core approach for reward assignment in RL, making this method a useful tool.",
+      "llm_tldr_cn": "针对逆强化学习用双层优化学习奖励函数时，外层更新需要逆Hessian向量积导致计算困难的问题，提出高效超梯度下降方法。论文证明在内层最优处，Hessian与策略的Fisher信息矩阵成正比，从而简化超梯度计算。实验表明该方法在保持精度的同时大幅降低计算复杂度。虽然未专门针对长时序任务，但逆强化学习本质上是为强化学习分配奖励，该方法可作为长时序奖励分配的高效基础模块，为复杂任务奖励学习提供实用工具。",
+      "llm_tldr": "针对逆强化学习用双层优化学习奖励函数时，外层更新需要逆Hessian向量积导致计算困难的问题，提出高效超梯度下降方法。论文证明在内层最优处，Hessian与策略的Fisher信息矩阵成正比，从而简化超梯度计算。实验表明该方法在保持精度的同时大幅降低计算复杂度。虽然未专门针对长时序任务，但逆强化学习本质上是为强化学习分配奖励，该方法可作为长时序奖励分配的高效基础模块，为复杂任务奖励学习提供实用工具。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.11685v1",
+      "source": "arxiv",
+      "title": "EGM-Det: Entropy-Guided Multimodal Adaptive Fusion for UAV RGB-IR Object Detection",
+      "abstract": "Joint use of RGB and infrared (IR) imagery can improve UAV-view object detection, but most existing methods fuse multimodal features with static or fixed weights and therefore overlook spatially varying modality reliability. We propose EGM-Det, an entropy-guided multimodal adaptive fusion framework for RGB-IR object detection. EGM-Det employs a dual-stream architecture to preserve modality-specific representations and introduces an Entropy Offset Gate Fusion module for adaptive multi-scale fusion. The module derives shallow entropy priors from input intensity, local entropy, and cross-modal discrepancy, and uses them to guide local offset alignment and spatial-channel gated fusion. It therefore selectively aggregates reliable RGB and infrared cues instead of uniformly combining heterogeneous features. We further introduce cross-modal distillation to regularize the learned fusion gates and reduce fusion degradation. Each student branch extracts complementary knowledge from the cross-modality teacher branch matched to the main branch, while entropy-adaptive supervision emphasizes uncertain modality decisions. Experiments on DroneVehicle, LLVIP, and VEDAI demonstrate state-of-the-art performance across all three benchmarks; in particular, EGM-Det outperforms prior approaches by more than 10 percentage points on VEDAI.",
+      "authors": [
+        "Cunzheng Fan",
+        "Dawei Yan",
+        "Guanlin Wang",
+        "Xingshuo Yang",
+        "Yupeng Jia",
+        "Jing Yang",
+        "Haokui Zhang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-12T05:51:48+00:00",
+      "link": "https://arxiv.org/pdf/2608.11685v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "UAV RGB-IR object detection method adaptable for transmission line defect detection",
+      "llm_evidence_cn": "面向无人机RGB-IR目标检测的熵引导融合方法可用于输电线路缺陷检测",
+      "llm_evidence": "面向无人机RGB-IR目标检测的熵引导融合方法可用于输电线路缺陷检测",
+      "canonical_evidence": "面向无人机RGB-IR目标检测的熵引导融合方法可用于输电线路缺陷检测",
+      "llm_tldr_en": "Proposes EGM-Det, an entropy-guided multimodal adaptive fusion framework for UAV-view RGB-IR object detection, which selectively aggregates reliable modalities and could be transferred to UAV-based transmission line defect detection.",
+      "llm_tldr_cn": "针对无人机RGB-IR图像目标检测中模态融合权重静态、忽略空间变化可靠性的问题，提出熵引导的自适应融合框架EGM-Det。该方法利用双流架构保留模态特定表示，并通过熵偏移门控融合模块实现多尺度自适应融合。实验表明该方法在UAV视角目标检测上有效，有助于提升无人机图像中输电线路缺陷检测的准确性。",
+      "llm_tldr": "针对无人机RGB-IR图像目标检测中模态融合权重静态、忽略空间变化可靠性的问题，提出熵引导的自适应融合框架EGM-Det。该方法利用双流架构保留模态特定表示，并通过熵偏移门控融合模块实现多尺度自适应融合。实验表明该方法在UAV视角目标检测上有效，有助于提升无人机图像中输电线路缺陷检测的准确性。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "transmission line defect detection from UAV imagery",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

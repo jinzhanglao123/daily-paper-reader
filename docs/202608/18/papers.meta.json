@@ -1,0 +1,54 @@
+{
+  "label": "2026-08-18",
+  "date": "2026-08-18",
+  "generated_at": "2026-08-18T19:43:16",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202608/18/2608.09564v1-from-semantic-grounding-to-decision-optimization-a-unified-framework-for-long-horizon-uav-vision-language-navigation",
+      "section": "quick",
+      "title_en": "From Semantic Grounding to Decision Optimization: A Unified Framework for Long-Horizon UAV Vision-Language Navigation",
+      "authors": "Zeyuan Ma, Jiaxin Chen, Di Huang",
+      "date": "2026-08-10",
+      "pdf": "https://arxiv.org/pdf/2608.09564v1",
+      "score": "6.0",
+      "evidence": "面向长程无人机导航决策的统一框架",
+      "tldr": "无人机视觉语言导航面临指令相关地标语义对齐弱、长程历史利用不足及局部决策不稳定等耦合问题。本文提出统一语义到决策框架，通过指令接地语义增强、相关性动态时序聚合和拓扑感知决策优化解决上述痛点。实验在AerialVLN和OpenFly基准上取得最先进性能，验证框架有效性，为长程无人机视觉语言导航提供新思路。",
+      "tags": "query:uav-drl",
+      "abstract_en": "UAV vision-language navigation (UAV-VLN) focuses on enabling an aerial agent to follow natural-language instructions in open 3D environments from egocentric visual observations. Current approaches suffer from three coupled issues: weak grounding of instruction-relevant landmarks in visual observations, insufficient exploitation of long-horizon history, and unstable decisions under local traps or repeated exploration. To address these issues, we propose a unified semantic-to-decision framework. First, we present an instruction-grounded semantic enhancement module that injects object-level semantics and relative spatial cues into the current observation state. Subsequently, we develop a relevance-aware dynamic temporal aggregation strategy that reweights the full history buffer while converting a few high-relevance frames into structured landmark prompts for the decoder. Finally, we devise a topology-aware decision method that combines local-optimum cognition with group-relative policy optimization under progress, goal, semantic, and path-compliance rewards. Experiments on the widely used AerialVLN and OpenFly benchmarks clearly demonstrate that our method achieves state-of-the-art performance.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/18/2608.11052v1-efficient-hypergradient-descent-for-inverse-reinforcement-learning",
+      "section": "quick",
+      "title_en": "Efficient Hypergradient Descent for Inverse Reinforcement Learning",
+      "authors": "Nikita Sevriukov, Anna Barabanova, Uliana Gagarina, Karina Ivanova, Sofiia Kasaeva, Ilya Levin, Marina Sheshukova",
+      "date": "2026-08-11",
+      "pdf": "https://arxiv.org/pdf/2608.11052v1",
+      "score": "6.0",
+      "evidence": "通过超梯度下降的高效逆强化学习直接学习奖励函数，与强化学习奖励分配相关",
+      "tldr": "针对逆强化学习用双层优化学习奖励函数时，外层更新需要逆Hessian向量积导致计算困难的问题，提出高效超梯度下降方法。论文证明在内层最优处，Hessian与策略的Fisher信息矩阵成正比，从而简化超梯度计算。实验表明该方法在保持精度的同时大幅降低计算复杂度。虽然未专门针对长时序任务，但逆强化学习本质上是为强化学习分配奖励，该方法可作为长时序奖励分配的高效基础模块，为复杂任务奖励学习提供实用工具。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Inverse reinforcement learning (IRL) aims to recover a reward function under which the resulting policy reproduces the behavior observed in expert demonstrations. A natural approach is to formulate IRL as a bilevel optimization problem, in which the inner level corresponds to policy optimization under the learned reward and the outer level measures the discrepancy between the induced policy and expert data. However, this formulation is computationally challenging in practice because the outer update requires a hypergradient involving an inverse-Hessian-vector product for the inner objective. We address this challenge by showing that, at the inner optimum, the Hessian of the inner objective is proportional to the Fisher information matrix of the policy, yielding a structured Fisher-based hypergradient closely related to Natural Hypergradient Descent. To address the resulting scalability bottleneck associated with large Fisher matrices, we approximate the required inverse-Fisher-vector product using a streaming spectral sketch, avoiding explicit construction of the Fisher matrix. We evaluate our approach against a first-order stochastic bilevel baseline across discrete- and continuous-control environments. The results demonstrate competitive policy performance and strong reward-ranking quality, while Fisher sketching reduces curvature-storage complexity and can improve computational efficiency relative to an explicit Fisher solver.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/18/2608.11685v1-egm-det-entropy-guided-multimodal-adaptive-fusion-for-uav-rgb-ir-object-detection",
+      "section": "quick",
+      "title_en": "EGM-Det: Entropy-Guided Multimodal Adaptive Fusion for UAV RGB-IR Object Detection",
+      "authors": "Cunzheng Fan, Dawei Yan, Guanlin Wang, Xingshuo Yang, Yupeng Jia, Jing Yang, Haokui Zhang",
+      "date": "2026-08-12",
+      "pdf": "https://arxiv.org/pdf/2608.11685v1",
+      "score": "6.0",
+      "evidence": "面向无人机RGB-IR目标检测的熵引导融合方法可用于输电线路缺陷检测",
+      "tldr": "无人机视角RGB-IR目标检测中，现有融合方法多采用静态或固定权重，忽视了空间变化的模态可靠性。本文提出EGM-Det，采用双流架构保留模态特定表示，并设计熵偏移门控融合模块，从输入强度、局部熵和跨模态差异导出浅层熵先验，引导局部偏移对齐与空间-通道门控融合，选择性地聚合可靠RGB和红外线索。在DroneVehicle、LLVIP、VEDAI三个基准上达到最优，VEDAI性能提升超10个百分点。该方法有效解决了均匀融合带来的退化问题，显著提升复杂环境下无人机多模态检测精度。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Joint use of RGB and infrared (IR) imagery can improve UAV-view object detection, but most existing methods fuse multimodal features with static or fixed weights and therefore overlook spatially varying modality reliability. We propose EGM-Det, an entropy-guided multimodal adaptive fusion framework for RGB-IR object detection. EGM-Det employs a dual-stream architecture to preserve modality-specific representations and introduces an Entropy Offset Gate Fusion module for adaptive multi-scale fusion. The module derives shallow entropy priors from input intensity, local entropy, and cross-modal discrepancy, and uses them to guide local offset alignment and spatial-channel gated fusion. It therefore selectively aggregates reliable RGB and infrared cues instead of uniformly combining heterogeneous features. We further introduce cross-modal distillation to regularize the learned fusion gates and reduce fusion degradation. Each student branch extracts complementary knowledge from the cross-modality teacher branch matched to the main branch, while entropy-adaptive supervision emphasizes uncertain modality decisions. Experiments on DroneVehicle, LLVIP, and VEDAI demonstrate state-of-the-art performance across all three benchmarks; in particular, EGM-Det outperforms prior approaches by more than 10 percentage points on VEDAI.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
