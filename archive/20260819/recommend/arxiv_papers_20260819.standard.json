@@ -1,0 +1,335 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-19T20:35:16.690600+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 3,
+    "deep_cap": 6,
+    "deep_selected": 3,
+    "quick_candidates": 5,
+    "quick_skim_target": 11,
+    "quick_selected": 5
+  },
+  "deep_dive": [
+    {
+      "id": "2608.17310v1",
+      "source": "arxiv",
+      "title": "Agentic ESOpt: Fine-Tuning Long-Horizon LLM Agents with Minimal GPU Requirements",
+      "abstract": "Reinforcement Learning (RL) has been promising in single-turn LLM fine-tuning. However, long-horizon agentic reasoning introduces increasingly branching interactions and sparse rewards, exposing several limitations of RL: its heavyweight backpropagation-based training stack makes it impractical to fine-tune larger LLMs, and longer-horizon trajectories make credit assignment in RL substantially harder. This paper argues that evolution strategies (ES) can be a better choice for fine-tuning long-horizon LLM agents. Compared with agentic RL, ES offers three key advantages: 1) Model Scalability: ES enables full-parameter optimization with only minimal, inference-level GPU memory, making it possible to fine-tune large LLMs. 2) Flexibility: its lightweight, black-box feedback interface makes ES fine-tuning easy to compose with prompt-space evolution (e.g., skill optimization & test-time compute); and 3) Long-Horizon Scalability: ES performs trajectory-level parameter attribution without decomposing rewards across horizons, yielding better scalability than Agentic RL as the horizon length grows. Based on this insight, we propose Agentic ESOpt, a full-parameter agentic fine-tuning framework tailored to flexible parameter--context co-evolution. At each step, Agentic ESOpt samples perturbations around the current LLM parameters, evaluates the resulting agents with rewards, and applies an online reward-weighted update. To improve the exploration--adaptation trade-off, Agentic ESOpt further introduces a cosine decay schedule of the perturbation scale $σ$. On WebArena-Lite, full-parameter optimization of Qwen-3.5-27B improves the No Skill baseline by 6.69%. In test-time automatic heuristic design, Agentic ESOpt performs online prompt--parameter co-evolution, improving its matched baseline in 28 of 36 settings.",
+      "authors": [
+        "Zhi Zheng",
+        "Rongsheng Chen",
+        "Yunpeng Ba",
+        "Zhenkun Wang",
+        "Yee Whye Teh",
+        "Wee Sun Lee"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-08-18T03:03:53+00:00",
+      "link": "https://arxiv.org/pdf/2608.17310v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "explicitly addresses long-horizon credit assignment in RL, proposing evolution strategies for better reward assignment in long-horizon agents",
+      "llm_evidence_cn": "明确处理长时程RL中的信用分配，提出进化策略改善长时程智能体的奖励分配",
+      "llm_evidence": "明确处理长时程RL中的信用分配，提出进化策略改善长时程智能体的奖励分配",
+      "canonical_evidence": "明确处理长时程RL中的信用分配，提出进化策略改善长时程智能体的奖励分配",
+      "llm_tldr_en": "The paper argues evolution strategies outperform RL for fine-tuning long-horizon LLM agents, addressing credit assignment challenges and reducing GPU requirements.",
+      "llm_tldr_cn": "本文指出强化学习在长时程智能体推理中面临信用分配困难和高计算开销。为此，作者提出使用进化策略（ES）替代RL来微调长时程LLM智能体，ES仅需推理级GPU内存即可实现全参数优化。该方法减轻了长轨迹下的奖励分配问题，同时保持灵活性。实验表明ES在模型扩展性和样本效率上具有优势。其贡献在于为长时程RL信用分配提供了可行的替代方案。",
+      "llm_tldr": "本文指出强化学习在长时程智能体推理中面临信用分配困难和高计算开销。为此，作者提出使用进化策略（ES）替代RL来微调长时程LLM智能体，ES仅需推理级GPU内存即可实现全参数优化。该方法减轻了长轨迹下的奖励分配问题，同时保持灵活性。实验表明ES在模型扩展性和样本效率上具有优势。其贡献在于为长时程RL信用分配提供了可行的替代方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.17499v1",
+      "source": "arxiv",
+      "title": "Towards Better Agents for Multi-Turn User Interaction: The Next User Turn Is More Than Context",
+      "abstract": "User-facing tool agents must coordinate dialogue and tool use as user goals unfold over multiple turns. Yet interactive reinforcement learning typically reduces each rollout to a terminal reward, assigning the same credit to effective elicitation, errors, and later repair. The next user turn is more than context: it also provides noisy, temporally local evidence about the preceding user-to-user segment. We introduce \\textbf{F}eedback-\\textbf{A}ware \\textbf{C}redit \\textbf{A}ssignment (\\textsc{FACA}), which aligns each reaction with that segment, derives a locally normalized reaction advantage, and adds it to verified terminal outcome advantage without an extra critic or rollout. Against an outcome-only Interactive GRPO control matched in simulator, visible dialogue, initialization, rollout, and optimization, \\textsc{FACA} improves the nine-domain $τ$-family average across three independently trained runs by 5.91 and 10.22 percentage points at 8B and 14B, respectively. Gains concentrate in Telecom; at 8B, randomizing reaction polarity removes the Telecom gain. The same ordering holds zero-shot on Pare-Bench and Co-Gym. These results demonstrate that next-turn user reactions provide actionable local credit for improving multi-turn user-interacting agents.",
+      "authors": [
+        "Yiwen Zhao",
+        "Zhihao Wen",
+        "Yuchen Mao",
+        "Mingxuan Jiang",
+        "Yihao Hu",
+        "Pan Wang",
+        "Xin Zhang",
+        "Wei Wu"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-08-18T08:25:21+00:00",
+      "link": "https://arxiv.org/pdf/2608.17499v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "credit assignment for long-horizon interactive RL",
+      "llm_evidence_cn": "长时程交互强化学习的信用分配",
+      "llm_evidence": "长时程交互强化学习的信用分配",
+      "canonical_evidence": "长时程交互强化学习的信用分配",
+      "llm_tldr_en": "FACA introduces feedback-aware credit assignment for multi-turn interactive RL, aligning user reactions to segments and improving long-horizon reward assignment.",
+      "llm_tldr_cn": "针对交互式强化学习中终端奖励信用分配粗略的问题，提出FACA方法，利用下一用户回合作为局部反馈，对齐用户段并计算归一化反应优势，与终端优势结合，无需额外critic即可改进长时程任务奖励分配，可迁移至UAV巡检等长时程决策场景。",
+      "llm_tldr": "针对交互式强化学习中终端奖励信用分配粗略的问题，提出FACA方法，利用下一用户回合作为局部反馈，对齐用户段并计算归一化反应优势，与终端优势结合，无需额外critic即可改进长时程任务奖励分配，可迁移至UAV巡检等长时程决策场景。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.17612v1",
+      "source": "arxiv",
+      "title": "Geometry-Aware DRL for Multi-Subband Scheduling in Satellite-Assisted UAM Networks",
+      "abstract": "In this paper, we investigate downlink scheduling for urban air mobility (UAM) in a cooperative space-air-ground integrated network. Multiple ground stations (GSs) employ narrow three-dimensional beams and share spectrum across multiple subbands, while a satellite provides an orthogonal-band service option. Rapidly time-varying geometry and directional interference require joint decisions on base station association, GS subband assignment, and transmit powers. We formulate a finite-horizon mixed discrete-continuous problem that maximizes sum rate while penalizing handovers and GS overload, using only UAM positions and velocities. To address the combinatorial scheduling problem, we propose GeoSetPPO, a geometry-aware set-attention proximal policy optimization (PPO) method that outputs per-UAM discrete association and subband decisions with permutation-invariant representations. Conditioned on each schedule, GS powers are computed by a per-slot successive convex approximation (SCA) module under per-GS power budgets and minimum signal-to-interference-plus-noise ratio (SINR) constraints. To reduce training cost and improve stability, we adopt a two-stage training strategy that transitions reward evaluation from uniform power to SCA-based power allocation. Simulations demonstrate stable convergence, higher returns than multi-layer perceptron (MLP)- and Transformer-based PPO under the considered training setting, and favorable reward and schedule-feasibility performance relative to algorithm-based and distance-based schedulers. In the larger evaluated network, GeoSetPPO also reduces the scheduling latency from 40.84 ms to 2.90 ms relative to the previous algorithm-based method.",
+      "authors": [
+        "Hyung-Joo Moon",
+        "Sangha Park",
+        "Chan-Byoung Chae",
+        "Robert W. Heath"
+      ],
+      "primary_category": "eess.SP",
+      "categories": [
+        "eess.SP"
+      ],
+      "published": "2026-08-18T10:22:28+00:00",
+      "link": "https://arxiv.org/pdf/2608.17612v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "formulates a mixed discrete-continuous finite-horizon problem and solves with geometry-aware set-attention PPO DRL",
+      "llm_evidence_cn": "将混合离散-连续有限时域问题建模并用几何感知集合注意力PPO深度强化学习求解",
+      "llm_evidence": "将混合离散-连续有限时域问题建模并用几何感知集合注意力PPO深度强化学习求解",
+      "canonical_evidence": "将混合离散-连续有限时域问题建模并用几何感知集合注意力PPO深度强化学习求解",
+      "llm_tldr_en": "The paper addresses hybrid discrete-continuous scheduling in satellite-assisted UAM networks; it formulates a finite-horizon mixed-action problem and proposes GeoSetPPO, a geometry-aware set-attention PPO variant, improving sum rate and reducing handovers.",
+      "llm_tldr_cn": "针对卫星辅助城市空中交通网络中下行调度面临的混合离散-连续决策和快速时变几何干扰问题，本文将联合基站关联、子带分配与功率控制建模为有限时域混合动作问题。提出GeoSetPPO，一种融合几何感知集合注意力的近端策略优化方法，以无人机位置和速度为输入进行调度决策。仿真结果表明该方法在提升总速率的同时有效降低切换和过载。该工作展示了深度强化学习处理混合动作空间通信调度问题的能力。",
+      "llm_tldr": "针对卫星辅助城市空中交通网络中下行调度面临的混合离散-连续决策和快速时变几何干扰问题，本文将联合基站关联、子带分配与功率控制建模为有限时域混合动作问题。提出GeoSetPPO，一种融合几何感知集合注意力的近端策略优化方法，以无人机位置和速度为输入进行调度决策。仿真结果表明该方法在提升总速率的同时有效降低切换和过载。该工作展示了深度强化学习处理混合动作空间通信调度问题的能力。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "reinforcement learning with hybrid action space",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.15088v1",
+      "source": "arxiv",
+      "title": "Max-Q Selective Imitation for Human-in-the-Loop Online Robot Learning",
+      "abstract": "Human-in-the-loop (HIL) online reinforcement learning for real robots must absorb human interventions quickly while continuing to improve beyond the human prior. We present a training method for this setting based on two components. First, an \\emph{MC Q-chunk} critic regresses chunk-level action values onto Monte Carlo returns from the replay buffer, performing sample-average (behavior) policy evaluation so that intervention trajectories are credited directly rather than diluted by current-policy TD backups. Second, \\emph{max-Q selective imitation} updates the actor by imitating, at each state, the higher-$Q$ action between the current policy action and a buffer sample under a hard winner-take-all rule. This rule automatically switches between learning from interventions and on-policy self-improvement: when the autonomous policy is stronger, targets align with the policy distribution, reducing the policy--target-sample gap that otherwise induces execution-time distribution shift. In practice we score candidates with a standard critic ensemble mean to reduce comparison noise, without softening targets or introducing score-gap thresholds. On a real USB pick-and-insertion task with 20 demonstrations, ACT QChunk-MCBC attains 99\\% success within 30 minutes of HIL training, whereas HIL-SERL requires about 5 hours to converge. In simulation on Peg Insertion and Square, ACT/Flow Q-chunk variants similarly reach $\\ge$96\\% success within roughly half an hour of effective training, outperforming HIL-SERL, EXPO, and E2HiL on the success--time frontier.",
+      "authors": [
+        "Zihang Wang",
+        "Yishan Wang"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "published": "2026-08-15T07:13:59+00:00",
+      "link": "https://arxiv.org/pdf/2608.15088v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "introduces MC Q-chunk critic for chunk-level action value regression onto Monte Carlo returns, directly crediting intervention trajectories",
+      "llm_evidence_cn": "提出MC Q-chunk批评器将块级动作值回归到蒙特卡洛回报，直接对干预轨迹进行信用分配",
+      "llm_evidence": "提出MC Q-chunk批评器将块级动作值回归到蒙特卡洛回报，直接对干预轨迹进行信用分配",
+      "canonical_evidence": "提出MC Q-chunk批评器将块级动作值回归到蒙特卡洛回报，直接对干预轨迹进行信用分配",
+      "llm_tldr_en": "The paper addresses credit assignment in human-in-the-loop online RL for robots by proposing MC Q-chunk critics and max-Q selective imitation; it shows intervention trajectories are credited directly without TD dilution, improving learning beyond human prior.",
+      "llm_tldr_cn": "针对人在回路在线强化学习中人类干预轨迹信用稀释的问题，本文提出MC Q-chunk批评器，将块级动作值回归到蒙特卡洛回报，从而实现样本平均策略评估。同时采用max-Q选择性模仿，在每状态选择当前策略动作与缓冲区样本中Q值较高者更新演员。实验表明该方法能直接吸收干预并继续超越人类先验。该工作为长程RL中的信用分配提供了有效策略。",
+      "llm_tldr": "针对人在回路在线强化学习中人类干预轨迹信用稀释的问题，本文提出MC Q-chunk批评器，将块级动作值回归到蒙特卡洛回报，从而实现样本平均策略评估。同时采用max-Q选择性模仿，在每状态选择当前策略动作与缓冲区样本中Q值较高者更新演员。实验表明该方法能直接吸收干预并继续超越人类先验。该工作为长程RL中的信用分配提供了有效策略。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.15041v1",
+      "source": "arxiv",
+      "title": "LLM-Based Hierarchical Coordinated Control with Continuation-Aware Policy Learning",
+      "abstract": "Coordinating multiple interacting units in complex engineering systems is challenging when system interactions are difficult to model, operational information is heterogeneous, and low-level actions must satisfy strict constraints. We propose an LLM-based hierarchical framework in which the LLM coordinates interacting units based on heterogeneous operational context, while task-specific controllers or optimizers generate executable and constraint-aware actions. We further introduce Continuation-Aware GRPO to capture the consequences of coordination decisions over subsequent control intervals. Rather than judging a decision only by its immediate outcome, the method also evaluates how the system evolves afterward under the current policy. We validate the framework on multi-ramp traffic control and virtual power plant (VPP) energy management, using simplified system models for training and more realistic simulators for evaluation. Across both tasks, the proposed method consistently outperforms direct task-specific control and optimization, end-to-end reinforcement learning, rule-based and RL-based hierarchical coordination, and prompting-only LLM coordinators, demonstrating the value of heterogeneous-context reasoning, hierarchical execution, and continuation-aware policy learning.",
+      "authors": [
+        "Changhong He",
+        "Jinda Gao",
+        "Xinkuan Liu",
+        "Le Zhang",
+        "Xizi Luo",
+        "Yu Mei"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-08-15T05:00:02+00:00",
+      "link": "https://arxiv.org/pdf/2608.15041v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Continuation-Aware GRPO evaluates long-term consequences of decisions",
+      "llm_evidence_cn": "延续感知GRPO评估决策的长期后果",
+      "llm_evidence": "延续感知GRPO评估决策的长期后果",
+      "canonical_evidence": "延续感知GRPO评估决策的长期后果",
+      "llm_tldr_en": "Proposes an LLM-based hierarchical coordinated control framework with Continuation-Aware GRPO to capture future evolution of systems.",
+      "llm_tldr_cn": "该工作针对复杂工程系统协调中决策后果难以评估的问题，提出基于大语言模型的分层协调框架，并引入延续感知GRPO，不仅依据即时结果，还评估系统在后续控制区间内的演化。方法能够更好地捕捉协调决策的长期影响。该工作为长时程决策中的信用分配提供了通用思路，对强化学习的奖励分配方法具有一定借鉴意义。",
+      "llm_tldr": "该工作针对复杂工程系统协调中决策后果难以评估的问题，提出基于大语言模型的分层协调框架，并引入延续感知GRPO，不仅依据即时结果，还评估系统在后续控制区间内的演化。方法能够更好地捕捉协调决策的长期影响。该工作为长时程决策中的信用分配提供了通用思路，对强化学习的奖励分配方法具有一定借鉴意义。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.15680v1",
+      "source": "arxiv",
+      "title": "Robo-Dopamine 2.0: History-Conditioned and OOD-Aware Process Reward Modeling for Robotic Manipulation",
+      "abstract": "Vision-language-action (VLA) models improve robotic manipulation but remain vulnerable to compounding errors, scene changes, and off-trajectory states. Reinforcement learning can refine pretrained VLA policies, yet sparse success signals hinder exploration, while engineered dense rewards are costly and task-specific. Existing learned visual reward models often rely on static before-after observations, causing temporal ambiguity and weak discrimination between robustness-preserving variations and task-invalid failures under out-of-distribution (OOD) execution. We introduce Robo-Dopamine 2.0, a history- and OOD-aware process reward model with a pairwise prediction interface. It combines (1) history-conditioned pairwise rewards that use source-aligned reference panels for synthetic OOD queries and observed rollout history for online queries, while preserving the queried endpoints, and (2) an OOD-aware signed progress space that represents valid progress, robustness, failure, and recovery. A Signed-Hop Curriculum with transition-aware replay learns coarse execution ordering before fine-grained progress calibration. We also construct an OOD trajectory dataset and a five-family benchmark. Reference panels improve mean visual order consistency (VOC) from 0.967 to 0.986 and OOD-robust VOC from 0.906 to 0.958. With the same 400K pairwise-reward budget, Signed-Hop training with 25% replay reaches 0.9872 mean VOC, compared with 0.9858 for a matched-pool shuffled control. In downstream reinforcement learning, the full model achieves 86.8% mean RoboTwin success and 71/80 successful real-world insertions.",
+      "authors": [
+        "Yijie Xu",
+        "Haopeng Jin",
+        "Run Zhou",
+        "Shengbang Liu",
+        "Sixiang Chen",
+        "Hongyang Cheng",
+        "Sicheng Hu",
+        "Peterson Co",
+        "Jinwen Luo",
+        "Huajie Tan",
+        "Shanghang Zhang"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "published": "2026-08-16T11:15:55+00:00",
+      "link": "https://arxiv.org/pdf/2608.15680v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "history-conditioned process reward model addresses temporal credit assignment",
+      "llm_evidence_cn": "历史条件化过程奖励模型解决时序信用分配",
+      "llm_evidence": "历史条件化过程奖励模型解决时序信用分配",
+      "canonical_evidence": "历史条件化过程奖励模型解决时序信用分配",
+      "llm_tldr_en": "Proposes Robo-Dopamine 2.0, a history- and OOD-aware process reward model with pairwise prediction to improve sparse-reward RL for robotic manipulation.",
+      "llm_tldr_cn": "该工作针对现有视觉奖励模型依赖静态前后观测导致时序模糊和分布外判别弱的问题，提出历史条件化与分布外感知的过程奖励模型Robo-Dopamine 2.0，采用成对预测接口。实验表明模型能更好区分鲁棒性保持变化与任务无效失败。该方法为长时程任务中的细粒度奖励分配提供了新的思路，对强化学习在复杂操作中的信用分配具有借鉴意义。",
+      "llm_tldr": "该工作针对现有视觉奖励模型依赖静态前后观测导致时序模糊和分布外判别弱的问题，提出历史条件化与分布外感知的过程奖励模型Robo-Dopamine 2.0，采用成对预测接口。实验表明模型能更好区分鲁棒性保持变化与任务无效失败。该方法为长时程任务中的细粒度奖励分配提供了新的思路，对强化学习在复杂操作中的信用分配具有借鉴意义。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.17362v1",
+      "source": "arxiv",
+      "title": "Continuity-Driven Representation Learning for Industrial Defect Detection",
+      "abstract": "Industrial defect detection differs from natural-image object detection because inspection images are captured under controlled conditions and contain large normal-dominant regions with repetitive structures. Defects therefore appear as localized disruptions of otherwise predictable patterns, while conventional detectors rely mainly on sparse bounding-box supervision, resulting in weakly constrained normal-region representations. We propose a continuity-driven representation regularization framework that exploits normal-dominant regions as dense auxiliary supervision. The framework introduces two detector-agnostic objectives: Multi-Continuity Loss, which combines 1D patch-sequence prediction and 2D masked spatial prediction, and Differencing Loss, which regularizes first-order feature variation and second-order curvature between neighboring patch embeddings. Both objectives are applied with box-derived region weighting to stabilize normal-region representations while preserving defect-related discontinuities.   Experiments on two real-world industrial datasets and the public NEU-DET benchmark, using six detector architectures including YOLO-family models, MambaYOLO, and DETR, demonstrate consistent improvements over native detector baselines. In the full-data setting, the proposed regularizers improve average mAP@0.5:0.95 by up to 3.49 percentage points on Industrial Metal, 5.38 percentage points on MEA, and 5.03 percentage points on NEU-DET. Under limited-data conditions, the gains become more pronounced, with Differencing Loss achieving improvements of up to 21.07 percentage points in mAP@0.5 and 8.23 percentage points in mAP@0.5:0.95 on NEU-DET using only 25% of the training data. These results suggest that continuity-driven regularization provides an effective prior for improving industrial defect detection, particularly when annotated data are scarce.",
+      "authors": [
+        "Minjong Kim",
+        "Hyun Jun Kim",
+        "Jeongrae Kim",
+        "Heeseung Shin",
+        "Changwon Lim"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-18T04:31:55+00:00",
+      "link": "https://arxiv.org/pdf/2608.17362v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "industrial defect detection method transferable to transmission line defect detection from UAV imagery",
+      "llm_evidence_cn": "工业缺陷检测方法可迁移至无人机输电线路缺陷检测",
+      "llm_evidence": "工业缺陷检测方法可迁移至无人机输电线路缺陷检测",
+      "canonical_evidence": "工业缺陷检测方法可迁移至无人机输电线路缺陷检测",
+      "llm_tldr_en": "The paper proposes a continuity-driven representation regularization framework for industrial defect detection, exploiting normal-dominant regions as dense supervision.",
+      "llm_tldr_cn": "针对工业缺陷检测中正常区域主导、缺陷为局部破坏的特点，本文提出连续性驱动的表示正则化框架，利用正常优势区域作为密集辅助监督。框架引入多连续性损失和差分损失，约束正常区域表示。该方法无需改变检测器结构，即插即用。实验表明在工业缺陷检测基准上性能提升。其贡献在于为输电线路缺陷检测等类似场景提供了可迁移的表示学习方法。",
+      "llm_tldr": "针对工业缺陷检测中正常区域主导、缺陷为局部破坏的特点，本文提出连续性驱动的表示正则化框架，利用正常优势区域作为密集辅助监督。框架引入多连续性损失和差分损失，约束正常区域表示。该方法无需改变检测器结构，即插即用。实验表明在工业缺陷检测基准上性能提升。其贡献在于为输电线路缺陷检测等类似场景提供了可迁移的表示学习方法。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "transmission line defect detection from UAV imagery",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.18008v1",
+      "source": "arxiv",
+      "title": "Policy-Invariant Reward Shaping from LLM Feedback: A Framework for Hybrid RL Agents",
+      "abstract": "Combining large language models with reinforcement learning is increasingly explored, yet the theoretical status of LLM-derived reward signals is often left implicit. We formalize the hybrid LLM-planner and RL-controller architecture as a Goal-Augmented Markov Decision Process and show that when the LLM per-state progress score is used as a bounded potential function, the resulting shaping term preserves the optimal policy set even when the LLM scores are inaccurate. This guarantee is stronger than what general LLM-as-reward approaches provide. We verify the result numerically on a small MDP under four potential configurations, including an adversarial one scaled to twenty times the base reward magnitude.",
+      "authors": [
+        "Christophe D. Hounwanou",
+        "John Emeka Eze",
+        "Yaé U. Gaba"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-08-18T16:55:46+00:00",
+      "link": "https://arxiv.org/pdf/2608.18008v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "reward shaping preserving optimal policy in hybrid RL",
+      "llm_evidence_cn": "混合强化学习中保持最优策略的奖励塑形",
+      "llm_evidence": "混合强化学习中保持最优策略的奖励塑形",
+      "canonical_evidence": "混合强化学习中保持最优策略的奖励塑形",
+      "llm_tldr_en": "The paper formalizes hybrid LLM-planner/RL-controller as a Goal-Augmented MDP, showing LLM progress-based reward shaping preserves optimal policies, relevant to reward assignment.",
+      "llm_tldr_cn": "针对混合LLM-RL智能体中LLM奖励信号缺乏理论保证的问题，将架构形式化为目标增强MDP，证明将LLM进度分数作为有界势函数进行奖励塑形能保持最优策略集，即使在LLM评分不准确时也成立，为长时程奖励分配提供了可靠方法。",
+      "llm_tldr": "针对混合LLM-RL智能体中LLM奖励信号缺乏理论保证的问题，将架构形式化为目标增强MDP，证明将LLM进度分数作为有界势函数进行奖励塑形能保持最优策略集，即使在LLM评分不准确时也成立，为长时程奖励分配提供了可靠方法。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

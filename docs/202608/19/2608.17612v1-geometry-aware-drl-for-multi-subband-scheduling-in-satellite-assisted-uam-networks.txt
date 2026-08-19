@@ -1,0 +1,2002 @@
+Title: Geometry-Aware DRL for Multi-Subband Scheduling in Satellite-Assisted UAM Networks
+
+URL Source: https://arxiv.org/pdf/2608.17612v1
+
+Published Time: Wed, 19 Aug 2026 00:53:56 GMT
+
+Number of Pages: 16
+
+Markdown Content:
+> 1
+
+# Geometry-Aware DRL for Multi-Subband Scheduling in Satellite-Assisted UAM Networks 
+
+Hyung-Joo Moon, Member, IEEE , Sangha Park, Graduate Student Member, IEEE ,Chan-Byoung Chae, Fellow, IEEE , and Robert W. Heath, Jr., Fellow, IEEE 
+
+Abstract —In this paper, we investigate downlink scheduling for urban air mobility (UAM) in a cooperative space-air-ground integrated network. Multiple ground stations (GSs) employ narrow three-dimensional beams and share spectrum across multiple subbands, while a satellite provides an orthogonal-band service option. Rapidly time-varying geometry and directional interference require joint decisions on base station association, GS subband assignment, and transmit powers. We formulate a finite-horizon mixed discrete-continuous problem that maximizes sum rate while penalizing handovers and GS overload, using only UAM positions and velocities. To address the combinatorial scheduling problem, we propose GeoSetPPO, a geometry-aware set-attention proximal policy optimization (PPO) method that outputs per-UAM discrete association and subband decisions with permutation-invariant representations. Conditioned on each schedule, GS powers are computed by a per-slot successive convex approximation (SCA) module under per-GS power bud-gets and minimum signal-to-interference-plus-noise ratio (SINR) constraints. To reduce training cost and improve stability, we adopt a two-stage training strategy that transitions reward evaluation from uniform power to SCA-based power allocation. Simulations demonstrate stable convergence, higher returns than multi-layer perceptron (MLP)- and Transformer-based PPO under the considered training setting, and favorable reward and schedule-feasibility performance relative to algorithm-based and distance-based schedulers. In the larger evaluated network, GeoSetPPO also reduces the scheduling latency from 40 .84 ms to 2.90 ms relative to the previous algorithm-based method. 
+
+Index Terms —Urban air mobility, low-altitude economy, deep reinforcement learning, proximal policy optimization. 
+
+I. I NTRODUCTION 
+
+# URBAN air mobility (UAM) is emerging as a key com-ponent of the rapidly expanding low-altitude economy (LAE), enabling new forms of passenger transport, logistics, inspection, and public-safety operations [1]. A critical re-quirement for large-scale UAM deployment is robust wireless connectivity that supports command-and-control, navigation support, and data services with stringent reliability and latency targets [2]. Unlike conventional terrestrial users, UAM vehicles move in three-dimensional (3D) space, exhibit rapidly chang-ing geometry relative to the infrastructure, and can experience interference patterns that evolve quickly as aerial users move into or out of each other’s angular vicinity. These characteris-tics make UAM communications inherently mobility-coupled and strongly dependent on spatial configuration. 
+
+H.-J. Moon, S. Park, and C.-B. Chae are with the School of Integrated Technology, Yonsei University, Seoul 03722, South Korea (e-mail: {moonhj, shp234, cbchae }@yonsei.ac.kr). R. W. Heath, Jr. is with the Department of Electrical and Computer Engineering, University of California San Diego, La Jolla, CA, 92093 USA (email: rwheathjr@ucsd.edu) 
+
+Motivated by this setting, we develop a centralized downlink architecture where multiple ground stations (GSs) cooperate under a network controller that collects mobility informa-tion and coordinates scheduling decisions. The GS-to-UAM channels exhibit strong geometry dependence, where link quality and interference are largely determined by the relative positions and angles between GSs and aerial users [3]. This property enables mobility information such as position and velocity to capture the underlying channel conditions, reducing reliance on explicit CSI feedback. At the same time, narrow beams create strongly structured interference: UAMs that are close in angle may suffer significant inter-beam interference, and inter-GS interference can become severe when neigh-boring GSs steer beams toward nearby aerial directions. As mobility continuously reshapes these angular relations, link association, spectrum usage, and power allocation must be coordinated over time in a rapidly varying network [4]–[6]. To enhance interference management and service robust-ness, we adopt a cooperative space-air-ground integrated net-work (SAGIN) in which a satellite operates on a separate frequency band and can serve a subset of UAMs in parallel with the GS tier [7]. Within this architecture, the prior work [4] developed a graph-based association method for a single-band GS tier. Although that method accounts for predicted UAM mobility, it selects one association that remains fixed over the considered prediction interval. In contrast, the present formula-tion permits the association and GS subband assignment to be updated over multiple time steps while explicitly accounting for handovers and subband changes. The resulting decisions are temporally coupled, and the subband assignments deter-mine the interference relationships among GS-served UAMs at each step. These sequential and multi-subband interactions substantially increase the scheduling complexity and cannot be represented directly by the graph-based method in [4]. We therefore develop a DRL-based framework for joint association and subband scheduling over the considered mobility horizon. We address this joint design through a hybrid learning-and-optimization approach that reflects the mixed discrete-continuous structure of the problem. We adopt proximal policy optimization (PPO) to learn the sequential association and subband decisions [8], [9]. However, effective learning requires an architecture that represents the set-structured and geometry-dependent interactions among UAMs and communi-cation resources. A conventional multilayer perceptron (MLP) does not explicitly preserve this set structure, while generic Transformer attention lacks the task-specific decomposition of UAM-to-UAM and UAM-to-resource relations that determines arXiv:2608.17612v1 [eess.SP] 18 Aug 2026 2
+
+directional interference in the considered network. GeoSetPPO incorporates these relations through dedicated geometry-aware set-attention modules and a shared per-UAM decision head. Conditioned on the resulting discrete schedule, the GS power-allocation problem is solved independently at each time step using successive convex approximation (SCA) [10]. The main contributions of this work are summarized as follows:  
+
+> •
+
+We formulate a cooperative ground-satellite downlink problem for mobility-aware UAM communications with a multi-subband GS tier. Unlike [4], which maintains one association over a prediction interval and assumes a single shared GS band, the proposed formulation opti-mizes sequential association and subband decisions while accounting for geometry-driven interference, handovers, GS overload, and per-step power allocation.  
+
+> •
+
+We propose GeoSetPPO, a PPO-based scheduler designed for the set-structured UAM scheduling problem. The policy employs dedicated UAM-to-UAM and UAM-to-resource attention modules that incorporate relative po-sition, relative velocity, and resource-related information. This geometry-aware decomposition provides a problem-specific inductive bias that is absent from the considered MLP- and generic Transformer-based PPO architectures.  
+
+> •
+
+We address the mixed discrete-continuous design by learning only the discrete association and subband deci-sions using DRL, while computing continuous GS trans-mit powers using an SCA-based per-slot power allocation module conditioned on the schedule. We further propose a two-stage training strategy that evaluates rewards with uniform power in the first stage and gradually incor-porates SCA-based power allocation, improving training stability and reducing computational cost.  
+
+> •
+
+We evaluate GeoSetPPO across multiple network scales and subband settings. Under the considered training set-ting, GeoSetPPO achieves higher returns than the MLP-PPO and Transformer-PPO baselines. Relative to the algorithm-based scheduler [4] and the distance-based heuristic, it provides favorable reward performance and produces more feasible schedules in the considered multi-subband settings. 
+
+A. Prior Work 
+
+UAV communication studies broadly consider aerial plat-forms either as communication infrastructure, such as aerial base stations and relays, or as cellular-connected aerial users. This work belongs to the latter category and focuses on downlink service for UAM vehicles. The air-ground channels of aerial users are strongly geometry-dependent: the high prob-ability of line-of-sight (LoS) propagation and the relatively low path-loss exponent allow both desired and interfering signals to remain significant over long distances, often produc-ing network-wide inter-cell interference [6], [11]–[13]. Multi-antenna transmission, three-dimensional (3D) beamforming, and cooperative interference management have therefore been investigated, together with beam tracking to sustain their gains under mobility [14]–[16]. These physical-layer characteristics motivate network-level coordination of association, spectrum usage, and transmit power. At the network layer, this design is closely related to joint user association and radio-resource allocation in hetero-geneous networks (HetNets), where discrete association and frequency-resource decisions are coupled with interference-dependent power variables, yielding mixed-integer noncon-vex formulations. Prior studies have addressed joint associ-ation, subchannel, and power allocation using graph-theoretic and difference-of-convex optimization, as well as QoS-aware formulations based on tractable convex approximations and bounds [17], [18]. Although such optimization methods can provide high-quality solutions, repeatedly solving them be-comes computationally demanding as the numbers of users and resources increase or the network state evolves. This limitation has motivated multi-agent DRL methods for long-term association, spectrum, and power allocation in large-scale HetNets [19], [20]. These studies avoid directly re-solving the original mixed-integer program for every network realization, but focus on terrestrial HetNets without 3D aerial mobility, geometry-structured directional interference, or a satellite service tier. Joint trajectory and resource allocation has also been studied in aerial and integrated networks. Optimization-based studies have jointly designed UAV placement or trajectories with association, spectrum, and power allocation [21], [22], while learning-based studies have employed multi-agent DRL and soft actor-critic methods for related joint trajectory-resource decisions [23], [24]. Other DRL studies have addressed cov-erage continuity, spatiotemporal scheduling, and cooperative resource allocation in mobile UAV networks [5], [25]–[29]. Unlike the present work, however, many of these formulations treat UAVs as controllable aerial BSs and optimize their positions or trajectories, whereas the UAMs considered here are mobile aerial users whose trajectories are externally de-termined. Related studies have applied attention-based PPO to satellite-assisted computation and MARL to UAM transporta-tion operations, but not to geometry-aware joint association and multi-subband downlink scheduling [30], [31]. Our closest prior work developed a graph-theoretic cooperative ground-satellite UAM scheduler [4], but considered snapshot-based operation over a single GS band rather than a learned mobility-aware multi-subband policy. Consequently, the joint design of cooperative GS-satellite association, multi-subband scheduling, QoS-constrained power allocation, and handover-aware management of geometry-structured interference remains underexplored for many mov-ing UAM users. Moreover, many learning-based radio-resource management methods use instantaneous or estimated CSI and link-gain observations as policy inputs, whose fre-quent acquisition and processing can be difficult in high-mobility air-space networks [25], [27], [32]. These gaps mo-tivate GeoSetPPO, which learns per-UAM association and subband decisions from positions, velocities, and geometry-derived relations through a permutation-invariant set-attention policy, while an SCA module computes continuous GS trans-mit powers for the selected schedule. 3
+
+B. Notation and Paper Organization 
+
+Boldface lowercase letters x denote vectors, and boldface uppercase letters X denote matrices. The operators (·)∗, (·)T,and (·)H denote complex conjugate, transpose, and Hermitian transpose, and ⊗ denotes the Kronecker product. The notation 
+
+x ∈ [a, b ] indicates that a real number x lies in the closed interval [a, b ]. The operators | · | and ∥·∥ denote absolute value and Euclidean norm, and max {·} denotes the maximum of its arguments. The expectation and variance operators are denoted by E[·] and Var( ·). The notation CN (μ, σ 2) denotes the complex normal distribution with mean μ and variance σ2. For simplicity, log( ·) denotes log 2(·). The function clip( x, a, b )
+
+clips a scalar x to the interval [a, b ]. Finally, [x; y] denotes vector concatenation. The remainder of this paper is organized as follows. Sec-tion II presents the cooperative ground-satellite system model, including the geometry, mobility, and link models. Section III formulates the sequential scheduling and GS power-allocation problems. Section IV develops the SCA-based power alloca-tor, GeoSetPPO architecture, and two-stage training method. Section V presents the simulation results, and Section VI concludes the paper. II. S YSTEM MODEL 
+
+We investigate a downlink scenario where K GSs and a single satellite jointly serve M UAMs, as illustrated in Fig. 1. The design objective is to maximize the network sum rate while penalizing excessive handovers and overly unbalanced user association across GSs. We refer to the GSs and the satellite collectively as base stations (BSs). The GS tier operates over multiple subbands, and the central task at each time step is to determine link association, subband assignment, and GS transmit powers for a given spatial configuration of GSs and UAMs. In our setting, association decisions are driven by beam directions and 3D geometry ( e.g. , positions and velocities), together with network-level constraints such as per-BS user capacity. We also incorporate a satellite tier operating on a dedicated frequency band and serving a subset of UAMs under acentralized controller that performs joint scheduling across the GS and satellite tiers. We consider a low Earth orbit (LEO) satellite forming a quasi-stationary spot beam that covers the target airspace. Since the satellite footprint typically spans several tens of kilometers, we do not consider per-UAM satellite beamforming. Instead, satellite-served users are multiplexed via time-division multiple access (TDMA) or frequency-division multiple access (FDMA). The satellite tier therefore provides an additional orthogonal-band downlink option that complements the GS tier depending on the in-stantaneous geometry and interference conditions. We assume perfect time and frequency synchronization between each connected BS-UAM pair via robust signaling. The associated synchronization signaling overhead incurred when a UAM attaches to a new BS is captured by the handover penalty. 
+
+A. Geometry-Related Parameters 
+
+Each GS is equipped with an upward-facing rectangular antenna array of dimension Nx ×Ny , where Nx and Ny denote  
+
+> Fig. 1. System model of a space-air-ground integrated UAM network.
+
+the numbers of elements along the horizontal and vertical axes, respectively. The associated unit vectors ˆi(k), ˆj(k) ∈ R3
+
+describe the local array orientation of the k-th GS array (the x- and y-axis directions). To provide sufficiently narrow beams for UAMs at distances of several hundred meters or more, both Nx and Ny are chosen to be moderately large (e.g. , Nx, N y ≥ 4). Each antenna element is connected to its own RF chain, enabling fully digital beamforming and simultaneous service of multiple UAMs per GS. To avoid excessive complexity and backhaul congestion, however, the DRL scheduler imposes a penalty whenever the number of UAMs associated with a GS exceeds a threshold NGS . After link association, we denote the number of GS-served UAMs by MGS and the number of satellite-served UAMs by MSAT ,with MGS + MSAT = M . Each UAM is assumed to carry two antennas, a downward-facing antenna for GS links and a directional upward antenna for satellite connectivity. We model each mobility episode over Ts discrete time steps indexed by t ∈ { 0, · · · , T s − 1}, with sampling interval τs
+
+between consecutive steps. The satellite position is defined as 
+
+uS[t] = xS[t], y S[t], z ST, (1) where zS is the orbital altitude. The coordinates of the k-th GS are 
+
+uG 
+
+> k
+
+= xG 
+
+> k
+
+, y G 
+
+> k
+
+, z G
+
+> k
+
+T, (2) for k ∈ { 1, · · · , K }. The trajectory of the m-th UAM is described by its position and velocity: 
+
+um[t] = xU
+
+> m
+
+[t], y U
+
+> m
+
+[t], z U
+
+> m
+
+[t]T,
+
+˙um[t] =  ˙xU
+
+> m
+
+[t], ˙yU
+
+> m
+
+[t], ˙zU
+
+> m
+
+[t]T, (3) with m ∈ { 1, · · · , M } indicating the UAM index. In the sim-ulations, we generate smooth UAM trajectories by controlling the acceleration profiles. For any time index t when scheduling is performed, we assume that the network controller knows uG
+
+> k
+
+for all GSs and um[t], ˙um[t] for all UAMs. Specifically, the displacement of UAM m from GS k is 
+
+d(k) 
+
+> m
+
+[t] = um[t] − uG 
+
+> k
+
+. (4) 4
+
+The cosines between d(k) 
+
+> m
+
+[t] and the array axes ˆi(k) and ˆj(k)
+
+are represented as 
+
+cos α(k) 
+
+> m
+
+[t] = d(k) 
+
+> m
+
+[t]Tˆi(k)
+
+∥d(k) 
+
+> m
+
+[t]∥ ,
+
+cos β(k) 
+
+> m
+
+[t] = d(k) 
+
+> m
+
+[t]Tˆj(k)
+
+∥d(k) 
+
+> m
+
+[t]∥ .
+
+(5) Thus, the angles α(k) 
+
+> m
+
+[t] and β(k) 
+
+> m
+
+[t] define the link direction with respect to GS k.
+
+B. GS-to-UAM Signal Models 
+
+To model inter-beam and inter-cell interference under simul-taneous GS transmissions, we relabel the UAM indices after link scheduling. While the UAMs were indexed by m in the previous geometry description, after scheduling we index the GS-served UAMs by a triple (k, b, p ), or simply kbp , where 
+
+k ∈ { 1, · · · , K } is the GS index, b ∈ { 1, · · · , B } is the GS subband index, and p ∈ { 1, · · · , P kb } is the local UAM index associated with GS k on subband b. Here, Pkb denotes the number of UAMs scheduled by GS k on subband b, so that PKk=1 
+
+PBb=1 Pkb = MGS . By construction, the UAM labeled by kbp is served by GS k on subband b. Let WG denote the total bandwidth of the GS tier. We assume that WG is equally partitioned into B orthogonal subbands, so that each subband has bandwidth WG/B .We now describe the baseband-equivalent signal and chan-nel models for the downlink GS-to-UAM transmission. For notational simplicity, although most quantities depend on the time-varying locations of the UAMs, we omit the explicit time index [t] in this subsection. Let xkbp ∈ C be the data symbol for UAM kbp , and let ρkbp ∈ R be the transmit power allocated to that stream. The 3D beamforming vector at GS k for UAM 
+
+kbp is denoted by v(k) 
+
+> kbp
+
+∈ CNxNy . Then, the transmit signal vector of GS k on subband b is modeled as 
+
+ykb =
+
+> Pkb
+
+X
+
+> p=1
+
+v(k)
+
+> kbp
+
+√ρkbp xkbp . (6) To construct v(k)
+
+> kbp
+
+, we first define the Vandermonde vector as 
+
+aN (x) = 1, e −jπx , · · · , e −jπ (N −1) xT. (7) We assume that the GS-to-UAM links are LoS-dominant. Using the angles between the k-th GS array and the link direction, (α(k)
+
+> kbp
+
+, β (k)
+
+> kbp
+
+) from (5), a normalized 3D maximum ratio transmission (MRT) beamforming vector is designed as 
+
+v(k) 
+
+> kbp
+
+= 1
+
+pNxNy
+
+aNx (cos α(k)
+
+> kbp
+
+) ⊗ aNy (cos β(k)
+
+> kbp
+
+) ∗. (8) Let L(ℓ) 
+
+> kbp
+
+∈ R denote the free-space pathloss (FSPL) be-tween GS ℓ and UAM kbp . Let N0 denote the thermal-noise power spectral density. Since each GS subband has bandwidth 
+
+WG/B , the receiver-noise power on one subband is 
+
+σ2n,B = N0
+
+WG
+
+B . (9) Accordingly, let zkbp ∼ CN (0 , σ 2n,B ) denote the receiver noise, and let gℓbq kbp ∈ C denote the normalized beamforming gain ( i.e. , the inner product between the channel vector and the beamforming vector) observed at UAM kbp on subband b
+
+when GS ℓ transmits using the beam intended for UAM ℓbq .The received baseband signal at UAM kbp on subband b is then 
+
+rkbp =
+
+q
+
+L(k) 
+
+> kbp
+
+gkbp kbp 
+
+√ρkbp xkbp 
+
++
+
+> K
+
+X
+
+> ℓ̸=kPℓb
+
+X
+
+> q=1
+
+q
+
+L(ℓ) 
+
+> kbp
+
+gℓbq kbp 
+
+√ρℓbq xℓbq 
+
++
+
+> Pkb
+
+X 
+
+> q̸=p
+
+q
+
+L(k) 
+
+> kbp
+
+gkbq kbp 
+
+√ρkbq xkbq + zkbp ,
+
+(10) where the three terms correspond to the desired signal, inter-GS interference, and intra-GS interference, respectively. As-suming isotropic GS-link antenna elements and neglecting backlobe radiation, let λ denote the carrier wavelength and let d(ℓ) 
+
+> kbp
+
+denote the displacement vector from GS ℓ to UAM 
+
+kbp . The resulting FSPL is 
+
+L(ℓ) 
+
+> kbp
+
+=
+
+ λ
+
+4π∥d(ℓ)
+
+> kbp
+
+∥
+
+2
+
+. (11) We use the geometry-derived LoS array response to design the GS beams and construct the scheduling inputs. The GeoSetPPO actor therefore does not observe instantaneous small-scale fading realizations. During training and evaluation, however, the link gains used to compute the scheduling reward follow a LoS-dominant Rician model with KR = 20 dB unless otherwise stated. Section V further evaluates policies trained at this nominal condition under different test-channel Rician factors. Accordingly, the deterministic LoS component is modeled as 
+
+h(ℓ) 
+
+> kbp
+
+= aNx (cos α(ℓ)
+
+> kbp
+
+) ⊗ aNy (cos β(ℓ)
+
+> kbp
+
+). (12) The corresponding beamforming gain when GS ℓ uses the beam for UAM ℓbq and UAM kbp receives is 
+
+gℓbq kbp = h(ℓ) T 
+
+> kbp
+
+v(ℓ)
+
+> ℓbq
+
+= 1
+
+pNxNy
+
+aNx (cos α(ℓ)
+
+> kbp
+
+)HaNx (cos α(ℓ) 
+
+> ℓbq
+
+)
+
+· aNy (cos β(ℓ)
+
+> kbp
+
+)HaNy (cos β(ℓ) 
+
+> ℓbq
+
+).
+
+(13) Thus, gkbp kbp captures the main-lobe gain for the intended UAM, while gℓbq kbp with ℓ̸ = k or q̸ = p represents inter-beam interference. Both L(ℓ) 
+
+> kbp
+
+and gℓbq kbp are determined by the geometry and the array configurations and can be precomputed. We therefore define the combined large-scale channel coefficient 
+
+wℓbq kbp = L(ℓ) 
+
+> kbp
+
+gℓbq kbp 
+
+> 2
+
+. (14) In particular, we denote the desired-link coefficient by wkbp ≜
+
+wkbp kbp . Using the channel coefficients wℓbq kbp and the GS transmit power ρkbp , the signal-to-interference-plus-noise ratio (SINR) 5
+
+at UAM kbp on subband b can be expressed as 
+
+γkbp = wkbp ρkbp KX
+
+> ℓ̸=kPℓb
+
+X
+
+> q=1
+
+wℓbq kbp ρℓbq +
+
+> Pkb
+
+X 
+
+> q̸=p
+
+wkbq kbp ρkbq + σ2n,B 
+
+. (15) The corresponding achievable spectral efficiency is modeled as follows: 
+
+Ckbp = log  1 + γkbp 
+
+. (16) Since each GS subband has bandwidth WG/B , the achievable data rate of UAM kbp is 
+
+Rkbp = WG
+
+B Ckbp . (17) Accordingly, when the aggregate GS-tier rate is normalized by the fixed total GS bandwidth WG, it is expressed as 
+
+RG = 1
+
+B
+
+> K
+
+X
+
+> k=1
+> B
+
+X
+
+> b=1
+> Pkb
+
+X
+
+> p=1
+
+Ckbp . (18) Although small-scale fading makes the instantaneous downlink SINR random, the scheduling inputs and SCA-based power allocation are computed using the geometry-derived LoS chan-nel gains. During training and evaluation, the rate expression in (16) is evaluated using Rician channel gains only for reward calculation, without exposing the fading realizations to either GeoSetPPO or the SCA module. This is motivated by the fact that, in aerial links, the dominant interference structure is primarily governed by slowly varying geometry and beam directions, whereas instantaneous CSI is difficult to acquire and exploit in high-mobility scenarios. For brevity, we omit the explicit discrete time index [t] in this subsection, however, most parameters defined in this section are functions of t and are used in the subsequent analysis. 
+
+C. Assumptions for Satellite-to-UAM Transmission 
+
+After link scheduling, MSAT UAMs are assigned to the satellite, which serves them in a separate frequency band from the GS tier. Let WS denote the satellite-tier bandwidth. For simplicity, we assume WS = WG throughout this work. Due to the high altitude of the satellite, the spatial channels of different satellite-to-UAM links are highly correlated. We therefore assume that the satellite downlink operates in a TDMA or FDMA mode. Let s ∈ { 1, · · · , M SAT } denote the index of a satellite-served UAM. The corresponding satellite-to-UAM channel gain is modeled as 
+
+GS 
+
+> s
+
+= GRS GTS (μs)
+
+ λS
+
+4πd S
+
+> s
+
+2
+
+HS 
+
+> s
+
+LS, (19) where GRS and GTS (μs) are the receive and transmit antenna gains, dS 
+
+> s
+
+is the satellite-to-UAM distance, λS is the satellite carrier wavelength, HS 
+
+> s
+
+collects propagation loss factors ( e.g. , gaseous, cloud, and rain attenuation), and LS represents other losses such as antenna losses [4]. A widely used K-band tapered-aperture antenna model [33] characterizes the satellite transmit gain. Let J1(·) and J3(·)
+
+denote the first- and third-order Bessel functions, respectively. The transmit gain is given by 
+
+GTS (μs) = G0
+
+ J1(μs)2μs
+
++ 36 J3(μs)
+
+μ3
+
+> s
+
+2
+
+. (20) Here, the argument μs is given by μs =2.07123 sin( ψs)/ sin( ψ3dB ), where ψs is the off-boresight angle and ψ3dB = 0.39 πλ S/a is the 3-dB beamwidth for an aperture diameter a [34]. The boresight gain is given by 
+
+G0 = 4πAη λ2
+
+> S
+
+, where A is the effective aperture and η is the antenna efficiency. Additional attenuation factors such as atmospheric gases, clouds, and rain can be included using ITU-R recommenda-tions [35]–[37], and are combined into HS 
+
+> s
+
+. The analysis in [4] showed that the overall expected satellite-to-UAM channel gains for different UAMs in the target airspace differ by less than 0.5 dB, even under distinct weather conditions. Motivated by this, we assume that all satellite-served UAMs experience approximately the same downlink channel gain. Hence, the satellite downlink signal-to-noise ratio (SNR) can be approximated by the common expression 
+
+γSAT = GRS GTS (0)   λS
+
+> 4πz S
+
+2 HSLS ρS
+
+σ2
+
+> S
+
+, (21) where zS is the satellite altitude, ρS is the satellite transmit power, HS is the common propagation-loss factor, and σ2
+
+> S
+
+is the noise power at the UAM receiver. The corresponding achievable spectral efficiency on the satellite link is 
+
+CSAT = log  1 + γSAT . (22) Since a time- or frequency-division multiple access scheme is used, the MSAT UAMs orthogonally share this spectral efficiency. Let CSAT  
+
+> s
+
+denote the effective satellite downlink spectral efficiency of the s-th satellite-served UAM. The sum of the individual spectral efficiencies then satisfies 
+
+> MSAT
+
+X
+
+> s=1
+
+CSAT  
+
+> s
+
+= CSAT . (23) Thus, assigning additional UAMs to the satellite redistributes the fixed satellite-tier spectral efficiency among its users. III. P ROBLEM FORMULATION 
+
+Our objective is to design a joint link-association, subband-allocation, and GS power-allocation strategy that maximizes the cumulative sum rate over the considered horizon of all UAMs. These decisions are made by a centralized network controller using only the current UAM positions and velocities, without requiring instantaneous CSI feedback from UAMs to the BSs. At each decision step t, the controller selects the association, subband assignment, and transmit powers that remain fixed over the actual time interval τ ∈ [tτ s, (t + 1) τs).The index t is also used as the time step in the DRL formulation. At each decision step, we decompose the overall problem into two coupled components:  
+
+> •
+
+Scheduling: BS-UAM association (GS tier or satellite tier) and subband selection for GS-UAM links. 6 
+
+> •
+
+GS power allocation: transmit-power optimization for the scheduled GS-UAM links subject to per-GS power budgets and per-link minimum-SINR constraints. In this section, we first formulate the scheduling problem and then describe its coupling with the GS power allocation subproblem. 
+
+A. Scheduling Problem 
+
+At each decision step t, the network controller allocates all 
+
+M UAMs to the available space-frequency resources. Each UAM can either be associated with one of the K GSs on one of the B subbands, or be served by the satellite. Therefore, each UAM has KB + 1 association options. The scheduling objective is to maximize the sum rate over the entire horizon 
+
+t ∈ { 0, · · · , T s − 1}, given that the GS powers are optimized by a separate power allocation algorithm, while at the same time reducing handover events and avoiding overloading any single GS. Let f sched  
+
+> t
+
+denote the scheduling function at time step t,which maps the original UAM index m ∈ { 1, · · · , M } to either a GS-subband pair or the satellite: 
+
+f sched  
+
+> t
+
+: {1, · · · , M } → { (GS 1, band 1) , (GS 1, band 2) , · · · ,
+
+(GS K, band B), SAT }.
+
+(24) According to this scheduling function, each UAM index m is mapped to either kbp (GS-served UAM index) or s (satellite-served UAM index), as described in Section II. In the follow-ing formulations, indices of the form kbp or s refer to specific UAMs. Using the rate expressions in (16) and (22), the finite horizon scheduling problem is formulated as (P1) :max .  
+
+> {fsched
+> t}
+> Ts−1
+
+X
+
+> t=0
+
+(
+
+1
+
+B
+
+> K
+
+X
+
+> k=1
+> B
+
+X
+
+> b=1
+> Pkb [t]
+
+X
+
+> p=1
+
+Ckbp [t]+ Rsat  
+
+> t
+
+− P ho  
+
+> t
+
+− P gs 
+
+> t
+
+) (25a) s.t. Rsat  
+
+> t
+
+=
+
+(
+
+0, MSAT [t] = 0 
+
+CSAT , MSAT [t] ≥ 1 (25b) 
+
+Pho  
+
+> t
+
+= cBN B 
+
+> t
+
++ cGN G 
+
+> t
+
++ cSN S 
+
+> t
+
+(25c) 
+
+Pgs  
+
+> t
+
+= cgs 
+
+> K
+
+X
+
+> k=1
+
+max M (k) 
+
+> GS
+
+[t] − N GS , 0 (25d) 
+
+∀(k, b, p, t ) : 
+
+ρkbp [t] are determined by solving (P2) (25e) In (P1), the first term in (25a) is the aggregate GS-tier rate normalized by the fixed total GS bandwidth WG, where 
+
+Ckbp [t] is computed from (16). For a given scheduling de-cision, the remaining degrees of freedom in Ckbp [t] are the transmit powers ρkbp [t], which are obtained by solving the GS power allocation subproblem (P2), as indicated in (25e) and detailed in Section III-B. The term Rsat  
+
+> t
+
+denotes the satellite-tier throughput. Constraint (25b) specifies that the satellite tier provides zero throughput when no UAM is assigned to the satellite, and a fixed sum throughput CSAT otherwise, consistent with (23). For simplicity, CSAT is treated as time-invariant. The handover penalty Pho  
+
+> t
+
+in (25c) assigns different costs through the coefficients cB, cG, and cS to three types of switching events: N B 
+
+> t
+
+counts subband changes for UAMs that remain associated with the same GS, N G 
+
+> t
+
+counts GS-to-GS handovers between consecutive slots, and N S 
+
+> t
+
+counts switching events between the GS tier and the satellite tier. Finally, Pgs 
+
+> t
+
+in (25d) discourages GS overload: if the number of UAMs associated with GS k at time t, denoted by M (k) 
+
+> GS
+
+[t], exceeds the threshold NGS , a penalty proportional to cgs is imposed. Problem (P1) is a mixed-integer program with a dual-loop structure. The outer loop selects the discrete association and subband decisions, while the inner loop optimizes the contin-uous GS transmit powers through (P2) at each time step. Each UAM selects one of KB GS-subband pairs or the satellite tier, resulting in (KB + 1) M possible joint scheduling decisions per step. Directly enumerating the corresponding decision se-quences over Ts steps would require considering (KB +1) M T s
+
+possibilities. Moreover, the subband assignments determine the same-band interference relationships within each step, while the handover penalties couple successive decisions. Compared with [4], which maintains one association over a prediction interval and assumes a single shared GS band, these sequential and multi-subband couplings prevent direct application of the graph-based association procedure and make exhaustive optimization impractical. 
+
+B. GS Power Allocation Problem 
+
+Given a scheduling decision f sched  
+
+> t
+
+at time step t, suppose that all M UAMs have been assigned either to a GS-subband pair or to the satellite. Accordingly, GS-served UAMs are indexed by (k, b, p ) and the satellite-served UAMs by s. The remaining task is to allocate transmit powers to the scheduled GS-UAM links. Since the satellite operates on a separate band with a fixed sum throughput CSAT , the power allocation affects only the sum rate of GS-served UAMs. For a fixed t (and omitting the explicit time index for notational simplicity), the GS power allocation problem is formulated as (P2) : min . 
+
+> ρ
+
+−
+
+> K
+
+X
+
+> k=1
+> B
+
+X
+
+> b=1
+> Pkb
+
+X
+
+> p=1
+
+Ckbp (26a) s.t. 
+
+> B
+
+X
+
+> b=1
+> Pkb
+
+X
+
+> p=1
+
+ρkbp ≤ ρtot , ∀k (26b) 
+
+ρkbp ≥ 0, ∀(k, b, p ) (26c) 
+
+γkbp ≥ γmin , ∀(k, b, p ) (26d) For a fixed value of B, the factor 1/B is constant with respect to the GS transmit powers. Therefore, it is omitted from the power-allocation subproblem without affecting its optimizer. Here, ρ = [ ρ111 , · · · , ρ KBP KB ]T denotes the collection of GS transmit powers, ρtot is the per-GS sum-power budget, and γmin is the minimum target SINR for each GS-served UAM. Constraints (26b)-(26d) enforce, respectively, the per-GS power budget, non-negativity of transmit powers, and 7 
+
+> Fig. 2. Proposed two-stage PPO training strategy. The first stage evaluates rewards using uniform GS power allocation, and the second stage evaluates rewards using the SCA-based power allocator.
+
+per-link minimum SINR requirements.Thus, whenever (P2) is feasible, the minimum-SINR constraint enforces a link-level QoS requirement for every GS-served UAM. IV. DRL-B ASED UAM S CHEDULING FRAMEWORK 
+
+To solve the scheduling problem (P1), we propose ageometry-aware set-attention PPO (GeoSetPPO)-based DRL framework. The agent learns a scheduling policy by maximiz-ing a reward that combines the sum-rate term with the han-dover and GS-overload penalties. Because the scheduling ob-jective in (25a) depends on the transmit powers through (25e), computing the reward at each time step requires a specific power-allocation procedure. We therefore treat GS power allocation as an inner-loop module: given a schedule, the GS transmit powers are obtained by an SCA-based solver, and the resulting rates Ckbp [t] are used to evaluate the reward and update the PPO policy in the outer loop. In this section, we first develop an SCA-based nonlinear programming method to solve (P2), which provides a practi-cal power-allocation module for the multi-GS, multi-subband setting. We then present the PPO training procedure and the proposed GeoSetPPO actor-critic architecture, which employs set attention to capture UAM-UAM and UAM-GS interactions. Finally, as illustrated in Fig. 2, we introduce a two-stage training strategy that gradually transitions reward evaluation from uniform to SCA-based power allocation, enabling stable and effective learning for (P1). 
+
+A. Nonlinear Programming-Based Power Allocation Module 
+
+For a given schedule, (P2) maximizes the GS-tier sum rate subject to per-GS power and per-link minimum SINR constraints. While the constraints in (26b)-(26d) are convex, the objective in (26a) is non-convex. We therefore adopt SCA, a widely used iterative nonlinear programming technique [4], [10]. The key idea is to replace the non-convex objective with a convex upper bound that is tight at the current iterate. At SCA iteration δ, given the current power vector ρ(δ), we construct a convex surrogate for −Ckbp and minimize the sum of these surrogates. The resulting subproblem is convex and can be solved efficiently, and its optimizer is used as the expansion point for the next iteration. 
+
+Lemma 1: For each scheduled link (k, b, p ), the non-convex function −Ckbp can be upper-bounded by the following convex surrogate at iteration (δ + 1) :
+
+−C(δ+1)  
+
+> kbp
+
+= −θ(δ) 
+
+> kbp
+
+log  wkbp ρkbp 
+
+
+
++ θ(δ)
+
+> kbp
+
+μ(δ)
+
+> kbp
+
+ KX
+
+> ℓ̸=kPℓb
+
+X
+
+> q=1
+
+wℓbq kbp ρℓbq +
+
+> Pkb
+
+X 
+
+> q̸=p
+
+wkbq kbp ρkbq 
+
+
+
+− ζ(δ)
+
+> kbp
+
+, (27) where the parameters θ(δ)
+
+> kbp
+
+, μ(δ)
+
+> kbp
+
+, and ζ(δ) 
+
+> kbp
+
+are defined as 
+
+θ(δ) 
+
+> kbp
+
+= wkbp ρ(δ)
+
+> kbp
+
+PKℓ=1 
+
+PPℓb  
+
+> q=1
+
+wℓbq kbp ρ(δ) 
+
+> ℓbq
+
++ σ2n,B 
+
+, (28) 
+
+μ(δ) 
+
+> kbp
+
+=
+
+> K
+
+X
+
+> ℓ̸=kPℓb
+
+X
+
+> q=1
+
+wℓbq kbp ρ(δ) 
+
+> ℓbq
+
++
+
+> Pkb
+
+X 
+
+> q̸=p
+
+wkbq kbp ρ(δ) 
+
+> kbq
+
++ σ2n,B , (29) 
+
+ζ(δ) 
+
+> kbp
+
+= log 
+
+
+
+1 + wkbp ρ(δ)
+
+> kbp
+
+μ(δ)
+
+> kbp
+
+
+
+− θ(δ) 
+
+> kbp
+
+log  wkbp ρ(δ)
+
+> kbp
+
+
+
++ θ(δ)
+
+> kbp
+
+μ(δ)
+
+> kbp
+
+ KX
+
+> ℓ̸=kPℓb
+
+X
+
+> q=1
+
+wℓbq kbp ρ(δ) 
+
+> ℓbq
+
++
+
+> Pkb
+
+X 
+
+> q̸=p
+
+wkbq kbp ρ(δ)
+
+> kbq
+
+
+
+.
+
+(30) Moreover, the bound in (27) is tight at ρ = ρ(δ).
+
+Proof: See Appendix A. ■
+
+Using Lemma 1, we form the SCA subproblem at iteration 
+
+δ by replacing −Ckbp in (26a) with its surrogate −C(δ+1) 
+
+> kbp
+
+in (27) while keeping the original constraints (26b)-(26d): (P3) (δ+1) : min .
+
+> ρ
+> K
+
+X
+
+> k=1
+> B
+
+X
+
+> b=1
+> Pkb
+
+X
+
+> p=1
+
+−C(δ+1)  
+
+> kbp
+
+(ρ) (31a) s.t. 
+
+> B
+
+X
+
+> b=1
+> Pkb
+
+X
+
+> p=1
+
+ρkbp ≤ ρtot , ∀k (31b) 
+
+ρkbp ≥ 0, ∀(k, b, p ) (31c) 
+
+γkbp (ρ) ≥ γmin , ∀(k, b, p ) (31d) where γkbp (ρ) is given by (15). By construction, the objec-tive (31a) and the constraints (31b)-(31d) are convex in ρ.Hence, each subproblem (P3) (δ+1) can be solved using stan-dard convex optimization methods [38]. Let ρ(δ+1) denote the resulting optimizer. We then update the surrogate parameters using (28)-(30) with ρ(δ+1) and repeat until convergence. The SCA convergence result applies to the fixed-schedule power-allocation problem when the per-GS power and minimum-SINR constraints are feasible and the algorithm is initialized with a feasible power vector. Under these conditions, the surrogate in Lemma 1 is tight and first-order consistent at the current iterate, and the standard SCA conditions in [39] ensure convergence to a stationary point of (P2). When a sampled schedule is infeasible, the SCA step is bypassed and uniform power allocation is used only as a fallback to continue the environment rollout; the event is recorded separately and is not regarded as satisfying the minimum-SINR constraints. In practical deployment, an infeasible schedule can be handled 8
+
+by reducing the target SINR or by rescheduling one or more UAMs to the satellite tier. This convergence statement applies only to the feasible fixed-schedule power-allocation problem and does not imply convergence of the overall DRL-SCA framework. 
+
+B. General PPO Framework 
+
+In this subsection, we briefly review the generic PPO learning framework. PPO alternates between collecting on-policy rollouts by interacting with the environment under the current policy and updating the policy and value networks for multiple epochs using the collected samples [8]. A scheduling episode consists of discrete time steps t = 0 , · · · , T s − 1. At each step, the agent observes a state St, samples an action 
+
+At from the current policy πϑ(At|S t), receives a reward 
+
+Rt, and transitions to the next state St+1 . From the rollout, we store tuples (St, At, Rt, d t), where dt ∈ { 0, 1} indicates termination. In our scheduling setting, πϑ(·|S t) is a categorical distribution over the discrete scheduling actions. PPO typically uses generalized advantage estimation (GAE) to obtain low-variance advantage estimates while controlling bias using a tunable parameter [8]. Defining the temporal-difference error 
+
+δt = Rt + γD(1 − dt)Vφ(St+1 ) − Vφ(St), (32) where 0 < γ D < 1 is the discount factor, the GAE advantage estimate is computed recursively as 
+
+ˆAt = δt + γDλG(1 − dt) ˆAt+1 , (33) with λG ∈ [0 , 1] controlling the bias-variance tradeoff. The corresponding return target for critic regression is ˆRt = ˆAt +
+
+Vφ(St). For policy updates, PPO forms the likelihood ratio 
+
+rt(ϑ) = πϑ(At|S t)
+
+πϑold (At|S t) , (34) and maximizes the clipped surrogate objective 
+
+Lclip (ϑ) = E
+
+h
+
+min  rt(ϑ) ˆAt, clip( rt(ϑ), 1 − ε, 1 + ε) ˆAt
+
+i
+
+,
+
+(35) where ε ≪ 1 is the clipping parameter. The critic is trained by minimizing the mean-squared error 
+
+Lv(φ) = E(Vφ(St) − ˆRt)2, (36) and an entropy bonus encourages exploration: 
+
+Lent (ϑ) = EH(πϑ( · |S t)) . (37) The overall PPO objective is 
+
+J (ϑ, φ ) = Lclip (ϑ) − cv Lv(φ) + ce Lent (ϑ), (38) with coefficients cv , c e > 0. In practice, the samples from the current rollout are partitioned into mini-batches and optimized for several epochs with gradient clipping. A new rollout is then collected under the updated policy, and this rollout-and-update cycle constitutes the PPO backbone used in our DRL-based algorithm. 
+
+C. Environment and Agent Modeling for GeoSetPPO-Based UAM Scheduling 
+
+We model the UAM scheduling problem as a Markov decision process (MDP) with state St, action At, transition dynamics P (St+1 |S t, At), and reward Rt. On top of this environment, we design the GeoSetPPO actor πϑ(At|S t) and critic Vφ(St). Note that the power-allocation module can be viewed as part of the environment: given a schedule At, it maps the geometric state to per-link SINRs and, consequently, to the reward Rt.
+
+1) State Space: The state St collects the information available to the UAM network controller at time step t. By assumption, the controller observes the UAM positions um[t]
+
+and velocities ˙um[t] for m = 1 , · · · , M , as well as the GS positions uG 
+
+> k
+
+for k = 1 , · · · , K . To account for handover-related effects, we additionally include the previous scheduling decision At−1 for t ≥ 1. For notational simplicity, we define 
+
+A−1 as an arbitrary action and omit it from the network inputs at t = 0 . The state is thus given by 
+
+St =  u1[t], · · · , uM [t], ˙u1[t], · · · , ˙uM [t],
+
+uG 
+
+> 1
+
+, · · · , uG 
+
+> K
+
+, At−1
+
+. (39) The agent observes St and transforms it into feature represen-tations that serve as inputs to the GeoSetPPO actor and critic models. 
+
+2) Action Space: As described in Section III-A, we treat each GS-subband pair and the satellite as a resource. An action 
+
+At specifies, for all UAMs, which resource to connect to. Since each of the K GSs offers B subbands and the satellite has no subband choice, there are KB +1 resources in total. For UAM m at time step t, the scheduling decision is represented by a one-hot vector act t[m] ∈ { 0, 1}KB +1 . If UAM m is associated with GS k on subband b, then the (( k − 1) B + b)-th entry of act t[m] is 1. If it is associated with the satellite, then the (KB + 1) -th entry is 1. The resulting joint action at time step t is 
+
+At =  act t[1] , · · · , act t[M ], (40) which encodes the scheduling decisions for all UAMs at time step t.
+
+3) Reward: We adopt the per-step objective of (P1) as the reward. From (25a), the reward at time step t is 
+
+Rt = 1
+
+B
+
+> K
+
+X
+
+> k=1
+> B
+
+X
+
+> b=1
+> Pkb
+
+X
+
+> p=1
+
+Ckbp [t] + Rsat  
+
+> t
+
+− P ho  
+
+> t
+
+− P gs  
+
+> t
+
+, (41) where Rsat  
+
+> t
+
+, Pho  
+
+> t
+
+, and Pgs  
+
+> t
+
+are computed using (25b), (25c), and (25d), respectively. Hence, Rt combines the GS-tier through-put and satellite-tier throughput with penalties for handovers and GS overload. The relative strengths of these penalties are controlled by cB, cG, cS, and cgs . Since handover cost typically increases from inter-subband changes to inter-GS handovers and then to GS-satellite handovers, we typically set 0 ≤ cB < c G < c S.
+
+4) State Features: We convert St into three feature sets: UAM features, resource features, and edge (UAM-resource) 9     
+
+> Fig. 3. Forward pass of the GeoSetPPO actor for a target UAM m. Set attention forms UAM-to-UAM and UAM-to-resource context vectors, then an MLP head outputs a categorical distribution over the KB + 1 resources.
+
+features: 
+
+Fuam  
+
+> t
+
+= ( f uam  
+
+> t
+
+[1] , · · · , f uam  
+
+> t
+
+[M ]) ,
+
+Fres  
+
+> t
+
+= ( f res  
+
+> t
+
+[1] , · · · , f res  
+
+> t
+
+[KB + 1]) ,
+
+Fedge  
+
+> t
+
+= ( f edge  
+
+> t
+
+[1 , 1] , · · · , f edge  
+
+> t
+
+[M, KB + 1]) .
+
+(42) Here, KB + 1 is the total number of resources. For the m-th UAM, we define 
+
+f uam  
+
+> t
+
+[m] = um[t]; ˙ um[t]; act t−1[m] ∈ RKB +7 , (43) where act t−1[m] is the previous scheduling decision for that UAM. Let i = ( k − 1) B + b with k ∈ { 1, · · · , K } and b ∈{1, · · · , B } so that the i-th resource corresponds to the k-th GS and b-th subband. The corresponding resource feature is 
+
+f res  
+
+> t
+
+[i] = idx GS ,k t ; idx band ,b t ; uG 
+
+> k
+
+; 0  ∈ RK+B+4 , (44) where idx GS ,k t ∈ RK and idx band ,b t ∈ RB are one-hot encodings of the GS and subband indices, respectively. For the satellite resource ( i = KB + 1 ), we simply use a one-hot “satellite flag”: 
+
+f res  
+
+> t
+
+[KB + 1] = [0 , · · · , 0, 1] T ∈ RK+B+4 . (45) Using the same mapping i = (k − 1) B + b with k ∈{1, · · · , K } and b ∈ { 1, · · · , B }, the edge feature between the m-th UAM and the i-th resource is 
+
+f edge  
+
+> t
+
+[m, i ] = ∥um[t] − uG 
+
+> k
+
+∥2, IF m,k t
+
+T ∈ R2, (46) which captures both link quality (squared distance) and a heuristic interference score. Specifically, IF m,k t quantifies the potential interference that would be induced if GS k serves UAM m at time step t:
+
+IF m,k t =
+
+> M
+
+X
+
+> n̸=m
+
+aNx (cos α(k) 
+
+> m
+
+[t]) HaNx (cos α(k) 
+
+> n
+
+[t]) 
+
+· aNy (cos β(k) 
+
+> m
+
+[t]) HaNy (cos β(k) 
+
+> n
+
+[t]) 2
+
+× 1
+
+∥un[t] − uG 
+
+> k
+
+∥2 .
+
+(47) For the satellite resource ( i = KB + 1 ), we set 
+
+f edge  
+
+> t
+
+[m, KB + 1] = [0 , 0] T, (48) since the satellite uses an orthogonal band and the satellite-tier sum throughput is fixed to CSAT .
+
+5) Actor: The feature sets Fuam  
+
+> t
+
+, Fres  
+
+> t
+
+, and Fedge  
+
+> t
+
+are fed to the GeoSetPPO actor. Rather than explicitly parameter-izing a categorical distribution over all (KB + 1) M joint assignments, the actor uses a shared per-UAM categorical head and produces M (KB + 1) logits. The factorization is applied only at the output, since each per-UAM distribution is conditioned on the complete UAM, resource, and edge sets, and the assembled joint schedule is evaluated using a common reward that reflects the satellite-tier contribution, subband interference, GS overload, and SCA-based power allocation. Thus, the factorized policy provides a scalable approximation to the coupled scheduling problem, although it does not impose hard feasibility constraints on the sampled joint action. Consequently, scheduling decisions are driven by relative geometry and UAM-resource interactions and are not affected by the arbitrary ordering of UAM indices. To this end, we employ a set-attention architecture that incorporates geometry-derived pairwise information in attention scoring, such as relative position and relative velocity [40]. In particu-lar, for a fixed target UAM m, the actor output is invariant to any permutation of the remaining UAM or resource tokens. 1
+
+The overall actor architecture is illustrated in Fig. 3. For each time step t and ∀m, i , we first pass the raw features through linear encoders 
+
+guam  
+
+> t
+
+[m] = enc u(f uam  
+
+> t
+
+[m]) ,
+
+gres  
+
+> t
+
+[i] = enc r(f res  
+
+> t
+
+[i]) ,
+
+gedge  
+
+> t
+
+[m, i ] = enc e(f edge  
+
+> t
+
+[m, i ]) ,
+
+(49) where guam  
+
+> t
+
+[m], gres  
+
+> t
+
+[i], gedge  
+
+> t
+
+[m, i ] ∈ RH and H is the hid-den dimension. We then apply Bahdanau-style attention [41] 
+
+> 1This permutation invariance concerns arbitrary token ordering and does not imply zero-shot transfer across different network dimensions, GS layouts, mobility distributions, subband configurations, or reward definitions, which may require retraining or fine-tuning. 10
+
+Algorithm 1 Two-Stage GeoSetPPO Training 
+
+Require: Environment model, GeoSetPPO actor πϑ, critic 
+
+Vφ, PPO hyperparameters (γD, λ G, ε, c v , c e), SCA power-allocation module, warm-up iterations Nuni , transition horizon Nmix , total iterations Ntrain  
+
+> 1:
+
+Initialize actor parameters ϑ and critic parameters φ 
+
+> 2:
+
+for PPO iteration r = 1 , · · · , N train do  
+
+> 3:
+
+Set reference policy ϑold ← ϑ 
+
+> 4:
+
+if r ≤ Nuni then  
+
+> 5:
+
+ηr ← 1 
+
+> 6:
+
+else  
+
+> 7:
+
+ηr ← max {0, 1 − (r − Nuni )/N mix } 
+
+> 8:
+
+end if  
+
+> 9:
+
+D ← ∅  
+
+> 10:
+
+for episode eepi = 1 , · · · , N epi do  
+
+> 11:
+
+Reset environment and obtain initial state S0 
+
+> 12:
+
+for t = 0 , · · · , T s − 1 do  
+
+> 13:
+
+Construct state St from (39)  
+
+> 14:
+
+Sample scheduling action At ∼ πϑold (·|S t) 
+
+> 15:
+
+Compute uniform powers ρuni  
+
+> t
+> 16:
+
+if r ≤ Nuni then  
+
+> 17:
+
+ρt ← ρuni  
+
+> t
+> 18:
+
+else  
+
+> 19:
+
+ρsca  
+
+> t
+
+← SCA-Power-Allocation (St, At) 
+
+> 20:
+
+ρt ← ηr ρuni  
+
+> t
+
++ (1 − ηr )ρsca  
+
+> t
+> 21:
+
+end if  
+
+> 22:
+
+Evaluate reward Rt using ρt 
+
+> 23:
+
+Step environment to St+1 with terminal flag dt 
+
+> 24:
+
+Store (St, At, Rt, St+1 , d t, log πϑold (At|S t),Vφ(St)) in D 
+
+> 25:
+
+end for  
+
+> 26:
+
+end for  
+
+> 27:
+
+Compute δt by (32) and ˆAt by (33) on D 
+
+> 28:
+
+Set ˆRt = ˆAt + Vφ(St) and normalize { ˆAt} 
+
+> 29:
+
+for epoch e = 1 , · · · , N epo and mini-batch B ⊂ D do  
+
+> 30:
+
+Recompute log πϑ(At|S t) and Vφ(St) for t ∈ B  
+
+> 31:
+
+rt(ϑ) ← exp   log πϑ(At|S t) − log πϑold (At|S t) 
+
+> 32:
+
+Set Lclip (ϑ), Lv(φ), Lent (ϑ) as in (35), (36), (37)  
+
+> 33:
+
+Combine into total objective J (ϑ, φ ) by (38)  
+
+> 34:
+
+Update ϑ and φ by gradient-ascent on J (ϑ, φ ) 
+
+> 35:
+
+end for  
+
+> 36:
+
+if performance converged then break  
+
+> 37:
+
+end for  
+
+> 38:
+
+return trained GeoSetPPO actor πϑ and critic Vφ
+
+to capture UAM-UAM and UAM-resource interactions. The attention scores su2u  
+
+> t
+
+[m, n ] and su2r  
+
+> t
+
+[m, i ] are computed using shallow MLPs, score u2u and score u2r :
+
+su2u  
+
+> t
+
+[m, n ] = score u2u 
+
+ [guam  
+
+> t
+
+[m]; guam  
+
+> t
+
+[n]; ∆ um,n [t]; ∆ ˙ um,n [t]; um[t]; ˙ um[t]] ,
+
+su2r  
+
+> t
+
+[m, i ] = score u2r 
+
+ [guam  
+
+> t
+
+[m]; gres  
+
+> t
+
+[i]; gedge  
+
+> t
+
+[m, i ]] ,
+
+(50) where ∆um,n [t] = un[t] − um[t] and ∆ ˙ um,n [t] = ˙un[t] −
+
+˙um[t] are the relative position and velocity, respectively.             
+
+> Fig. 4. Example 3D deployments and UAM trajectories. Filled markers and hollow markers denote UAM locations at t=0and t=Ts−1.Smaller markers indicate intermediate trajectory samples every 20 s, and orange markers denote GS locations.
+
+Attention weights are obtained via softmax: 
+
+wu2u  
+
+> t
+
+[m, n ] = softmax   
+
+> n∈{ 1,··· ,M }
+
+(s u2u  
+
+> t
+
+[m, n ]) ,
+
+wu2r  
+
+> t
+
+[m, i ] = softmax  
+
+> i∈{ 1,··· ,KB +1 }
+
+(s u2r  
+
+> t
+
+[m, i ]) . (51) The corresponding value vectors are 
+
+vu2u  
+
+> t
+
+[m, n ] = value u2u 
+
+ [guam  
+
+> t
+
+[n]; ∆ um,n [t]; ∆ ˙ um,n [t]] ,
+
+vu2r  
+
+> t
+
+[m, i ] = value u2r 
+
+ [gres  
+
+> t
+
+[i]; gedge  
+
+> t
+
+[m, i ]] , (52) where value u2u and value u2r are also shallow MLPs. The UAM-UAM and UAM-resource context vectors for UAM m
+
+are then 
+
+ctx u2u  
+
+> t
+
+[m] = 
+
+> M
+
+X
+
+> n=1
+
+wu2u  
+
+> t
+
+[m, n ]vu2u  
+
+> t
+
+[m, n ],
+
+ctx u2r  
+
+> t
+
+[m] = 
+
+> KB +1
+
+X
+
+> i=1
+
+wu2r  
+
+> t
+
+[m, i ]vu2r  
+
+> t
+
+[m, i ].
+
+(53) Finally, the actor produces a categorical distribution over the 
+
+KB + 1 resources: 
+
+act soft  
+
+> t
+
+[m] = softmax  lgt([ guam  
+
+> t
+
+[m]; ctx u2u  
+
+> t
+
+[m]; ctx u2r  
+
+> t
+
+[m]]) ,
+
+(54) where lgt is an MLP that outputs KB + 1 logits, and 
+
+act soft  
+
+> t
+
+[m] ∈ RKB +1 . During training, the one-hot action vector act t[m] is sampled from the categorical distribution defined by act soft  
+
+> t
+
+[m], whereas during evaluation we select the resource with the largest probability. Aggregating the per-UAM decisions into At as in (40) yields the joint policy 
+
+πϑ(At|S t).
+
+6) Critic: The critic network Vφ(St) estimates the value of the current state by aggregating information from all UAMs, resources, and edges. Each feature type is first encoded and then processed through attention and pooling modules to obtain permutation-invariant summaries. These summaries are concatenated and fed to an MLP value head to produce the scalar estimate Vφ(St). In this way, the critic shares the same inductive bias as the actor, capturing geometry-driven interactions among UAMs and available resources. 
+
+D. Combined Training Algorithm for GeoSetPPO 
+
+Building on the proposed GeoSetPPO actor-critic architec-tures, we train the scheduling agent using the PPO framework 11 
+
+TABLE I SIMULATION PARAMETERS                                                      
+
+> Parameter Value
+> Number of UAMs and GSs ( M, K )(20 ,4) ,(50 ,7)
+> Per-GS user threshold ( NGS )4,6
+> Number of GS subbands ( B)1,2
+> Size of GS antenna array ( Nx, N y)(4 ,4) ,(6 ,6) ,(10 ,10)
+> GS transmit power budget ( ρtot )1 W
+> GS carrier frequency ( c/λ )7.5 GHz
+> Total GS-tier bandwidth ( WG)100 MHz
+> Minimum SINR threshold ( γmin )0 dB
+> GS-UAM Rician factor ( KR)20 dB
+> Satellite carrier frequency and bandwidth ( c/λ S, W S)20 GHz ,100 MHz
+> LEO altitude and spot-beam transmit power ( zS, ρ S)600 km ,50 W
+> Satellite Tx and UAM Rx gains ( GTS(0) , G RS)37 .39 ,20 dBi
+> Other satellite-link loss ( LS)10 dB
+> Satellite spectral efficiency ( CSAT )2 bps /Hz
+> Time horizon ( τsTs)60 s
+> Time slot duration ( τs)5 s
+> Max. and min. altitude of UAM 5,0.5 km
+> Max. and min. speed of UAM 50 ,10 m /s
+> Minimum GS separation 2 km
+> Penalty coefficients ( cB, c G, c S, c gs )0.2,0.6,1.0,0.5
+> PPO learning rate 10 −4
+> PPO mini-batch size 256
+> PPO update epochs ( Nepo )4
+> PPO discount factor ( γD)0.99
+> GAE parameter ( λG)0.95
+> PPO clipping parameter ( ε)0.1
+> Warm-up steps ( Nuni Nepi Ts)10 M ,14 M
+> Transition steps ( Nmix Nepi Ts)50000
+> Total steps ( Ntrain Nepi Ts)10 .4 M ,14 .4 M
+
+summarized in Section IV-B. The GeoSetPPO actor imple-ments the policy πϑ(At|S t), and the critic Vφ(St) provides baseline estimates for advantage computation. Training alter-nates between collecting on-policy rollouts and updating the actor and critic: temporal-difference errors δt are computed via (32), advantages ˆAt are estimated using GAE in (33), and network parameters are updated by maximizing the PPO objective in (38). On top of this standard PPO backbone, we introduce a two-stage training strategy that controls the power-allocation rule used in reward evaluation, as illustrated in Fig. 2. In the first stage, we use uniform power allocation after each scheduling decision. Given At, transmit power is obtained by equally splitting the per-GS power budget across the scheduled links, and the reward Rt is computed accordingly. This stage runs for Nuni PPO iterations, avoiding nonlinear-programming overhead and exposing both the actor and critic to a simple reward structure. After the first stage, we gradually introduce the SCA-based power allocator into reward computation. Let r denote the PPO iteration index. For r > N uni , we define a mixing weight 
+
+ηr ∈ [0 , 1] that decreases linearly over a transition horizon of 
+
+Nmix iterations. At each iteration r, we compute the uniform power vector ρuni  
+
+> t
+
+and also obtain the SCA solution ρsca  
+
+> t
+
+for the scheduled links. The power vector used for rate and reward evaluation is then the linear combination 
+
+ρt = ηr ρuni  
+
+> t
+
++ (1 − ηr )ρsca  
+
+> t
+
+. (55) For r ≥ Nuni + Nmix , we have ηr = 0 and reward evaluation becomes fully SCA-based. The overall training process is described in Algorithm 1. The proposed two-stage training strategy has two main ad-
+
+Fig. 5. Training curves of GeoSetPPO, MLP-PPO, and Transformer-PPO for 
+
+(M, K, B ) = (20 , 4, 2) . Light curves show episode returns, bold curves show moving averages, and the vertical lines indicate the warm-up and transition boundaries of the two-stage GeoSetPPO training. 
+
+vantages. First, it avoids repeatedly invoking the SCA-based power allocator, which is computationally expensive, during the early phase of training when many PPO iterations are required. Second, the gradual transition from uniform to SCA-based power allocation prevents an abrupt change in the reward distribution, which helps the critic track the return targets and improves the stability of PPO updates. As a result, the actor can progressively exploit the performance gains of the SCA solution while maintaining stable learning dynamics. V. S IMULATION RESULTS 
+
+Table I summarizes the main simulation parameters. The total GS-tier bandwidth is fixed at 100 MHz for all con-figurations and is equally divided among the B GS sub-bands. Thus, each subband occupies 100 /B MHz, and its noise power is calculated over the corresponding subband bandwidth. We consider four representative settings with 
+
+(M, K, NGS , B, N x, N y ) = (20 , 4, 4, 1, 6, 6) , (20 , 4, 4, 2, 4, 4) ,
+
+(50 , 7, 6, 1, 10 , 10) , and (50 , 7, 6, 2, 6, 6) . The multi-subband cases allow the scheduler to exploit frequency-domain sepa-ration for interference management, while the B = 1 cases provide direct comparisons with the single-band association methods. Slightly larger GS arrays are used for B = 1
+
+because all GS transmissions share the same band and the resulting system is more strongly interference limited. The satellite parameters follow the link-budget setting in [4]. They yield a nominal boresight SNR of approximately 14 dB before system-level implementation margins and access overhead, for which the effective sum spectral efficiency CSAT = 2 bps/Hz is a conservative operating value. We compare GeoSetPPO with four scheduling baselines. MLP-PPO uses conventional multilayer perceptron (MLP) actor and critic networks without the proposed set-attention structure. Transformer-PPO encodes the UAM and resource features using a standard Transformer, but does not include the explicit relative-position, relative-velocity, and UAM-resource edge representations used by GeoSetPPO. The algorithm-based scheduler in [4] and the distance-based heuristic deter-mine only BS-UAM association. The distance-based method associates up to NGS nearby UAMs with each GS and assigns the remaining UAMs to the satellite. The two association baselines determine BS-UAM association independently at 12            
+
+> Fig. 6. Convergence of the SCA-based GS power allocation for B= 2 under the minimum SINR constraint. Results are shown for the first three slots of randomly generated episodes with (a) K= 4 and (b) K= 7 .
+> Fig. 7. SCA outage probability versus the minimum SINR threshold for GeoSetPPO, the algorithm-based scheduler, and the distance-based scheduler. RR subband allocation is applied to the two association baselines when B=2.
+
+each slot. For B = 2 , the resulting association is comple-mented by a deterministic persistent per-GS round-robin (RR) subband rule. UAMs that remain associated with the same GS retain their previous subbands, while newly associated UAMs are ordered by their azimuths around that GS and assigned sequentially to the least-loaded subband. This rule balances the subband loads and preserves subband assignments for retained links, but does not use channel gains, interference, or rate evaluations to select subbands. We generate random three-dimensional scenarios with UAM trajectories over a 60 s horizon, consisting of 12 decision steps with a 5 s interval. At the considered speed range of 10 –
+
+50 m/s, a UAM travels 50 –250 m during one decision interval and approximately 0.6–3 km over one episode. These displace-ments are comparable to the 2-km minimum GS separation and therefore produce meaningful changes in link distances, beam directions, interference relationships, and handover decisions. Accordingly, the considered horizon is sufficient to evaluate the temporal coupling targeted in this work. Each UAM starts from a random initial position with a random initial velocity and a random acceleration process, which produces nontrivial trajectories within the target airspace. The GS locations follow fixed patterns, and the distance between the closest pair of GSs is 2 km. Fig. 4 visualizes example deployments and trajectories for (M, K ) = (20 , 4) and (50 , 7) . Unless otherwise stated, the                                   
+
+> TABLE II RUNTIME PER SCHEDULING INSTANCE AND SCA POWER -ALLOCATION CALL (MS )
+> (M, K, B )Statistic GeoSetPPO Alg.+RR Dist.+RR SCA
+> (20 ,4,2) Mean 2.782 5.545 1.198 297 .6(20 ,4,2) Std. dev. 0.136 1.883 1.000 83 .5(50 ,7,2) Mean 2.899 40 .84 1.340 1871 .8(50 ,7,2) Std. dev. 0.881 2.064 0.439 399 .9
+
+GS-to-UAM evaluation channels are strongly LoS dominant with a Rician K factor of 20 dB. Training and test episodes are generated independently using disjoint random seeds. The test set therefore contains unseen UAM initial states, trajectories, acceleration processes, and channel realizations drawn from the same network configuration. For each trained policy and operating point, the reported mean and its 95% confidence interval are computed across independently generated test episodes with different UAM initial states, trajectories, accel-eration processes, and Rician channel realizations. The GeoSetPPO actor architecture is illustrated in Fig. 3. The score and value networks, score u2u , score u2r , value u2u ,and value u2r , are MLPs with one hidden layer, and the policy head lgt is an MLP with four hidden layers. All hidden layers have width 256 , including the encoded feature dimension of 
+
+guam  
+
+> t
+
+[m], gres  
+
+> t
+
+[i], and gedge  
+
+> t
+
+[m, i ]. The MLP-PPO actor and critic each use four hidden layers of width 256 . The Transformer-PPO baseline receives the same per-UAM position, velocity, and previous-action information as token features, but relies on generic token attention without the geometry-derived pairwise scoring used by GeoSetPPO. 
+
+A. Convergence and Computational Analysis 
+
+Fig. 5 compares the learning behavior of the three PPO architectures. GeoSetPPO rapidly learns a stable policy dur-ing the uniform-power stage and achieves a higher return than MLP-PPO. After the transition to SCA-based reward evaluation, its return increases further without an abrupt loss of training stability. In contrast, Transformer-PPO does not obtain a competitive policy within the conducted training run. Although generic self-attention can exchange information among UAM and resource tokens, it does not explicitly represent the relative geometry that determines directional interference. Under the considered architecture and training budget, this result indicates that the explicit geometry-aware decomposition facilitates policy learning relative to generic token attention. Fig. 6 examines the convergence of the inner-loop SCA power allocator. For both K = 4 and K = 7 , the per-slot reward increases rapidly over a few SCA iterations and then saturates. This indicates that the SCA module provides a fast improvement over uniform powers for a feasible fixed schedule while satisfying the per-GS power and per-link minimum SINR constraints. The reward alone does not indicate whether the schedule admits a power vector satisfying the minimum SINR con-straints. We therefore define the SCA outage probability as the fraction of test slots for which the fixed-schedule problem 13          
+
+> Fig. 8. Average reward per UAM for (M, K ) = (20 ,4) under uniform and SCA-based power allocation. The handover-penalty scale multiplies (cB, c G, c S) = (0 .2,0.6,1.0) . “GeoSetPPO w/o FT” denotes the ablation without the final SCA-based fine-tuning stage.
+> Fig. 9. Empirical CDF of the average reward per UAM over independent test scenarios with (M, K, B ) = (20 ,4,1) . Solid and dotted curves represent SCA-based and uniform power allocation, respectively.
+
+(P2) is infeasible and report it in Fig. 7. For B = 1 , the algorithm-based scheduler in [4] yields the lowest outage probability because its association procedure explicitly avoids strong interference, whereas the distance-based scheduler fre-quently creates interfering links and becomes infeasible even at moderate thresholds. For B = 2 , applying RR subband allocation after association can place mutually interfering links on the same subband without accounting for their angular relationships. GeoSetPPO jointly selects association and sub-bands and consequently provides lower outage at the higher SINR thresholds. The distance-based method remains the least reliable in all four settings. Table II reports the measured execution times under the same implementation environment. The RR subband-allocation time for the association baselines is negligible and is therefore not reported separately. GeoSetPPO requires approximately 2.8–2.9 ms per scheduling instance and changes little as the network grows from (M, K ) = (20 , 4) to 
+
+(50 , 7) . The algorithm-based scheduler increases from 5.545 to 
+
+40 .84 ms because of its combinatorial association procedure, while the distance-based heuristic remains the fastest schedul-ing method. The SCA power allocator is substantially more     
+
+> Fig. 10. Empirical CDF of the average reward per UAM over independent test scenarios with (M, K, B ) = (20 ,4,2) . RR subband allocation is applied to the association baselines. Solid and dotted curves represent SCA-based and uniform power allocation, respectively.
+
+expensive than all discrete schedulers, requiring 297 .6 ms for 
+
+(20 , 4) and 1871 .8 ms for (50 , 7) on average. These results distinguish the low inference latency of the learned scheduler from the computational cost of enforcing power and SINR constraints through online optimization. 
+
+B. Performance and Robustness Analysis 
+
+Fig. 8 compares the average reward for K = 4 under two subband configurations and two handover-penalty scales. SCA-based power allocation improves the reward relative to uniform power for all schedulers, confirming the benefit of optimizing continuous powers after fixing the discrete sched-ule. GeoSetPPO achieves the highest or nearly highest average reward across the considered settings, with the clearest margin in the interference-limited B = 1 case. The model without the final SCA-based fine-tuning stage remains competitive, but does not exploit the SCA-based reward as consistently. This comparison supports the intended role of the second training stage in aligning the scheduling policy with the power allocator used during deployment. For B = 2, the distance-based method becomes more competitive in raw reward because RR 14        
+
+> Fig. 11. Average reward of GeoSetPPO under position and velocity input errors. Each horizontal-axis value gives the common per-coordinate standard deviations of the zero-mean Gaussian position error in meters and velocity error in meters per second. Separate models are trained and evaluated under each matched error level.
+> Fig. 12. Sensitivity of the GeoSetPPO scheduling outcome to the satellite-tier sum spectral efficiency CSAT for (M, K, B ) = (20 ,4,1) . The two panels show the mean spectral efficiency per GS-served UAM and the mean number of satellite-served UAMs per slot, respectively.
+
+separates part of the interference and short links provide strong desired signals. Fig. 9 and Fig. 10 report the empirical CDFs of the average reward over independently generated test scenarios for B = 1 
+
+and B = 2 , respectively. For B = 1 , GeoSetPPO with SCA shifts the reward distribution to the right of the baselines over most of the CDF, and the gap between its uniform- and SCA-based curves shows that power optimization provides gains be-yond learned association. For B = 2 , the reward distributions of GeoSetPPO and the RR-augmented association baselines overlap substantially, indicating comparable raw reward over part of the test distribution. Because infeasible instances of (P2) use the uniform-power fallback described in Section IV, these CDFs do not directly characterize schedule feasibility. The reward comparison should therefore be considered jointly with Fig. 7, where GeoSetPPO yields substantially lower outage than the distance-based method and, at higher SINR thresholds, the algorithm-based method with RR. Fig. 11 evaluates the effect of imperfect mobility infor-mation. Independent zero-mean Gaussian errors are added to each position and velocity coordinate, with the same numerical standard deviation used in meters and meters per second, respectively. The scheduling reward changes only modestly as the error standard deviations increase from 0 to 3 m and from 0 to 3 m/s across both network sizes and subband settings. The result indicates that GeoSetPPO does not require              
+
+> Fig. 13. Average reward per UAM versus the test-channel Rician KRfactor for B= 1 . Solid and dotted curves represent (M, K ) = (20 ,4) and (50 ,7) ,respectively. The DRL models are trained with KR= 20 dB.
+
+unrealistically exact mobility information when the expected state-estimation errors are represented during training. Fig. 12 compares the scheduling outcomes obtained when a separate GeoSetPPO policy is trained for each value of 
+
+CSAT . Increasing CSAT from 1 to 2 makes satellite association more favorable, increasing the mean number of satellite-served UAMs and reducing interference among the remaining GS-served UAMs. Consequently, the mean spectral efficiency per GS-served UAM also increases. Both quantities change only marginally when CSAT is further increased from 2 to 4.Throughout the model development, GeoSetPPO uses geometry-based channel information rather than instantaneous fading realizations. To evaluate the resulting mismatch, Fig. 13 tests models trained at KR = 20 dB over channels ranging from KR = 10 dB to the pure-LoS case. The average reward decreases for all scheduling methods as the Rician factor decreases. Importantly, the baselines exhibit a similar decline, while GeoSetPPO preserves its performance ordering across the tested channel conditions and both network sizes. This common trend indicates that much of the degradation is caused by the reduction in achievable link quality under stronger NLoS components rather than by a failure of the learned scheduler outside its training condition. Finally, Fig. 14 visualizes example schedules for (M, K ) = (20 , 4) . GeoSetPPO yields more persistent link patterns over time and avoids unnecessary changes in association and sub-band usage. This scheduling stability is a principal benefit of the proposed finite-horizon formulation, which explicitly pe-nalizes handovers and resource changes rather than optimizing only the instantaneous sum rate. Combined with sequential optimization over the considered mobility horizon, the use of velocity information allows the policy to anticipate near-future geometry and avoid short-lived switches that provide only transient rate gains. The algorithm-based scheduler exhibits frequent switching across slots, consistent with its snapshot-based decision structure. The distance-based method shows fewer changes due to the temporal correlation of distances, but it still lacks explicit interference awareness and does not optimize subband allocation. 15 
+
+Fig. 14. Example schedules over 12 time steps in a random scenario with (M, K ) = (20 , 4) . Left shows the proposed joint association and subband scheduling for B = 2 , where the second subband is indicated by hatch patterns. 
+
+VI. C ONCLUSION 
+
+This work studied mobility-aware downlink scheduling for UAM communications in a cooperative GS-satellite network with a multi-subband GS tier and geometry-structured interfer-ence. In contrast to the single-band formulation in [4], which maintains one association over a prediction interval, the pro-posed formulation permits sequential association and subband decisions while explicitly accounting for handovers over the scheduling horizon. We developed GeoSetPPO, which repre-sents UAM-to-UAM and UAM-to-resource relations through geometry-aware set attention, and combined the learned dis-crete scheduler with an SCA-based GS power allocator under per-GS power and minimum-SINR constraints. The results demonstrated the importance of the proposed geometric in-ductive bias relative to conventional MLP- and Transformer-based PPO architectures. GeoSetPPO also achieved favorable reward performance relative to the association baselines while producing more feasible multi-subband schedules at moderate-to-high SINR thresholds. Future work will investigate efficient policy transfer or adaptation across different UAM counts, GS layouts, mobility distributions, subband configurations, and operating objectives. APPENDIX APROOF OF LEMMA 1We use the following logarithmic lower bound [10]: 
+
+log(1 + x) ≥ θ log x + κ, (56) where θ = x0 
+
+> 1+ x0
+
+and κ = log(1+ x0)−θ log x0. Applying this approximation to Ckbp = log  1 + γkbp 
+
+ gives a tight lower bound at the point x0 = γkbp (ρ(δ)), where γkbp (ρ(δ)) can be computed using (15). Thus, for each kbp , θkbp is given by (28), and κkbp is 
+
+κ(δ) 
+
+> kbp
+
+= log 
+
+
+
+1 + wkbp ρ(δ)
+
+> kbp
+
+μ(δ)
+
+> kbp
+
+
+
+− θ(δ) 
+
+> kbp
+
+log 
+
+ wkbp ρ(δ)
+
+> kbp
+
+μ(δ)
+
+> kbp
+
+
+
+, (57) where μ(δ) 
+
+> kbp
+
+is defined in (29). Using θ(δ)
+
+> kbp
+
+, μ(δ)
+
+> kbp
+
+, and κ(δ)
+
+> kbp
+
+, we obtain 
+
+log 
+
+
+
+1 + wkbp ρkbp 
+
+μkbp 
+
+
+
+≥ θ(δ)
+
+> kbp
+
+{log( wkbp ρkbp ) − log μkbp } + κ(δ)
+
+> kbp
+
+,
+
+(58) where μkbp = PKℓ̸=k
+
+PPℓb  
+
+> q=1
+
+wℓbq kbp ρℓbq +PPkb   
+
+> q̸=p
+
+wkbq kbp ρkbq +σ2n,B .Next, we apply the first-order Taylor upper bound of the concave function log μkbp at μ(δ)
+
+> kbp
+
+:
+
+log μkbp ≤ log μ(δ) 
+
+> kbp
+
++ 1
+
+μ(δ)
+
+> kbp
+
+ KX
+
+> ℓ̸=kPℓb
+
+X
+
+> q=1
+
+wℓbq kbp (ρℓbq − ρ(δ) 
+
+> ℓbq
+
+)+
+
+> Pkb
+
+X 
+
+> q̸=p
+
+wkbq kbp (ρkbq − ρ(δ) 
+
+> kbq
+
+)
+
+
+
+.
+
+(59) Substituting (59) into (58) yields 
+
+Ckbp ≥ θ(δ) 
+
+> kbp
+
+log( wkbp ρkbp )
+
+− θ(δ)
+
+> kbp
+
+μ(δ)
+
+> kbp
+
+ KX
+
+> ℓ̸=kPℓb
+
+X
+
+> q=1
+
+wℓbq kbp ρℓbq +
+
+> Pkb
+
+X 
+
+> q̸=p
+
+wkbq kbp ρkbq 
+
+
+
++ ζ(δ)
+
+> kbp
+
+,
+
+(60) where ζ(δ) 
+
+> kbp
+
+is defined in (30). Taking the negative of both sides gives the convex upper bound for −Ckbp in (27). REFERENCES [1] Y. Jiang et al. , “Integrated sensing and communication for low altitude economy: Opportunities and challenges,” IEEE Commun. Mag. , vol. 63, no. 12, pp. 72–78, Dec. 2025. [2] A. A. Zaid et al. , “eVTOL communications and networking in UAM: Requirements, key enablers, and challenges,” IEEE Commun. Mag. ,vol. 61, no. 8, pp. 154–160, Aug. 2023. [3] S. Zhang et al. , “Cellular-enabled UAV communication: A connectivity-constrained trajectory optimization perspective,” IEEE Trans. Commun. ,vol. 67, no. 3, pp. 2580–2604, Mar. 2019. [4] H.-J. Moon and C.-B. Chae, “Cooperative ground-satellite scheduling and power allocation for urban air mobility networks,” IEEE J. Sel. Areas Commun. , vol. 43, no. 1, pp. 218–233, Jan. 2025. [5] J. Li et al. , “Reinforcement learning-based resource allocation for coverage continuity in high dynamic UAV communication networks,” 
+
+IEEE Trans. Wireless Commun. , vol. 23, no. 2, pp. 848–860, Feb. 2024. [6] J. Lyu and R. Zhang, “Network-connected UAV: 3-D system modeling and coverage performance analysis,” IEEE Internet Things J. , vol. 6, no. 4, pp. 7048–7060, Aug. 2019. 16 
+
+[7] R. Han et al. , “Dynamic spectrum sharing in cellular based urban air mobility via deep reinforcement learning,” in Proc. IEEE Glob. Commun. Conf. (GLOBECOM) , 2022, pp. 1332–1337. [8] J. Schulman et al. , “Proximal policy optimization algorithms,” CoRR ,vol. abs/1707.06347, 2017. [Online]. Available: http://arxiv.org/abs/ 1707.06347 [9] T. T. Nguyen, N. D. Nguyen, and S. Nahavandi, “Deep reinforcement learning for multiagent systems: A review of challenges, solutions, and applications,” IEEE Trans. Cybern. , vol. 50, no. 9, pp. 3826–3839, Sep. 2020. [10] H.-J. Moon et al. , “A generalized pointing error model for FSO links with fixed-wing UAVs for 6G: Analysis and trajectory optimization,” 
+
+IEEE Trans. Wireless Commun. , vol. 24, no. 7, pp. 5723–5737, Jul. 2025. [11] Y. Zeng et al. , “Cellular-connected UAV: Potential, challenges, and promising technologies,” IEEE Wireless Commun. , vol. 26, no. 1, pp. 120–127, Feb. 2019. [12] M. M. Azari et al. , “Cellular connectivity for UAVs: Network modeling, performance analysis, and design guidelines,” IEEE Trans. Wireless Commun. , vol. 18, no. 7, pp. 3366–3381, Jul. 2019. [13] Z. Wang and J. Zheng, “Performance analysis of location-based base station cooperation for cellular-connected UAV networks,” IEEE Trans. Veh. Technol. , vol. 72, no. 11, pp. 14 787–14 800, Nov. 2023. [14] A. Garcia-Rodriguez et al. , “The essential guide to realizing 5G-connected UAVs with massive MIMO,” IEEE Commun. Mag. , vol. 57, no. 12, pp. 84–90, Dec. 2019. [15] W. Mei and R. Zhang, “Cooperative downlink interference transmission and cancellation for cellular-connected UAV: A divide-and-conquer approach,” IEEE Trans. Commun. , vol. 68, no. 2, pp. 1297–1311, Feb. 2020. [16] Y. Huang et al. , “3D beam tracking for cellular-connected UAV,” IEEE Wireless Commun. Lett. , vol. 9, no. 5, pp. 736–740, May 2020. [17] F. Wang, W. Chen, H. Tang, and Q. Wu, “Joint optimization of user association, subchannel allocation, and power allocation in multi-cell multi-association OFDMA heterogeneous networks,” IEEE Trans. Commun. , vol. 65, no. 6, pp. 2672–2684, Jun. 2017. [18] H. U. Sokun, R. H. Gohary, and H. Yanikomeroglu, “A novel approach for QoS-aware joint user association, resource block and discrete power allocation in HetNets,” IEEE Trans. Wireless Commun. , vol. 16, no. 11, pp. 7603–7618, Nov. 2017. [19] N. Zhao, Y.-C. Liang, D. Niyato, Y. Pei, M. Wu, and Y. Jiang, “Deep reinforcement learning for user association and resource allocation in heterogeneous cellular networks,” IEEE Trans. Wireless Commun. ,vol. 18, no. 11, pp. 5141–5152, Nov. 2019. [20] H. Yang, J. Zhao, K.-Y. Lam, Z. Xiong, Q. Wu, and L. Xiao, “Distributed deep reinforcement learning-based spectrum and power allocation for heterogeneous networks,” IEEE Trans. Wireless Commun. , vol. 21, no. 9, pp. 6935–6948, Sep. 2022. [21] F. Pervez, L. Zhao, and C. Yang, “Joint user association, power opti-mization and trajectory control in an integrated satellite-aerial-terrestrial network,” IEEE Trans. Wireless Commun. , vol. 21, no. 5, pp. 3279–3290, May 2022. [22] P. Yi, L. Zhu, Z. Xiao, R. Zhang, Z. Han, and X.-G. Xia, “3-D position-ing and resource allocation for multi-UAV base stations under blockage-aware channel model,” IEEE Trans. Wireless Commun. , vol. 23, no. 3, pp. 2453–2468, Mar. 2024. [23] B. Yin, X. Fang, and X. Wang, “Joint optimization of trajectory control, resource allocation, and user association based on DRL for multi-fixed-wing UAV networks,” IEEE Trans. Wireless Commun. , vol. 23, no. 10, pp. 13 330–13 343, Oct. 2024. [24] Y. Qin et al. , “Deep reinforcement learning based resource allocation and trajectory planning in integrated sensing and communications UAV network,” IEEE Trans. Wireless Commun. , vol. 22, no. 11, pp. 8158– 8169, Nov. 2023. [25] Y. Li and A. H. Aghvami, “Radio resource management for cellular-connected UAV: A learning approach,” IEEE Trans. Commun. , vol. 71, no. 5, pp. 2784–2800, May 2023. [26] O. Bouhamed et al. , “A generic spatiotemporal scheduling for au-tonomous UAVs: A reinforcement learning-based approach,” IEEE Open J. Veh. Technol. , vol. 1, pp. 93–106, Mar. 2020. [27] Z. Liu et al. , “Energy-efficient multi-agent reinforcement learning for UAV trajectory optimization in cell-free massive MIMO networks,” 
+
+IEEE Trans. Wireless Commun. , vol. 24, no. 7, pp. 5917–5930, Jul. 2025. [28] J. Cui et al. , “Multi-agent reinforcement learning-based resource alloca-tion for UAV networks,” IEEE Trans. Wireless Commun. , vol. 19, no. 2, pp. 729–743, Feb. 2020. [29] C. Wang et al. , “Resource scheduling based on deep reinforcement learning in UAV assisted emergency communication networks,” IEEE Trans. Commun. , vol. 70, no. 6, pp. 3834–3848, Jun. 2022. [30] S. S. Hassan et al. , “Satellite-based ITS data offloading & computation in 6G networks: A cooperative multi-agent proximal policy optimization DRL with attention approach,” IEEE Trans. Mobile Comput. , vol. 23, no. 5, pp. 4956–4974, May 2024. [31] C. Park et al. , “Multi-agent reinforcement learning for cooperative air transportation services in city-wide autonomous urban air mobility,” 
+
+IEEE Trans. Intell. Veh. , vol. 8, no. 8, pp. 4016–4030, Aug. 2023. [32] Y. Lin et al. , “Dynamic spectrum interaction of UAV flight formation communication with priority: A deep reinforcement learning approach,” 
+
+IEEE Trans. Cogn. Commun. Netw. , vol. 6, no. 3, pp. 892–903, Sep. 2020. [33] C. Caini et al. , “A spectrum- and power-efficient EHF mobile satellite system to be integrated with terrestrial cellular systems,” IEEE J. Sel. Areas Commun. , vol. 10, no. 8, pp. 1315–1325, Oct. 1992. [34] P. Gu et al. , “Dynamic cooperative spectrum sharing in a multi-beam LEO-GEO co-existing satellite system,” IEEE Trans. Wireless Commun. ,vol. 21, no. 2, pp. 1170–1182, Feb. 2022. [35] Recommendation ITU-R P.676-13, “Attenuation by atmospheric gases and related effects,” Aug. 2022. [36] Recommendation ITU-R P.840-9, “Attenuation due to clouds and fog,” Aug. 2023. [37] Recommendation ITU-R P.838-3, “Specific attenuation model for rain for use in prediction methods,” Mar. 2005. [38] S. Boyd and L. Vandenberghe, Convex Optimization . Cambridge, U.K.: Cambridge Univ. Press, 2004. [39] T. Lipp and S. Boyd, “Variations and extension of the convex-concave procedure,” Optim. Eng. , vol. 17, no. 2, pp. 263–287, Jun. 2016. [40] J. Lee et al. , “Set transformer: A framework for attention-based permutation-invariant neural networks,” May 2019. [Online]. Available: https://arxiv.org/abs/1810.00825 [41] D. Bahdanau, K. Cho, and Y. Bengio, “Neural machine translation by jointly learning to align and translate,” 2016. [Online]. Available: https://arxiv.org/abs/1409.0473
