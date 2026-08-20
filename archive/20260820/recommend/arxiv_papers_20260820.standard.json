@@ -1,0 +1,54 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-20T20:39:44.204526+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2608.18682v1",
+      "source": "arxiv",
+      "title": "RTPO: Reverse-Turn Policy Optimization for Stabilizing Agentic RL Training",
+      "abstract": "Training multi-turn agentic workflows with reinforcement learning (RL) enables large language models to perform complex reasoning, use external tools, and conduct iterative search beyond single-turn settings. Yet multi-turn RL training remains highly unstable, often causing severe performance degradation as the number of turns increases. Through theoretical analysis, we identify three tightly coupled sources of instability: rollout-training context mismatch, weak turn-level credit assignment under sparse terminal rewards, and asynchronous policy drift when short and long trajectories are optimized under different policy versions. We show that these issues share a common structural origin in flattened trajectory optimization and address them through a unified reverse-turn formulation. We propose Reverse-Turn Policy Optimization (RTPO), which organizes multi-turn rollouts as sparse reverse trees and performs turn-level policy updates in temporal reverse order, aligning each decision with its downstream continuation. RTPO enables causally consistent turn-level credit assignment and on-policy continuation to control asynchronous drift. We provide theoretical guarantees showing that RTPO eliminates context mismatch and asynchronous drift under the proposed turn-level formulation, reduces credit bias, and converges to recursive optimality. Experiments on multi-turn agentic RL benchmarks show that RTPO improves upon trajectory- and turn-level baselines by 21.50% and 10.76%, respectively, highlighting its potential to support more stable training for tool-using agents.",
+      "authors": [
+        "Yugu Li",
+        "Jimmy Cao",
+        "Jianglin Qiao",
+        "Siyi Hu"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-08-19T08:33:01+00:00",
+      "link": "https://arxiv.org/pdf/2608.18682v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Addresses weak turn-level credit assignment under sparse terminal rewards in multi-turn RL",
+      "llm_evidence_cn": "解决多轮强化学习中稀疏终局奖励下的弱回合级信用分配",
+      "llm_evidence": "解决多轮强化学习中稀疏终局奖励下的弱回合级信用分配",
+      "canonical_evidence": "解决多轮强化学习中稀疏终局奖励下的弱回合级信用分配",
+      "llm_tldr_en": "Proposes RTPO to stabilize multi-turn agentic RL by addressing rollout-training mismatch, weak credit assignment, and policy drift; shows improved training stability and long-horizon performance.",
+      "llm_tldr_cn": "多轮智能体强化学习训练因轨迹扁平化导致不稳定，尤其是在稀疏终局奖励下回合级信用分配困难。本文提出RTPO方法，通过反向回合策略优化缓解训练上下文不匹配、弱信用分配和异步策略漂移问题，从而稳定训练过程。实验表明RTPO能有效提升多轮工作流训练的稳定性和长程任务表现，为复杂智能体系统提供可靠的强化学习训练方案。",
+      "llm_tldr": "多轮智能体强化学习训练因轨迹扁平化导致不稳定，尤其是在稀疏终局奖励下回合级信用分配困难。本文提出RTPO方法，通过反向回合策略优化缓解训练上下文不匹配、弱信用分配和异步策略漂移问题，从而稳定训练过程。实验表明RTPO能有效提升多轮工作流训练的稳定性和长程任务表现，为复杂智能体系统提供可靠的强化学习训练方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}

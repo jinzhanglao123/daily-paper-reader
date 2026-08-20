@@ -1,0 +1,24 @@
+{
+  "label": "2026-08-20",
+  "date": "2026-08-20",
+  "generated_at": "2026-08-20T20:47:51",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202608/20/2608.18682v1-rtpo-reverse-turn-policy-optimization-for-stabilizing-agentic-rl-training",
+      "section": "deep",
+      "title_en": "RTPO: Reverse-Turn Policy Optimization for Stabilizing Agentic RL Training",
+      "authors": "Yugu Li, Jimmy Cao, Jianglin Qiao, Siyi Hu",
+      "date": "2026-08-19",
+      "pdf": "https://arxiv.org/pdf/2608.18682v1",
+      "score": "8.0",
+      "evidence": "解决多轮强化学习中稀疏终局奖励下的弱回合级信用分配",
+      "tldr": "多轮智能体强化学习训练常因上下文错配、稀疏奖励下信用分配弱及异步策略漂移而不稳定。本工作提出逆向轮次策略优化（RTPO），将多轮轨迹组织为稀疏逆向树并按时间逆序做轮次级更新，对齐每个决策与下游延续。在多轮智能体基准上，RTPO较轨迹级和轮次级基线分别提升21.50%和10.76%，显著稳定了工具使用智能体的训练。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Training multi-turn agentic workflows with reinforcement learning (RL) enables large language models to perform complex reasoning, use external tools, and conduct iterative search beyond single-turn settings. Yet multi-turn RL training remains highly unstable, often causing severe performance degradation as the number of turns increases. Through theoretical analysis, we identify three tightly coupled sources of instability: rollout-training context mismatch, weak turn-level credit assignment under sparse terminal rewards, and asynchronous policy drift when short and long trajectories are optimized under different policy versions. We show that these issues share a common structural origin in flattened trajectory optimization and address them through a unified reverse-turn formulation. We propose Reverse-Turn Policy Optimization (RTPO), which organizes multi-turn rollouts as sparse reverse trees and performs turn-level policy updates in temporal reverse order, aligning each decision with its downstream continuation. RTPO enables causally consistent turn-level credit assignment and on-policy continuation to control asynchronous drift. We provide theoretical guarantees showing that RTPO eliminates context mismatch and asynchronous drift under the proposed turn-level formulation, reduces credit bias, and converges to recursive optimality. Experiments on multi-turn agentic RL benchmarks show that RTPO improves upon trajectory- and turn-level baselines by 21.50% and 10.76%, respectively, highlighting its potential to support more stable training for tool-using agents.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
