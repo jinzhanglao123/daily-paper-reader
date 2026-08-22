@@ -1,0 +1,39 @@
+{
+  "label": "2026-08-22",
+  "date": "2026-08-22",
+  "generated_at": "2026-08-22T20:17:53",
+  "count": 2,
+  "papers": [
+    {
+      "paper_id": "202608/22/2608.20161v1-dars-dual-level-credit-assignment-rl-with-structured-reasoning-for-instruction-based-image-editing",
+      "section": "quick",
+      "title_en": "DARS: Dual-Level Credit Assignment RL with Structured Reasoning for Instruction-Based Image Editing",
+      "authors": "Haoxiang Cao, Jiajiong Cao, Xuanpu Zhang, Changqian Yu, Chaoqun Wang",
+      "date": "2026-08-20",
+      "pdf": "https://arxiv.org/pdf/2608.20161v1",
+      "score": "7.0",
+      "evidence": "双层次信用分配强化学习",
+      "tldr": "指令式图像编辑的规划器-渲染器两阶段训练仅用最终图像奖励，难以定位是规划器还是渲染器的问题。DARS 提出双层信用分配，跨模块通过多计划多渲染估计变异性进行软路由与自适应课程，规划器内用四字段结构化推理实现前缀门控奖励和 token 级优势重加权。在五个基准上超越相同设置的 Joint RL 基线，推理密集型编辑增益最大。将结果级反馈转化为局部监督，提升训练效率与编辑效果。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Instruction-based image editing uses a planner-renderer pipeline: a vision-language model (VLM) first converts the instruction into an edit plan, and a diffusion model then executes that plan. Training such systems with only final-image rewards is inefficient because a poor edit does not reveal whether additional optimization should place more emphasis on the planner or the renderer, and even planner-dominant cases remain difficult to localize within a free-form reasoning trace. We present DARS, a reinforcement learning framework for dual-level credit assignment in this two-stage setting. Across modules, multi-plan multi-render rollouts estimate between-plan and within-plan reward variability for soft module routing, while rollout mean rewards provide hardness estimates for an adaptive curriculum. Within the planner, a four-field structured reasoning output enables a prefix-gated reward and token-level advantage reweighting, turning outcome-level feedback into localized supervision. Experiments on five benchmarks show that DARS outperforms a Joint~RL baseline with the same backbone, data, reward model, and rollout budget, with the largest gains on reasoning-intensive edits.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/22/2608.18673v1-dyncur-geo-dynamic-curiosity-reward-shaping-for-multimodal-active-geo-localization",
+      "section": "quick",
+      "title_en": "DynCur-Geo: Dynamic Curiosity Reward Shaping for Multimodal Active Geo-Localization",
+      "authors": "Yiming Sun, Yang Zhang, Pengfei Zhu",
+      "date": "2026-08-19",
+      "pdf": "https://arxiv.org/pdf/2608.18673v1",
+      "score": "6.0",
+      "evidence": "低空无人机主动地理定位中的动态好奇心奖励整形",
+      "tldr": "主动地理定位使低空无人机从局部观测搜索目标，但多模态线索、受限视野和稀疏反馈使探索与收敛难以平衡。现有好奇心方法固定内在奖励权重，接近目标后仍奖励新颖性导致绕行。我们提出DynCur-Geo，根据剩余距离动态调整预测误差奖励，距离感知门控兼顾探索与目标导向，势能奖励提供密集引导。在多模态、跨场景、灾害及长距离设置中相对基线一致提升。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Active geo-localization enables low-altitude UAVs to search for specified targets from limited local aerial observations, supporting time-sensitive applications such as search and rescue and emergency inspection. However, multimodal target cues, restricted views, and sparse feedback make it difficult to balance exploration with target convergence. Existing curiosity-driven methods assign a fixed intrinsic-reward weight throughout search, which can continue rewarding novelty after the agent nears the target and induce detours. We propose DynCur-Geo, a dynamic curiosity framework that adjusts prediction-error intrinsic reward according to remaining target distance. A distance-aware gate encourages early exploration and shifts the policy toward goal-directed behavior near the target, while potential-based reward shaping supplies dense progress guidance. Experiments across multimodal, cross-scene, disaster-affected, and long-range settings show consistent gains over active geo-localization baselines.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
