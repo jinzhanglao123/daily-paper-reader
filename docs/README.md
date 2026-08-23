@@ -6,29 +6,22 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-22
-- 运行时间：2026-08-22 20:17:28 UTC
+- 最新运行日期：2026-08-23
+- 运行时间：2026-08-23 20:10:02 UTC
 - 运行状态：成功
-- 本次总论文数：2
+- 本次总论文数：0
 - 精读区：0
-- 速读区：2
+- 速读区：0
 
 ### 今日简报（AI）
-- 今日共生成 2 篇推荐（精读 0 篇，速读 2 篇）
-- 速读：《DARS: Dual-Level Credit Assignment RL with Structured Reasoning for Instruction-Based Image Editing》（7.0/10）, 《DynCur-Geo: Dynamic Curiosity Reward Shaping for Multimodal Active Geo-Localization》（6.0/10）
-- 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
-- 详情：[/202608/22/README](/202608/22/README)
+> 今日无新推荐，系统未产出可展示论文。
+- 详情：[/202608/23/README](/202608/23/README)
 
 ### 精读区论文标签
 - 本次无精读推荐。
 
 ### 速读区论文标签
-1. [DARS: Dual-Level Credit Assignment RL with Structured Reasoning for Instruction-Based Image Editing](/202608/22/2608.20161v1-dars-dual-level-credit-assignment-rl-with-structured-reasoning-for-instruction-based-image-editing)  
-   标签：评分：7.0/10、query:uav-drl
-   evidence：双层次信用分配强化学习
-2. [DynCur-Geo: Dynamic Curiosity Reward Shaping for Multimodal Active Geo-Localization](/202608/22/2608.18673v1-dyncur-geo-dynamic-curiosity-reward-shaping-for-multimodal-active-geo-localization)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：低空无人机主动地理定位中的动态好奇心奖励整形
+- 本次无速读推荐。
 
 
 <div class="dpr-home-promo-card">
