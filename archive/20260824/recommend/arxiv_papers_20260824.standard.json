@@ -1,0 +1,178 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-24T20:35:55.935561+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 3,
+    "quick_skim_target": 11,
+    "quick_selected": 3
+  },
+  "deep_dive": [
+    {
+      "id": "2608.20680v1",
+      "source": "arxiv",
+      "title": "Reinforcement Learning for Continuous-Time Jump Markov Decision Processes with Applications to Network Dynamic Pricing",
+      "abstract": "We study reinforcement learning (RL) in Continuous-Time Jump Markov Decision Processes (CTJMDPs) featuring general discrete state spaces (which need not possess a vector space structure) and continuous/discrete action spaces. The setup covers many well-known applications in operations such as multi-product dynamic pricing with capacitated resources (Gallego and van Ryzin 1997). To model the exploration-exploitation tradeoff, we formulate an entropy-regularized continuous-time control problem with stochastic policies. Recent continuous-time RL techniques such as $q$-learning for controlled diffusions in (Jia and Zhou 2023) focus on continuous state spaces $\\mathbb{R}^d$ and rely heavily on semimartingale theory in $\\mathbb{R}^d$ for their theoretical analysis. Consequently, their methods cannot be directly applied to CTJMDPs with general discrete state spaces, which may lack the algebraic addition and subtraction structures inherent to Euclidean spaces. To bridge this gap, we establish the theoretical foundations of $q$-learning for CTJMDPs and develop model-free $q$-learning algorithms. Compared to naïve time discretization and approximating CTJMDPs using discrete-time MDPs, our approach has several conceptual and empirical benefits. Numerical experiments in network dynamic pricing (Gallego and van Ryzin 1997) show that our proposed RL algorithm reliably learns near-optimal policies and consistently outperforms standard benchmark methods, demonstrating superior solution quality and effective scalability to large-scale network instances.",
+      "authors": [
+        "Huiling Meng",
+        "Ningyuan Chen",
+        "Xuefeng Gao"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-08-21T02:36:15+00:00",
+      "link": "https://arxiv.org/pdf/2608.20680v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "RL for hybrid continuous/discrete action spaces in CTJMDPs",
+      "llm_evidence_cn": "连续时间跳跃MDP中混合连续/离散动作空间的强化学习",
+      "llm_evidence": "连续时间跳跃MDP中混合连续/离散动作空间的强化学习",
+      "canonical_evidence": "连续时间跳跃MDP中混合连续/离散动作空间的强化学习",
+      "llm_tldr_en": "Studies RL in continuous-time jump Markov decision processes with general discrete state spaces and continuous/discrete action spaces, formulating entropy-regularized control with stochastic policies.",
+      "llm_tldr_cn": "该文研究连续时间跳跃马尔可夫决策过程中的强化学习，支持一般离散状态空间和连续/离散混合动作空间。通过熵正则化连续时间控制问题建模探索-利用权衡，扩展了现有连续时间RL方法。实验以网络动态定价为例验证了算法性能，为混合动作空间RL提供了理论和方法基础。",
+      "llm_tldr": "该文研究连续时间跳跃马尔可夫决策过程中的强化学习，支持一般离散状态空间和连续/离散混合动作空间。通过熵正则化连续时间控制问题建模探索-利用权衡，扩展了现有连续时间RL方法。实验以网络动态定价为例验证了算法性能，为混合动作空间RL提供了理论和方法基础。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "reinforcement learning with hybrid action space",
+      "matched_requirement_id": "req-5",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.17310v2",
+      "source": "arxiv",
+      "title": "Agentic ESOpt: Fine-Tuning Long-Horizon LLM Agents with Minimal GPU Requirements",
+      "abstract": "Reinforcement Learning (RL) has been promising in single-turn LLM fine-tuning. However, long-horizon agentic reasoning introduces increasingly branching interactions and sparse rewards, exposing several limitations of RL: its heavyweight backpropagation-based training stack makes it impractical to fine-tune larger LLMs, and longer-horizon trajectories make credit assignment in RL substantially harder. This paper argues that evolution strategies (ES) can be a better choice for fine-tuning long-horizon LLM agents. Compared with agentic RL, ES offers three key advantages: 1) Model Scalability: ES enables full-parameter optimization with only minimal, inference-level GPU memory, making it possible to fine-tune large LLMs. 2) Flexibility: its lightweight, black-box feedback interface makes ES fine-tuning easy to compose with prompt-space evolution (e.g., skill optimization & test-time compute); and 3) Long-Horizon Scalability: ES performs trajectory-level parameter attribution without decomposing rewards across horizons, yielding better scalability than Agentic RL as the horizon length grows. Based on this insight, we propose Agentic ESOpt, a full-parameter agentic fine-tuning framework tailored to flexible parameter--context co-evolution. At each step, Agentic ESOpt samples perturbations around the current LLM parameters, evaluates the resulting agents with rewards, and applies an online reward-weighted update. To improve the exploration--adaptation trade-off, Agentic ESOpt further introduces a cosine decay schedule of the perturbation scale $σ$. On WebArena-Lite, full-parameter optimization of Qwen-3.5-27B improves the No Skill baseline by 6.69%. In test-time automatic heuristic design, Agentic ESOpt performs online prompt--parameter co-evolution, improving its matched baseline in 28 of 36 settings.",
+      "authors": [
+        "Zhi Zheng",
+        "Rongsheng Chen",
+        "Yunpeng Ba",
+        "Zhenkun Wang",
+        "Yee Whye Teh",
+        "Wee Sun Lee"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-08-18T03:03:53+00:00",
+      "link": "https://arxiv.org/pdf/2608.17310v2",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "evolution strategies for long-horizon agentic RL credit assignment",
+      "llm_evidence_cn": "进化策略用于长时程智能体强化学习的信用分配",
+      "llm_evidence": "进化策略用于长时程智能体强化学习的信用分配",
+      "canonical_evidence": "进化策略用于长时程智能体强化学习的信用分配",
+      "llm_tldr_en": "Argues evolution strategies are better than RL for long-horizon LLM agents due to easier credit assignment and scalability, enabling minimal-GPU fine-tuning.",
+      "llm_tldr_cn": "针对长时程智能体推理中回溯训练栈笨重且信用分配困难的问题，本文提出用进化策略替代强化学习微调LLM智能体。进化策略仅需推理级GPU内存即可实现全参数优化，灵活性高，且避免了长轨迹上的信用分配难题。实验表明该方法在长时程智能体任务上优于传统RL微调，且资源需求极低。",
+      "llm_tldr": "针对长时程智能体推理中回溯训练栈笨重且信用分配困难的问题，本文提出用进化策略替代强化学习微调LLM智能体。进化策略仅需推理级GPU内存即可实现全参数优化，灵活性高，且避免了长轨迹上的信用分配难题。实验表明该方法在长时程智能体任务上优于传统RL微调，且资源需求极低。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.16072v1",
+      "source": "arxiv",
+      "title": "Learn What's Left, Not What's Mastered: Saturation Aware Advantage Reweighting for Multi-Reward Policy Optimization",
+      "abstract": "Reinforcement learning (RL) with group-relative advantages has become the de facto standard for post-training language model reasoners. However, when optimizing multiple reward objectives, existing methods typically scalarize the reward vector with a fixed weighted sum before group-wise standardization. We show that this design leads to two fundamental problems: rollouts with distinct reward profiles can receive identical advantages, and all objectives are optimized with fixed relative weights regardless of their current level of saturation. As a result, training continues to allocate gradient budget to already-solved objectives instead of focusing on those with greater remaining headroom. We introduce \\textbf{Saturation Aware Advantage Reweighting for Multi-Reward Policy Optimization} (SA-MRPO), which standardizes each reward objective independently and adaptively discounts its contribution according to a batch-level estimate of objective saturation. This dynamically reallocates optimization effort toward under-optimized objectives while empirically maintaining performance on those that are already well satisfied. We further show that saturation-aware reweighting can reverse the sign of an update, rather than merely rescale its magnitude. Across mathematical reasoning with two- and three-objective reward combinations, SA-MRPO improves the harder correctness objective over GDPO in 12 of 15 benchmark comparisons, with gains of up to $5\\%$ on AIME24. On adaptive reasoning it improves accuracy on all five benchmarks, by $3.8\\%$ on average and up to $9.2 \\%$ on AMC23, and on coding benchmarks it improves pass rate by up to $2.3\\%$, while in all settings maintaining the easier objectives near their already satisfied levels.",
+      "authors": [
+        "Yixuan Wang",
+        "Yifei Chen",
+        "Haichao Zhang",
+        "Haozheng Luo",
+        "Xander Wu",
+        "Jie Ni",
+        "Yun Fu",
+        "Nuno Vasconcelos",
+        "Yijiang Li"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-08-17T04:07:50+00:00",
+      "link": "https://arxiv.org/pdf/2608.16072v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "multi-reward policy optimization with saturation aware advantage reweighting",
+      "llm_evidence_cn": "多奖励策略优化中的饱和感知优势重加权",
+      "llm_evidence": "多奖励策略优化中的饱和感知优势重加权",
+      "canonical_evidence": "多奖励策略优化中的饱和感知优势重加权",
+      "llm_tldr_en": "Addresses fixed scalarization of multiple reward objectives in RL, proposing saturation-aware advantage reweighting to focus on unsolved objectives.",
+      "llm_tldr_cn": "针对强化学习中多奖励目标优化时固定标量化导致已解决目标仍占用梯度预算的问题，本文提出一种饱和感知的优势重加权方法。该方法根据各目标当前饱和程度动态调整权重，使训练将梯度分配给仍有提升空间的目标。在多种强化学习基准上的实验表明，该方法能有效改善多目标策略优化性能，对复杂奖励塑形具有指导意义。",
+      "llm_tldr": "针对强化学习中多奖励目标优化时固定标量化导致已解决目标仍占用梯度预算的问题，本文提出一种饱和感知的优势重加权方法。该方法根据各目标当前饱和程度动态调整权重，使训练将梯度分配给仍有提升空间的目标。在多种强化学习基准上的实验表明，该方法能有效改善多目标策略优化性能，对复杂奖励塑形具有指导意义。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.18787v1",
+      "source": "arxiv",
+      "title": "Dream2Reward: Transition-Alignment Reward Models from Positive Demonstrations for Robotic Manipulation",
+      "abstract": "Learning robotic policies requires dense rewards that remain informative when behavior departs from successful demonstrations. Progress-based rewards estimate how far an observation has advanced along a nominal successful trajectory, but may remain high after an incorrect transition. We introduce Dream2Reward, which learns a language-conditioned successful latent transition field from positive demonstrations. Given the visual history up to a transition start, the model predicts the latent displacement associated with successful execution and scores the observed displacement through signed directional and symmetric magnitude agreement. This transition-level comparison penalizes wrong-direction, overshooting, and stagnant motion even when the resulting observation appears to show progress. Dream2Reward requires no failure annotations, progress labels, or synthetic negatives, and produces a dense causal reward. Across mechanism diagnostics and shared-trajectory evaluations, it provides stronger success-failure separation and more informative feedback on low-quality behavior than progress-based alternatives. Across online and offline policy learning, the same frozen reward model reduces reward hacking and supports stronger downstream performance, including in real-robot manipulation. These results show that comparing realized motion with predicted successful change provides an effective way to convert positive demonstrations into dense rewards for robot learning.",
+      "authors": [
+        "Haoyu Zhang",
+        "Zecui Zeng",
+        "Bin Wang",
+        "Lusong Li",
+        "Liang Lin",
+        "Long Cheng"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO"
+      ],
+      "published": "2026-08-19T10:44:20+00:00",
+      "link": "https://arxiv.org/pdf/2608.18787v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Learns transition-alignment reward models from demonstrations to provide dense, informative rewards for RL",
+      "llm_evidence_cn": "从演示中学习过渡对齐的奖励模型，为强化学习提供稠密且信息丰富的奖励信号",
+      "llm_evidence": "从演示中学习过渡对齐的奖励模型，为强化学习提供稠密且信息丰富的奖励信号",
+      "canonical_evidence": "从演示中学习过渡对齐的奖励模型，为强化学习提供稠密且信息丰富的奖励信号",
+      "llm_tldr_en": "The paper addresses the limitation of progress-based rewards in robotic RL by learning a language-conditioned latent transition field from positive demonstrations. It scores observed transitions via directional and magnitude agreement, penalizing incorrect transitions. This dense reward model improves policy learning.",
+      "llm_tldr_cn": "该论文解决机器人强化学习中基于进度的奖励在错误转移后仍保持较高的问题。提出Dream2Reward，从正演示中学习语言条件的成功潜在转移场，通过有符号方向和对称幅度一致性对转移进行评分。实验表明该过渡级奖励能更有效地惩罚错误方向、超调和停滞。该方法为机器人操作任务的稠密奖励设计提供了新方案。",
+      "llm_tldr": "该论文解决机器人强化学习中基于进度的奖励在错误转移后仍保持较高的问题。提出Dream2Reward，从正演示中学习语言条件的成功潜在转移场，通过有符号方向和对称幅度一致性对转移进行评分。实验表明该过渡级奖励能更有效地惩罚错误方向、超调和停滞。该方法为机器人操作任务的稠密奖励设计提供了新方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

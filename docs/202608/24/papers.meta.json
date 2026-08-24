@@ -1,0 +1,69 @@
+{
+  "label": "2026-08-24",
+  "date": "2026-08-24",
+  "generated_at": "2026-08-24T20:43:14",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202608/24/2608.20680v1-reinforcement-learning-for-continuous-time-jump-markov-decision-processes-with-applications-to-network-dynamic-pricing",
+      "section": "deep",
+      "title_en": "Reinforcement Learning for Continuous-Time Jump Markov Decision Processes with Applications to Network Dynamic Pricing",
+      "authors": "Huiling Meng, Ningyuan Chen, Xuefeng Gao",
+      "date": "2026-08-21",
+      "pdf": "https://arxiv.org/pdf/2608.20680v1",
+      "score": "8.0",
+      "evidence": "连续时间跳跃MDP中混合连续/离散动作空间的强化学习",
+      "tldr": "针对连续时间跳跃马尔可夫决策过程（CTJMDP）的强化学习问题，现有基于欧氏空间的连续时间q学习无法处理一般离散状态空间。本文建立CTJMDP的q学习理论基础并提出无模型算法，避免简单时间离散化。在网络动态定价实验中，算法稳定学到近最优策略，优于基准并具备大规模可扩展性。",
+      "tags": "query:uav-drl",
+      "abstract_en": "We study reinforcement learning (RL) in Continuous-Time Jump Markov Decision Processes (CTJMDPs) featuring general discrete state spaces (which need not possess a vector space structure) and continuous/discrete action spaces. The setup covers many well-known applications in operations such as multi-product dynamic pricing with capacitated resources (Gallego and van Ryzin 1997). To model the exploration-exploitation tradeoff, we formulate an entropy-regularized continuous-time control problem with stochastic policies. Recent continuous-time RL techniques such as $q$-learning for controlled diffusions in (Jia and Zhou 2023) focus on continuous state spaces $\\mathbb{R}^d$ and rely heavily on semimartingale theory in $\\mathbb{R}^d$ for their theoretical analysis. Consequently, their methods cannot be directly applied to CTJMDPs with general discrete state spaces, which may lack the algebraic addition and subtraction structures inherent to Euclidean spaces. To bridge this gap, we establish the theoretical foundations of $q$-learning for CTJMDPs and develop model-free $q$-learning algorithms. Compared to naïve time discretization and approximating CTJMDPs using discrete-time MDPs, our approach has several conceptual and empirical benefits. Numerical experiments in network dynamic pricing (Gallego and van Ryzin 1997) show that our proposed RL algorithm reliably learns near-optimal policies and consistently outperforms standard benchmark methods, demonstrating superior solution quality and effective scalability to large-scale network instances.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/24/2608.17310v2-agentic-esopt-fine-tuning-long-horizon-llm-agents-with-minimal-gpu-requirements",
+      "section": "quick",
+      "title_en": "Agentic ESOpt: Fine-Tuning Long-Horizon LLM Agents with Minimal GPU Requirements",
+      "authors": "Zhi Zheng, Rongsheng Chen, Yunpeng Ba, Zhenkun Wang, Yee Whye Teh, Wee Sun Lee",
+      "date": "2026-08-18",
+      "pdf": "https://arxiv.org/pdf/2608.17310v2",
+      "score": "7.0",
+      "evidence": "进化策略用于长时程智能体强化学习的信用分配",
+      "tldr": "针对长时程智能体推理中回溯训练栈笨重且信用分配困难的问题，本文提出用进化策略替代强化学习微调LLM智能体。进化策略仅需推理级GPU内存即可实现全参数优化，灵活性高，且避免了长轨迹上的信用分配难题。实验表明该方法在长时程智能体任务上优于传统RL微调，且资源需求极低。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Reinforcement Learning (RL) has been promising in single-turn LLM fine-tuning. However, long-horizon agentic reasoning introduces increasingly branching interactions and sparse rewards, exposing several limitations of RL: its heavyweight backpropagation-based training stack makes it impractical to fine-tune larger LLMs, and longer-horizon trajectories make credit assignment in RL substantially harder. This paper argues that evolution strategies (ES) can be a better choice for fine-tuning long-horizon LLM agents. Compared with agentic RL, ES offers three key advantages: 1) Model Scalability: ES enables full-parameter optimization with only minimal, inference-level GPU memory, making it possible to fine-tune large LLMs. 2) Flexibility: its lightweight, black-box feedback interface makes ES fine-tuning easy to compose with prompt-space evolution (e.g., skill optimization & test-time compute); and 3) Long-Horizon Scalability: ES performs trajectory-level parameter attribution without decomposing rewards across horizons, yielding better scalability than Agentic RL as the horizon length grows. Based on this insight, we propose Agentic ESOpt, a full-parameter agentic fine-tuning framework tailored to flexible parameter--context co-evolution. At each step, Agentic ESOpt samples perturbations around the current LLM parameters, evaluates the resulting agents with rewards, and applies an online reward-weighted update. To improve the exploration--adaptation trade-off, Agentic ESOpt further introduces a cosine decay schedule of the perturbation scale $σ$. On WebArena-Lite, full-parameter optimization of Qwen-3.5-27B improves the No Skill baseline by 6.69%. In test-time automatic heuristic design, Agentic ESOpt performs online prompt--parameter co-evolution, improving its matched baseline in 28 of 36 settings.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/24/2608.18787v1-dream2reward-transition-alignment-reward-models-from-positive-demonstrations-for-robotic-manipulation",
+      "section": "quick",
+      "title_en": "Dream2Reward: Transition-Alignment Reward Models from Positive Demonstrations for Robotic Manipulation",
+      "authors": "Haoyu Zhang, Zecui Zeng, Bin Wang, Lusong Li, Liang Lin, Long Cheng",
+      "date": "2026-08-19",
+      "pdf": "https://arxiv.org/pdf/2608.18787v1",
+      "score": "7.0",
+      "evidence": "从演示中学习过渡对齐的奖励模型，为强化学习提供稠密且信息丰富的奖励信号",
+      "tldr": "现有基于进度的奖励在策略偏离成功轨迹时仍可能保持高值，无法有效惩罚错误转移。Dream2Reward从正演示中学习语言条件成功潜在转移场，预测成功执行的潜在位移，并通过符号方向一致性与对称幅度一致性对实际位移评分，构造稠密因果奖励。该方法无需失败标注、进度标签或合成负样本，在诊断与共享轨迹评估中显著提升成功-失败分离与低质量行为反馈，并减少奖励黑客，支持更强下游策略学习。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Learning robotic policies requires dense rewards that remain informative when behavior departs from successful demonstrations. Progress-based rewards estimate how far an observation has advanced along a nominal successful trajectory, but may remain high after an incorrect transition. We introduce Dream2Reward, which learns a language-conditioned successful latent transition field from positive demonstrations. Given the visual history up to a transition start, the model predicts the latent displacement associated with successful execution and scores the observed displacement through signed directional and symmetric magnitude agreement. This transition-level comparison penalizes wrong-direction, overshooting, and stagnant motion even when the resulting observation appears to show progress. Dream2Reward requires no failure annotations, progress labels, or synthetic negatives, and produces a dense causal reward. Across mechanism diagnostics and shared-trajectory evaluations, it provides stronger success-failure separation and more informative feedback on low-quality behavior than progress-based alternatives. Across online and offline policy learning, the same frozen reward model reduces reward hacking and supports stronger downstream performance, including in real-robot manipulation. These results show that comparing realized motion with predicted successful change provides an effective way to convert positive demonstrations into dense rewards for robot learning.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/24/2608.16072v1-learn-whats-left-not-whats-mastered-saturation-aware-advantage-reweighting-for-multi-reward-policy-optimization",
+      "section": "quick",
+      "title_en": "Learn What's Left, Not What's Mastered: Saturation Aware Advantage Reweighting for Multi-Reward Policy Optimization",
+      "authors": "Yixuan Wang, Yifei Chen, Haichao Zhang, Haozheng Luo, Xander Wu, Jie Ni, Yun Fu, Nuno Vasconcelos, Yijiang Li",
+      "date": "2026-08-17",
+      "pdf": "https://arxiv.org/pdf/2608.16072v1",
+      "score": "6.0",
+      "evidence": "多奖励策略优化中的饱和感知优势重加权",
+      "tldr": "多奖励策略优化中，固定加权标量化与组标准化导致已达标目标仍占梯度预算，忽视剩余优化空间。SA-MRPO独立标准化每个奖励目标，并按批量饱和估计自适应折扣已饱和目标贡献，从而动态将优化力度转向欠优化目标。在数学、自适应推理和编码基准上，该方法在保持简单目标性能的同时，显著提升困难目标，如AIME24提高5%、AMC23提高9.2%。该方法为多目标强化学习提供了一种更高效的梯度分配策略。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Reinforcement learning (RL) with group-relative advantages has become the de facto standard for post-training language model reasoners. However, when optimizing multiple reward objectives, existing methods typically scalarize the reward vector with a fixed weighted sum before group-wise standardization. We show that this design leads to two fundamental problems: rollouts with distinct reward profiles can receive identical advantages, and all objectives are optimized with fixed relative weights regardless of their current level of saturation. As a result, training continues to allocate gradient budget to already-solved objectives instead of focusing on those with greater remaining headroom. We introduce \\textbf{Saturation Aware Advantage Reweighting for Multi-Reward Policy Optimization} (SA-MRPO), which standardizes each reward objective independently and adaptively discounts its contribution according to a batch-level estimate of objective saturation. This dynamically reallocates optimization effort toward under-optimized objectives while empirically maintaining performance on those that are already well satisfied. We further show that saturation-aware reweighting can reverse the sign of an update, rather than merely rescale its magnitude. Across mathematical reasoning with two- and three-objective reward combinations, SA-MRPO improves the harder correctness objective over GDPO in 12 of 15 benchmark comparisons, with gains of up to $5\\%$ on AIME24. On adaptive reasoning it improves accuracy on all five benchmarks, by $3.8\\%$ on average and up to $9.2 \\%$ on AMC23, and on coding benchmarks it improves pass rate by up to $2.3\\%$, while in all settings maintaining the easier objectives near their already satisfied levels.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
