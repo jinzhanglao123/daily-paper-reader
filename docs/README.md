@@ -6,35 +6,38 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-24
-- 运行时间：2026-08-24 20:42:46 UTC
+- 最新运行日期：2026-08-25
+- 运行时间：2026-08-25 20:59:56 UTC
 - 运行状态：成功
-- 本次总论文数：4
-- 精读区：1
+- 本次总论文数：5
+- 精读区：2
 - 速读区：3
 
 ### 今日简报（AI）
-- 今日共生成 4 篇推荐（精读 1 篇，速读 3 篇）
-- 精读：《Reinforcement Learning for Continuous-Time Jump Markov Decision Processes with Applications to Network Dynamic Pricing》（8.0/10）
-- 速读：《Agentic ESOpt: Fine-Tuning Long-Horizon LLM Agents with Minimal GPU Requirements》（7.0/10）, 《Dream2Reward: Transition-Alignment Reward Models from Positive Demonstrations for Robotic Manipulation》（7.0/10）, 《Learn What's Left, Not What's Mastered: Saturation Aware Advantage Reweighting for Multi-Reward Policy Optimization》（6.0/10）
+- 今日共生成 5 篇推荐（精读 2 篇，速读 3 篇）
+- 精读：《Let Credit Follow Computation: Architecture-Aware Credit Transport for Large Language Model Reinforcement Learning》（8.0/10）, 《Agent-G$^2$: Gaussian Guidance for Agentic Reinforcement Learning》（8.0/10）
+- 速读：《Prism-GRPO: Faster VLA Policy Optimization via Splitting Same-outcome Groups》（6.0/10）, 《CLSC DETR: Reliable Candidate Ranking via Cross Layer Geometric Support for UAV Small Object Detection》（6.0/10）, 《RACO: Reliability-Aware Coarse-Goal Optimization for Inspection-Oriented UAV Vision-Language Navigation》（6.0/10）
 - 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
-- 详情：[/202608/24/README](/202608/24/README)
+- 详情：[/202608/25/README](/202608/25/README)
 
 ### 精读区论文标签
-1. [Reinforcement Learning for Continuous-Time Jump Markov Decision Processes with Applications to Network Dynamic Pricing](/202608/24/2608.20680v1-reinforcement-learning-for-continuous-time-jump-markov-decision-processes-with-applications-to-network-dynamic-pricing)  
+1. [Let Credit Follow Computation: Architecture-Aware Credit Transport for Large Language Model Reinforcement Learning](/202608/25/2608.21501v1-let-credit-follow-computation-architecture-aware-credit-transport-for-large-language-model-reinforcement-learning)  
    标签：评分：8.0/10、query:uav-drl
-   evidence：连续时间跳跃MDP中混合连续/离散动作空间的强化学习
+   evidence：基于计算条件的信用传输用于LLM RL中的词元级优势估计，直接改进奖励分配
+2. [Agent-G$^2$: Gaussian Guidance for Agentic Reinforcement Learning](/202608/25/2608.23318v1-agent-g2-gaussian-guidance-for-agentic-reinforcement-learning)  
+   标签：评分：8.0/10、query:uav-drl
+   evidence：针对长时程任务奖励稀疏的高斯引导强化学习方法
 
 ### 速读区论文标签
-1. [Agentic ESOpt: Fine-Tuning Long-Horizon LLM Agents with Minimal GPU Requirements](/202608/24/2608.17310v2-agentic-esopt-fine-tuning-long-horizon-llm-agents-with-minimal-gpu-requirements)  
-   标签：评分：7.0/10、query:uav-drl
-   evidence：进化策略用于长时程智能体强化学习的信用分配
-2. [Dream2Reward: Transition-Alignment Reward Models from Positive Demonstrations for Robotic Manipulation](/202608/24/2608.18787v1-dream2reward-transition-alignment-reward-models-from-positive-demonstrations-for-robotic-manipulation)  
-   标签：评分：7.0/10、query:uav-drl
-   evidence：从演示中学习过渡对齐的奖励模型，为强化学习提供稠密且信息丰富的奖励信号
-3. [Learn What's Left, Not What's Mastered: Saturation Aware Advantage Reweighting for Multi-Reward Policy Optimization](/202608/24/2608.16072v1-learn-whats-left-not-whats-mastered-saturation-aware-advantage-reweighting-for-multi-reward-policy-optimization)  
+1. [Prism-GRPO: Faster VLA Policy Optimization via Splitting Same-outcome Groups](/202608/25/2608.17423v1-prism-grpo-faster-vla-policy-optimization-via-splitting-same-outcome-groups)  
    标签：评分：6.0/10、query:uav-drl
-   evidence：多奖励策略优化中的饱和感知优势重加权
+   evidence：用轨迹级执行质量分数增强二元结果奖励，恢复同结果组中的优势信号
+2. [CLSC DETR: Reliable Candidate Ranking via Cross Layer Geometric Support for UAV Small Object Detection](/202608/25/2608.21457v1-clsc-detr-reliable-candidate-ranking-via-cross-layer-geometric-support-for-uav-small-object-detection)  
+   标签：评分：6.0/10、query:uav-drl
+   evidence：无人机小目标检测，可应用于输电线路缺陷检测
+3. [RACO: Reliability-Aware Coarse-Goal Optimization for Inspection-Oriented UAV Vision-Language Navigation](/202608/25/2608.22678v1-raco-reliability-aware-coarse-goal-optimization-for-inspection-oriented-uav-vision-language-navigation)  
+   标签：评分：6.0/10、query:uav-drl
+   evidence：面向巡检的无人机导航与粗目标优化
 
 
 <div class="dpr-home-promo-card">

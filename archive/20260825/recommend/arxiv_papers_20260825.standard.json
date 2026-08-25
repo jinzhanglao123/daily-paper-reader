@@ -1,0 +1,216 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-25T20:54:22.541271+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 3,
+    "quick_skim_target": 11,
+    "quick_selected": 3
+  },
+  "deep_dive": [
+    {
+      "id": "2608.21501v1",
+      "source": "arxiv",
+      "title": "Let Credit Follow Computation: Architecture-Aware Credit Transport for Large Language Model Reinforcement Learning",
+      "abstract": "Credit assignment in large-language-model reinforcement learning (LLM RL) can be separated into three objects: evidence about success, a transport operator that converts this evidence into token-level advantages, and an update geometry that turns advantages into policy changes. Recent work has greatly improved evidence, sampling, and update geometry, but the transport operator is usually architecture-agnostic. Fixed-discount GAE applies a stationary geometric kernel along token time; group-relative methods broadcast an outcome statistic across an entire response. Neither operator represents the trajectory-specific computation used by the Transformer policy itself. We introduce computation-conditioned credit transport (CCT), a general framework in which a detached statistic of the behavior policy's internal computation parameterizes the causal kernel that transports downstream value through a rollout. Our concrete algorithm, CompPO, maps native attention concentration to a bounded per-token retention gate, uses the gate in both the one-step bootstrap and a path-dependent generalized-advantage trace (Comp-GAE), and co-designs a transport-aligned critic (TAC) that reuses the actor's hidden states and routing information without a second same-scale Transformer. The task reward and clipped PPO policy objective remain unchanged; a constant gate recovers fixed-coefficient GAE. Across five Qwen3-4B seeds, CompPO reaches 61.4% final held-out accuracy (95% CI [60.8,62.0]) versus 53.8% [52.9,54.7] for tuned GRPO. Neither Comp-GAE with a standard critic (55.2%) nor TAC with a fixed gate (56.4%) matches the full model (interaction +2.4 [1.9,2.9]). Shuffle and position controls confirm trajectory-specific alignment; CompPO is stable in 10/12 PPO-grid runs versus 3/12. Frozen evaluation improves over GRPO by 4.3 and 3.9 greedy pass@1 macro points on Qwen3-4B and Llama-3.1-8B-Instruct.",
+      "authors": [
+        "Qifan Shi",
+        "Zhaolu Kang",
+        "Chenghua Zhu"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-08-21T16:25:26+00:00",
+      "link": "https://arxiv.org/pdf/2608.21501v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "computation-conditioned credit transport for token-level advantage estimation in LLM RL, directly improves reward assignment",
+      "llm_evidence_cn": "基于计算条件的信用传输用于LLM RL中的词元级优势估计，直接改进奖励分配",
+      "llm_evidence": "基于计算条件的信用传输用于LLM RL中的词元级优势估计，直接改进奖励分配",
+      "canonical_evidence": "基于计算条件的信用传输用于LLM RL中的词元级优势估计，直接改进奖励分配",
+      "llm_tldr_en": "Introduces architecture-aware credit transport that conditions credit assignment on the trajectory-specific computation of the Transformer policy, addressing limitations of fixed-discount GAE and group-relative methods for LLM RL.",
+      "llm_tldr_cn": "该论文针对大语言模型强化学习中信用分配传输算子通常与模型架构无关、无法表征策略自身轨迹特定计算的问题，提出计算条件化的信用传输方法。它分离成功证据、传输算子和更新几何，利用Transformer策略本身的计算结构将结果证据转换为词元级优势。相比固定折扣GAE和组相对方法的静态核或广播，该方法实现更精细的信用分配。实验表明可提升LLM RL的信用分配质量与策略优化效果，对长时程奖励分配问题具有重要参考价值。",
+      "llm_tldr": "该论文针对大语言模型强化学习中信用分配传输算子通常与模型架构无关、无法表征策略自身轨迹特定计算的问题，提出计算条件化的信用传输方法。它分离成功证据、传输算子和更新几何，利用Transformer策略本身的计算结构将结果证据转换为词元级优势。相比固定折扣GAE和组相对方法的静态核或广播，该方法实现更精细的信用分配。实验表明可提升LLM RL的信用分配质量与策略优化效果，对长时程奖励分配问题具有重要参考价值。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.23318v1",
+      "source": "arxiv",
+      "title": "Agent-G$^2$: Gaussian Guidance for Agentic Reinforcement Learning",
+      "abstract": "Hint-based reinforcement learning addresses reward sparsity in long-horizon agentic tasks by retaining a prefix of an expert trajectory before each rollout, letting the policy explore from a state closer to success. Its effectiveness hinges on the guidance depth: how much of the trajectory to keep. Existing methods treat this depth as a deterministic scalar. Scheduled approaches share one value across samples and ignore per-task heterogeneity; per-sample probing estimates it separately at the cost of extra rollouts. We find that useful guidance occupies a band of depths whose informativeness profile is approximately Gaussian around the band center, rather than concentrating at a single optimal point. We propose Agent-G$^2$, a Gaussian guidance framework that draws the depth per task from a Gaussian whose center and spread are estimated online from rollouts already collected for policy optimization, requiring no probe rollouts or learned depth predictor. The center combines a global baseline with per-cluster difficulty, and the spread tracks within-cluster variance. We evaluate Agent-G$^2$ on ALFWorld and WebShop on Qwen2.5-1.5B / 7B-Instruct. Agent-G$^2$ outperforms the strongest hint-based, hint-free, and Aux-RL baselines on ALFWorld by 2.3 / 3.9 / 7.4 points at under one-third the rollout cost of per-sample probing.",
+      "authors": [
+        "Zixuan Wang",
+        "Yanrui Miao",
+        "Zhengxi Lu",
+        "Teng Pan",
+        "Yiwen Qiu",
+        "Hongxing Li",
+        "Peng Qiu",
+        "Ruiqing Zhang",
+        "Yongliang Shen"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI",
+        "cs.CL"
+      ],
+      "published": "2026-08-24T14:34:34+00:00",
+      "link": "https://arxiv.org/pdf/2608.23318v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "Gaussian guidance for hint-based RL addressing reward sparsity in long-horizon tasks",
+      "llm_evidence_cn": "针对长时程任务奖励稀疏的高斯引导强化学习方法",
+      "llm_evidence": "针对长时程任务奖励稀疏的高斯引导强化学习方法",
+      "canonical_evidence": "针对长时程任务奖励稀疏的高斯引导强化学习方法",
+      "llm_tldr_en": "For long-horizon agentic RL with sparse rewards, existing hint-based methods treat guidance depth as deterministic scalar, but the paper finds useful guidance depths follow a Gaussian profile and proposes Agent-G^2 to model and exploit this, improving efficiency over scheduled and per-sample probing approaches.",
+      "llm_tldr_cn": "长时程智能体任务存在奖励稀疏问题，提示式强化学习依赖于保留专家轨迹前缀的引导深度选择。现有方法将引导深度视为固定标量或逐样本探测，忽略任务异质性。本文发现有效引导深度呈近似以带中心为均值的高斯分布，提出Agent-G²高斯引导框架动态选择引导深度。实验表明该方法比固定深度和逐样本探测方法更高效，为长时程稀疏奖励强化学习提供了灵活且可扩展的引导方案。",
+      "llm_tldr": "长时程智能体任务存在奖励稀疏问题，提示式强化学习依赖于保留专家轨迹前缀的引导深度选择。现有方法将引导深度视为固定标量或逐样本探测，忽略任务异质性。本文发现有效引导深度呈近似以带中心为均值的高斯分布，提出Agent-G²高斯引导框架动态选择引导深度。实验表明该方法比固定深度和逐样本探测方法更高效，为长时程稀疏奖励强化学习提供了灵活且可扩展的引导方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.17423v1",
+      "source": "arxiv",
+      "title": "Prism-GRPO: Faster VLA Policy Optimization via Splitting Same-outcome Groups",
+      "abstract": "GRPO is increasingly used for reinforcement learning of vision-language-action (VLA) policies because, unlike PPO, it does not require training a critic. This simplification comes with a sampling cost: group-relative advantages require multiple rollouts from each scene. Under binary success rewards, groups whose rollouts all succeed or all fail have zero advantage and are discarded by dynamic sampling. These groups are especially common early in training, when most rollouts fail, wasting much of the expensive robotic rollout budget. We introduce Prism-GRPO, which augments binary outcome reward with a weighted trajectory-level execution-quality score. By splitting same-outcome groups into a quality spectrum, Prism-GRPO recovers training signal while ensuring that every success still outranks every failure. Quality scores can be derived from simulator contacts, executed actions, or visual observations, avoiding task-specific progress rewards. We prove that Prism-GRPO never increases the probability that a sampled group is discarded for having zero advantages, and derive a gradient-alignment condition under which its combined update remains a local ascent direction for task success. Across four RoboTwin tasks spanning different horizons and coordination patterns, Prism-GRPO improves success and quality at matched rollout budgets and reaches target success rates with up to 56% fewer rollouts. It also suppresses a reward-hacking shortcut, with the cleaner behavior transferring under direct deployment to a real robot. Through ablations, we show consistent gains across contact-, smoothness-, and VLM-derived quality signals.",
+      "authors": [
+        "Zeyun Deng",
+        "Yuzhe Lu",
+        "Yawei Wang",
+        "Linbo Liu",
+        "Qing Ping",
+        "Han Ding",
+        "Guande Wu",
+        "Panpan Xu",
+        "Jun Huan"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.LG"
+      ],
+      "published": "2026-08-18T06:44:16+00:00",
+      "link": "https://arxiv.org/pdf/2608.17423v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "augments binary outcome reward with trajectory-level quality score to recover advantage signal in same-outcome groups",
+      "llm_evidence_cn": "用轨迹级执行质量分数增强二元结果奖励，恢复同结果组中的优势信号",
+      "llm_evidence": "用轨迹级执行质量分数增强二元结果奖励，恢复同结果组中的优势信号",
+      "canonical_evidence": "用轨迹级执行质量分数增强二元结果奖励，恢复同结果组中的优势信号",
+      "llm_tldr_en": "Prism-GRPO improves GRPO for VLA policy optimization by splitting same-outcome groups with a quality spectrum, recovering training signal wasted when all rollouts succeed or fail, especially in early training.",
+      "llm_tldr_cn": "该论文针对GRPO在视觉-语言-动作策略强化学习中因组相对优势需多次采样、且同结果组优势为零导致采样浪费的问题，提出Prism-GRPO方法。通过将轨迹级执行质量分数与二元结果奖励加权结合，将原来全成功或全失败的组分裂为质量谱，从而在训练早期多数轨迹失败时也能恢复有效训练信号。该方法在不训练评论家的情况下加速VLA策略优化，减少昂贵机器人采样预算浪费，对奖励信号设计具有启示意义。",
+      "llm_tldr": "该论文针对GRPO在视觉-语言-动作策略强化学习中因组相对优势需多次采样、且同结果组优势为零导致采样浪费的问题，提出Prism-GRPO方法。通过将轨迹级执行质量分数与二元结果奖励加权结合，将原来全成功或全失败的组分裂为质量谱，从而在训练早期多数轨迹失败时也能恢复有效训练信号。该方法在不训练评论家的情况下加速VLA策略优化，减少昂贵机器人采样预算浪费，对奖励信号设计具有启示意义。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.21457v1",
+      "source": "arxiv",
+      "title": "CLSC DETR: Reliable Candidate Ranking via Cross Layer Geometric Support for UAV Small Object Detection",
+      "abstract": "Unmanned aerial vehicle (UAV) object detection is critical for applications such as target search, where accurate detection of small objects in complex aerial scenes remains challenging. The limited spatial extent, dense distribution, and frequent occlusion of small objects make reliable candidate ranking particularly difficult. Existing Detection Transformer (DETR) based methods improve ranking by estimating localization quality from individual queries and incorporating it into classification scores. However, a single query often lacks sufficient geometric evidence for small objects with weak boundary cues, resulting in unreliable quality estimation and unstable ranking. To address this limitation, we propose Cross Layer Local Support and Consistency Calibration for DETR, termed CLSC DETR. Specifically, the Cross Layer Local Support module establishes correspondences between final layer queries and intermediate layer candidates to aggregate complementary geometric evidence for more reliable localization quality estimation, while the Classification and Localization Consistency Calibration module adaptively adjusts classification scores according to localization quality and classification reliability to improve candidate ranking. Experiments show that CLSC DETR improves AP and AP$_{75}$ over the baseline by 1.5\\% and 2.0\\% on VisDrone, respectively, while achieving consistent improvements on UAVDT.",
+      "authors": [
+        "Junyan Lin"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV"
+      ],
+      "published": "2026-08-20T14:37:37+00:00",
+      "link": "https://arxiv.org/pdf/2608.21457v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "UAV small object detection, applicable to transmission line defect detection",
+      "llm_evidence_cn": "无人机小目标检测，可应用于输电线路缺陷检测",
+      "llm_evidence": "无人机小目标检测，可应用于输电线路缺陷检测",
+      "canonical_evidence": "无人机小目标检测，可应用于输电线路缺陷检测",
+      "llm_tldr_en": "Addresses unreliable candidate ranking for small objects in UAV aerial scenes; proposes cross-layer geometric support within DETR to improve localization quality estimation.",
+      "llm_tldr_cn": "无人机航拍小目标检测中，单个查询缺乏足够几何证据导致候选排序不可靠。本文提出跨层几何支持机制，在DETR框架中融合多层特征增强定位质量估计，提升小目标候选排序的稳定性。在无人机小目标检测数据集上的实验表明该方法能有效提高检测精度，为输电线路缺陷检测等任务提供了更可靠的检测基础。",
+      "llm_tldr": "无人机航拍小目标检测中，单个查询缺乏足够几何证据导致候选排序不可靠。本文提出跨层几何支持机制，在DETR框架中融合多层特征增强定位质量估计，提升小目标候选排序的稳定性。在无人机小目标检测数据集上的实验表明该方法能有效提高检测精度，为输电线路缺陷检测等任务提供了更可靠的检测基础。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "transmission line defect detection from UAV imagery",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.22678v1",
+      "source": "arxiv",
+      "title": "RACO: Reliability-Aware Coarse-Goal Optimization for Inspection-Oriented UAV Vision-Language Navigation",
+      "abstract": "UAV vision-language navigation (UAV-VLN) is commonly evaluated as goal reaching, but inspection-oriented deployment requires the agent to stop within a valid inspection region and avoid falsely confirming visually or semantically similar distractors. This requirement exposes a key weakness in existing coarse-to-fine UAV-VLN policies: the coarse goal predicted before local refinement is often treated as reliable, although it may drift toward plausible but incorrect object regions and limit the ability of the local stage to recover. To systematically evaluate this problem, we introduce LG-UVI, an object-centric inspection evaluation setting derived from CityNav/CityRefer. LG-UVI extends standard UAV-VLN episodes with target objects, hard distractors, type-aware inspection regions, and diagnostics for inspection-region arrival and object-level confirmation. To address this inspection-oriented setting, we further propose RACO, a reliability-aware adaptive coarse-to-fine navigation framework. Instead of treating the predicted coarse goal as a fixed waypoint, RACO views it as a runtime hypothesis and uses object-level candidate anchors to check and correct coarse localization before Stage 1 and at the Stage 1-to-Stage 2 boundary. RACO also applies scale-adaptive terminal refinement to handle terminal near-miss cases using runtime-observable geometric and anchor-based evidence. Under a unified online evaluation protocol, RACO improves SR over the reproduced HETT baseline by 9.53 and 7.98 percentage points on validation-unseen and test-unseen, respectively. It also improves inspection-region arrival and reduces false verification risk, showing that coarse-goal reliability optimization is an effective complement to existing coarse-to-fine UAV-VLN policies.",
+      "authors": [
+        "Sen Wang",
+        "Yiming Sun",
+        "Jiaxuan He",
+        "Pengfei Zhu"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI",
+        "cs.CV"
+      ],
+      "published": "2026-08-24T00:32:51+00:00",
+      "link": "https://arxiv.org/pdf/2608.22678v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Inspection-oriented UAV navigation with coarse-goal optimization",
+      "llm_evidence_cn": "面向巡检的无人机导航与粗目标优化",
+      "llm_evidence": "面向巡检的无人机导航与粗目标优化",
+      "canonical_evidence": "面向巡检的无人机导航与粗目标优化",
+      "llm_tldr_en": "Improves UAV vision-language navigation for inspection by optimizing coarse goals to avoid distractors and stop within valid inspection regions.",
+      "llm_tldr_cn": "面向巡检的无人机视觉语言导航需要准确停在有效巡检区域并避免相似干扰。现有粗到细策略中粗目标预测不可靠，易漂移至错误区域。本文提出可靠性感知的粗目标优化方法，并引入LG-UVI评测设置，包含目标中心巡检任务。实验表明该方法能显著提升巡检导航的成功率和可靠性，为无人机自主巡检提供了更鲁棒的导航能力。",
+      "llm_tldr": "面向巡检的无人机视觉语言导航需要准确停在有效巡检区域并避免相似干扰。现有粗到细策略中粗目标预测不可靠，易漂移至错误区域。本文提出可靠性感知的粗目标优化方法，并引入LG-UVI评测设置，包含目标中心巡检任务。实验表明该方法能显著提升巡检导航的成功率和可靠性，为无人机自主巡检提供了更鲁棒的导航能力。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "deep reinforcement learning for UAV inspection tasks",
+      "matched_requirement_id": "req-1",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}

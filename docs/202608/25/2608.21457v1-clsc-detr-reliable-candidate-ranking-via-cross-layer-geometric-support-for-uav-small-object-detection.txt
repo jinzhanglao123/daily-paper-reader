@@ -1,0 +1,278 @@
+Title: CLSC DETR: Reliable Candidate Ranking via Cross Layer Geometric Support for UAV Small Object Detection
+
+URL Source: https://arxiv.org/pdf/2608.21457v1
+
+Published Time: Tue, 25 Aug 2026 00:03:33 GMT
+
+Number of Pages: 5
+
+Markdown Content:
+## CLSC DETR: RELIABLE CANDIDATE RANKING VIA CROSS LAYER GEOMETRIC SUPPORT FOR UAV SMALL OBJECT DETECTION 
+
+## Junyan Lin 
+
+## South China Agricultural University Guangzhou, China 
+
+## ljygarcia@stu.scau.edu.cn 
+
+ABSTRACT 
+
+Unmanned aerial vehicle (UAV) object detection is critical for applications such as target search, where accurate detec-tion of small objects in complex aerial scenes remains chal-lenging. The limited spatial extent, dense distribution, and frequent occlusion of small objects make reliable candidate ranking particularly difficult. Existing Detection Transformer (DETR) based methods improve ranking by estimating local-ization quality from individual queries and incorporating it into classification scores. However, a single query often lacks sufficient geometric evidence for small objects with weak boundary cues, resulting in unreliable quality estimation and unstable ranking. To address this limitation, we propose Cross Layer Local Support and Consistency Calibration for DETR, termed CLSC DETR. Specifically, the Cross Layer Local Support module establishes correspondences between final layer queries and intermediate layer candidates to ag-gregate complementary geometric evidence for more reliable localization quality estimation, while the Classification and Localization Consistency Calibration module adaptively ad-justs classification scores according to localization quality and classification reliability to improve candidate ranking. Experiments show that CLSC DETR improves AP and AP 75 
+
+over the baseline by 1.5% and 2.0% on VisDrone, respec-tively, while achieving consistent improvements on UAVDT. 
+
+Index Terms — unmanned aerial vehicles, small object detection, Detection Transformer, localization quality 
+
+1. INTRODUCTION 
+
+Recent advances in visual representation learning have driven progress across a broad range of vision tasks, including struc-tured human generation and customizable virtual dressing [1, 2]. In aerial perception, unmanned aerial vehicles (UAVs) have been widely adopted owing to their flexible deployment and wide area observation capabilities, where reliable small object detection is essential for extracting critical target in-formation [3]. However, objects in UAV imagery are often small, densely distributed, and heavily occluded, providing …… 
+
+> L
+> ……
+> Proposal Boxes
+> …
+> Proposal Quality IoU Top-K, Mean Qgeo
+> …
+
+Fig. 1 . Structure of the Cross-Layer Local Support Module. 
+
+⊗ is the multiplication. limited appearance and boundary cues for accurate localiza-tion. These characteristics not only increase localization dif-ficulty but also make candidate ranking unreliable, since clas-sification confidence may not faithfully reflect bounding box quality. Therefore, reliable localization quality estimation is critical for promoting well localized predictions and improv-ing UAV small object detection. Existing studies have improved Detection Transformer (DETR) [4] mainly through architectural design and feature representation. DINO enhances query learning through con-trastive denoising training and mixed query selection [5], while RT-DETR introduces an efficient hybrid encoder to balance detection accuracy and inference efficiency [6]. MI-DETR further improves feature utilization through a paral-lel multi time inquiry mechanism [7]. For UAV imagery, UAV-DETR combines frequency enhancement, multiscale feature fusion, and semantic calibration to strengthen small object representations [8]. HEDS-DETR and EFSI-DETR further preserve fine grained information through high fre-quency semantics, geometric priors, and frequency spatial interaction [9, 10]. Although these methods improve fea-ture representation, candidate ranking still depends largely on classification scores, which are not necessarily consistent with the localization quality of the predicted boxes. Another line of research explicitly considers localization arXiv:2608.21457v1 [cs.CV] 20 Aug 2026 Decoder Layer 
+
+> CLC-Module
+> Encoder Layer Encoder Layer
+> Multi-Scale Features Flatten & Concat
+> CLS-Module
+
+…   
+
+> Encoder Layer Prediction
+> feature token object query Encoder Layer Encoder Layer Encoder Layer
+
+…
+
+> Decoder Layer
+
+Fig. 2 . Overview of the CLSC-DETR . CLS-Module represents the Cross-Layer Local Support Module; CLC-Module denotes the Classification-Localization Consistency Calibration Module. quality and classification localization consistency. IoU-Net predicts IoU as an estimate of bounding box localization qual-ity [11], while Cascade-DETR predicts the expected IoU as-sociated with each query and uses it to calibrate classifica-tion scores [12]. Cal-DETR improves confidence calibration through uncertainty guided logit modulation and logit mix-ing [13]. Rank-DETR introduces ranking oriented architec-tural designs, objectives, and matching costs to promote high quality predictions [14], whereas Align-DETR improves clas-sification localization consistency through task alignment and cross layer query alignment [15]. Despite these advances, localization quality is still estimated primarily from the rep-resentation of each individual candidate. For small objects, however, a single query contains limited and potentially noisy geometric information due to weak boundaries and insuffi-cient spatial support. As a result, its localization quality esti-mate can fluctuate substantially, causing poorly localized pre-dictions to receive high ranking scores while suppressing bet-ter localized candidates. To address this limitation, we propose CLSC-DETR, a Cross Layer Local Support and Consistency Calibration framework for UAV small object detection. The key idea is to exploit complementary geometric evidence across net-work layers rather than relying solely on an individual query. Specifically, the Cross Layer Local Support Quality Estima-tion module establishes correspondences between final layer queries and intermediate layer candidates, and integrates their spatial overlap and localization quality to obtain more reliable geometric support. Based on the refined quality esti-mate, the Classification Localization Consistency Calibration module further adjusts the contribution of localization quality according to classification reliability, preventing uncertain geometric estimates from excessively suppressing semanti-cally reliable candidates. Together, the two modules improve localization quality estimation and classification localization consistency, leading to more reliable candidate ranking. Our main contributions are summarized as follows: 
+
+• We propose a Cross Layer Local Support Quality Es-timation module that aggregates complementary geo-metric evidence from intermediate candidates to im-prove localization quality estimation for small objects. 
+
+• We develop a Classification Localization Consistency Calibration module that adaptively balances classifica-tion confidence and localization quality according to classification reliability, enabling more reliable candi-date ranking. 
+
+• Extensive experiments on VisDrone and UAVDT demon-strate the effectiveness of CLSC DETR. Compared with the baseline, our method improves AP and AP 75 
+
+by 1.5% and 2.0% on VisDrone, and by 3.0% and 3.8% on UAVDT, respectively. 
+
+2. PROPOSED METHOD Overview. As shown in Fig. 2, CLSC-DETR extends MI-DETR [7] with Cross-Layer Local Support Quality Estima-tion and Classification–Localization Consistency Calibration. The former leverages cross-layer support to improve the ro-bustness of small-object query quality estimation, while the latter aligns classification scores with localization quality to enable more reliable candidate ranking. 
+
+2.1. Cross-Layer Local Support Quality Estimation 
+
+In small-object scenarios, localization quality estimation based on individual queries is susceptible to feature noise. To obtain more stable estimates, we propose the Cross-Layer Local Support Quality Estimation module (CLS-Module), which enhances final-layer queries by aggregating geometric evidence from corresponding candidates across encoder lay-ers. As shown in Fig. 1, a shared prediction head is applied to the intermediate encoder layers M and the final layer L
+
+to ensure consistent predictions across layers. For each final-layer candidate i, we search a local neighborhood of radius ρ
+
+around its corresponding position in each intermediate layer and collect the candidates into an auxiliary set Ωi. For each auxiliary candidate (ℓ, j ) ∈ Ωi, where ℓ ∈ M denotes the intermediate encoder layer index and j denotes the candi-date box index within that layer, its geometric evidence for Table 1 . Comparison on the VisDrone-DET and UAVDT datasets. 
+
+VisDrone-DET UAVDT Method Pub.Year AP AP 50 AP 75 AP S AP S 
+
+> 50
+
+AP S 
+
+> 75
+
+AP AP 50 AP 75 AP S
+
+YOLOv10-X [16] NIPS.2024 27.5 44.8 28.2 17.4 34.2 15.9 32.2 50.0 37.6 21.4 YOLOv11-X [17] arXiv.2024 26.7 43.3 27.5 17.1 33.1 15.7 32.9 55.3 32.8 24.9 DINO [5] ICLR.2023 33.7 56.9 33.9 25.5 49.3 23.2 34.8 59.9 36.9 24.5 Rank-DETR [14] NIPS.2023 32.7 54.5 33.0 24.4 46.5 22.2 33.1 58.2 35.4 23.5 Align-DETR [15] BMVC.2024 32.9 55.3 32.8 24.9 48.1 22.2 34.8 57.1 39.9 22.8 RT-DETR [6] CVPR.2024 29.5 49.7 29.3 19.6 39.5 16.8 33.7 53.3 39.6 20.5 MI-DETR [7] CVPR.2025 33.7 56.4 33.9 25.5 48.7 23.7 34.0 59.1 36.4 22.7 
+
+Ours – 35.2 57.9 35.9 26.6 49.9 25.2 37.0 62.9 40.2 26.6 
+
+Table 2 . Ablation experiments of the proposed modules. 
+
+No. Settings Metrics CLS CLC AP AP 50 AP 75 
+
+1 ✗ ✗ 33.7 56.3 33.9 2 ✓ ✗ 34.7 57.2 35.5 3 ✗ ✓ 34.6 57.7 35.0 4 ✓ ✓ 35.2 57.9 35.9 
+
+final-layer candidate i is defined as 
+
+gℓij = IoU  bLi , bℓj
+
+ qℓj , (1) where b and q denote the predicted box and localization qual-ity, respectively. Thus, only reliable auxiliary candidates that highly overlap with the final-layer candidate provide strong support. To suppress noisy correspondences, we aggregate only the Top-K candidates with the strongest geometric evi-dence: 
+
+Ti = TopK (ℓ,j )∈Ωi
+
+ gℓij 
+
+ , Gi = 1
+
+|T i|
+
+X
+
+> (ℓ,j )∈T i
+
+gℓij , (2) where Gi denotes the aggregated cross-layer local support. The localization quality is then refined as 
+
+Qgeo  
+
+> i
+
+= αG iqLi , (3) where α is a scaling coefficient. A candidate obtains a high 
+
+Qgeo  
+
+> i
+
+only when it has reliable intrinsic localization and re-ceives consistent cross-layer support, reducing quality fluctu-ations caused by single-query prediction errors. 
+
+2.2. Classification–Localization Consistency Calibration 
+
+We propose Classification–Localization Consistency Calibra-tion (CLC-Module), which adaptively adjusts the contribution of geometric quality according to classification reliability. For candidate i, let pi = {pi,c }c∈C and zi denote its classifica-tion probability vector and logits, respectively. We estimate its classification reliability using the maximum classification score, classification margin, and entropy-based certainty: 
+
+si = max  
+
+> c∈C
+
+pi,c , mi = pi,c (1) 
+
+> i
+
+− pi,c (2) 
+
+> i
+
+,hi = 1 − H(Softmax( zi)) log |C| ,Rcls  
+
+> i
+
+= λ1N (si) + λ2N (mi) + λ3N (hi),
+
+(4) where c(1)  
+
+> i
+
+and c(2)  
+
+> i
+
+denote the categories with the highest and second-highest classification probabilities, respectively. H(·)
+
+denotes Shannon entropy, N (·) denotes image-wise normal-ization, and λ1, λ2, and λ3 are the fusion weights of the three classification cues. We then compare Rcls  
+
+> i
+
+with the normal-ized geometric quality to compute the protection factor and final calibrated score: 
+
+ui = ReLU  Rcls  
+
+> i
+
+− N (Qgeo  
+
+> i
+
+) Rcls  
+
+> i
+
+,Si,c = pi,c (Qgeo  
+
+> i
+
+)β(1 −γu i) , (5) where ui and Si,c are the protection factor and final category score, respectively; β and γ control the geometric contribu-tion and protection strength. When classification is more reli-able than geometric quality, ui reduces the geometric penalty to avoid suppressing valid candidates and improve ranking. 
+
+3. EXPERIMENT AND ANALYSIS Datasets. We evaluate CLSC-DETR on UAVDT [18] and VisDrone2019-DET [19]. For VisDrone, the official training and validation sets, containing 6,471 and 548 images, are used for training and evaluation, respectively. For UAVDT, we construct UAVDT-5.3K from its 30 training sequences. We use 24 sequences for training by sampling every four frames and the remaining six for validation by sampling every ten frames, yielding 4,793 and 503 images without sequence overlap. 
+
+Implementation Details. CLSC-DETR is built upon MI-DETR [7] with a ResNet-50 backbone [20]. All models are trained for 90,000 iterations on two NVIDIA GeForce RTX 5090 GPUs with a batch size of 4. We use AdamW [21] with learning rates of 1 × 10 −4 and 1 × 10 −5 for the detector and backbone, respectively, and a weight decay of 1 × 10 −4. The learning rate is reduced to 1 × 10 −5 after 82,500 iterations, Table 3 . Comparison of score calibration strategies. 
+
+Strategy AP AP 50 AP 75 
+
+Fixed exponent ( η = 0 .5) 34.8 57.2 35.4 Linear fusion ( ω = 0 .65 ) 34.8 57.3 35.4 Ours 35.2 57.9 35.9 
+
+Table 4 . Sensitivity analysis of key hyperparameters in CLSC-DETR. Only the specified parameter is varied in each group, while all other settings remain fixed. 
+
+Parameter Value AP AP 50 AP 75 
+
+K
+
+1 35.1 57.5 36.1 
+
+2 35.2 57.9 35.9 4 35.0 57.3 35.9 8 34.8 57.0 35.6 
+
+α
+
+0.5 34.9 57.0 35.6 1.0 35.2 57.9 35.9 2.0 34.9 57.6 36.0 
+
+3.0 34.8 57.7 35.5 
+
+β
+
+0.10 35.0 58.1 35.6 0.20 35.2 57.9 35.9 0.30 35.1 57.5 36.0 
+
+0.50 34.8 56.4 35.9 
+
+γ
+
+0.8 35.1 57.5 36.0 
+
+1.2 35.2 57.9 35.9 4.0 34.8 57.3 35.5 8.0 34.5 57.0 35.0 
+
+and gradients are clipped with a maximum norm of 0.1. We report the standard COCO metrics, including AP, AP 50 , AP 75 ,and AP S .
+
+3.1. Comparison with State-of-the-art Methods 
+
+As shown in Table 1, CLSC-DETR achieves the best overall performance on both datasets. Compared with MI-DETR, it improves AP/AP 50 /AP 75 /AP S by 1.5%/1.5%/2.0%/1.1% on VisDrone and 3.0%/3.8%/3.8%/3.9% on UAVDT. These results validate the effectiveness of cross-layer geometric support and consistency calibration in improving localization quality estimation and candidate ranking. The larger gains on UAVDT may stem from its vehicle-dominated, concentrated category distribution and dense, scale-varying objects, which make candidate ranking more sensitive to localization quality. 
+
+3.2. Ablation Studies and Analysis Component Effectiveness. Table 2 shows that CLS-Module and CLC-Module are effective and complementary. CLS-Module improves AP and AP 75 by 1.0% and 1.6%, while CLC-Module improves AP and AP 50 by 0.9% and 1.4%; combining them increases AP and AP 75 by 1.5% and 2.0%, respectively. These gains arise because CLS-Module sta-bilizes localization quality estimation, while CLC-Module improves classification–localization consistency. 
+
+Calibration Strategies. As shown in Table 3, we compare the adaptive calibration strategy with fixed-exponent fusion, 1 100 300 500 700 900 
+
+> Per-image ranking budget K
+> 0.3 0.4 0.5 0.6 0.7 0.8 0.9
+> Mean IoU@K
+> Before calibration After calibration
+
+Fig. 3 . Mean class-agnostic maximum IoU of the Top-K
+
+queries before and after calibration. K denotes the per-image ranking budget. 
+
+Sfix  
+
+> i,c
+
+= pi,c (Qgeo  
+
+> i
+
+)η , and linear fusion, Slin  
+
+> i,c
+
+= pi,c [(1 − ω) + 
+
+ωQ geo  
+
+> i
+
+]. Our method improves AP by 0.4% over both alter-natives. This advantage stems from adaptively adjusting the contribution of geometric quality according to classification reliability, thereby avoiding the limitation of applying a glob-ally fixed coefficient to all candidates. 
+
+Hyperparameter Sensitivity. Table 4 shows that CLSC-DETR remains stable across the tested parameter ranges. The best performance is obtained with K = 2 , α = 1 .0, β = 0 .20 ,and γ = 1 .2. Aggregating excessive candidates or applying overly strong calibration may introduce noise and disturb the classification and localization balance. 
+
+Visualization. As shown in Fig. 3, the calibrated rank-ing achieves a higher Mean IoU@ K across most ranking budgets, indicating that better-localized queries are ranked higher. These results demonstrate that the proposed calibra-tion strategy improves localization-quality-aware candidate ranking without changing the candidate set. 
+
+4. CONCLUSION 
+
+This paper proposes CLSC-DETR, a Cross-Layer Local Sup-port and Consistency Calibration framework for UAV small-object detection. By integrating the CLS and CLC modules, CLSC-DETR alleviates localization quality estimation bias and candidate-ranking instability caused by insufficient geo-metric information. CLS improves small-object localization quality estimation through cross-layer geometric support, while CLC mitigates classification–localization inconsistency through classification-reliability-aware calibration. Com-pared with MI-DETR, CLSC-DETR improves AP/AP 75 by 1.5%/2.0% on VisDrone and 3.0%/3.8% on UAVDT. The cur-rent fixed local search and Top-K aggregation may not fully adapt to object-scale variations. Future work will explore learnable neighborhoods and adaptive cross-layer aggrega-tion to further improve representation and generalization. 5. REFERENCES 
+
+[1] Fei Shen and Jinhui Tang, “Imagpose: A unified con-ditional framework for pose-guided person generation,” 
+
+Advances in neural information processing systems , vol. 37, pp. 6246–6266, 2024. [2] Fei Shen, Xin Jiang, Xin He, Hu Ye, Cong Wang, Xi-aoyu Du, Zechao Li, and Jinhui Tang, “Imagdressing-v1: Customizable virtual dressing,” in Proceedings of the AAAI Conference on Artificial Intelligence , 2025, vol. 39, pp. 6795–6804. [3] Pengfei Zhu, Longyin Wen, Xiao Bian, Haibin Ling, and Qinghua Hu, “Vision meets drones: A challenge,” 
+
+arXiv preprint arXiv:1804.07437 , 2018. [4] Nicolas Carion, Francisco Massa, Gabriel Synnaeve, Nicolas Usunier, Alexander Kirillov, and Sergey Zagoruyko, “End-to-end object detection with trans-formers,” in European Conference on Computer Vision ,2020, pp. 213–229. [5] Hao Zhang, Feng Li, Shilong Liu, Lei Zhang, Hang Su, Jun Zhu, Lionel M. Ni, and Heung-Yeung Shum, “DINO: DETR with improved denoising anchor boxes for end-to-end object detection,” in International Con-ference on Learning Representations , 2023. [6] Yian Zhao, Wenyu Lv, Shangliang Xu, Jinman Wei, Guanzhong Wang, Qingqing Dang, Yi Liu, and Jie Chen, “DETRs beat YOLOs on real-time object de-tection,” in Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition , 2024, pp. 16965–16974. [7] Zhixiong Nan, Xianghong Li, Jifeng Dai, and Tao Xi-ang, “MI-DETR: An object detection model with multi-time inquiries mechanism,” arXiv preprint arXiv:2503.01463 , 2025. [8] Huaxiang Zhang, Kai Liu, Zhongxue Gan, and Guo-Niu Zhu, “UAV-DETR: Efficient end-to-end object detection for unmanned aerial vehicle imagery,” arXiv preprint arXiv:2501.01855 , 2025. [9] Hongxing Peng, Lide Chen, Hui Zhu, and Yan Chen, “High-frequency semantics and geometric priors for end-to-end detection transformers in challenging UAV imagery,” arXiv preprint arXiv:2507.00825 , 2025. [10] Yu Xia, Chang Liu, Tianqi Xiang, and Zhigang Tu, “EFSI-DETR: Efficient frequency-semantic integration for real-time small object detection in UAV imagery,” 
+
+arXiv preprint arXiv:2601.18597 , 2026. [11] Borui Jiang, Ruixuan Luo, Jiayuan Mao, Tete Xiao, and Yuning Jiang, “Acquisition of localization confidence for accurate object detection,” in European Conference on Computer Vision , 2018, pp. 784–799. [12] Mingqiao Ye, Lei Ke, Siyuan Li, Yu-Wing Tai, Chi-Keung Tang, Martin Danelljan, and Fisher Yu, “Cascade-DETR: Delving into high-quality universal object detection,” in Proceedings of the IEEE/CVF In-ternational Conference on Computer Vision , 2023, pp. 6704–6714. [13] Muhammad Akhtar Munir, Salman Khan, Muham-mad Haris Khan, Mohsen Ali, and Fahad Shahbaz Khan, “Cal-DETR: Calibrated detection transformer,” arXiv preprint arXiv:2311.03570 , 2023. [14] Yifan Pu, Weicong Liang, Yiduo Hao, Yuhui Yuan, Yukang Yang, Chao Zhang, Han Hu, and Gao Huang, “Rank-DETR for high quality object detection,” in Ad-vances in Neural Information Processing Systems , 2023, vol. 36, pp. 39004–39018. [15] Zhi Cai, Avinash Ravichandran, Paolo Favaro, Minsi Wang, Davide Modolo, Rahul Bhotika, Zhuowen Tu, and Stefano Soatto, “Align-DETR: Improving DETR with simple IoU-aware BCE and query alignment,” 
+
+arXiv preprint arXiv:2304.07527 , 2023. [16] Ao Wang, Hui Chen, Lihao Liu, Kai Chen, Zijie Lin, Jungong Han, and Guiguang Ding, “YOLOv10: Real-time end-to-end object detection,” arXiv preprint arXiv:2405.14458 , 2024. [17] Glenn Jocher and Jing Qiu, “Ultralytics YOLO11,” 
+
+https://github.com/ultralytics/ ultralytics , 2024. [18] Dawei Du, Yuankai Qi, Hongyang Yu, Yifan Yang, Kai-wen Duan, Guorong Li, Weigang Zhang, Qingming Huang, and Qi Tian, “The unmanned aerial vehicle benchmark: Object detection and tracking,” in Proceed-ings of the European Conference on Computer Vision (ECCV) , 2018, pp. 370–386. [19] Pengfei Zhu, Longyin Wen, Dawei Du, Xiao Bian, Heng Fan, Qinghua Hu, and Haibin Ling, “Detection and tracking meet drones challenge,” IEEE Transactions on Pattern Analysis and Machine Intelligence , vol. 44, no. 11, pp. 7380–7399, 2022. [20] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun, “Deep residual learning for image recognition,” in 
+
+Proceedings of the IEEE Conference on Computer Vi-sion and Pattern Recognition , 2016, pp. 770–778. [21] Ilya Loshchilov and Frank Hutter, “Decoupled weight decay regularization,” in International Conference on Learning Representations , 2019.
