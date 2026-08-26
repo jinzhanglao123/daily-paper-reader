@@ -1,0 +1,54 @@
+{
+  "label": "2026-08-26",
+  "date": "2026-08-26",
+  "generated_at": "2026-08-26T22:02:26",
+  "count": 3,
+  "papers": [
+    {
+      "paper_id": "202608/26/2608.24588v1-iapo-influence-aware-policy-optimization-for-credit-assignment-in-multi-turn-service-agents",
+      "section": "deep",
+      "title_en": "IAPO: Influence-Aware Policy Optimization for Credit Assignment in Multi-Turn Service Agents",
+      "authors": "Bo Ren, Yirong Mao, Yi Yang, Wenhui Que",
+      "date": "2026-08-25",
+      "pdf": "https://arxiv.org/pdf/2608.24588v1",
+      "score": "8.0",
+      "evidence": "直接处理强化学习中的长时程信用分配",
+      "tldr": "多轮服务代理中任务信息逐步呈现，仅靠最终奖励难以判断各动作贡献，现有方法依赖轨迹比较或人工步骤信号。IAPO将每条轨迹建模为类型化影响依赖图，以用户与工具观察为证据，把支持/失败结构转为路由权重，重新分配同一轨迹级优势。在Qwen3-4B/8B上，IAPO于τ²-Bench、UserBench、AgentChangeBench三个基准超越多轮RL基线，并保持BFCL-v4多轮函数调用性能。该工作深化多轮交互信用分配理解，为稀疏结果反馈的服务代理训练提供原则性方法。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Large Language Model (LLM) agents increasingly solve long-horizon tasks through multi-turn interactions with users and external tools. In these settings, relevant task information often unfolds over time rather than being fully specified at the initial prompt. Service agents make this challenge especially concrete: users may clarify or revise their goals, while tool responses provide information needed for subsequent decisions. Thus, a final reward alone cannot indicate which actions contributed to resolving the task. Recent methods rely on comparative evidence from other trajectories or resampled continuations, or on separately constructed step-level learning signals, to refine credit. However, a completed rollout already records how information and errors flow between agent actions. We introduce Influence-Aware Policy Optimization (IAPO), which represents each rollout as a typed influence-dependency graph over trainable agent actions, with user and tool observations serving as evidence. IAPO converts support-use and failed-use structure into routing weights that redistribute the same trajectory-level advantage. Experiments with Qwen3-4B and Qwen3-8B demonstrate superior performance over multi-turn reinforcement learning (RL) baselines across three service-agent benchmarks: {τ^2}-Bench, UserBench, and AgentChangeBench. BFCL-v4 Multi-Turn further shows that these gains do not compromise multi-turn function-calling performance. This work advances the understanding of credit assignment in multi-turn user interactions and provides a principled approach to training service agents from sparse outcome feedback.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/26/2608.24114v1-ahead-adaptive-hindsight-with-environment-augmented-distillation-for-agentic-rl",
+      "section": "quick",
+      "title_en": "AHEAD: Adaptive Hindsight with Environment-Augmented Distillation for Agentic RL",
+      "authors": "Xiaolong Jin, Dingmin Wang, Vijay Lingam, Varun Kumar",
+      "date": "2026-08-25",
+      "pdf": "https://arxiv.org/pdf/2608.24114v1",
+      "score": "7.0",
+      "evidence": "针对长时程强化学习智能体的分步功劳分配",
+      "tldr": "多轮 LLM 智能体的强化学习常依赖轨迹级奖励，难以定位具体错误步骤；现有自蒸馏方法虽引入特权信息，但对所有步骤一视同仁，忽略了常规步骤与关键错误步骤的不对称性。本文提出 AHEAD，采用步骤感知蒸馏，让教师在所有步骤接收环境反馈作为密集监督，并仅在错误步骤注入 LLM 生成的纠正提示。在 ALFWorld、WebShop 和搜索问答三个任务上，AHEAD 使 7B 模型成功率比 GRPO 分别提升 13.3 和 11.0 个百分点，且训练步数更少、交互预算更紧。该方法以最小改动增强 GRPO，验证了按步骤类型匹配监督源可显著提升智能体学习效率。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Training multi-turn LLM agents with reinforcement learning typically relies on trajectory-level rewards, which assign a uniform advantage to every step and cannot identify which decisions led to success or failure. Self-distillation methods can provide finer-grained supervision by augmenting RL with privileged information. However, existing approaches usually apply the same type of privileged information to every step in an indistinguishable manner, ignoring a key asymmetry: routine steps need little additional guidance, while critical error steps require corrective direction that environment feedback alone cannot provide. We propose AHEAD, a step-aware framework that matches different supervision sources to different step types. The teacher receives environment feedback on all steps as a grounded dense signal, and additionally receives LLM-generated corrective hints on error steps to supply the direction that environment feedback lacks. The method introduces minimal changes to the standard GRPO algorithm. Across ALFWorld, WebShop, and Search-based QA, and across three model scales, AHEAD raises task success (+13.3 points on ALFWorld and +11.0 on WebShop at 7B over GRPO), reaches a given success rate in fewer training steps, and solves tasks within tighter interaction budgets than outcome-only RL and prior self-distillation baselines.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/26/2608.24300v1-contrastive-branch-policy-optimization",
+      "section": "quick",
+      "title_en": "Contrastive Branch Policy Optimization",
+      "authors": "Ying Wang, Changlin Qiu, Bang Lin, Linbo Jin, Wen Jiang, Zhe Sun, Jingli Yang",
+      "date": "2026-08-25",
+      "pdf": "https://arxiv.org/pdf/2608.24300v1",
+      "score": "7.0",
+      "evidence": "解决强化学习中稀疏结果奖励的中间决策信用分配问题",
+      "tldr": "RLVR 训练工具交互智能体时稀疏奖励难以定位关键决策，现有分支采样混淆预算分配与信用分配。CBPO 用生成熵筛选候选位置与双层衰减预算解耦二者，并基于精确前缀组内奖励变化构造 CBV 重标定局部优势。在10个数学与知识搜索基准上、两种模型规模下均取得最高宏平均准确率。该方法仅需结果奖励，提供实用的细粒度信用分配方案。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Reinforcement learning with verifiable rewards (RLVR) enables language models to learn multi-turn interaction with external tools, yet its sparse outcome rewards provide no signal for identifying which intermediate decisions are responsible for success. Branch sampling induces local comparisons among alternative continuations, but existing methods tend to conflate two distinct problems: allocating a fixed rollout budget and translating branch outcomes into token-level credit. We introduce Contrastive Branch Policy Optimization (CBPO), which disentangles these two problems and assigns a dedicated mechanism to each. Generation entropy screens candidate branch positions across the entire response, while path-level and node-level decay distribute a fixed budget across trajectories and positions to prevent exploration from collapsing onto a few paths or adjacent tokens. A parent trajectory together with the branches that share an identical token prefix forms an exact-prefix group, and the reward variation within this controlled group defines the Contrastive Branch Value (CBV), an outcome-based estimate of local decision sensitivity that rescales continuation advantages without altering their sign. When multiple nodes are selected along the same trajectory, CBPO partitions it into non-overlapping credit segments, thereby avoiding duplicated gradients on shared tokens. Requiring only outcome rewards and no process-level annotation, CBPO provides a practical solution for fine-grained credit assignment in tool-integrated agent training. Extensive experiments on ten benchmarks, including five for mathematical reasoning and five for knowledge-intensive search, show that CBPO consistently outperforms state-of-the-art policy-optimization and branch-based methods, attaining the highest macro-average accuracy in both domains and across two model scales.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

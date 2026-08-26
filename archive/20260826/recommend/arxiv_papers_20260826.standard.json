@@ -1,0 +1,135 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-08-26T21:53:42.858986+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2608.24588v1",
+      "source": "arxiv",
+      "title": "IAPO: Influence-Aware Policy Optimization for Credit Assignment in Multi-Turn Service Agents",
+      "abstract": "Large Language Model (LLM) agents increasingly solve long-horizon tasks through multi-turn interactions with users and external tools. In these settings, relevant task information often unfolds over time rather than being fully specified at the initial prompt. Service agents make this challenge especially concrete: users may clarify or revise their goals, while tool responses provide information needed for subsequent decisions. Thus, a final reward alone cannot indicate which actions contributed to resolving the task. Recent methods rely on comparative evidence from other trajectories or resampled continuations, or on separately constructed step-level learning signals, to refine credit. However, a completed rollout already records how information and errors flow between agent actions. We introduce Influence-Aware Policy Optimization (IAPO), which represents each rollout as a typed influence-dependency graph over trainable agent actions, with user and tool observations serving as evidence. IAPO converts support-use and failed-use structure into routing weights that redistribute the same trajectory-level advantage. Experiments with Qwen3-4B and Qwen3-8B demonstrate superior performance over multi-turn reinforcement learning (RL) baselines across three service-agent benchmarks: {τ^2}-Bench, UserBench, and AgentChangeBench. BFCL-v4 Multi-Turn further shows that these gains do not compromise multi-turn function-calling performance. This work advances the understanding of credit assignment in multi-turn user interactions and provides a principled approach to training service agents from sparse outcome feedback.",
+      "authors": [
+        "Bo Ren",
+        "Yirong Mao",
+        "Yi Yang",
+        "Wenhui Que"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-08-25T14:14:36+00:00",
+      "link": "https://arxiv.org/pdf/2608.24588v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "directly addresses long-horizon credit assignment in RL",
+      "llm_evidence_cn": "直接处理强化学习中的长时程信用分配",
+      "llm_evidence": "直接处理强化学习中的长时程信用分配",
+      "canonical_evidence": "直接处理强化学习中的长时程信用分配",
+      "llm_tldr_en": "Proposes IAPO, an influence-aware policy optimization method that improves credit assignment in multi-turn service agents by leveraging information from completed rollouts, addressing long-horizon reward attribution.",
+      "llm_tldr_cn": "论文针对多轮服务智能体在长时程任务中最终奖励难以归因的问题，提出IAPO方法，利用已完成轨迹中的影响信息改进信用分配。该方法避免依赖对比证据或单独构造的逐步学习信号。摘要未给出具体量化结果，但其思路对于长时程强化学习中的奖励分配具有重要参考价值。",
+      "llm_tldr": "论文针对多轮服务智能体在长时程任务中最终奖励难以归因的问题，提出IAPO方法，利用已完成轨迹中的影响信息改进信用分配。该方法避免依赖对比证据或单独构造的逐步学习信号。摘要未给出具体量化结果，但其思路对于长时程强化学习中的奖励分配具有重要参考价值。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.24114v1",
+      "source": "arxiv",
+      "title": "AHEAD: Adaptive Hindsight with Environment-Augmented Distillation for Agentic RL",
+      "abstract": "Training multi-turn LLM agents with reinforcement learning typically relies on trajectory-level rewards, which assign a uniform advantage to every step and cannot identify which decisions led to success or failure. Self-distillation methods can provide finer-grained supervision by augmenting RL with privileged information. However, existing approaches usually apply the same type of privileged information to every step in an indistinguishable manner, ignoring a key asymmetry: routine steps need little additional guidance, while critical error steps require corrective direction that environment feedback alone cannot provide. We propose AHEAD, a step-aware framework that matches different supervision sources to different step types. The teacher receives environment feedback on all steps as a grounded dense signal, and additionally receives LLM-generated corrective hints on error steps to supply the direction that environment feedback lacks. The method introduces minimal changes to the standard GRPO algorithm. Across ALFWorld, WebShop, and Search-based QA, and across three model scales, AHEAD raises task success (+13.3 points on ALFWorld and +11.0 on WebShop at 7B over GRPO), reaches a given success rate in fewer training steps, and solves tasks within tighter interaction budgets than outcome-only RL and prior self-distillation baselines.",
+      "authors": [
+        "Xiaolong Jin",
+        "Dingmin Wang",
+        "Vijay Lingam",
+        "Varun Kumar"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-08-25T06:23:48+00:00",
+      "link": "https://arxiv.org/pdf/2608.24114v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "step-aware credit assignment for long-horizon RL agents",
+      "llm_evidence_cn": "针对长时程强化学习智能体的分步功劳分配",
+      "llm_evidence": "针对长时程强化学习智能体的分步功劳分配",
+      "canonical_evidence": "针对长时程强化学习智能体的分步功劳分配",
+      "llm_tldr_en": "Proposes AHEAD, a step-aware framework that assigns different supervision to routine and critical steps, addressing trajectory-level reward ambiguity.",
+      "llm_tldr_cn": "本文针对多轮 LLM 智能体强化学习中轨迹级奖励无法区分每一步决策贡献的问题，提出 AHEAD 框架，根据步骤类型匹配不同监督来源：常规步骤少指导、关键错误步骤给予纠正方向。利用环境反馈和特权信息进行自适应后见之明与蒸馏，实现更精细的逐步骤优势分配。实验预期表明该方法能提升长时程任务的决策质量。该工作为长时程奖励分配提供了可迁移的解决方案。",
+      "llm_tldr": "本文针对多轮 LLM 智能体强化学习中轨迹级奖励无法区分每一步决策贡献的问题，提出 AHEAD 框架，根据步骤类型匹配不同监督来源：常规步骤少指导、关键错误步骤给予纠正方向。利用环境反馈和特权信息进行自适应后见之明与蒸馏，实现更精细的逐步骤优势分配。实验预期表明该方法能提升长时程任务的决策质量。该工作为长时程奖励分配提供了可迁移的解决方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.24300v1",
+      "source": "arxiv",
+      "title": "Contrastive Branch Policy Optimization",
+      "abstract": "Reinforcement learning with verifiable rewards (RLVR) enables language models to learn multi-turn interaction with external tools, yet its sparse outcome rewards provide no signal for identifying which intermediate decisions are responsible for success. Branch sampling induces local comparisons among alternative continuations, but existing methods tend to conflate two distinct problems: allocating a fixed rollout budget and translating branch outcomes into token-level credit. We introduce Contrastive Branch Policy Optimization (CBPO), which disentangles these two problems and assigns a dedicated mechanism to each. Generation entropy screens candidate branch positions across the entire response, while path-level and node-level decay distribute a fixed budget across trajectories and positions to prevent exploration from collapsing onto a few paths or adjacent tokens. A parent trajectory together with the branches that share an identical token prefix forms an exact-prefix group, and the reward variation within this controlled group defines the Contrastive Branch Value (CBV), an outcome-based estimate of local decision sensitivity that rescales continuation advantages without altering their sign. When multiple nodes are selected along the same trajectory, CBPO partitions it into non-overlapping credit segments, thereby avoiding duplicated gradients on shared tokens. Requiring only outcome rewards and no process-level annotation, CBPO provides a practical solution for fine-grained credit assignment in tool-integrated agent training. Extensive experiments on ten benchmarks, including five for mathematical reasoning and five for knowledge-intensive search, show that CBPO consistently outperforms state-of-the-art policy-optimization and branch-based methods, attaining the highest macro-average accuracy in both domains and across two model scales.",
+      "authors": [
+        "Ying Wang",
+        "Changlin Qiu",
+        "Bang Lin",
+        "Linbo Jin",
+        "Wen Jiang",
+        "Zhe Sun",
+        "Jingli Yang"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-08-25T09:25:55+00:00",
+      "link": "https://arxiv.org/pdf/2608.24300v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "addresses credit assignment for intermediate decisions in reinforcement learning with sparse outcome rewards",
+      "llm_evidence_cn": "解决强化学习中稀疏结果奖励的中间决策信用分配问题",
+      "llm_evidence": "解决强化学习中稀疏结果奖励的中间决策信用分配问题",
+      "canonical_evidence": "解决强化学习中稀疏结果奖励的中间决策信用分配问题",
+      "llm_tldr_en": "CBPO disentangles rollout budget allocation and token-level credit assignment in RLVR, using entropy screening and path/node-level decay for long-horizon credit.",
+      "llm_tldr_cn": "针对强化学习可验证奖励中稀疏结果奖励无法归因中间决策的问题，提出对比分支策略优化（CBPO），将固定 rollout 预算分配与 token 级信用分配解耦，分别通过生成熵筛选和路径/节点级衰减处理。实验表明该方法能有效提升语言模型多轮交互的学习效果，为长时程奖励分配提供新思路。",
+      "llm_tldr": "针对强化学习可验证奖励中稀疏结果奖励无法归因中间决策的问题，提出对比分支策略优化（CBPO），将固定 rollout 预算分配与 token 级信用分配解耦，分别通过生成熵筛选和路径/节点级衰减处理。实验表明该方法能有效提升语言模型多轮交互的学习效果，为长时程奖励分配提供新思路。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

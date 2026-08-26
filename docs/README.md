@@ -6,38 +6,32 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-25
-- 运行时间：2026-08-25 20:59:56 UTC
+- 最新运行日期：2026-08-26
+- 运行时间：2026-08-26 22:02:01 UTC
 - 运行状态：成功
-- 本次总论文数：5
-- 精读区：2
-- 速读区：3
+- 本次总论文数：3
+- 精读区：1
+- 速读区：2
 
 ### 今日简报（AI）
-- 今日共生成 5 篇推荐（精读 2 篇，速读 3 篇）
-- 精读：《Let Credit Follow Computation: Architecture-Aware Credit Transport for Large Language Model Reinforcement Learning》（8.0/10）, 《Agent-G$^2$: Gaussian Guidance for Agentic Reinforcement Learning》（8.0/10）
-- 速读：《Prism-GRPO: Faster VLA Policy Optimization via Splitting Same-outcome Groups》（6.0/10）, 《CLSC DETR: Reliable Candidate Ranking via Cross Layer Geometric Support for UAV Small Object Detection》（6.0/10）, 《RACO: Reliability-Aware Coarse-Goal Optimization for Inspection-Oriented UAV Vision-Language Navigation》（6.0/10）
+- 今日共生成 3 篇推荐（精读 1 篇，速读 2 篇）
+- 精读：《IAPO: Influence-Aware Policy Optimization for Credit Assignment in Multi-Turn Service Agents》（8.0/10）
+- 速读：《AHEAD: Adaptive Hindsight with Environment-Augmented Distillation for Agentic RL》（7.0/10）, 《Contrastive Branch Policy Optimization》（7.0/10）
 - 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
-- 详情：[/202608/25/README](/202608/25/README)
+- 详情：[/202608/26/README](/202608/26/README)
 
 ### 精读区论文标签
-1. [Let Credit Follow Computation: Architecture-Aware Credit Transport for Large Language Model Reinforcement Learning](/202608/25/2608.21501v1-let-credit-follow-computation-architecture-aware-credit-transport-for-large-language-model-reinforcement-learning)  
+1. [IAPO: Influence-Aware Policy Optimization for Credit Assignment in Multi-Turn Service Agents](/202608/26/2608.24588v1-iapo-influence-aware-policy-optimization-for-credit-assignment-in-multi-turn-service-agents)  
    标签：评分：8.0/10、query:uav-drl
-   evidence：基于计算条件的信用传输用于LLM RL中的词元级优势估计，直接改进奖励分配
-2. [Agent-G$^2$: Gaussian Guidance for Agentic Reinforcement Learning](/202608/25/2608.23318v1-agent-g2-gaussian-guidance-for-agentic-reinforcement-learning)  
-   标签：评分：8.0/10、query:uav-drl
-   evidence：针对长时程任务奖励稀疏的高斯引导强化学习方法
+   evidence：直接处理强化学习中的长时程信用分配
 
 ### 速读区论文标签
-1. [Prism-GRPO: Faster VLA Policy Optimization via Splitting Same-outcome Groups](/202608/25/2608.17423v1-prism-grpo-faster-vla-policy-optimization-via-splitting-same-outcome-groups)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：用轨迹级执行质量分数增强二元结果奖励，恢复同结果组中的优势信号
-2. [CLSC DETR: Reliable Candidate Ranking via Cross Layer Geometric Support for UAV Small Object Detection](/202608/25/2608.21457v1-clsc-detr-reliable-candidate-ranking-via-cross-layer-geometric-support-for-uav-small-object-detection)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：无人机小目标检测，可应用于输电线路缺陷检测
-3. [RACO: Reliability-Aware Coarse-Goal Optimization for Inspection-Oriented UAV Vision-Language Navigation](/202608/25/2608.22678v1-raco-reliability-aware-coarse-goal-optimization-for-inspection-oriented-uav-vision-language-navigation)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：面向巡检的无人机导航与粗目标优化
+1. [AHEAD: Adaptive Hindsight with Environment-Augmented Distillation for Agentic RL](/202608/26/2608.24114v1-ahead-adaptive-hindsight-with-environment-augmented-distillation-for-agentic-rl)  
+   标签：评分：7.0/10、query:uav-drl
+   evidence：针对长时程强化学习智能体的分步功劳分配
+2. [Contrastive Branch Policy Optimization](/202608/26/2608.24300v1-contrastive-branch-policy-optimization)  
+   标签：评分：7.0/10、query:uav-drl
+   evidence：解决强化学习中稀疏结果奖励的中间决策信用分配问题
 
 
 <div class="dpr-home-promo-card">

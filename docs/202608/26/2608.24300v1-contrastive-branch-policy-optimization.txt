@@ -1,0 +1,823 @@
+Title: Contrastive Branch Policy Optimization
+
+URL Source: https://arxiv.org/pdf/2608.24300v1
+
+Published Time: Wed, 26 Aug 2026 00:52:24 GMT
+
+Number of Pages: 10
+
+Markdown Content:
+# Contrastive Branch Policy Optimization 
+
+Ying Wang 1,2 Changlin Qiu 1,* Bang Lin 1 Linbo Jin 1 Wen Jiang 1 Zhe Sun 1 Jingli Yang 2
+
+> 1
+
+Alibaba Group, Hangzhou, China 2Harbin Institute of Technology, Harbin, China 
+
+Abstract 
+
+Reinforcement learning with verifiable rewards (RLVR) enables language models to learn multi-turn interaction with external tools, yet its sparse outcome rewards provide no signal for identifying which intermediate decisions are responsible for success. Branch sampling induces local comparisons among alternative continua-tions, but existing methods tend to conflate two distinct problems: allocating a fixed rollout budget and translating branch outcomes into token-level credit. We introduce Contrastive Branch Policy Optimization (CBPO), which disentangles these two problems and assigns a dedicated mechanism to each. Generation entropy screens candidate branch positions across the entire response, while path-level and node-level decay distribute a fixed budget across trajec-tories and positions to prevent exploration from collapsing onto a few paths or adjacent tokens. A parent trajectory together with the branches that share an identical token prefix forms an exact-prefix group, and the reward variation within this controlled group defines the Contrastive Branch Value (CBV), an outcome-based esti-mate of local decision sensitivity that rescales continuation advan-tages without altering their sign. When multiple nodes are selected along the same trajectory, CBPO partitions it into non-overlapping credit segments, thereby avoiding duplicated gradients on shared tokens. Requiring only outcome rewards and no process-level an-notation, CBPO provides a practical solution for fine-grained credit assignment in tool-integrated agent training. Extensive experiments on ten benchmarks—five for mathematical reasoning and five for knowledge-intensive search—show that CBPO consistently out-performs state-of-the-art policy-optimization and branch-based methods, attaining the highest macro-average accuracy in both domains and across two model scales. 
+
+Keywords 
+
+reinforcement learning, large language models, tool-integrated rea-soning, credit assignment 
+
+1 Introduction 
+
+Chain-of-thought prompting [33] and reinforcement learning with verifiable rewards (RLVR) [28, 29] have substantially improved the reasoning capabilities of large language models (LLMs). Many tasks, however, require current information, exact computation, or feed-back from an external environment. Addressing such tasks entails multi-turn interaction with search engines, code interpreters, or both [9, 37]. Recent systems apply reinforcement learning to these interactions [7, 20], including settings that require coordinated use of multiple tools [5]. The resulting training signal nevertheless remains coarse. Most RLVR and agentic reinforcement-learning methods assign a single 
+
+> ∗Corresponding author: Changlin Qiu (qiuchanglin.qcl@taobao.com).
+
+terminal reward to every generated token in a trajectory. Such uni-form credit cannot distinguish a decisive tool request or correction from text that merely precedes a successful answer. Process super-vision [22] and step-wise preference optimization [19] provide finer signals but require intermediate labels or preferences. Tree-based sampling instead compares continuations from a shared history using only outcome rewards [14]. This approach, however, still requires a principled policy for locating branches under a limited budget and mapping their outcomes to local policy updates. Existing methods address these requirements only partially. GIGPO and Tree-GRPO construct local advantages from shared or tree-structured histories [8, 16], whereas ARPO uses generation entropy to select branch points after tool feedback [4]. Entropy provides an inexpensive proxy for token-level uncertainty [2, 24, 32], but does not measure outcome sensitivity. Allocation based solely on entropy can concentrate branches at adjacent positions, overlook consequential decisions outside tool boundaries, or emphasize variation that leaves the final answer unchanged. Contrastive Branch Policy Optimization (CBPO) separates can-didate discovery from credit assignment. CBPO scans local entropy throughout the response and applies path-level and node-level de-cay to distribute a fixed branch budget. A parent trajectory and branches sharing an identical token prefix form an exact-prefix group. Reward variation within this controlled group defines Con-trastive Branch Value (CBV), an outcome-based estimate of local decision sensitivity. A bounded form of CBV changes the magni-tude, but not the sign, of continuation advantages. Copied prefixes receive no branch gradient, and multiple branch nodes partition a parent trajectory into non-overlapping credit segments. The two signals therefore serve distinct functions: entropy identifies alterna-tive continuations, whereas observed outcome variation estimates their task relevance. The evaluation spans two model scales and includes five tool-augmented mathematical benchmarks and five knowledge-intensive search benchmarks. CBPO consistently outperforms state-of-the-art policy-optimization and branch-based methods, attaining the highest macro average in both domains. The main contributions are as follows: 
+
+• Branch selection is formulated as budgeted exploration over the entire response. Fixed-interval entropy windows expose candidates beyond tool boundaries, while path-level and node-level decay prevent allocation from collapsing onto a few trajectories or adjacent positions. 
+
+• CBV estimates local decision sensitivity from reward varia-tion within exact-prefix groups. Standardized and bounded CBV modulates continuation advantages without changing their signs. Prefix masking and non-overlapping segmenta-tion prevent repeated credit on shared tokens. 
+
+> 1arXiv:2608.24300v1 [cs.LG] 25 Aug 2026 Ying Wang, Changlin Qiu, Bang Lin, Linbo Jin, Wen Jiang, Zhe Sun, and Jingli Yang
+
+• Experiments across ten benchmarks and two model scales show that CBPO consistently outperforms strong policy-optimization and branch-based baselines. Cross-scale ab-lations further attribute these gains to balanced branch allocation and outcome-contrastive credit assignment. 
+
+2 Related Work 2.1 Fine-Grained Credit Assignment 
+
+PPO optimizes a policy from trajectory-level returns [28]. GRPO-based reasoning systems likewise derive one advantage from each completed response [10, 29]. Subsequent variants improve optimiza-tion stability or scaling [15, 38], while GSPO moves the optimization unit from tokens to sequences [41]. These methods train directly from outcome rewards but do not distinguish decisive intermediate choices from weakly related transitional text. Problem decomposi-tion, computational correction, tool selection, and answer verifica-tion can contribute differently to a multi-step solution. Assigning a single advantage may therefore reinforce effective decisions and incidental behavior together. Process rewards [22] and step-wise preference optimization [19] supervise intermediate reasoning more directly. Preference objec-tives such as DPO [26] and token-entropy methods [11] offer alter-native local signals. Process labels and learned value estimates can provide dense feedback but entail annotation costs or estimation error. Entropy requires neither annotation nor learned value estima-tion, yet measures predictive uncertainty rather than a position’s empirical association with the final reward. Tree-based methods reuse prefixes and sample several contin-uations from intermediate states, enabling local comparisons at controlled cost. Online variants derive advantages from current-policy descendants, within-tree contrasts, or recurring histories [14, 16]. Entropy can identify uncertain candidates at low com-putational cost [2, 24]. Moreover, a small fraction of high-entropy tokens can dominate effective updates [32]. EAPO combines reward polarity with token entropy. AEPO balances entropy during rollout and optimization while limiting repeated branches at consecutive high-entropy positions [6, 11]. These approaches use uncertainty to guide optimization, but divergent token distributions need not yield divergent outcomes. CBPO instead restricts entropy to candidate screening and estimates local credit from outcome contrasts among continuations sharing an identical prefix. 
+
+2.2 Tool-Integrated Reasoning 
+
+External tools allow language models to access current information, perform exact computation, and act on an environment [23, 37]. Tool-integrated reasoning extends beyond the binary decision to invoke a tool. A model must select a tool, construct the request, de-termine when to invoke it, verify the response, integrate the result, and terminate appropriately. Search provides open-world evidence, whereas code interpreters support calculation and programmatic verification. Coordinating both requires repeated transitions be-tween internal reasoning and external actions as new observations arrive. Work in this area has progressed from prompted reasoning and acting [9, 37] to reinforcement learning for search [18, 30], code interpreters [7, 20], and multi-tool coordination [5]. Recent WSDM studies train autonomous programmatic agents and optimize tool selection with reinforcement learning [17, 39]. Unlike prompting or supervised imitation, reinforcement learning can optimize the complete interaction from environmental feedback and terminal outcomes. In long trajectories, however, success may depend on pre-call reasoning, request construction, feedback interpretation, or post-call synthesis. Tool-return boundaries therefore capture only a subset of potentially decisive positions. Knowledge-intensive tasks also depend on retrieval quality and timing. Adaptive retrieval can extend beyond an initial ranking when the first-stage candidate pool has insufficient recall [27]. In LLM-based fact-checking, adaptive evidence retrieval allows a model to determine when internal knowledge is inadequate or conflicts with external evidence [40]. These WSDM studies concern retrieval and verification rather than token-level credit assignment, but reveal the same structural challenge. An agent must determine where additional computation or evidence can alter the final out-come. Long-horizon tool learning often improves planning or attribu-tion through reward shaping, process supervision, or step-level optimization. Intermediate supervision is costly, while predefined states and step boundaries constrain the granularity of credit assign-ment. GIGPO derives step-level advantages from shared histories. ARPO branches after tool feedback and assigns the resulting advan-tage to the suffix [4, 8]. The former depends on repeated history states, and the latter treats tool returns as fixed branch boundaries. CBPO searches the full response for branch candidates, then at-tributes local credit by comparing outcomes under an identical prefix. 
+
+3 Preliminaries 
+
+Tool-integrated rollout. Given a problem 𝑥 drawn from dataset 
+
+D and a tool set T , policy 𝜋 𝜃 generates an interaction trajectory 
+
+𝜏 that interleaves model tokens, tool requests, and environmental observations. Let 𝑧 = (𝑧 1, . . . , 𝑧 |𝑧 | ) collect the model-generated tokens of 𝜏 , and let 𝑜 <𝑡 denote the tool observations available before position 𝑡 . Trajectory generation then factorizes autoregressively over model tokens only: 
+
+𝑃 𝜃 (𝜏 | 𝑥 ; T ) = 
+
+> |𝑧 |
+
+Ö
+
+> 𝑡 =1
+
+𝜋 𝜃 (𝑧 𝑡 | 𝑥, 𝑧 <𝑡 , 𝑜 <𝑡 ; T ) . (1) Observations are inserted by the environment upon each tool call; they condition subsequent generation but contribute neither likelihood terms nor policy gradients. Upon termination, a veri-fier assigns a bounded outcome reward 𝑅 (𝜏 ). Following agentic reinforcement learning formulations [4, 6], training maximizes the KL-regularized expected reward: max 
+
+> 𝜋 𝜃
+
+E𝑥 ∼D , 𝜏 ∼𝜋 𝜃 (· | 𝑥 ;T ) 
+
+𝑅 (𝜏 ) − 𝛽 𝐷 KL (𝜋 𝜃 ∥ 𝜋 ref ) , (2) where 𝜋 ref is a frozen reference policy and 𝛽 controls the regular-ization strength. Shared-history, suffix-based, and tree-search agent RL methods adopt this trajectory-level reward setting [4, 8, 16]. 
+
+Group-relative optimization. For a given problem, Group Relative Policy Optimization (GRPO) samples 𝐺 trajectories and estimates the advantage of trajectory 𝑘 as [29]: 
+
+> 2Contrastive Branch Policy Optimization
+
+𝐴 𝑘 = 𝑅 (𝜏 𝑘 ) − 𝜇 𝑅 
+
+𝜎 𝑅 + 𝜖 , 𝜇 𝑅 = 1
+
+𝐺 
+
+> 𝐺
+
+∑︁ 
+
+> 𝑗 =1
+
+𝑅 (𝜏 𝑗 ), (3) Here, 𝜇 𝑅 and 𝜎 𝑅 are the within-group reward mean and stan-dard deviation, and 𝜖 provides numerical stability. Standard GRPO assigns 𝐴 𝑘 to every model-generated token in trajectory 𝑘 , so the update magnitude is uniform along the trajectory regardless of which intermediate decisions determine the outcome. 
+
+Generation uncertainty. At generation position 𝑡 , let the con-text be ℎ𝑡 = (𝑥, 𝑧 <𝑡 ) and the next-token distribution be 𝑝 𝑡 = 𝜋 𝜃 (· | 
+
+ℎ𝑡 ). Its Shannon entropy is 
+
+𝐻 𝑡 = −∑︁  
+
+> 𝑣 ∈ V
+
+𝑝 𝑡,𝑣 log 𝑝 𝑡,𝑣 , (4) where V denotes the vocabulary. Larger 𝐻 𝑡 indicates greater uncertainty over the next token. This quantity reflects the disper-sion of the generation distribution at position 𝑡 rather than the confidence of any particular sampled token. Prior work uses token entropy to identify critical decisions [24] and characterize explo-ration in language-model reasoning [2, 32]. 
+
+4 Contrastive Branch Policy Optimization 4.1 Overview 
+
+CBPO addresses two coupled limitations of branch-based RL: con-centrated exploration and imprecise local credit. The method uses generation uncertainty for candidate selection and observed out-come variation to modulate update magnitude. Figure 1 summarizes the resulting training framework. Starting from complete interac-tion trajectories, CBPO scans each response for uncertain posi-tions and allocates a fixed branch budget through path-level and node-level decay. Rewards are then compared among continuations sharing an exact prefix to construct CBV-aware local credit. Shared-prefix deduplication and non-overlapping segmentation convert this credit into token-level advantages. Section 4.2 constructs bal-anced exact-prefix groups, and Section 4.3 converts their outcomes into policy updates. The design maintains three invariants. First, every problem re-ceives the same total rollout budget because unused branch slots are reallocated to independent complete trajectories. Second, each local comparison conditions on an identical token history, so reward variation arises only from resampled continuations. Third, copied prefixes are excluded from branch losses, and parent trajectories are partitioned into non-overlapping intervals when several nodes are selected. In tool-integrated trajectories, environmental observa-tions condition later actions but are neither scanned nor assigned policy gradients, since they are not model-generated. These con-straints separate allocation from attribution and prevent additional branches from duplicating shared-token gradients. 
+
+4.2 Entropy-Guided Balanced Branch Exploration 
+
+Exhaustive branching at every token is computationally infeasi-ble, whereas branching only at tool-return boundaries assumes that consequential decisions coincide with predefined interaction events. Entropy provides an inexpensive candidate signal, but an unregularized ranking can allocate most of a fixed budget to a few trajectories or neighboring positions. This stage therefore com-bines full-response candidate discovery with explicit coverage con-trol. The procedure first samples 𝑁 0 complete trajectories from the current policy. Figure 2 illustrates how fixed-interval scanning identifies high-entropy decisions beyond tool-call boundaries. 
+
+Full-trajectory candidate identification. For trajectory 𝑖 ,CBPO places candidate boundaries throughout the response at intervals of 𝑑 min :
+
+B𝑖 = {𝑏 𝑖,𝑞 = 𝑞𝑑 min }𝑄 𝑖 
+
+> 𝑞 =1
+
+, (5) where 𝑄 𝑖 is the number of valid candidates. Let W𝑖,𝑏 denote the window of 𝑤 model-generated tokens beginning at boundary 
+
+𝑏 ∈ B 𝑖 . Its normalized entropy is 
+
+𝐻 𝑖,𝑏 = − 1
+
+|W 𝑖,𝑏 | log |V | ∑︁ 𝑡 ∈ W 𝑖,𝑏 ∑︁ 𝑣 ∈ V 𝑖,𝑡 𝐾 
+
+𝑝 𝑖,𝑡,𝑣 log 𝑝 𝑖,𝑡,𝑣 , (6) where V𝑖,𝑡 𝐾 is the top-𝐾 candidate set at token 𝑡 , and 𝑝 𝑖,𝑡,𝑣 is the probability of candidate 𝑣 . The retained probability mass is not renormalized. Thus, 𝐻 𝑖,𝑏 is a truncated entropy proxy used only to rank candidate locations, not the entropy of a top-𝐾 distribution. The first window of each trajectory provides a path-specific reference: 
+
+𝐻 root  
+
+> 𝑖
+
+= 𝐻 𝑖, 0. (7) Local uncertainty at boundary 𝑏 is measured by the entropy increase relative to this reference: 
+
+Δ𝐻 𝑖,𝑏 = 𝐻 𝑖,𝑏 − 𝐻 root  
+
+> 𝑖
+
+. (8) The corresponding raw priority is 
+
+𝑃 raw  
+
+> 𝑖,𝑏
+
+= clip  𝛼 + 𝛾 Δ𝐻 𝑖,𝑏 , 0, 1 , (9) where 𝛼 sets the base priority, 𝛾 scales the entropy increase, and clip restricts the score to [0, 1].
+
+Path-node balanced budgeting. An entropy ranking alone can allocate most branches to a few trajectories or neighboring positions. Let 𝐿 𝑖 count branches assigned to path 𝑖 , and let 𝑙 𝑖,𝑏 count branches at node (𝑖, 𝑏 ). CBPO updates the priority as 
+
+𝑃 bal  
+
+> 𝑖,𝑏
+
+= 𝑃 raw 
+
+> 𝑖,𝑏
+
+(1 + 𝐿 𝑖 )𝜌 path (1 + 𝑙 𝑖,𝑏 )𝜌 node , (10) where 𝜌 path , 𝜌 node ≥ 0 control path-level and node-level decay. Before allocation, CBPO retains at most 𝐽 max candidates from each parent. A candidate remains eligible while 𝑙 𝑖,𝑏 < 𝐵 node and 𝐿 𝑖 <
+
+𝐵 path . The hard caps are necessary because power decay never reduces a priority exactly to zero. Updating both counts after each sampled branch progressively shifts allocation toward less-explored paths and nodes. At each allocation step, CBPO selects the eligible candidate with the largest 𝑃 bal . A branch is sampled only if this score exceeds 𝜅 .Otherwise, independent complete trajectories fill the unused rollout slots, preserving the fixed budget. At a selected node, the trajectory is decomposed at token bound-ary 𝑏 as 
+
+> 3Ying Wang, Changlin Qiu, Bang Lin, Linbo Jin, Wen Jiang, Zhe Sun, and Jingli Yang
+
+Figure 1: CBPO training framework. The model first performs interactive reasoning with Python and Search tools and samples complete initial trajectories. Candidate nodes are identified across the full response, and path-level and node-level decay allocate the branch budget. Outcome rewards estimate CBV within exact-prefix groups. Shared-prefix deduplication and non-overlapping hierarchical segmentation then construct token-level advantages for the policy update. 
+
+Figure 2: Full-response candidate discovery. Fixed-interval entropy scans identify high-entropy decisions beyond prede-fined tool-call boundaries. 
+
+𝜏 = (𝑝 𝑏 , 𝑐 𝑏 ), 𝑝 𝑏 = 𝜏 <𝑏 , 𝑐 𝑏 = 𝜏 ≥𝑏 , (11) Branch generation holds prefix 𝑝 𝑏 fixed and resamples only con-tinuation 𝑐 𝑏 . The parent and all branches sharing 𝑝 𝑏 form an exact-prefix group G( 𝑝 𝑏 ). Comparing their outcomes controls for the preceding token history and isolates variation among the sampled continuations. The resulting balanced exact-prefix groups serve as input to the outcome-contrastive credit-assignment stage. 
+
+4.3 Hierarchical Policy Optimization with CBV 
+
+The first stage identifies positions at which the policy admits alterna-tives, but entropy alone cannot establish whether those alternatives affect the reward. The second stage therefore measures reward variation within each exact-prefix group and translates it into lo-cal credit. This formulation emphasizes continuations sampled at A shared         
+
+> i
+> Outcome contrast
+> τi, 0
+> Ri, 0 = 0
+> τi, 1
+> Ri, 1 = 1
+> τi, 2
+> Ri, 2 = 0
+> Shared-prefix Credit CBV-aware Credit
+> Afinal
+> i, 0
+> Afinal
+> i, 1
+> Afinal
+> i, 2
+> ×✓×
+
+Figure 3: Outcome-contrastive credit assignment. Exact-prefix continuations are compared by outcome to construct CBV-aware credit while deduplicating shared-prefix credit. 
+
+outcome-sensitive nodes while suppressing redundant gradients on their shared histories. Figure 3 illustrates the distinction between shared-prefix credit and CBV-aware continuation credit. CBPO requires only bounded outcome rewards. Following Re-Tool and ToRL [7, 20], mathematical tasks use a binary correctness reward that compares trajectory answer ˆ 𝑎 (𝜏 ) with reference answer 
+
+𝑎 ★:
+
+𝑅 (𝜏 ) =
+
+(
+
+1, ˆ𝑎 (𝜏 ) is symbolically equivalent to 𝑎 ★,
+
+0, otherwise . (12) 
+
+> 4Contrastive Branch Policy Optimization
+
+Search tasks use normalized token-level F1 or an LLM-as-a-Judge score. Every reward satisfies 𝑅 (𝜏 ) ∈ [ 0, 1]; Section 5.1 gives the benchmark-specific metrics. 
+
+Contrastive Branch Value. Consider exact-prefix group G𝑖 =
+
+{𝜏 𝑖, 0, . . . , 𝜏 𝑖,𝐾 𝑖 }, where 𝜏 𝑖, 0 is the parent and the remaining trajecto-ries are branches. Contrastive Branch Value (CBV) is defined as the population standard deviation of group rewards 𝑅 𝑖, 0, . . . , 𝑅 𝑖,𝐾 𝑖 :CBV 𝑖 =
+
+vut 1
+
+𝐾 𝑖 + 1
+
+> 𝐾 𝑖
+
+∑︁ 
+
+> 𝑘 =0
+
+ 𝑅 𝑖,𝑘 − ¯𝑅 𝑖 
+
+2, ¯𝑅 𝑖 = 1
+
+𝐾 𝑖 + 1
+
+> 𝐾 𝑖
+
+∑︁ 
+
+> 𝑘 =0
+
+𝑅 𝑖,𝑘 . (13) Larger CBV indicates greater reward variation among contin-uations sampled after the same prefix. Because raw CBV is non-negative, direct addition would only increase advantage values. Standardization across valid nodes in the batch produces a compa-rable signed signal: 
+
+𝑍 CBV  
+
+> 𝑖
+
+= CBV 𝑖 −𝜇 CBV 
+
+𝜎 CBV + 𝜖 . (14) Here, 𝑍 CBV  
+
+> 𝑖
+
+> 0 denotes reward variation above the batch mean. If 𝜎 CBV falls below a numerical threshold, every 𝑍 CBV  
+
+> 𝑖
+
+is set to zero and the base advantages are retained. 
+
+Credit assignment. CBV identifies relative outcome sensitiv-ity at the group level, but the optimizer still requires token-level advantages. Problem-level GRPO normalization first yields base advantage 𝐴 𝑖,𝑘 for each trajectory. The common prefix at node 𝑖 
+
+receives the group-mean advantage: 
+
+𝐴 shared  
+
+> 𝑖
+
+= 1
+
+𝐾 𝑖 + 1
+
+> 𝐾 𝑖
+
+∑︁ 
+
+> 𝑘 =0
+
+𝐴 𝑖,𝑘 . (15) Following bounded advantage modulation [11], CBV changes only the magnitude of continuation advantage 𝑘 . The standardized credit is bounded as 
+
+𝐶 CBV  
+
+> 𝑖,𝑘
+
+= clip 
+
+
+
+𝑍 CBV  
+
+> 𝑖
+
+, − |𝐴 𝑖,𝑘 |
+
+𝜙 , |𝐴 𝑖,𝑘 |
+
+𝜙 
+
+
+
+. (16) The CBV-aware advantage is 
+
+𝐴 final  
+
+> 𝑖,𝑘
+
+= 𝐴 𝑖,𝑘 + 𝜂 sign (𝐴 𝑖,𝑘 ) stopgrad 
+
+
+
+𝐶 CBV 
+
+> 𝑖,𝑘
+
+
+
+, (17) where 𝜂 controls modulation strength and 𝜙 limits its relative magnitude. For 0 ≤ 𝜂 < 𝜙 , the modulated advantage retains the original sign and therefore preserves the local optimization direc-tion. 
+
+Hierarchical segmentation for multiple nodes. Let parent trajectory 𝑖 contain 𝐽 𝑖 selected boundaries 
+
+𝑏 𝑖, 1 < 𝑏 𝑖, 2 < · · · < 𝑏 𝑖,𝐽 𝑖 . (18) Multiple selected ancestors can otherwise assign credit repeat-edly to the same suffix. CBPO therefore partitions each parent trajectory into non-overlapping intervals, with token advantage 
+
+e𝐴 𝑡 =
+
+
+
+𝐴 shared  
+
+> 𝑖, 1
+
+, 0 ≤ 𝑡 < 𝑏 𝑖, 1,
+
+> 12
+
+
+
+𝐴 final  
+
+> 𝑖,𝑗, 0
+
++ 𝐴 shared 
+
+> 𝑖,𝑗 +1
+
+
+
+, 𝑏 𝑖,𝑗 ≤ 𝑡 < 𝑏 𝑖,𝑗 +1,𝐴 final  
+
+> 𝑖,𝐽 𝑖 ,0
+
+, 𝑡 ≥ 𝑏 𝑖,𝐽 𝑖 .
+
+(19) where 𝐴 final  
+
+> 𝑖,𝑗, 0
+
+is the parent’s continuation advantage at its 𝑗 -th selected node. Each intermediate interval is simultaneously a suffix of the preceding node and a shared prefix of the following node. The two associated terms therefore receive equal weight. CBPO retains the GRPO objective, replacing only trajectory-level advantage 𝐴 𝑘 with segmented token advantage e𝐴 𝑘,𝑡 . For model-generated token 𝑦 𝑘,𝑡 , the importance ratio is 
+
+𝑟 𝑘,𝑡 (𝜃 ) = 𝜋 𝜃 (𝑦 𝑘,𝑡 | 𝑥, 𝑦 𝑘, <𝑡 )
+
+𝜋 old (𝑦 𝑘,𝑡 | 𝑥, 𝑦 𝑘, <𝑡 ) , (20) and its clipped form ¯𝑟 𝑘,𝑡 (𝜃 ) = clip  𝑟 𝑘,𝑡 (𝜃 ), 1 − 𝜀, 1 + 𝜀 , (21) 
+
+ℓ𝑘,𝑡 (𝜃 ) = min 
+
+
+
+𝑟 𝑘,𝑡 (𝜃 ) e𝐴 𝑘,𝑡 , ¯𝑟 𝑘,𝑡 (𝜃 ) e𝐴 𝑘,𝑡 
+
+
+
+. (22) The CBPO objective is 
+
+JCBPO (𝜃 ) = E
+
+"
+
+1
+
+𝑀 
+
+> 𝑀
+
+∑︁ 
+
+> 𝑘 =1
+
+1
+
+|𝑦 𝑘 | 
+
+> |𝑦 𝑘 |
+
+∑︁ 
+
+> 𝑡 =1
+
+ ℓ𝑘,𝑡 (𝜃 ) − 𝛽𝐷 KL (𝜋 𝜃 ∥ 𝜋 ref )#
+
+. (23) The objective connects the two stages: balanced exploration defines the controlled comparisons, and CBV determines their con-tribution to non-overlapping continuation updates. Algorithm 1 summarizes the end-to-end training procedure. 
+
+Algorithm 1 Contrastive Branch Policy Optimization   
+
+> Input initial policy
+
+𝜋 𝜃 init , reference policy 𝜋 ref , data D, tools T  
+
+> Input training steps
+
+𝑆 , rollout budget 𝑀 , initial count 𝑁 0, caps 𝐽 max , 𝐵 node , 𝐵 path  
+
+> Input
+
+𝛼, 𝛾, 𝜅, 𝜌 path , 𝜌 node , 𝑑 min , 𝑤, 𝐾, 𝜂, 𝜙   
+
+> Output trained policy
+
+𝜋 𝜃  
+
+> 1:
+
+𝜋 𝜃 ← 𝜋 𝜃 init    
+
+> 2: for training step
+
+𝑠 = 1, . . . , 𝑆 do  
+
+> 3:
+
+𝜋 old ← 𝜋 𝜃 ; sample minibatch D𝑏 ⊂ D    
+
+> 4: for all problems
+
+𝑥 ∈ D 𝑏 do   
+
+> 5: sample
+
+𝑁 0 parent trajectories; initialize rollout set R𝑥    
+
+> 6: for all parent trajectories
+
+𝜏 𝑖 ∈ R 𝑥 do   
+
+> 7: scan
+
+𝑑 min -spaced boundaries and compute 𝐻 𝑖,𝑏 , Δ𝐻 𝑖,𝑏 , 𝑃 raw   
+
+> 𝑖,𝑏
+> 8: retain the top
+
+𝐽 max candidates; set 𝐿 𝑖 ← 0 and 𝑙 𝑖,𝑏 ← 0  
+
+> 9: while
+
+| R 𝑥 | < 𝑀 do   
+
+> 10: form eligible set
+
+C𝑥 = { ( 𝑖, 𝑏 ) : 𝐿 𝑖 < 𝐵 path , 𝑙 𝑖,𝑏 < 𝐵 node }  
+
+> 11: if
+
+C𝑥 = ∅ then   
+
+> 12: sample
+
+𝑀 − | R 𝑥 | independent complete trajectories; break   
+
+> 13: compute
+
+𝑃 bal   
+
+> 𝑖,𝑏 and choose
+
+(𝑖 ∗, 𝑏 ∗ ) = arg max (𝑖,𝑏 ) ∈C 𝑥 𝑃 bal   
+
+> 𝑖,𝑏
+> 14: if
+
+𝑃 bal  
+
+> 𝑖 ∗,𝑏 ∗
+
+> 𝜅 then   
+
+> 15: fix prefix
+
+𝜏 𝑖 ∗,<𝑏 ∗ , resample one continuation, and add it to R𝑥  
+
+> 16:
+
+𝐿 𝑖 ∗ ← 𝐿 𝑖 ∗ + 1; 𝑙 𝑖 ∗,𝑏 ∗ ← 𝑙 𝑖 ∗,𝑏 ∗ + 1   
+
+> 17: else
+> 18: sample
+
+𝑀 − | R 𝑥 | independent complete trajectories; break   
+
+> 19: evaluate
+
+𝑅 (𝜏 ) and compute prompt-level base advantages 𝐴 𝑖,𝑘 over R𝑥   
+
+> 20: build exact-prefix groups; compute
+
+CBV 𝑖 , 𝑍 CBV   
+
+> 𝑖 ,
+
+𝐴 shared   
+
+> 𝑖 , and
+
+𝐴 final   
+
+> 𝑖,𝑘
+> 21: mask each copied branch prefix; assign
+
+𝐴 final     
+
+> 𝑖,𝑘 only to its sampled suffix 22: segment each parent by Eq. (19); keep base advantages for fallback rollouts 23: maximize Eq. (23) and update
+
+𝜃 
+
+4.4 Theoretical Analysis 
+
+Two properties clarify the roles of the two signals. Conditional entropy bounds the outcome information available in sampled con-tinuations, which supports its use for candidate screening. CBV estimates conditional outcome variance under a fixed prefix, which supports its use for local credit. The bounded modulation addition-ally preserves the advantage sign and local PPO gradient direction. 
+
+Property 1: generation entropy bounds attainable out-come information. Given exact prefix 𝑝 , let continuation 
+
+> 5Ying Wang, Changlin Qiu, Bang Lin, Linbo Jin, Wen Jiang, Zhe Sun, and Jingli Yang
+
+𝐶 = (𝑌 1, . . . , 𝑌 𝐿 ) ∼ 𝜋 𝜃 (· | 𝑝 ) produce final outcome reward 𝑅 .The chain rule for conditional entropy and the upper bound on conditional mutual information give 
+
+𝐻 (𝐶 | 𝑝 ) =
+
+> 𝐿
+
+∑︁ 
+
+> 𝑡 =1
+
+E𝑌 <𝑡 |𝑝 
+
+𝐻 (𝑌 𝑡 | 𝑝, 𝑌 <𝑡 ),𝐼 (𝐶 ; 𝑅 | 𝑝 ) ≤ 𝐻 (𝐶 | 𝑝 ).
+
+(24) For deterministic outcome verification, a nearly deterministic continuation can carry little information about alternative out-comes. High conditional entropy is not sufficient, however, because variation in wording, formatting, or inconsequential reasoning may leave the answer unchanged. Thus, entropy provides an upper bound rather than a direct estimate of 𝐼 (𝐶 ; 𝑅 | 𝑝 ). CBPO uses it to screen for positions where meaningful alternatives may exist, then relies on observed branch rewards for credit assignment. 
+
+Property 2: CBV estimates conditional outcome variance under a shared prefix. Suppose 𝑛 continuations are sampled independently from prefix 𝑝 , yielding rewards 𝑅 1, . . . , 𝑅 𝑛 , and let ¯𝑅 = 𝑛 −1 Í𝑘 𝑅 𝑘 . Then CBV 2 (𝑝 ) = 1
+
+𝑛 
+
+> 𝑛
+
+∑︁ 
+
+> 𝑘 =1
+
+(𝑅 𝑘 − ¯𝑅 )2 = 12𝑛 2
+
+> 𝑛
+
+∑︁ 
+
+> 𝑖 =1
+> 𝑛
+
+∑︁ 
+
+> 𝑗 =1
+
+(𝑅 𝑖 − 𝑅 𝑗 )2, (25) and 
+
+ECBV 2 (𝑝 ) | 𝑝  = 𝑛 − 1
+
+𝑛 Var (𝑅 | 𝑝 ). (26) The pairwise identity follows by expanding the squared differ-ences: 
+
+> 𝑛
+
+∑︁ 
+
+> 𝑖 =1
+> 𝑛
+
+∑︁ 
+
+> 𝑗 =1
+
+(𝑅 𝑖 − 𝑅 𝑗 )2 = 2𝑛 
+
+> 𝑛
+
+∑︁ 
+
+> 𝑖 =1
+
+𝑅 2 
+
+> 𝑖
+
+− 2
+
+> 𝑛
+
+∑︁ 
+
+> 𝑖 =1
+
+𝑅 𝑖 
+
+!2
+
+. (27) For 𝑖 ≠ 𝑗 , conditional independence gives E[( 𝑅 𝑖 − 𝑅 𝑗 )2 | 𝑝 ] =
+
+2 Var (𝑅 | 𝑝 ). The 𝑛 diagonal terms are zero, leaving 𝑛 (𝑛 −1) nonzero ordered pairs. Substitution into Eq. (25) yields Eq. (26). Equations (25) and (26) show that 𝑛 𝑛 −1 CBV 2 (𝑝 ) is an unbiased estimator of conditional outcome variance. Its pairwise form mea-sures reward divergence among continuations sharing the same token history. For binary correctness with 𝑞 𝑝 = Pr (𝑅 = 1 | 𝑝 ),this variance is 𝑞 𝑝 (1 − 𝑞 𝑝 ) and is maximal at 𝑞 𝑝 = 1/2. Conse-quently, an uncertain node with consistent outcomes receives little CBV, whereas a node separating success from failure receives more. Bounded modulation changes update magnitude within a controlled interval while preserving the advantage sign and local PPO gradient direction. 
+
+Property 3: bounded CBV modulation preserves the update direction. Let 𝐶 = 𝐶 CBV satisfy the clipping constraint |𝐶 | ≤ | 𝐴 |/ 𝜙 .For any nonzero base advantage 𝐴 , Eq. (17) can be written as 
+
+𝐴 final = 𝑤𝐴, 𝑤 = 1 + 𝜂 𝐶 
+
+|𝐴 | ∈
+
+
+
+1 − 𝜂 𝜙 , 1 + 𝜂 𝜙 
+
+
+
+. (28) When 0 ≤ 𝜂 < 𝜙 , the lower endpoint is positive. Therefore, 𝐴 final 
+
+has the same sign as 𝐴 . The PPO surrogate is positively homoge-neous in its advantage argument, so ℓ (𝑟, 𝑤𝐴 ) = 𝑤ℓ (𝑟, 𝐴 ) for 𝑤 > 0. Because the modulation is stop-gradient, its local policy gradient is also scaled by the same positive 𝑤 . CBV consequently reallocates update magnitude without reversing the preference induced by the outcome reward. When 𝐴 = 0, the clipping constraint forces 𝐶 = 0, and the statement holds trivially. 
+
+5 Experiments 5.1 Experimental Setup 
+
+Datasets and evaluation. The evaluation covers mathemat-ical reasoning and knowledge-intensive search, two forms of tool-integrated reasoning. Each task provides access to Web Search and Python, allowing the policy to select tools without dataset-specific routing. Mathematical evaluation uses AIME 2024, AIME 2025, MATH-500, MATH [12], and the complete GSM8K test set [3]. Reported metrics include Pass@1, the five-task macro average, and Pass@3/5 computed from five samples per problem. Knowledge-intensive search evaluation uses WebWalker [34], HotpotQA [36], 2WikiMultiHopQA [13], MuSiQue [31], and Bamboogle [25]. WebWalker is evaluated with LLM-as-a-Judge Pass@1, whereas the other four benchmarks use normalized token-level F1. Domain-specific averages are reported because these metrics are not directly comparable. 
+
+Evaluation controls. All methods use the same system prompt, tool interfaces, decoding settings, and answer-extraction procedure. Search calls return the top ten snippets and share an evaluation cache, preventing method-specific retrieval variation from con-founding policy comparisons. Mathematical answers are checked with the same symbolic-equivalence verifier. Pass@3/5 uses five independent samples for every method and problem. AIME 2024 and AIME 2025 each contain 30 problems, so one additional correct answer changes accuracy by 3.3 percentage points. Accordingly, the analysis emphasizes cross-task averages, both model scales, and component ablations rather than small AIME differences in isolation. 
+
+Training setup. The experiments use Qwen3-1.7B and Qwen3-4B backbones [35]. Training data are drawn from Tool-Star [5]. Mathematical experiments use 5,000 mathematical samples, whereas search experiments use search and dual-tool trajectories from 10,000 open-domain RL samples. All reward-based methods share the SFT initialization, training data, update count, outcome rewards, tool environment, and 16 rollout slots. OPD checkpoints follow the same benchmark and decoding protocol during evaluation. CBPO allocates six slots to initial trajectories and ten to a second branching stage. Independent complete trajectories fill any unused branch slots. Candidate scanning uses 𝑤 = 20, 𝐾 = 10, 
+
+𝑑 min = 64, and 𝐽 max = 3. Allocation uses 𝛼 = 0.2, 𝛾 = 2.0, 𝜅 = 0.25, 
+
+𝜌 path = 𝜌 node = 0.2, 𝐵 node = 3, and 𝐵 path = 4. Credit modulation uses 𝜂 = 0.2, 𝜙 = 2.0, and a CBV standard-deviation threshold of 10 −6.
+
+Baselines. At both model scales, the comparison includes Base, TIR prompting [23], SFT, and on-policy distillation (OPD) [21]. Policy-optimization baselines are GRPO [29], REINFORCE++ [15], DAPO [38], GSPO [41], EAPO [11], and OC-GRPO [1]. Agentic and branch-based baselines are GIGPO [8], Tree-GRPO [16], and ARPO [4]. 
+
+> 6Contrastive Branch Policy Optimization
+
+Table 1: Measured results (%) for Qwen3-1.7B and Qwen3-4B under a unified protocol. Mathematical tasks report Pass@1; WebWalker reports LLM-as-a-Judge Pass@1; the other search tasks report normalized token-level F1. Math Avg. and Search Avg. are unweighted five-task means. Green subscripts show improvement over size-matched GIGPO. 
+
+Method Mathematical Reasoning Knowledge-Intensive Search 
+
+AIME24 AIME25 MATH500 GSM8K MATH Math Avg. WebWalker HotpotQA 2Wiki MuSiQue Bamboogle Search Avg. 
+
+Backbone: Qwen3-1.7B Training-Free Method 
+
+Base 13.3 16.7 82.2 90.8 86.7 57.9 5.0 22.0 25.0 9.5 34.0 19.1 TIR Prompting 16.7 23.3 81.4 88.4 85.1 59.0 14.5 36.0 41.0 16.0 48.0 31.1 
+
+Supervised and Distillation Methods 
+
+SFT 16.7 23.3 82.8 91.0 87.6 60.3 16.5 48.0 58.0 22.5 58.0 40.6 OPD 20.0 26.7 84.4 92.0 88.7 62.4 18.5 52.0 66.5 25.0 60.5 44.5 
+
+Classic RL Method 
+
+GRPO 16.7 30.0 83.6 91.3 89.0 62.1 18.0 53.5 68.5 26.5 62.0 45.7 REINFORCE++ 20.0 26.7 83.2 91.9 88.3 62.0 18.5 51.0 65.5 24.0 61.0 44.0 DAPO 13.3 26.7 84.8 91.5 88.8 61.0 17.5 52.0 65.0 25.0 60.5 44.0 GSPO 20.0 26.7 84.6 91.0 88.7 62.2 18.5 54.0 68.0 26.0 63.0 45.9 EAPO 23.3 30.0 85.6 91.8 90.0 64.1 20.5 55.0 69.5 32.0 65.0 48.4 OC-GRPO 20.0 33.3 85.2 92.4 89.5 64.1 19.5 54.5 69.0 27.0 64.0 46.8 
+
+Agentic RL Method 
+
+GIGPO 23.3 26.7 84.2 92.4 89.1 63 .1Δbase 23.5 58.0 73.0 29.5 67.0 50 .2Δbase 
+
+Tree-GRPO 23.3 30.0 85.0 92.0 88.8 63 .8+1.1% 24.0 58.5 73.5 30.0 68.0 50 .8+1.2% 
+
+ARPO 26.7 30.0 85.0 91.7 88.3 64 .3+1.9% 24.5 59.0 74.0 30.5 69.0 51 .4+2.4% 
+
+CBPO 26.7 33.3 86.4 93.2 90.4 66 .0+4.6% 26.0 61.0 75.5 31.5 72.0 53 .2+6.0%
+
+Backbone: Qwen3-4B Training-Free Method 
+
+Base 13.3 20.0 84.6 90.0 89.8 59.5 7.0 27.0 31.0 12.0 40.0 23.4 TIR Prompting 16.7 26.7 85.1 92.7 89.3 62.1 17.5 41.5 47.0 19.5 53.5 35.8 
+
+Supervised and Distillation Methods 
+
+SFT 16.7 26.7 85.7 93.2 90.5 62.6 20.0 52.0 63.0 25.5 63.0 44.7 OPD 23.3 33.3 86.5 94.1 89.6 65.4 21.5 56.0 71.5 28.0 65.5 48.5 
+
+Classic RL Method 
+
+GRPO 16.7 40.0 86.0 93.8 91.3 65.6 21.5 57.5 73.0 29.5 66.5 49.6 REINFORCE++ 26.7 33.3 85.8 94.2 91.4 66.3 22.0 55.0 70.0 27.0 65.5 47.9 DAPO 13.3 30.0 87.8 93.5 91.5 63.2 21.0 56.0 69.0 28.0 65.0 47.8 GSPO 20.0 33.3 87.1 93.4 91.2 65.0 21.5 57.0 72.0 29.0 66.0 49.1 EAPO 23.3 36.7 87.2 94.4 91.8 66.7 24.0 59.5 74.5 35.0 69.0 52.4 OC-GRPO 23.3 33.3 87.0 94.2 90.6 65.7 22.5 58.5 73.5 29.5 67.5 50.3 
+
+Agentic RL Method 
+
+GIGPO 26.7 33.3 86.7 94.6 91.0 66 .5Δbase 27.0 62.0 77.0 32.5 73.0 54 .3Δbase 
+
+Tree-GRPO 26.7 33.3 87.5 94.0 91.9 66 .7+0.3% 28.0 62.5 77.5 33.0 74.0 55 .0+1.3% 
+
+ARPO 30.0 33.3 87.4 94.1 90.7 67 .1+0.9% 29.0 63.0 78.0 33.5 75.0 55 .7+2.6% 
+
+CBPO 30.0 36.7 89.5 96.3 94.0 69 .3+4.2% 31.0 65.5 80.0 34.5 76.5 57 .5+5.9%
+
+5.2 Main Results 
+
+The primary comparison evaluates whether the complete CBPO pipeline improves closed-form reasoning and open-world retrieval under matched rollout budgets. Table 1 reports mathematical macro-average Pass@1 scores of 66.0% and 69.3% with the 1.7B and 4B backbones. These scores exceed those of ARPO, the strongest size-matched baseline by macro average, by 1.7 and 2.2 percentage points. The corresponding search averages are 53.2 and 57.5, exceeding ARPO by 1.8 points at both scales. Relative to OPD, CBPO gains 3.6 and 3.9 points on the mathematical average and 8.7 and 9.0 points on the search average. CBPO ranks first or ties for first on all five mathematical benchmarks at 1.7B and on four of five at 4B. At 4B, GRPO leads AIME 2025 by one problem. CBPO also leads four of five search benchmarks at each scale, trailing EAPO on MuSiQue by 0.5 points. This consistency across domains and model scales supports the overall pipeline. The following analyses examine the component-specific hypotheses. 
+
+Pass@K extension. Figure 4 evaluates whether the gain per-sists when several candidate answers are available. From five in-dependent samples per problem, Qwen3-1.7B with CBPO reaches macro-average Pass@1, Pass@3, and Pass@5 scores of 66.0%, 74.6%, and 77.9%. The corresponding Qwen3-4B scores are 69.3%, 76.9%, and 80.2%. CBPO exceeds ARPO at each reported value, indicating that its advantage is not confined to single-sample decoding. 
+
+> 7
+
+Ying Wang, Changlin Qiu, Bang Lin, Linbo Jin, Wen Jiang, Zhe Sun, and Jingli Yang Pass@1 Pass@3 Pass@5 20 30 40 50 60                                        
+
+> Qwen3-1.7B
+> (a) AIME 2024
+> 26.7 40.0 46.7
+> 26.7 43.3 50.0
+> Pass@1 Pass@3 Pass@5 20 30 40 50 60 (b) AIME 2025
+> 30.0 43.3 50.0
+> 33.3 46.7 53.3
+> Pass@1 Pass@3 Pass@5 80 85 90 95 100 (c) MATH-500
+> 85.0 91.2 93.0
+> 86.4 92.6 94.2
+> Pass@1 Pass@3 Pass@5 88 92 96 100 (d) GSM8K
+> 91.7 95.0 95.8
+> 93.2 96.0 96.8
+> Pass@1 Pass@3 Pass@5 85 90 95 100 (e) MATH
+> 88.3 93.2 94.2
+> 90.4 94.4 95.4
+> Pass@1 Pass@3 Pass@5 20 30 40 50 60
+> Qwen3-4B
+> (f) AIME 2024
+> 30.0 43.3 50.0
+> 30.0 46.7 53.3
+> Pass@1 Pass@3 Pass@5 20 30 40 50 60 (g) AIME 2025
+> 33.3 46.7 53.3
+> 36.7 50.0 56.7
+> Pass@1 Pass@3 Pass@5 80 85 90 95 100 (h) MATH-500
+> 87.4 93.0 94.6
+> 89.5 94.6 96.0
+> Pass@1 Pass@3 Pass@5 88 92 96 100 (i) GSM8K
+> 94.1 96.0 96.8 96.3 97.2 97.8
+> Pass@1 Pass@3 Pass@5 85 90 95 100 (j) MATH
+> 90.7 94.6 95.7
+> 94.0 96.2 97.0
+> Pass accuracy (%)
+> ARPO CBPO
+
+Figure 4: Pass@K comparison between ARPO and CBPO. The top and bottom rows show Qwen3-1.7B and Qwen3-4B. Pass@3/5 is computed from five samples per problem. Each benchmark uses an independent vertical axis; consequently, bar heights should not be compared across benchmarks. Training dynamics and branch selection. Figure 5 compares reward, tool use, and selected branch positions. CBPO attains a higher final mean reward than GIGPO and ARPO while averaging fewer tool calls. The performance gain therefore cannot be attrib-uted to more frequent tool invocation. The qualitative examples show that decay can reorder high-entropy candidates before allo-cation, consistent with separating candidate discovery from budget control. 
+
+5.3 Full-Response Candidate Analysis 
+
+Three Qwen3-1.7B trajectories from the MATH test set were in-spected to locate decisions associated with their outcomes. In one successful trajectory, the model enumerated all 16 one- and two-digit candidates before calling Python. The interpreter then cor-rectly identified the ten primes. In a failed trajectory, the submitted code also executed correctly, but the preceding reasoning listed only six parenthesizations of an arithmetic expression. Python eval-uated this incomplete list and returned two values instead of the correct four. The decisive error therefore occurred in the reasoning before tool invocation, not at the tool boundary. The third trajectory exhibited the converse pattern. Python raised the same execution exception twice, yet the model recov-ered the correct answer from an algebraic derivation completed before either call. A tool-return position was therefore salient but not decisive for the final reward. Together, these cases illustrate why candidate discovery should cover the full response rather than treat tool observations as universal branch boundaries. These exam-ples provide qualitative mechanism checks, not population-level or causal evidence. A controlled tool-boundary-only ablation remains necessary to quantify this design choice independently. 
+
+5.4 Ablation Study 
+
+The method motivates two quantitative predictions. Path-level and node-level decay should reduce complementary forms of alloca-tion concentration, whereas CBV should improve learning beyond 0 100 200 0.1 0.2 0.3 0.4 0.5 0.6 0.7       
+
+> Mean reward
+> (a) Mean reward (c) High-entropy
+> 0100 200 0.5 1.0 1.5 2.0 2.5 3.0
+> Mean tool calls
+> (b) Mean tool calls (d) Selected branches
+> GIGPO ARPO CBPO
+
+Figure 5: Training dynamics and branch selection. (a) Mean reward and (b) mean tool calls per trajectory; thick lines de-note smoothed means, with light traces and shading showing variation. In the qualitative word clouds, (c) token size in-creases monotonically with candidate entropy, whereas (d) token size increases monotonically with post-decay branch-ing priority among retained candidates. Entropy therefore favors selection, but path- and node-level decay can change the ranking and retain some positions below the entropy-only cutoff; sizes do not encode token frequency. 
+
+branch exploration alone. Table 2 tests these predictions under matched training, rollout, and evaluation protocols. Removing either decay level reduces the mathematical macro average by 1.5 points at both model scales. Removing both reduces it by 2.2 points, more than either individual ablation. The two decay terms therefore regulate distinct sources of allocation con-centration. Removing CBV produces the largest losses, 3.0 points for Qwen3-1.7B and 2.9 points for Qwen3-4B. Branch exploration alone is therefore insufficient; branch outcomes must also inform 
+
+8Contrastive Branch Policy Optimization 
+
+local credit. Most of this reduction occurs on AIME 2024 and AIME 2025, the two benchmarks with the lowest absolute accuracy. 
+
+Table 2: Component ablations for CBPO. Values are Pass@1 (%) and the five-task macro average. Shading marks the full method, and bold indicates the best value in each column. Method AIME24 AIME25 MATH500 GSM8K MATH Avg. 
+
+Backbone: Qwen3-1.7B 
+
+CBPO 26.7 33.3 86.4 93.2 90.4 66.0 
+
+w/o Path-level 23.3 30.0 86.2 92.8 90.2 64.5 w/o Node-level 23.3 30.0 86.1 93.0 90.3 64.5 w/o Dual decay 20.0 30.0 86.3 92.5 90.0 63.8 w/o CBV 20.0 26.7 85.5 92.9 90.1 63.0 
+
+Backbone: Qwen3-4B 
+
+CBPO 30.0 36.7 89.5 96.3 94.0 69.3 
+
+w/o Path-level 26.7 33.3 89.3 95.9 93.8 67.8 w/o Node-level 26.7 33.3 89.0 96.0 93.9 67.8 w/o Dual decay 23.3 33.3 89.4 95.7 93.9 67.1 w/o CBV 23.3 30.0 89.0 96.0 93.7 66.4 
+
+Table 3: CBPO Pass@1 (%) under different rollout configurations. 𝑀 = 𝑁 + 𝐵 . Shading marks the default configuration, and bold indicates the best value in each column. Rollout allocation Pass@1 accuracy (%) 
+
+Total 
+
+𝑀 
+
+Initial 
+
+𝑁 
+
+Branch 
+
+𝐵 AIME24 AIME25 MATH500 GSM8K MATH Avg. 
+
+Backbone: Qwen3-1.7B 
+
+4 1 3 13.3 23.3 82.2 89.9 86.0 58.9 4 2 2 16.7 23.3 82.8 90.5 86.8 60.0 8 2 6 16.7 26.7 83.7 91.0 87.8 61.2 8 4 4 20.0 26.7 84.0 91.5 88.3 62.1 16 4 12 23.3 36.7 85.8 92.9 89.8 65.7 
+
+16 6 10 26.7 33.3 86.4 93.2 90.4 66.0 
+
+16 8 8 26.7 30.0 86.1 93.0 90.2 65.2 16 12 4 23.3 30.0 85.8 92.6 89.8 64.3 
+
+Backbone: Qwen3-4B 
+
+4 1 3 16.7 26.7 84.4 91.8 89.0 61.7 4 2 2 20.0 26.7 85.0 92.3 89.7 62.7 8 2 6 20.0 30.0 86.6 93.8 91.0 64.3 8 4 4 23.3 30.0 87.0 94.2 91.5 65.2 16 4 12 26.7 40.0 88.9 95.8 93.3 68.9 
+
+16 6 10 30.0 36.7 89.5 96.3 94.0 69.3 
+
+16 8 8 30.0 33.3 89.2 96.0 94.4 68.6 16 12 4 26.7 33.3 88.8 95.6 93.2 67.5 
+
+5.5 Branching Configuration 
+
+Balanced branching requires sufficient independent paths for global coverage and sufficient shared-prefix continuations for local com-parison. This trade-off is evaluated by varying the allocation be-tween initial trajectories 𝑁 and dynamic branches 𝐵 . Total budgets are 𝑀 = 𝑁 + 𝐵 ∈ { 4, 8, 16 }, with all other settings held fixed. Increasing 𝑀 from 4 to 16 improves the macro average at both model scales. Within a fixed budget, too few initial trajectories restrict path coverage, whereas too few branches weaken exact-prefix comparisons. The highest macro average occurs at 𝑁 =
+
+6, 𝐵 = 10 for both backbones. This shared optimum favors branch sampling while retaining sufficient independent trajectories for global coverage. 
+
+6 Conclusion 
+
+CBPO addresses fine-grained credit assignment by separating two operations that branch-based RL often conflates. Full-response en-tropy scanning with path-level and node-level decay allocates a fixed rollout budget. Reward variation within exact-prefix groups then modulates the contribution of each sampled continuation. Pre-fix masking and hierarchical segmentation prevent shared tokens from receiving duplicated credit. With Qwen3-1.7B and Qwen3-4B, CBPO attains mathematical macro averages of 66.0% and 69.3% and search averages of 53.2 and 57.5. Cross-scale ablations attribute distinct gains to balanced allocation and CBV. However, the in-dependent contribution of full-response scanning still requires a controlled boundary-only ablation. Within the evaluated models, tasks, and budgets, the evidence supports a bounded design princi-ple: uncertainty identifies alternatives, whereas observed outcome variation provides a stronger signal for local credit assignment. 
+
+Ethical Considerations 
+
+The study uses public benchmarks and collects no new personal or human-subject data. Open-web retrieval may nevertheless expose a model to inac-curate, biased, offensive, or privacy-sensitive material. Benchmark accuracy does not establish the reliability or social neutrality of retrieved sources. Generated Python code runs in a sandbox, and tool calls are capped to limit security and resource risks. Like other branch-based methods, CBPO samples several continuations and therefore incurs additional generation cost. A fixed rollout budget bounds this cost, and all methods are com-pared using matched rollout slots. The experiments evaluate benchmark accuracy rather than deployment safety. High-stakes applications would re-quire domain-specific testing, content filtering, access controls, and human oversight. 
+
+References 
+
+[1] P. Agrawal, A. Samanta, S. Ghasemlou, B. Vidolov, J. Bhandari, K. Asadi, D. Jiang, and A. Modi. 2026. Off-Context GRPO: Learning to Reason on Hard Problems using Privileged Information. arXiv preprint arXiv:2607.19313. doi:10.48550/arXiv.2607.19313 [2] D. Cheng, S. Huang, X. Zhu, B. Dai, W. X. Zhao, Z. Zhang, and F. Wei. 2025. Reasoning with Exploration: An Entropy Perspective. arXiv preprint arXiv:2506.14758. doi:10.48550/arXiv.2506.14758 [3] K. Cobbe et al. 2021. Training Verifiers to Solve Math Word Problems. arXiv preprint arXiv:2110.14168. doi:10.48550/arXiv.2110.14168 [4] G. Dong et al. 2025. Agentic Reinforced Policy Optimization. arXiv preprint arXiv:2507.19849. doi:10.4 8550/arXiv.2507.19849 [5] G. Dong et al. 2025. Tool-Star: Empowering LLM-Brained Multi-Tool Reasoner via Reinforcement Learning. arXiv preprint arXiv:2505.16410. doi:10.48550/arXiv.2505.16410 [6] G. Dong, L. Bao, Z. Wang, K. Zhao, X. Li, J. Jin, J. Yang, H. Mao, F. Zhang, K. Gai, G. Zhou, Y. Zhu, J.-R. Wen, and Z. Dou. 2025. Agentic Entropy-Balanced Policy Optimization. arXiv preprint arXiv:2510.14545. doi:10.48550/arXiv.2510.14545 [7] J. Feng et al. 2026. ReTool: Reinforcement Learning for Strategic Tool Use in LLMs. In International Conference on Learning Representations .[8] L. Feng, Z. Xue, T. Liu, and B. An. 2025. Group-in-Group Policy Optimization for LLM Agent Training. arXiv preprint arXiv:2505.10978. doi:10.48550/arXiv.2505.10978 [9] Z. Gou et al. 2024. ToRA: A Tool-Integrated Reasoning Agent for Mathematical Problem Solving. In 
+
+International Conference on Learning Representations .[10] D. Guo et al. 2025. DeepSeek-R1: Incentivizing Reasoning Capability in LLMs via Reinforcement Learning. arXiv preprint arXiv:2501.12948. doi:10.48550/arXiv.2501.12948 [11] Y. He, H. Wu, S. Liu, H. Ge, H. Zhou, K. Wu, Z. Zheng, Q. Lin, Z. Zhong, and Y. Zhang. 2026. Rethinking Token-Level Credit Assignment in RLVR: A Polarity-Entropy Analysis. arXiv preprint arXiv:2604.11056. doi:10.48550/arXiv.2604.11056 [12] D. Hendrycks et al. 2021. Measuring Mathematical Problem Solving with the MATH Dataset. arXiv preprint arXiv:2103.03874. doi:10.48550/arXiv.2103.03874 [13] Xanh Ho, Anh-Khoa Duong Nguyen, Saku Sugawara, and Akiko Aizawa. 2020. Constructing A Multi-hop QA Dataset for Comprehensive Evaluation of Reasoning Steps. In Proceedings of the 28th International Conference on Computational Linguistics . International Committee on Computational Linguistics, Barcelona, Spain (Online), 6609–6625. doi:10.18653/v1/2020.coling-main.580 [14] Z. Hou, Z. Hu, Y. Li, R. Lu, J. Tang, and Y. Dong. 2025. TreeRL: LLM Reinforcement Learning with On-Policy Tree Search. In Proceedings of the Annual Meeting of the Association for Computational Linguistics .[15] J. Hu et al. 2025. REINFORCE++: Stabilizing Critic-Free Policy Optimization with Global Advantage Normalization. arXiv preprint arXiv:2501.03262. doi:10.48550/arXiv.2501.03262 [16] Y. Ji, Z. Ma, Y. Wang, G. Chen, X. Chu, and L. Wu. 2026. Tree Search for LLM Agent Reinforcement Learning. In International Conference on Learning Representations .[17] Chuang Jiang, Mingyue Cheng, Xiaoyu Tao, Qingyang Mao, Jie Ouyang, and Qi Liu. 2026. TableMind: An Autonomous Programmatic Agent for Tool-Augmented Table Reasoning. In Proceedings of the Nineteenth ACM International Conference on Web Search and Data Mining . ACM, Boise, ID, USA, 260–270. doi:10.1145/3773966.3777932 [18] B. Jin, H. Zeng, Z. Yue, J. Yoon, S. O. Arik, D. Wang, H. Zamani, and J. Han. 2025. Search-R1: Training LLMs to Reason and Leverage Search Engines with Reinforcement Learning. In Conference on Language Modeling .[19] X. Lai et al. 2024. Step-DPO: Step-Wise Preference Optimization for Long-Chain Reasoning of LLMs. arXiv preprint arXiv:2406.18629. doi:10.48550/arXiv.2406.18629 [20] X. Li, H. Zou, and P. Liu. 2025. ToRL: Scaling Tool-Integrated Reinforcement Learning. arXiv preprint arXiv:2503.23383. doi:10.48550/arXiv.2503.23383 [21] Y. Li et al. 2026. Rethinking On-Policy Distillation of Large Language Models: Phenomenology, Mecha-nism, and Recipe. arXiv preprint arXiv:2604.13016. doi:10.48550/arXiv.2604.13016 [22] H. Lightman et al. 2024. Let’s Verify Step by Step. In International Conference on Learning Representations .[23] H. Lin and Z. Xu. 2025. Understanding Tool-Integrated Reasoning. arXiv preprint arXiv:2508.19201. doi:10.48550/arXiv.2508.19201 
+
+9Ying Wang, Changlin Qiu, Bang Lin, Linbo Jin, Wen Jiang, Zhe Sun, and Jingli Yang 
+
+[24] Z. Lin, T. Liang, J. Xu, X. Wang, R. Luo, C. Shi, S. Li, Y. Yang, and Z. Tu. 2024. Critical Tokens Matter: Token-Level Contrastive Estimation Enhances LLM’s Reasoning Capability. arXiv preprint arXiv:2411.19943. doi:10.48550/arXiv.2411.19943 [25] Ofir Press, Muru Zhang, Sewon Min, Ludwig Schmidt, Noah A. Smith, and Mike Lewis. 2023. Measuring and Narrowing the Compositionality Gap in Language Models. In Findings of the Association for Computational Linguistics: EMNLP 2023 . Association for Computational Linguistics, Singapore, 5687– 5711. doi:10.18653/v1/2023.findings-emnlp.378 [26] R. Rafailov, A. Sharma, E. Mitchell, C. D. Manning, S. Ermon, and C. Finn. 2023. Direct Preference Optimization: Your Language Model Is Secretly a Reward Model. In Advances in Neural Information Processing Systems .[27] Mandeep Rathee, Sean MacAvaney, and Avishek Anand. 2025. Quam: Adaptive Retrieval through Query Affinity Modelling. In Proceedings of the Eighteenth ACM International Conference on Web Search and Data Mining . ACM, Hannover, Germany, 954–962. doi:10.1145/3701551.3703584 [28] J. Schulman et al. 2017. Proximal Policy Optimization Algorithms. arXiv preprint arXiv:1707.06347. doi:10.48550/arXiv.1707.06347 [29] Z. Shao et al. 2024. DeepSeekMath: Pushing the Limits of Mathematical Reasoning in Open Language Models. arXiv preprint arXiv:2402.03300. doi:10.48550/arXiv.2402.03300 [30] H. Sun, Z. Qiao, J. Guo, X. Fan, Y. Hou, Y. Jiang, P. Xie, Y. Zhang, F. Huang, and J. Zhou. 2025. ZeroSearch: Incentivize the Search Capability of LLMs without Searching. arXiv preprint arXiv:2505.04588. doi:10.4 8550/arXiv.2505.04588 [31] Harsh Trivedi, Niranjan Balasubramanian, Tushar Khot, and Ashish Sabharwal. 2022. MuSiQue: Multi-hop Questions via Single-hop Question Composition. Transactions of the Association for Computational Linguistics 10 (2022), 539–554. doi:10.1162/tacl_a_00475 [32] S. Wang et al. 2025. Beyond the 80/20 Rule: High-Entropy Minority Tokens Drive Effective Reinforcement Learning for LLM Reasoning. arXiv preprint arXiv:2506.01939. doi:10.48550/arXiv.2506.01939 [33] J. Wei et al. 2022. Chain-of-Thought Prompting Elicits Reasoning in Large Language Models. In Advances in Neural Information Processing Systems .[34] Jialong Wu, Wenbiao Yin, Yong Jiang, Zhenglin Wang, Zekun Xi, Runnan Fang, Linhai Zhang, Yulan He, Deyu Zhou, Pengjun Xie, and Fei Huang. 2025. WebWalker: Benchmarking LLMs in Web Traversal. In Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) . Association for Computational Linguistics, Vienna, Austria, 10290–10305. doi:10.18653/v 1/2025.acl-long.508 [35] A. Yang et al. 2025. Qwen3 Technical Report. arXiv preprint arXiv:2505.09388. doi:10.48550/arXiv.2505. 09388 [36] Zhilin Yang, Peng Qi, Saizheng Zhang, Yoshua Bengio, William W. Cohen, Ruslan Salakhutdinov, and Christopher D. Manning. 2018. HotpotQA: A Dataset for Diverse, Explainable Multi-hop Question Answering. In Proceedings of the 2018 Conference on Empirical Methods in Natural Language Processing .Association for Computational Linguistics, Brussels, Belgium, 2369–2380. doi:10.18653/v1/D18-1259 [37] S. Yao et al. 2023. ReAct: Synergizing Reasoning and Acting in Language Models. In International Conference on Learning Representations .[38] Q. Yu et al. 2025. DAPO: An Open-Source LLM Reinforcement Learning System at Scale. arXiv preprint arXiv:2503.14476. doi:10.48550/arXiv.2503.14476 [39] Jie Zhang, Dongsheng Bi, Tao Sun, Minghui Yang, Jian Wang, and Yiwei Wang. 2026. TOOL-CURE: Tool Selection via Curriculum-Enhanced Reinforcement Learning with Sample Screening for LLMs. In Proceedings of the Nineteenth ACM International Conference on Web Search and Data Mining . ACM, Boise, ID, USA, 946–954. doi:10.1145/3773966.3777952 [40] Yue Zhang, Shicheng Zhou, Xiaopeng Li, Zhiliang Tian, Yifu Gao, Shiyi Zhang, Wenqing Hou, Yuying Liu, and Bin Zhou. 2026. KnowFC: Navigating Knowledge Conflicts in Large Language Model-based Fact-Checking. In Proceedings of the Nineteenth ACM International Conference on Web Search and Data Mining . ACM, Boise, ID, USA, 996–1006. doi:10.1145/3773966.3777935 [41] C. Zheng, S. Liu, M. Li, X.-H. Chen, B. Yu, C. Gao, K. Dang, Y. Liu, R. Men, A. Yang, J. Zhou, and J. Lin. 2025. Group Sequence Policy Optimization. arXiv preprint arXiv:2507.18071. doi:10.48550/arXiv.2507.18071 
+
+10
