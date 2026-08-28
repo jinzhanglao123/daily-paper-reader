@@ -1,0 +1,69 @@
+{
+  "label": "2026-08-28",
+  "date": "2026-08-28",
+  "generated_at": "2026-08-28T02:51:50",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202608/28/2608.24588v2-iapo-influence-aware-policy-optimization-for-credit-assignment-in-multi-turn-service-agents",
+      "section": "deep",
+      "title_en": "IAPO: Influence-Aware Policy Optimization for Credit Assignment in Multi-Turn Service Agents",
+      "authors": "Bo Ren, Yirong Mao, Yi Yang, Wenhui Que",
+      "date": "2026-08-25",
+      "pdf": "https://arxiv.org/pdf/2608.24588v2",
+      "score": "8.0",
+      "evidence": "多轮智能体的长程信用分配",
+      "tldr": "多轮服务智能体中，任务信息随时间逐步展开，仅凭最终奖励难以判断各动作贡献，信用分配成为关键挑战。本文提出IAPO，将每个轨迹构建为类型化影响依赖图，利用支持-使用与失败-使用结构生成路由权重，重分配同一轨迹级优势。在Qwen3-4B和Qwen3-8B上，IAPO在τ²-Bench、UserBench和AgentChangeBench三个基准上超越多轮RL基线，且不损害BFCL-v4 Multi-Turn函数调用性能。该方法为多轮用户交互中的信用分配提供了原则性方案，并推动服务智能体训练。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Large Language Model (LLM) agents increasingly solve long-horizon tasks through multi-turn interactions with users and external tools. In these settings, relevant task information often unfolds over time rather than being fully specified at the initial prompt. Service agents make this challenge especially concrete: users may clarify or revise their goals, while tool responses provide information needed for subsequent decisions. Thus, a final reward alone cannot indicate which actions contributed to resolving the task. Recent methods rely on comparative evidence from other trajectories or resampled continuations, or on separately constructed step-level learning signals, to refine credit. However, a completed rollout already records how information and errors flow between agent actions. We introduce Influence-Aware Policy Optimization (IAPO), which represents each rollout as a typed influence-dependency graph over trainable agent actions, with user and tool observations serving as evidence. IAPO converts support-use and failed-use structure into routing weights that redistribute the same trajectory-level advantage. Experiments with Qwen3-4B and Qwen3-8B demonstrate superior performance over multi-turn reinforcement learning (RL) baselines across three service-agent benchmarks: ${τ^2}$-Bench, UserBench, and AgentChangeBench. BFCL-v4 Multi-Turn further shows that these gains do not compromise multi-turn function-calling performance. This work advances the understanding of credit assignment in multi-turn user interactions and provides a principled approach to training service agents from sparse outcome feedback.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/28/2608.23136v1-bridge-damage-detection-from-low-light-uav-imagery-via-degradation-aware-mixture-of-experts-enhancement",
+      "section": "quick",
+      "title_en": "Bridge Damage Detection from Low-Light UAV Imagery via Degradation-Aware Mixture-of-Experts Enhancement",
+      "authors": "Hu Wang, Hongxu Pu, Zhiqi Hu, Fangzhou Lin, Wang Wang",
+      "date": "2026-08-24",
+      "pdf": "https://arxiv.org/pdf/2608.23136v1",
+      "score": "6.0",
+      "evidence": "低光照无人机图像损伤检测与退化感知增强",
+      "tldr": "针对低光照无人机图像中小尺寸、低对比度缺陷难以检测的问题，本文提出退化感知混合专家增强方法，结合ISP感知低光合成管道和多个专家模块进行噪声抑制、颜色调整和结构恢复。在合成数据上达到23.12 dB PSNR，并提升YOLO检测器的mAP。该方法可迁移至输电线路等基础设施的无人机缺陷检测。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Poor illumination obscures small, low-contrast defects in UAV bridge imagery, reducing the reliability and operational flexibility of automated inspection. This paper investigates whether degradation-aware image restoration can improve bridge damage detection under low-light conditions and transfer from synthetic degradations to real inspection scenes. We propose DaL- MoE, a detector-agnostic restoration front end trained with an ISP-aware low-light synthesis pipeline and equipped with degradation-aware guidance estimation and complementary experts for noise suppression, color adjustment, and structural-detail recovery. On paired synthetic data, DaL-MoE achieves 23.12 dB PSNR and 0.8482 SSIM, increasing YOLOv11m box mAP50 from 0.3097 to 0.4923 and mask mAP50 from 0.2281 to 0.3529. On real low-light UAV imagery without paired normal-light references, sim-to-real evaluation shows improved defect visibility and more complete detections than direct inference on raw low-light inputs. Future work will develop low-light-aware bridge damage detectors with stronger cross-scene generalization across bridge sites, imaging conditions, and illumination levels.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/28/2608.25163v1-bayesian-flow-networks-for-offline-trajectory-planning",
+      "section": "quick",
+      "title_en": "Bayesian Flow Networks for Offline Trajectory Planning",
+      "authors": "Ludvig Killingberg, Helge Langseth",
+      "date": "2026-08-25",
+      "pdf": "https://arxiv.org/pdf/2608.25163v1",
+      "score": "6.0",
+      "evidence": "在单一概率公式中同时建模离散和连续轨迹空间",
+      "tldr": "离线强化学习利用静态数据集学习策略，但现有连续扩散模型难以直接应用于离散规划任务，需改用类别形式而非标准高斯构造。BFN-RL基于贝叶斯流网络，通过迭代演化分布参数而非噪声数据实例，原生统一建模离散和连续轨迹空间；其分类规划器生成状态序列，逆动力学模型将其转换为动作。在离散规划与连续控制评测中，BFN-RL均能生成有效轨迹，覆盖分类和连续状态空间。结果表明BFN可作为跨数据模态的离线轨迹规划通用生成基础。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Offline reinforcement learning (RL) leverages static datasets to learn decision policies without real-time environment interaction. While recent sequence-modeling approaches rely on continuous diffusion models for trajectory synthesis, applying these methods to discrete planning tasks requires a categorical formulation rather than the standard Gaussian construction. We present BFN-RL, a unified generative modeling framework for offline RL based on Bayesian Flow Networks (BFNs). By iteratively evolving distribution parameters rather than noisy data instances, BFN-RL natively models both discrete and continuous trajectory spaces within a single probabilistic formulation. The categorical planner generates future state sequences, and a learned inverse-dynamics model converts consecutive generated states into actions. Evaluations in discrete planning and continuous control show that BFN-RL can generate effective trajectories across both categorical and continuous state spaces. Our results establish BFNs as a versatile generative foundation for offline trajectory planning across data modalities.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202608/28/2608.25757v1-lm-x-explainable-action-modeling-with-progress-event-and-uncertainty-prediction-for-generalist-robot-manipulation",
+      "section": "quick",
+      "title_en": "LM-X: Explainable Action Modeling with Progress, Event, and Uncertainty Prediction for Generalist Robot Manipulation",
+      "authors": "Jin Lou, Jingxuan Zhu, Andong Chen, Xupeng Wang, Yuan Xu, Yuexuan Li, Xingdong Zhu, Zhijie Zhu, Yingwei Ji, Wenpeng Nie, Jingyi Li, Liangliang Chen, Jinyan Liu, Zhiqi Song, Jidong Zhang, Hongming Li, Yuchen Zhu",
+      "date": "2026-08-26",
+      "pdf": "https://arxiv.org/pdf/2608.25757v1",
+      "score": "6.0",
+      "evidence": "为长程机器人操作预测回报与任务进度",
+      "tldr": "通用视觉-语言-动作策略仅预测短期动作，任务进展、意图和可靠性隐式，形成控制瓶颈。LM-X引入RTG、ETG和异方差动作流三个显式监督信号，在线预测并直接条件化动作生成，使解释内在于控制。在五任务门中比动作骨干提高16.0分，大规模训练后在50个RoboTwin2.0任务达74.1%，优于GR00T N1.7的55.4%，真实任务68.6%对50.7%。结果表明显式多时间尺度预测状态能强化控制并暴露可解释内部估计。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Generalist vision--language--action (VLA) policies learn long-horizon behavior mainly through short-horizon action prediction and reveal little beyond sampled commands. This creates two coupled bottlenecks: a single action target must implicitly absorb task progress, intermediate intent, and local reliability, while these control states remain hidden during execution. Inspired by functional principles of biological sensorimotor control, we introduce LM-X , which organizes prediction across task, event, and motor scales without claiming anatomical correspondence. Three explicitly supervised signals are emitted online and directly condition action generation: return-to-go (RTG) measures visible task progress, event-to-go (ETG) identifies the next semantic transition, and heteroscedastic action flow estimates local reliability through propagated variance. Explanation is therefore intrinsic to control rather than generated post hoc. Before a costly 20-day pretraining run on 64 NVIDIA B200 GPUs, a controlled five-task pretraining gate verifies the design: the complete model improves success by 16.0 points over the action-only backbone and by 10.8 points over the strongest single-head variant. We then train LM-X on more than 20,000 hours of real-robot trajectories, including over 1,000 hours of failed policy rollouts. LM-X achieves 74.1\\% across 50 randomized-hard RoboTwin2.0 tasks versus 55.4\\% for GR00T N1.7, and 68.6\\% versus 50.7\\% across seven real-robot tasks. RTG tracks semantic progress and visible regression, while variance rises during hesitation and oscillatory control. These results show that explicit multi-timescale predictive state can strengthen control while exposing interpretable internal estimates.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}

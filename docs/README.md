@@ -6,32 +6,35 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-26
-- 运行时间：2026-08-26 22:02:01 UTC
+- 最新运行日期：2026-08-28
+- 运行时间：2026-08-28 02:51:19 UTC
 - 运行状态：成功
-- 本次总论文数：3
+- 本次总论文数：4
 - 精读区：1
-- 速读区：2
+- 速读区：3
 
 ### 今日简报（AI）
-- 今日共生成 3 篇推荐（精读 1 篇，速读 2 篇）
+- 今日共生成 4 篇推荐（精读 1 篇，速读 3 篇）
 - 精读：《IAPO: Influence-Aware Policy Optimization for Credit Assignment in Multi-Turn Service Agents》（8.0/10）
-- 速读：《AHEAD: Adaptive Hindsight with Environment-Augmented Distillation for Agentic RL》（7.0/10）, 《Contrastive Branch Policy Optimization》（7.0/10）
+- 速读：《Bridge Damage Detection from Low-Light UAV Imagery via Degradation-Aware Mixture-of-Experts Enhancement》（6.0/10）, 《Bayesian Flow Networks for Offline Trajectory Planning》（6.0/10）, 《LM-X: Explainable Action Modeling with Progress, Event, and Uncertainty Prediction for Generalist Robot Manipulation》（6.0/10）
 - 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
-- 详情：[/202608/26/README](/202608/26/README)
+- 详情：[/202608/28/README](/202608/28/README)
 
 ### 精读区论文标签
-1. [IAPO: Influence-Aware Policy Optimization for Credit Assignment in Multi-Turn Service Agents](/202608/26/2608.24588v1-iapo-influence-aware-policy-optimization-for-credit-assignment-in-multi-turn-service-agents)  
+1. [IAPO: Influence-Aware Policy Optimization for Credit Assignment in Multi-Turn Service Agents](/202608/28/2608.24588v2-iapo-influence-aware-policy-optimization-for-credit-assignment-in-multi-turn-service-agents)  
    标签：评分：8.0/10、query:uav-drl
-   evidence：直接处理强化学习中的长时程信用分配
+   evidence：多轮智能体的长程信用分配
 
 ### 速读区论文标签
-1. [AHEAD: Adaptive Hindsight with Environment-Augmented Distillation for Agentic RL](/202608/26/2608.24114v1-ahead-adaptive-hindsight-with-environment-augmented-distillation-for-agentic-rl)  
-   标签：评分：7.0/10、query:uav-drl
-   evidence：针对长时程强化学习智能体的分步功劳分配
-2. [Contrastive Branch Policy Optimization](/202608/26/2608.24300v1-contrastive-branch-policy-optimization)  
-   标签：评分：7.0/10、query:uav-drl
-   evidence：解决强化学习中稀疏结果奖励的中间决策信用分配问题
+1. [Bridge Damage Detection from Low-Light UAV Imagery via Degradation-Aware Mixture-of-Experts Enhancement](/202608/28/2608.23136v1-bridge-damage-detection-from-low-light-uav-imagery-via-degradation-aware-mixture-of-experts-enhancement)  
+   标签：评分：6.0/10、query:uav-drl
+   evidence：低光照无人机图像损伤检测与退化感知增强
+2. [Bayesian Flow Networks for Offline Trajectory Planning](/202608/28/2608.25163v1-bayesian-flow-networks-for-offline-trajectory-planning)  
+   标签：评分：6.0/10、query:uav-drl
+   evidence：在单一概率公式中同时建模离散和连续轨迹空间
+3. [LM-X: Explainable Action Modeling with Progress, Event, and Uncertainty Prediction for Generalist Robot Manipulation](/202608/28/2608.25757v1-lm-x-explainable-action-modeling-with-progress-event-and-uncertainty-prediction-for-generalist-robot-manipulation)  
+   标签：评分：6.0/10、query:uav-drl
+   evidence：为长程机器人操作预测回报与任务进度
 
 
 <div class="dpr-home-promo-card">
