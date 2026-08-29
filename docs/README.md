@@ -6,35 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-28
-- 运行时间：2026-08-28 02:51:19 UTC
+- 最新运行日期：2026-08-29
+- 运行时间：2026-08-29 03:29:43 UTC
 - 运行状态：成功
-- 本次总论文数：4
-- 精读区：1
-- 速读区：3
+- 本次总论文数：1
+- 精读区：0
+- 速读区：1
 
 ### 今日简报（AI）
-- 今日共生成 4 篇推荐（精读 1 篇，速读 3 篇）
-- 精读：《IAPO: Influence-Aware Policy Optimization for Credit Assignment in Multi-Turn Service Agents》（8.0/10）
-- 速读：《Bridge Damage Detection from Low-Light UAV Imagery via Degradation-Aware Mixture-of-Experts Enhancement》（6.0/10）, 《Bayesian Flow Networks for Offline Trajectory Planning》（6.0/10）, 《LM-X: Explainable Action Modeling with Progress, Event, and Uncertainty Prediction for Generalist Robot Manipulation》（6.0/10）
+- 今日共生成 1 篇推荐（精读 0 篇，速读 1 篇）
+- 速读：《Saliency-Depth Conditioning for Zero-Shot Segmentation of Communication-Tower Components in Cluttered UAV Imagery》（6.0/10）
 - 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
-- 详情：[/202608/28/README](/202608/28/README)
+- 详情：[/202608/29/README](/202608/29/README)
 
 ### 精读区论文标签
-1. [IAPO: Influence-Aware Policy Optimization for Credit Assignment in Multi-Turn Service Agents](/202608/28/2608.24588v2-iapo-influence-aware-policy-optimization-for-credit-assignment-in-multi-turn-service-agents)  
-   标签：评分：8.0/10、query:uav-drl
-   evidence：多轮智能体的长程信用分配
+- 本次无精读推荐。
 
 ### 速读区论文标签
-1. [Bridge Damage Detection from Low-Light UAV Imagery via Degradation-Aware Mixture-of-Experts Enhancement](/202608/28/2608.23136v1-bridge-damage-detection-from-low-light-uav-imagery-via-degradation-aware-mixture-of-experts-enhancement)  
+1. [Saliency-Depth Conditioning for Zero-Shot Segmentation of Communication-Tower Components in Cluttered UAV Imagery](/202608/29/2608.25435v1-saliency-depth-conditioning-for-zero-shot-segmentation-of-communication-tower-components-in-cluttered-uav-imagery)  
    标签：评分：6.0/10、query:uav-drl
-   evidence：低光照无人机图像损伤检测与退化感知增强
-2. [Bayesian Flow Networks for Offline Trajectory Planning](/202608/28/2608.25163v1-bayesian-flow-networks-for-offline-trajectory-planning)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：在单一概率公式中同时建模离散和连续轨迹空间
-3. [LM-X: Explainable Action Modeling with Progress, Event, and Uncertainty Prediction for Generalist Robot Manipulation](/202608/28/2608.25757v1-lm-x-explainable-action-modeling-with-progress-event-and-uncertainty-prediction-for-generalist-robot-manipulation)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：为长程机器人操作预测回报与任务进度
+   evidence：无人机图像组件零样本分割用于自动化检测
 
 
 <div class="dpr-home-promo-card">

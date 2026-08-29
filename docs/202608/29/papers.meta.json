@@ -1,0 +1,24 @@
+{
+  "label": "2026-08-29",
+  "date": "2026-08-29",
+  "generated_at": "2026-08-29T03:30:10",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202608/29/2608.25435v1-saliency-depth-conditioning-for-zero-shot-segmentation-of-communication-tower-components-in-cluttered-uav-imagery",
+      "section": "quick",
+      "title_en": "Saliency-Depth Conditioning for Zero-Shot Segmentation of Communication-Tower Components in Cluttered UAV Imagery",
+      "authors": "Ali Lesani, Chul Min Yeum, Su-Min Kang",
+      "date": "2026-08-26",
+      "pdf": "https://arxiv.org/pdf/2608.25435v1",
+      "score": "6.0",
+      "evidence": "无人机图像组件零样本分割用于自动化检测",
+      "tldr": "针对通信塔组件在杂乱无人机影像中零样本分割易受背景干扰、导致漏检误检的问题，提出一种模型无关的显著-深度前景条件策略。该策略融合外观显著性与单目相对深度，构建粗粒度塔先验并抑制无关内容，分别集成到 Grounded-SAM 和 SAM 3，形成 SD-Grounded-SAM 和 SD-SAM 3。在 TOW-300 数据集（340 张影像）上，SD-SAM 3 取得最佳实例分割性能，SD-Grounded-SAM 误检更少。消融实验证实显著、深度与框细化具有互补增益，有效提升杂乱场景下的分割鲁棒性。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Fine-grained segmentation of communication-tower components in UAV imagery is essential for automated inspection, yet task-specific models are hard to develop due to limited instance-level annotations. Zero-shot segmentation models offer a promising alternative, but in cluttered scenes, visually similar background structures interfere with component localization, causing missed instances and false positives. We propose a model-agnostic saliency-depth foreground-conditioning strategy combining appearance-based saliency with monocular relative depth to construct a coarse tower prior and suppress irrelevant content. We integrate this module with Grounded-SAM and SAM 3, yielding SD-Grounded-SAM and SD-SAM 3. SD-Grounded-SAM further applies geometric and depth-aware box refinement before mask generation, while SD-SAM 3 relies on SAM 3's internal setup. On TOW-300, a dataset of 340 communication-tower UAV images, our strategy improves both baselines: SD-SAM 3 achieves the strongest instance-segmentation performance, while SD-Grounded-SAM produces fewer false positives. Ablations confirm complementary gains from saliency, depth, and box refinement, improving robustness in cluttered scenes.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
