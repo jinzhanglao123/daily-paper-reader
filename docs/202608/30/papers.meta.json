@@ -1,0 +1,24 @@
+{
+  "label": "2026-08-30",
+  "date": "2026-08-30",
+  "generated_at": "2026-08-30T22:34:31",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202608/30/2608.21946v2-edge-experience-distillation-for-guided-exploration-in-agentic-reinforcement-learning",
+      "section": "quick",
+      "title_en": "EDGE: Experience-Distillation for Guided Exploration in Agentic Reinforcement Learning",
+      "authors": "Can Xie, Yuyi Zhou, Wen Yang, Ziyi zhang, Siyao Song, Yingzhuo Deng, Shuo Ren, Jiajun Zhang",
+      "date": "2026-08-22",
+      "pdf": "https://arxiv.org/pdf/2608.21946v2",
+      "score": "6.0",
+      "evidence": "利用经验蒸馏引导探索的长时程强化学习",
+      "tldr": "现有LLM智能体强化学习在策略更新后丢弃轨迹中可复用探索模式，推理时检索经验的方法又忽视策略能力演变并产生外部依赖。EDGE将检索经验作为训练期临时脚手架，通过分组对比估计正边际增益，并用反向KL蒸馏内化到策略参数。在具身、网络和搜索问答任务上，EDGE较GRPO等强基线最多提升12.5点。该方法无需推理时脚手架或专有反射器，实现探索经验高效沉淀与策略持续进化。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Reinforcement learning with outcome-based objectives such as GRPO enables LLM-based agents to solve complex, long-horizon tasks, yet the reusable exploration patterns embedded in interaction trajectories are largely discarded after a single policy update. Existing experience-augmented approaches retrieve historical guidance at inference time, but they apply experiences without accounting for the policy's evolving capability and create persistent dependencies on external retrieval. We propose EDGE (Experience-Distillation for Guided Exploration), a framework that treats retrieved experiences as temporary training-time scaffolds and progressively internalizes their benefits into the parametric policy. Concretely, EDGE partitions each rollout group into experience-conditioned and experience-free trajectories to estimate and admit only positive marginal gains without extra sampling, then distills the induced behavior into the base policy via a reverse-KL objective on its own empirical support. A co-evolutionary experience bank further synthesizes guidance from emerging failure modes and prunes obsolete entries as the policy evolves. Across embodied, web, and search-based QA tasks, EDGE improves over strong RL baselines by up to 12.5 points and remains effective without inference-time scaffolds or a proprietary reflector. The code is available at https://github.com/xvolcano02/EDGE.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
