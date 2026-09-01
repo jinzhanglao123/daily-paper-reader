@@ -1,0 +1,894 @@
+Title: A^2Agent: Action-Aware Reinforcement Learning for Repository-Level Code Localization Agents
+
+URL Source: https://arxiv.org/pdf/2608.29831v1
+
+Published Time: Tue, 01 Sep 2026 01:28:01 GMT
+
+Number of Pages: 21
+
+Markdown Content:
+# A2AGENT : Action-Aware Reinforcement Learning for Repository-Level Code Localization Agents 
+
+Doyeon Kim *, Suyoung Bae *, Yumin Lee, Jee-Hyong Lee †
+
+College of Computing and Informatics Sungkyunkwan University, South Korea {kimdozz0, sybae01, totoandy, john}@skku.edu 
+
+Abstract 
+
+Localizing issue-relevant code regions is a critical step in automated software engineer-ing. However, due to their reliance on sparse trajectory-level signals, existing methods can-not identify which per-turn actions are effective and often discover correct code regions dur-ing exploration but fail to commit them. To address these limitations, we propose an action-aware reinforcement learning method that com-bines a per-turn reward sequence rewarding both the discovery and commitment of gold code regions with an action-level advantage estimation scheme that isolates each action’s credit by grouping turns sharing the same ex-ploration context. Extensive evaluations show that our method improves the average F1 over the state-of-the-art (SOTA) by 1.58% on SWE-Bench Verified and 8.55% on SWE-Bench Pro, with our 4B model outperforming baselines up to 8× larger. Our code is available at 
+
+https://github.com/donian00/A2Agent .
+
+1 Introduction 
+
+Recent advances in large language models (LLMs) have shown strong performance across a wide range of code-related tasks (Chen et al., 2021; Roziere et al., 2023; Guo et al., 2024). Among them, code localization, which identifies the spe-cific code regions that must be modified to resolve a real software issue, has become a central research focus. Accurate localization is a prerequisite for any downstream issue resolution, and inaccurate localization fundamentally limits the quality of the resulting issue resolution (Jimenez et al., 2024). As modern software repositories grow in scale and dependency complexity, a single LLM infer-ence is no longer sufficient to localize all relevant code regions. As a result, agent-based approaches have emerged as the dominant paradigm, where 
+
+> *
+
+Equal contribution 
+
+> †
+
+Corresponding author Issue 
+
+> Auto-conversion of structured np.array
+> to NdarrayMixin should be removed. ...
+
+Codebase 
+
+Case 1: Wrong Exploration 
+
+Case 2: Failed Commitment 
+
+> •••
+
+Correct action  Do not commit 
+
+> •••
+
+Incorrect action          
+
+> File:
+> astropy/table.py
+> fFunction:
+> convert
+> CClass: Table
+> Gold Localized Code
+> File:
+> astropy/table.py
+> fFunction:
+> convert
+> CClass: Table
+> Gold Localized Code
+> SearchEntity
+> fFunction:
+> convert_col
+> File:
+> astropy/column.py
+> Observation
+> Action
+> SearchEntity
+> Observation
+> Action
+> File:
+> astropy/row.py
+> fFunction:
+> convert_row
+> CClass: Row
+> Observation
+> TraverseGraph
+> Action
+> Class: Column
+> File:
+> astropy/column.py
+> C
+> Observation
+> SearchEntity
+> Action
+> File:
+> astropy/table.py
+> Function: convert
+> Class: Table
+> f
+> C
+> •••
+> Turn 1 Turn N
+> Turn 1 Turn N
+
+Figure 1: Failure cases of previous agentic LLMs for repository-level code localization. (Case 1) Wrong ex-ploration : Agents cannot identify effective actions at each turn, causing unnecessary tool calls that do not contribute to issue resolution. (Case 2) Failed com-mitment : Even though agents observe the gold region during localization, they fail to recognize and commit it to the final prediction. 
+
+models iteratively invoke tools to navigate the code-base (Chen et al., 2025; Yu et al., 2025; Jiang et al., 2025; Zhang et al., 2025). Early approaches leverage few-shot prompting to elicit tool use and multi-step reasoning from pre-trained LLMs (Yao et al., 2022; Wei et al., 2022). However, such demonstrations are insufficient for learning complex multi-turn tool use. There-fore, recent work has shifted toward post-training paradigms, training code localization agents via supervised fine-tuning (SFT) (Chen et al., 2025; Ma et al., 2025; Pan et al., 2024) or reinforcement learning with verifiable rewards (RLVR) (Zhang et al., 2025; Sutawika et al., 2026; Wei et al., 2026). However, several limitations remain unresolved by arXiv:2608.29831v1 [cs.CL] 30 Aug 2026 these approaches, as illustrated in Figure 1. Existing methods fail to distinguish the contri-bution and error of each action taken at individ-ual turns, resulting in redundant tool calls that do not contribute to issue resolution. In multi-turn code localization, actions at each turn may either contribute to identifying the correct code regions or mislead the search through inappropriate tool calls (Wang et al., 2025a; Yu et al., 2025). However, existing methods rely on either a single gold trajec-tory or a sparse outcome-level signal, which cannot separate correct actions from erroneous ones. The agent thus cannot reinforce effective exploration or discount counterproductive behavior. Moreover, in multi-turn code localization, the agent may observe the correct code regions during exploration but fail to commit them to the final prediction, instead invoking additional tools and outputting incorrect regions (analysis illustrated in Figure 3). Such failures persist because existing trajectory-level sparse rewards treat these explored-but-uncommitted trajectories the same as ones that never reached the correct elements. The discov-ery–commit gap thus remains unresolved. To address these challenges, we propose 
+
+A2AGENT , an Action-Aware reinforcement learn-ing method for repository-level code localization 
+
+AGENT s. To strengthen the agent’s ability to per-form effective exploration and reliable commit-ment, we first design a per-turn reward sequence 
+
+that rewards the discovery and commitment of gold code regions, providing learning signals from par-tial successes. Second, we propose an action-level advantage estimation scheme that groups turns sharing the same exploration context, isolating the credit of each action under the same context. To-gether, these two components enable action-aware RL that optimizes the agent at the action level. We evaluate A 2AGENT on two widely-used benchmarks, SWE-Bench Verified (Jimenez et al., 2024) and SWE-Bench Pro (Deng et al., 2025), both comprising real-world GitHub issues with their corresponding repositories. Our experimen-tal results demonstrate that our A 2AGENT outper-forms the SOTA baselines by 1.58% and 8.55% in average F1, respectively. Notably, with Qwen3-4B as the backbone, A 2AGENT surpasses base-lines trained on models up to 8× larger, suggest-ing that fine-grained action-level supervision is a more critical performance factor than model scale in repository-level code localization. 
+
+2 Related Work 
+
+Repository-Level Code Localization. Early works in repository-level code localization rank files by similarity to the issue description using BM25 (Robertson and Zaragoza, 2009) or dense retrieval (Reddy et al., 2025; Suresh et al., 2025). However, the semantic gap between natural lan-guage issues and code, together with the difficulty of capturing inter-file dependencies (Gupta et al., 2025; Ouyang et al., 2025), motivates agent-based approaches that iteratively invoke tools to navigate the codebase. Subsequent work enriches these agents through graph modeling, symbol tracing, terminal navigation, and commit history (Chen et al., 2025; Zhang et al., 2025; Sutawika et al., 2026; Wang et al., 2025a; Jiang et al., 2025), while pipeline-based methods such as Agentless (Xia et al., 2024) take a complementary route by decom-posing localization into sequential LLM prompts. Yet existing methods predominantly focus on ex-panding the search space and collecting relevant context, leaving two key capabilities unsolved: identifying which per-turn actions meaningfully contribute to issue resolution, and committing ob-served code elements to the final prediction. 
+
+Agentic Training. Early agentic training relied primarily on SFT to imitate teacher trajectories, but it struggles to generalize to unfamiliar codebases at inference time (Deng et al., 2025; Chu et al., 2025). Recent work has explored group-based RL methods such as GRPO (Shao et al., 2024) and GSPO (Zheng et al., 2025), which estimate a sin-gle trajectory-level advantage from rollout group reward statistics without a separate value function, and have been widely adopted across tasks includ-ing code localization (Zhang et al., 2025; Sutawika et al., 2026; Lee et al., 2026b). However, these methods assign uniform advantages across the en-tire trajectory based solely on the final prediction, making it difficult to attribute which actions con-tributed to the final outcome across multiple turns. Another line of work pursues finer-grained credit assignment, estimating advantages at intermediate steps via resampling (Kazemnejad et al., 2024; Lee et al., 2026a; Guo et al., 2026) or anchoring rollout groups to shared environment states (Feng et al., 2026). In code exploration, however, the repository remains fixed and multi-turn rollouts are costly to re-execute, leaving no cheap anchor for either ap-proach. We tackle this by leveraging exploration history as a state proxy to compare tool calls within < The Overview of Code Localization Agents > 
+
+A. Reward Design  B. Action-Level Advantage Estimation 
+
+> Rollout Trajectories (N=8, T = 3)
+> Action-Level Advantage Estimation
+
+𝐴 𝑡 = 𝜔 0𝐴  𝜏 𝑖 + ෍ 𝐾=1 𝐻 
+
+𝜔 𝐾 መ𝐴 𝑡 (𝐾) 
+
+LLM Agents 
+
+Observation ( 𝑜 𝑡 )Action ( 𝑎 𝑡 )
+
+Issue :  𝑞   
+
+> Auto-conversion of structured np.array
+> to NdarrayMixin ...
+> File: astropy/table.py
+> fFunction: convert
+> CClass: Table
+
+Predicted :  ෝ𝒚 
+
+Tools 
+
+> SearchCodeSnippet, TraverseGraph, SearchEntity, SearchSummary, ViewSummary, SearchCommit
+
+Codebase 
+
+> •••
+
+C. Training Pipeline 
+
+❶ Terminal Reward (t =  𝑇 ) :  𝑟 𝑇 = 𝑟 𝐹1 + 𝑟 𝐷𝐶   
+
+> Gold 𝑦 Predicted ො𝑦
+> F1 score +
+> Discovery-Commit Ratio
+
+❷ Turn Level Reward (t =  1,…, 𝑇 ) :  𝑟 𝑡 = 𝛿 𝑡 𝑓 + 𝛿 𝑡 𝑚 + 𝛿 𝑡 𝑢   
+
+> If Gold Location Exist at 𝑜 𝑡 :
+
+𝛿 𝑡 𝑓 = ෡|𝐹| 𝑎𝑡 𝑡 |𝐹|  𝛿 𝑡 𝑚 = ෢|𝑀| 𝑎𝑡 𝑡 |𝑀|  𝛿 𝑡 𝑢 = ෢|𝑈| 𝑎𝑡 𝑡 |𝑈| 
+
+𝑎 1 𝑜 1 𝑎 2 𝑜 2 𝑎 𝑇  𝑜 𝑇     
+
+> Trajectory : 𝝉
+> •••
+> ❶+❷❷❷
+
+ො𝑦 𝑞 
+
+𝑟 𝑡 = ••• 
+
+𝐺 𝑡 = ෍ 
+
+> 𝑘=𝑡 𝑇
+
+𝛾 𝑘−𝑡 𝑟 𝑘 
+
+> Discounted Return
+
+𝑎 1 
+
+> 1
+
+𝑜 1 
+
+> 1
+
+𝑎 21 𝑜 21 𝑎 31 𝑜 31 ••• 
+
+𝑎 1 
+
+> 2
+
+𝑜 1 
+
+> 2
+
+𝑎 22 𝑜 22 𝑎 32 𝑜 32 ••• 
+
+𝑎 17 𝑜 17 𝑎 27 𝑜 27 𝑎 37 𝑜 37 ••• 
+
+𝑎 18 𝑜 18 𝑎 2 
+
+> 8
+
+𝑜 2 
+
+> 8
+
+𝑎 3 
+
+> 8
+
+𝑜 3 
+
+> 8•••
+
+𝑞 
+
+> Action History Grouping (H=2)
+
+2.  𝐴  𝜏 𝑖  : Trajectory-Level Advantage        
+
+> 𝐴 𝜏 𝑖 =
+> 𝑅(𝜏 𝑖 ) − 1|𝒢 𝜏 |σ𝑗∈𝒢 𝜏 𝑅(𝜏 𝑗 )
+> 𝜎 𝒢 𝜏 + 𝜖
+
+1.  መ𝐴 𝑡 (𝐾) : Action-Level Advantage 
+
+መ𝐴 3(1) 
+
+( , )𝑎 3 
+
+> 1
+
+𝑜 3 
+
+> 1
+
+𝑎 3 
+
+> 8
+
+𝑜 3  
+
+> 8
+> ∅13=
+> History Context K = 1
+
+መ𝐴 3(2) 
+
+( , )𝑎 31 𝑜 31 𝑎 3 
+
+> 8
+
+𝑜 3   
+
+> 8
+> ∅23=
+> History Context K = 2
+
++
+
+Teacher LLM 
+
+LLM Agents 
+
+> Step1 : Teacher SFT
+> Train Tool Usage and Trajectory Generation Ability
+> Step2 : Action-Aware RL
+> Improve Code Localization Ability
+
+LLM Agents      
+
+> Action-Level Advantage
+> Estimation ( 𝐴 𝑡 )
+> •••
+> Turn 1Turn 2Turn 𝑇 •••
+
+Figure 2: Overview of A 2 AGENT . Given an issue q, an LLM agent interacts with the codebase via tool calls to predict the gold target ˆy. (A) Reward Design combines a turn-level reward and a terminal reward to form the discounted return. (B) Action-Level Advantage Estimation groups turns sharing the same length-K action history across rollouts to compute a context-matched baseline, producing action-level advantages ˆA(K)
+
+t which are then combined with the trajectory-level advantage A(τi). (C) Training Pipeline first fine-tunes the agent for tool-use ability, and then optimizes it via Action-Aware RL to improve localization performance. 
+
+the same search context, enabling action-level ad-vantage estimation at each turn. 
+
+3 Preliminary 
+
+Problem Setup. We formulate repository-level code localization as a multi-turn decision-making process. At each turn t, the agent observes a state st
+
+encoding the issue, repository context, and interac-tion history, and produces an action at ∼ πθ(· | st)
+
+from a policy πθ. The agent outputs a localization decision at the final turn T , yielding a trajectory τ .In the conventional setting, a reward is observed only at this final turn, evaluating the final predic-tion. The discounted return from turn t is defined as Gt = PTk=t γk−trk, where γ ∈ (0 , 1] .
+
+Group-Relative Advantage Estimation. Group-based reinforcement learning methods, such as GRPO (Shao et al., 2024), estimate advantages without a separate value function by subtracting the mean return within a group of trajectories Gτ
+
+sampled for the same issue: 
+
+A(τi) = R(τi) − 1
+
+|G τ |
+
+P
+
+j∈G τ R(τj )
+
+σGτ + ϵ . (1) Since this value reflects only the relative perfor-mance of the entire trajectory, the same advantage is assigned to every turn, making it impossible to reflect the contribution of individual actions. To es-timate action-level advantages, one must define the discounted return Gt at turn t and compare turns that took different actions under the same state ˜s:
+
+A(˜ s, a ) = Gt − 1
+
+|G ˜s|
+
+P
+
+j∈G ˜s Gtj
+
+σG˜s + ϵ . (2) 
+
+4 Proposed Method 
+
+In this section, we introduce A2AGENT , an 
+
+Action-Aware reinforcement learning method for repository-level code localization AGENT s. We first formulate the task (Section 4.1). Then, we present our reward design and action-level advan-tage estimation (Section 4.2), and describe the train-ing procedure (Section 4.3). Figure 2 illustrates the overall framework. 
+
+4.1 Task Formulation 
+
+Given a repository and issue description q, our goal is to localize the code regions to be modi-fied at three granularities, files ˆF , classes/mod-ules ˆM , and functions ˆU , producing the pre-diction ˆy = ( ˆF , ˆM , ˆU ). The agent operates over an action space A = {SearchCodeSnippet ,
+
+TraverseGraph , SearchEntity , SearchSummary ,
+
+ViewSummary , SearchCommit } consisting of six tools that support keyword search, structural traver-sal, and semantic retrieval over the repository. De-tailed explanations are provided in Appendix A. Following Section 3, at each turn t the policy 
+
+πθ generates a tool call at ∈ A from the current state st and receives an observation ot, with st
+
+encoding the issue q and the interaction history 
+
+(a1, o 1, . . . , a t−1, o t−1). Here, each action at is defined as a tool name paired with its arguments, so that calls to the same tool with different argu-ments constitute distinct actions. The process ter-minates with a Finish action at turn T , yielding a trajectory τ = ( q, a 1, o 1, . . . , a T , ˆy). Given a gold target y = ( F, M, U ), we train πθ to maximize 
+
+Eτ ∼πθ [R(τ ; y)] , where R(τ ; y) decomposes into turn-level rewards used to compute action-level ad-vantages for fine-grained credit assignment. 
+
+4.2 Reward Design and Action-Level Advantage Estimation 
+
+Localizing issue-relevant code regions requires se-quential exploration, where each tool call shapes the search space for subsequent turns. However, trajectory-level signals alone face two limitations: they fail to capture partial successes where the agent uncovers the correct location but does not commit it to the final prediction, and Eq. (2) cannot be directly applied due to the lack of state equiv-alence in code exploration (Section 3). We tackle these by designing a turn-level reward that captures partial successes (Section 4.2.1) and an action-level advantage estimation scheme over a code-specific state proxy (Section 4.2.2). 
+
+4.2.1 Reward Design 
+
+In this section, we design rewards that operate at two complementary levels, a terminal reward at the final turn that evaluates the quality of the final pre-diction, and a turn-level reward that provides imme-diate feedback whenever the agent newly discovers a gold location during exploration. Together they form the per-turn reward sequence {rt}Tt=1 , from which the discounted return Gt = PTk=t γk−trk is computed for action-level advantage estimation. 
+
+Terminal Reward. The terminal reward is com-puted at the final turn T and reflects the quality of the agent’s final prediction. It consists of two complementary rewards: rT = rF1 + rDC .F1 reward rF1 evaluates final prediction accu-racy as the sum of F1 scores at the file, module, and function levels:     
+
+> rF1 = F1 F+ F1 M+ F1 U(3)
+
+Discovery-Commit (DC) reward rDC measures the fraction of explored gold locations that the agent commits to the final prediction. For each granularity level g ∈ { F, M, U }, we define the DC ratio as follows:            
+
+> DC g=|Eg∩Yg∩Og||Eg∩Yg|(4)
+
+where Eg, Yg, and Og denote the sets of explored, gold, and predicted locations at level g. Letting 
+
+I = {g | | Eg ∩ Yg| > 0} be the set of valid levels, the DC reward is defined as follows:        
+
+> rDC =
+> 
+> 1
+> |I|
+> P
+> g∈I DC gif I̸ =∅
+> 0otherwise (5)
+
+Within the discounted return Gt, this terminal re-ward propagates the outcome quality back to earlier turns, encouraging actions that lead to both accu-rate final predictions and consistent commitment of discovered locations. 
+
+Turn-Level Reward. Relying solely on the ter-minal reward leaves no learning signal for failed trajectories ( Gt = 0 ) even when gold locations were partially discovered, and underestimates the credit of early actions in successful trajectories due to discount-induced bias toward later turns. To tackle this, we additionally assign a turn-level re-ward that provides immediate feedback whenever the agent newly discovers a gold location. Let δft , δmt , δut denote the fraction of gold loca-tions newly discovered at turn t at the file, module, and function levels. The turn-level reward is: 
+
+rt = δft + δmt + δut (6) so that Gt reflects per-turn discovery and preserves learning signals for partially correct trajectories that would otherwise receive no gradient. 
+
+4.2.2 Action-Level Advantage Estimation 
+
+Using Gt, we now estimate an action-level advan-tage that isolates the contribution of each individ-ual action. As discussed in Section 3, this requires identifying turns that took different actions under the same state ˜s, and computing the advantage as the discounted return Gt normalized against the mean return within such a group (Eq. (2)). The challenge is that code exploration lacks a natural notion of state equivalence: unlike game or web environments where the state changes through ob-servable transitions such as movement or page nav-igation, the repository remains fixed throughout the trajectory, so a turn’s state is determined solely by its accumulated interaction history. Determining whether two turns share the same state ˜s is there-fore inherently difficult. We tackle this in two steps. We first define a state proxy for code exploration and group turns that share the same proxy. We then instantiate Eq. (2) on the resulting proxy-induced groups to obtain the action-level advantage. 
+
+State Proxy and Action-History Grouping. 
+
+Treating two turns as sharing the same state ˜s based on their action alone is insufficient: the same action can carry different exploration contexts depending on when it is invoked within a trajectory. In our training data, approximately 79.2% of turns involve a different preceding action, and the same action appears in an average of 3.29 distinct accumulated histories, indicating substan-tial contextual bias. We therefore define the state proxy based on the “exploration history preced-ing” the current turn. Specifically, the preced-ing K-action sequence at turn t is ϕK (t) =
+
+⟨at−K , a t−K+1 , . . . , a t−1⟩ and turns sharing the same ϕK (t) are grouped into G(K) 
+
+> t
+
+. Their mean return serves as a baseline for the average expected outcome at that exploration context. The current action at is excluded from the group key, since in-cluding it would restrict comparisons to turns with the same action and cancel out the learning signal. Note that grouping is performed per issue over rollouts of the same instance, and all exploration tools are read-only deterministic functions over a fixed repository, so an action with the same tool and arguments always returns the same observation. Turns sharing the same action history therefore reach their current turn through identical observa-tions, ensuring that only comparable exploration contexts are grouped together. 
+
+Action-Level Advantage Estimation. Within a group G(K) 
+
+> t
+
+of turns sharing the same exploration history ϕK , we instantiate Eq. (2) by normalizing the return Gt against the group baseline and stan-dard deviation:       
+
+> ˆA(K)
+> t=
+> Gt−mean j∈G (K)
+> t
+> Gtj
+> σG(K)
+> t
+> +ϵ.(7)
+
+Since the baseline is computed over turns that share the same exploration context but took alternative actions, ˆA(K) 
+
+> t
+
+directly measures how much the cur-rent action at outperformed its alternatives under the same context. To avoid committing to a single depth and bal-ance precision against stability, motivated by He et al. (2026), we combine advantages from multiple depths K = 1 , . . . , H , setting ˆA(K) 
+
+> t
+
+= 0 whenever the group size is one to suppress unreliable advan-tages. For turns whose groups are insufficient at every depth, we further introduce a trajectory-level anchor: the group-relative advantage A(τi) from Eq. (1) guarantees a minimum learning signal re-gardless of group availability. Combining the two, the final turn-level advantage is defined as:         
+
+> At=ω0·A(τi) +
+> HX
+> K=1
+> ωK·ˆA(K)
+> t,(8)
+
+where ωK ≥ 0 and PHK=0 ωK = 1 . The anchor term ω0 · A(τi) ensures every turn receives at least a trajectory-level advantage, while each depth-K
+
+term ωK · ˆA(K) 
+
+> t
+
+contributes action-level advantage only when sufficiently many turns share the same exploration context at that depth. 
+
+4.3 Two-Stage Training Teacher SFT Warm-up. Directly applying rein-forcement learning to a pretrained LLM is challeng-ing, as the initial policy lacks both the tool-use pro-ficiency and the repository exploration patterns re-quired to produce valid trajectories. To address this, we perform a SFT prior to reinforcement learning. Specifically, we leverage a strong teacher model to collect high-quality trajectories, filter for success-ful ones, and fine-tune the pretrained LLM on the resulting dataset to obtain the initial policy πsft  
+
+> θ
+
+.
+
+Action-Aware Reinforcement Learning. Initial-ized from πsft  
+
+> θ
+
+, we perform action-aware reinforce-ment learning using the advantage At defined in Section 4.2 to improve code localization. We first collect N trajectories per issue from the training set. To reinforce actions at high-advantage turns and down-weight those at low-advantage turns, we de-fine an advantage-weighted maximum-likelihood objective (Peng et al., 2019) that assigns token weights proportional to At. The transformation from At to a positive token weight is as follows: File-level Module-level Function-level Method LLM F1 P R F1 P R F1 P R
+
+Closed-Source LLMs 
+
+RepoSearcher Claude-3.7-Sonnet 32.30 20.24 89.24 – – – 26.91 18.64 66.08 
+
+RepoNavigator GPT-5-Chat 58.88 61.87 58.17 – – – 31.17 34.56 30.42 Claude-3.7-Sonnet 73.01 75.95 72.26 – – – 31.72 34.43 31.03 Claude-Sonnet-4.5 79.94 81.92 80.68 – – – 43.62 45.76 43.97 OpenHands-Bash GPT-5 3.20 3.20 3.20 2.60 2.60 2.60 2.60 2.60 2.60 Claude-Sonnet-4.5 0.80 0.80 0.80 0.40 0.40 0.40 0.40 0.40 0.40 OpenHands-Bash rem GPT-5 78.18 79.25 80.80 61.17 62.23 63.35 54.79 56.80 56.53 Claude-Sonnet-4.5 82.01 84.50 82.86 67.19 70.11 67.47 61.78 65.42 61.99 
+
+Open-Source LLMs 
+
+CoSIL Qwen2.5-32B 30.77 19.34 83.50 – – – 22.11 14.85 55.38 Agentless 35.38 25.60 78.93 – – – 27.33 24.07 40.97 LocAgent 44.18 34.18 79.39 – – – 21.48 16.29 46.79 OrcaLoca 58.11 59.51 59.57 – – – 28.72 25.59 39.14 RepoSearcher Qwen2.5-7B 30.09 18.80 83.11 – – – 25.57 17.68 62.38 Qwen2.5-32B 32.25 20.24 88.59 – – – 28.03 19.36 68.55 
+
+RepoNavigator Qwen2.5-7B 51.63 53.83 50.62 – – – 27.49 30.34 26.69 Qwen2.5-14B 58.90 58.97 61.60 – – – 29.23 30.08 31.02 Qwen2.5-32B 67.75 70.76 67.29 – – – 34.09 37.19 33.71 OpenHands-Bash Qwen3-1.7B 2.40 2.09 3.60 0.37 0.32 0.60 0.34 0.32 0.50 Qwen3-4B-Instruct 49.73 49.69 53.34 19.32 19.86 20.15 13.27 14.17 13.74 Qwen3-14B 43.13 36.49 71.20 22.86 20.40 33.04 16.08 14.51 23.58 Qwen3-32B (Thinking) 62.91 59.87 73.63 34.69 33.85 39.46 23.99 24.22 26.86 CODE SCOUT -4B 68.52 71.53 67.74 45.97 49.70 44.97 36.78 40.71 35.72 CODE SCOUT -14B 68.57 71.00 68.69 50.88 53.71 50.88 40.32 43.74 40.27 Qwen3-4B-Instruct 72.64 70.88 76.76 46.94 42.25 59.55 38.59 35.50 48.98 A2 AGENT Qwen3-8B 73.31 70.14 80.23 47.98 42.56 63.42 41.01 37.15 54.44 
+
+Table 1: Comparison of different methods on file-level, module-level, and function-level on SWE-Bench Verified using three evaluation metrics, F1 score ( F1 ), Precision ( P ), and Recall ( R). The best result per metric is bold-faced 
+
+and the second best is underlined within each block (closed- and open-source LLMs).       
+
+> ˜At=clip (At,−κ, κ ),wt=clip
+> 
+> exp( β˜At), w min , w max
+> 
+> (9)
+
+The inner clip bounds outlier advantages and the outer clip keeps the resulting positive weight within a stable range. The training objective is defined as follows, where the token weight wi := wti assigns each token i the weight of its corresponding turn ti,and ℓi(θ) = − log πθ(yi | y<i , τ <t i ) denotes the per-token cross-entropy of policy πθ:          
+
+> L(θ) = Eτ∼D
+> 1
+> |V(τ)|
+> X
+> i∈V(τ)
+> wi·ℓi(θ)
+> (10)
+
+where D is the set of collected trajectories and 
+
+V (τ ) denotes the index set of all assistant tokens in trajectory τ . The overall training algorithm is summarized in Appendix B. 
+
+5 Experiments 
+
+5.1 Experimental Setup Datasets. We construct 2,438 training instances from SWE-Gym (Pan et al., 2024), and evaluate on two held-out benchmarks: SWE-Bench Veri-fied (Jimenez et al., 2024) (500 human-verified) and the more challenging SWE-Bench Pro (Deng et al., 2025) (266 instances) for generalization. We exclude any repository-level overlap between train-ing and evaluation sets to prevent contamination. Further details are provided in Appendix C. 
+
+Baselines. We compare our method against sev-eral representative baselines using both open-and closed-source LLMs, including CoSIL (Jiang et al., 2025), Agentless (Xia et al., 2024), LocA-gent (Chen et al., 2025), OrcaLoca (Yu et al., 2025), RepoSearcher (Ma et al., 2025), RepoNaviga-tor (Zhang et al., 2025), and CodeScout (Sutawika File-level Module-level Function-level Method LLM F1 P R F1 P R F1 P R                                                                                                                                                                              
+
+> Closed-Source LLMs
+> OpenHands-Bash GPT-5 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 Claude-Sonnet-4.5 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 0.00 OpenHands-Bash rem GPT-5 61.18 69.10 62.06 42.20 52.86 39.63 35.86 48.91 32.65 Claude-Sonnet-4.5 64.75 75.39 64.49 48.54 61.75 45.39 42.26 58.14 38.06
+> Open-Source LLMs
+> RepoSearcher Qwen2.5-32B 3.81 2.52 9.00 –––2.31 2.46 2.52 LocAgent 19.77 0.38 25.73 –––4.30 0.17 8.72 Agentless 20.07 13.89 43.07 –––7.98 7.31 11.08 CoSIL 20.95 14.03 48.87 –––7.67 6.00 14.03 RepoNavigator Qwen2.5-7B 39.74 48.13 36.36 –––14.29 21.26 12.33 Qwen2.5-14B 49.72 58.64 46.85 –––18.06 25.25 16.05 Qwen2.5-32B 57.57 68.69 53.49 –––20.72 29.44 18.13 OpenHands-Bash Qwen3-1.7B 0.73 0.72 1.13 0.00 0.00 0.00 0.00 0.00 0.00 Qwen3-4B-Instruct 36.96 44.42 35.59 11.78 17.46 10.19 8.12 12.16 7.01 Qwen3-14B 30.08 28.48 48.22 11.87 13.82 14.21 8.20 9.97 9.92 Qwen3-32B (Thinking) 46.85 49.65 54.55 21.94 27.18 22.62 12.31 17.82 11.93 CODE SCOUT -4B 51.77 68.98 46.16 36.97 56.05 31.13 29.03 48.65 23.73 CODE SCOUT -14B 53.63 68.81 48.81 37.13 53.80 32.02 28.74 46.09 23.76 Qwen3-4B-Instruct 58.19 73.34 53.83 38.38 45.18 40.00 29.23 38.29 28.85 A2AGENT Qwen3-8B 60.05 76.54 56.16 39.07 45.51 42.37 30.60 39.16 30.91
+
+Table 2: Comparison of different methods on file-level, module-level, and function-level on SWE-Bench Pro using three evaluation metrics, F1 score ( F1 ), Precision ( P ), and Recall ( R). The best result per metric is bold-faced and the second best is underlined within each block (closed- and open-source LLMs). 
+
+et al., 2026). All baseline results are taken from the respective papers or subsequent work. To provide closed-source upper bounds, we additionally eval-uate GPT-5 and Claude-Sonnet-4.5 via the Open-Hands (Wang et al., 2025b) scaffold. Detailed de-scriptions are provided in Appendix D. 
+
+Metrics. Following Sutawika et al. (2026), we predict a variable number of locations per issue rather than a fixed-length candidate list, allowing the model to adaptively determine the proper scope of each prediction. Under this setting, our primary evaluation metric is the instance-level average F1 score between predicted and ground-truth locations across three granularities of file, module, and func-tion. We additionally report precision and recall 
+
+at each granularity to enable fair comparison with baselines that predict differing numbers of loca-tions. The formal definition of the evaluation pro-tocol is provided in Appendix E. 
+
+Implementation Details. We train and evaluate with Qwen3-4B-Instruct and Qwen3-8B as base models, fine-tuned with LoRA (rank =16 ) for 3 epochs. For RL, we run 2 epochs with a batch size of 16, sampling N =8 trajectories per issue and setting the history depth to H=2 . Further imple-mentation details are provided in Appendix F. 
+
+5.2 Main Results 
+
+As reported in Table 1, A 2AGENT consistently out-performs all open-source baselines in average F1 over SWE-Bench Verified, surpassing the SOTA baseline (CodeScout-14B) by 1.58%. Notably, our 4B model even outperforms baselines up to 8× larger (32B-scale models). Here, OpenHands-Bash rem denotes an OpenHands-Bash variant with patch-editing removed, restricting it to localization. Trajectory-level training methods such as RepoN-avigator and CodeScout assign a single advantage to every turn, capturing only the overall trajectory quality and leaving each individual tool call’s con-tribution unattributed. In contrast, A 2AGENT re-wards each call by comparing it against alternative actions taken under the same exploration history, converting a sparse reward into a dense action-level reward. This enables even a small model to learn targeted search over redundant broad search and to commit more of the gold locations it uncovers. Furthermore, as shown in Table 2, A 2AGENT 
+
+also consistently outperforms all open-source base-Method History Grouping rDC File F1 Module F1 Function F1                 
+
+> A2AGENT
+> ✓✓73.31 47.98 41.01
+> ✓✗71.73
+> (-1.58)
+> 46.42
+> (-1.56)
+> 39.55
+> (-1.46)
+> ✗✓72.19
+> (-1.12)
+> 47.10
+> (-0.88)
+> 40.19
+> (-0.82)
+> ✗✗71.01
+> (-2.30)
+> 45.63
+> (-2.35)
+> 38.72
+> (-2.29)
+> SFT --66.20
+> (-7.11)
+> 41.15
+> (-6.83)
+> 35.41
+> (-5.60)
+> GRPO --67.47
+> (-5.84)
+> 42.33
+> (-5.65)
+> 34.28
+> (-6.73)
+
+Table 3: Ablation study on key components of A2 AGENT . All ablations are conducted under the Qwen3-8B backbone on SWE-Bench Verified. Values in parentheses indicate the drop in percentage points relative to ours. 
+
+lines across all three granularities on SWE-Bench Pro, demonstrating robust generalization to diverse repositories and varying levels of task difficulty. We also provide qualitative results in Appendix G. 
+
+5.3 Ablation Study 
+
+In Table 3, we conduct an ablation study to verify the effectiveness of our method and the contribu-tion of each proposed component, comparing ours against SFT and GRPO baselines while ablating its two key components, History Grouping ( H=2 )and Discovery-Commit reward ( rDC ). First, SFT generalizes poorly to unseen code-bases (7.11%p drop in file-level F1), while GRPO assigns the same advantage to every turn, leaving individual tool call contributions unattributed and treating partially successful trajectories identically to complete failures. In contrast, even the simplest variant of A 2AGENT (both components removed) already outperforms GRPO by 3.54%p, demon-strating that turn-level reward alone provides sub-stantially richer learning signals than trajectory-level supervision. Second, both components contribute comple-mentarily. History Grouping and rDC each con-tribute independently and combine for the best re-sult, as they target distinct failure modes: History Grouping refines action-level credit by comparing turns under matched exploration contexts, while 
+
+rDC explicitly rewards the agent for committing the gold elements it observes during exploration. Finally, these contributions hold consistently across all three granularities. Their effect does not diminish at finer levels. While the file level has a small candidate space that even coarse exploration LocAgent RepoSearcher CoSIL A2Agent (w/o rDC )A2Agent 
+
+> 20 30 40 50 60
+> Discovery–Commit gap (%) ↓
+> DC gap File-level F1
+> 20 30 40 50 60 70 80
+> File-level F1 ↑
+
+Figure 3: Comparison of Discovery-Commit gap and file-level F1 under Qwen3-8B backbone. rDC markedly reduces the gap while keeping the highest F1. 1 2 3 4      
+
+> History depth H
+> 020 40 60
+> Turn coverage (%)
+> Turn coverage ( K=H)File F1 Module F1 Function F1
+> 38 42 45 48 72 74
+> F1 score
+
+Figure 4: Effect of history depth H on F1 and turn coverage under Qwen3-8B backbone, the fraction of turns in groups of size ≥ 2 at depth K=H. F1 peaks at 
+
+H=2 and declines as coverage shrinks with larger H.
+
+can reach, the function level relies more heavily on committing discovered locations and isolating per-action credit, which is precisely where our com-ponents operate. 
+
+5.4 Further Analysis of A 2AGENT 
+
+To further analyze the effectiveness of our method, we measure the Discovery-Commit gap across base-lines in Figure 3, defined as the fraction of failures in which a gold location was discovered during ex-ploration but not committed to the final prediction. This gap accounts for over 40% of failures across all baselines, revealing uncommitted discovery as a prevalent failure mode under trajectory-level su-pervision. In contrast, ours with rDC substantially reduces this gap while simultaneously improving file-level F1, confirming that rDC converts explored gold locations into correct predictions rather than trading localization accuracy for commitment. To assess the effect of history depth H, we mea-Type Method Avg. #Turns ( ↓)Avg. Time ( ↓)              
+
+> Procedure-based Agentless 2.77 6.41 Agent-based CoSIL 17.55 77.57 LocAgent 6.20 86.23 RepoSearcher 12.47 42.58 A2AGENT 11.72 18.08
+> Table 4: Inference efficiency comparison on SWE-Bench Verified, where all methods use the Qwen3-4B-Instruct backbone for fair comparison. Avg. #Turns :average number of tool calls per instance. Avg. Time :average inference time per instance.
+
+sure F1 and turn coverage (the fraction of turns in groups of size ≥ 2 at depth K=H) across H values in Figure 4. Increasing H trades coverage for preci-sion: smaller H groups more turns under a coarser context, while larger H matches turns under a finer context but leaves fewer turns grouped. Beyond 
+
+H=2 , coverage drops steeply and groups become too small for reliable credit estimation. The added deep-level terms thus contribute more noise than signal to Eq. (8), causing F1 to decline. We there-fore set H=2 , which best balances grouping preci-sion and coverage. 
+
+5.5 Inference Efficiency Analysis 
+
+To assess the practical cost of A 2AGENT , we report inference efficiency in Table 4. Among agent-based methods, A 2AGENT attains the lowest inference time, which stems not from fewer tool calls but from more concise observations. Without action-level credit, baselines repeatedly invoke broad ex-ploration tools that contribute little to localization. In contrast, A 2AGENT learns to shift from broad exploration to targeted search, reducing average ob-servation length by approximately 40% compared to baselines. Since observations accumulate in the prefill context of later turns, this gap compounds into a substantial speedup. 
+
+5.6 Influence on Issue Resolution 
+
+To verify that our localization gains carry over to end-to-end issue resolution, we conduct a down-stream experiment that measures resolve rate di-rectly, as reported in Table 5. We isolate the effect of localization by fixing the repair back-end to the Agentless repair pipeline. Every method feeds its localization output into this identical pipeline, per-forming localization with Qwen3-4B-Instruct and patch generation with Qwen3-30B-A3B-Instruct,                       
+
+> Method File F1 Function F1 Resolved (%)
+> Oracle --45.93 RepoSearcher 29.33 18.02 26.82 CoSIL 32.70 19.37 27.64 Agentless 44.70 20.54 29.07 LocAgent 49.14 25.82 31.78 A2AGENT 72.64 38.59 38.07
+> Table 5: Downstream issue resolution results on SWE-Bench Verified. All localization methods use the Qwen3-4B-Instruct backbone, and their outputs are fed into the same repair pipeline. Oracle denotes providing the gold locations directly to the repair pipeline.
+
+so any difference in resolve rate reflects localiza-tion quality alone. Oracle feeds the gold locations directly into the repair pipeline and thus marks the upper bound reachable with perfect localiza-tion. Resolve rate rises together with localization quality across all methods, and A 2AGENT reaches the highest resolve rate among all baselines while substantially narrowing the gap to the Oracle up-per bound. This confirms that the F1 gains from A2AGENT translate into a clear improvement in end-to-end resolve rate, consistent with the widely recognized view that localization quality directly bounds final resolution performance (Jimenez et al., 2024; Xia et al., 2024). 
+
+6 Conclusion 
+
+We proposed A 2AGENT , an action-aware reinforce-ment learning method for repository-level code lo-calization agents. By estimating action-level ad-vantages and incorporating a Discovery-Commit reward, the agent learns which tool calls advance localization and reliably commits discovered gold locations. Extensive experiments demonstrated that A2AGENT achieved strong performance, outper-forming baselines up to 8 × larger. Requiring no external API access or Docker setup, A 2AGENT 
+
+can be deployed entirely on-premises, making it practical where source code privacy is required. 
+
+Limitations 
+
+Owing to computational resource constraints, our experiments were conducted on small open-source models rather than larger-scale ones. Even so, our method achieved strong performance at this scale. Moreover, although our method was also effective for downstream issue resolution as shown in Ta-ble 5, further optimization for the downstream task remains a promising direction for our future work. Acknowledgements 
+
+This work was supported by Institute of Infor-mation & communications Technology Planning & Evaluation (IITP) grant funded by the Korea government(MSIT) (NO.RS-2025-02218768, 20%; No.RS-2025-25442569, 20%; RS-2019-II190421, 20%; IITP-2026-RS-2024-00437633, 20%), and the National Research Foundation of Korea(NRF) funded by the Ministry of Education (RS-2025-25433088, 20%). 
+
+References 
+
+Mark Chen, Jerry Tworek, Heewoo Jun, Qiming Yuan, Henrique Ponde De Oliveira Pinto, Jared Kaplan, Harri Edwards, Yuri Burda, Nicholas Joseph, Greg Brockman, and 1 others. 2021. Evaluating large language models trained on code. arXiv preprint arXiv:2107.03374 .Zhaoling Chen, Robert Tang, Gangda Deng, Fang Wu, Jialong Wu, Zhiwei Jiang, Viktor Prasanna, Arman Cohan, and Xingyao Wang. 2025. Locagent: Graph-guided llm agents for code localization. In Proceed-ings of the 63rd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Pa-pers) , pages 8697–8727. Tianzhe Chu, Yuexiang Zhai, Jihan Yang, Sheng-bang Tong, Saining Xie, Dale Schuurmans, Quoc V Le, Sergey Levine, and Yi Ma. 2025. Sft mem-orizes, rl generalizes: A comparative study of foundation model post-training. arXiv preprint arXiv:2501.17161 .Xiang Deng, Jeff Da, Edwin Pan, Yannis Yiming He, Charles Ide, Kanak Garg, Niklas Lauffer, An-drew Park, Nitin Pasari, Chetan Rane, and 1 others. 2025. Swe-bench pro: Can ai agents solve long-horizon software engineering tasks? arXiv preprint arXiv:2509.16941 .Lang Feng, Zhenghai Xue, Tingcong Liu, and Bo An. 2026. Group-in-group policy optimization for llm agent training. Advances in Neural Information Pro-cessing Systems , 38:46375–46408. Caglar Gulcehre, Tom Le Paine, Srivatsan Srini-vasan, Ksenia Konyushkova, Lotte Weerts, Abhishek Sharma, Aditya Siddhant, Alex Ahern, Miaosen Wang, Chenjie Gu, and 1 others. 2023. Reinforced self-training (rest) for language modeling. arXiv preprint arXiv:2308.08998 .Daya Guo, Qihao Zhu, Dejian Yang, Zhenda Xie, Kai Dong, Wentao Zhang, Guanting Chen, Xiao Bi, Yi-fan Wu, YK Li, and 1 others. 2024. Deepseek-coder: when the large language model meets programming–the rise of code intelligence. arXiv preprint arXiv:2401.14196 .Yiran Guo, Lijie Xu, Jie Liu, Dan Ye, and Shuang Qiu. 2026. Segment policy optimization: Effective segment-level credit assignment in rl for large lan-guage models. Advances in Neural Information Pro-cessing Systems , 38:114399–114431. Dhruv Gupta, Gayathri Ganesh Lakshmy, and Yiqing Xie. 2025. Sacl: Understanding and combat-ing textual bias in code retrieval with semantic-augmented reranking and localization. arXiv preprint arXiv:2506.20081 .Shuo He, Lang Feng, Qi Wei, Xin Cheng, Lei Feng, and Bo An. 2026. Hierarchy-of-groups policy optimiza-tion for long-horizon agentic tasks. arXiv preprint arXiv:2602.22817 .Edward J Hu, Yelong Shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean Wang, Lu Wang, and Weizhu Chen. 2021. Lora: Low-rank adap-tation of large language models. arXiv preprint arXiv:2106.09685 .Zhonghao Jiang, Xiaoxue Ren, Meng Yan, Wei Jiang, Yong Li, and Zhongxin Liu. 2025. Cosil: Software is-sue localization via llm-driven code repository graph searching. arXiv preprint arXiv:2503.22424 .Carlos E Jimenez, John Yang, Alexander Wettig, Shunyu Yao, Kexin Pei, Ofir Press, and Karthik R Narasimhan. 2024. SWE-bench: Can language mod-els resolve real-world github issues? In The Twelfth International Conference on Learning Representa-tions .Amirhossein Kazemnejad, Milad Aghajohari, Eva Portelance, Alessandro Sordoni, Siva Reddy, Aaron Courville, and Nicolas Le Roux. 2024. Vineppo: Re-fining credit assignment in rl training of llms. arXiv preprint arXiv:2410.01679 .Woosuk Kwon, Zhuohan Li, Siyuan Zhuang, Ying Sheng, Lianmin Zheng, Cody Hao Yu, Joseph Gon-zalez, Hao Zhang, and Ion Stoica. 2023. Efficient memory management for large language model serv-ing with pagedattention. In Proceedings of the 29th symposium on operating systems principles , pages 611–626. Jaehoon Lee, CheolWon Na, Suyoung Bae, Jin-Seop Lee, Jihyung Lee, YunSeok Choi, and Jee-Hyong Lee. 2026a. EXPO-SQL: Execution-based clause-level policy optimization for text-to-SQL. In Findings of the Association for Computational Linguistics: ACL 2026 , pages 22000–22019, San Diego, California, United States. Association for Computational Lin-guistics. Jin-Seop Lee, SungJoon Lee, SeongJun Jung, Boyang Li, and Jee-Hyong Lee. 2026b. Learning to refuse: Refusal-aware reinforcement fine-tuning for hard-irrelevant queries in video temporal grounding. In 
+
+Proceedings of the IEEE/CVF Conference on Com-puter Vision and Pattern Recognition , pages 10397– 10407. Zexiong Ma, Chao Peng, Qunhong Zeng, Pengfei Gao, Yanzhen Zou, and Bing Xie. 2025. Tool-integrated reinforcement learning for repo deep search. arXiv preprint arXiv:2508.03012 .Ashvin Nair, Abhishek Gupta, Murtaza Dalal, and Sergey Levine. 2020. Awac: Accelerating online reinforcement learning with offline datasets. arXiv preprint arXiv:2006.09359 .Siru Ouyang, Wenhao Yu, Kaixin Ma, Zilin Xiao, Zhi-han Zhang, Mengzhao Jia, Jiawei Han, Hongming Zhang, and Dong Yu. 2025. Repograph: Enhancing ai software engineering with repository-level code graph. In International Conference on Learning Rep-resentations , volume 2025, pages 30098–30121. Jiayi Pan, Xingyao Wang, Graham Neubig, Navdeep Jaitly, Heng Ji, Alane Suhr, and Yizhe Zhang. 2024. Training software engineering agents and verifiers with swe-gym. arXiv preprint arXiv:2412.21139 .Xue Bin Peng, Aviral Kumar, Grace Zhang, and Sergey Levine. 2019. Advantage-weighted regression: Sim-ple and scalable off-policy reinforcement learning. 
+
+arXiv preprint arXiv:1910.00177 .Samyam Rajbhandari, Jeff Rasley, Olatunji Ruwase, and Yuxiong He. 2020. Zero: Memory optimizations toward training trillion parameter models. In SC20: international conference for high performance com-puting, networking, storage and analysis , pages 1–16. IEEE. Revanth Gangi Reddy, Tarun Suresh, JaeHyeok Doo, Ye Liu, Xuan Phi Nguyen, Yingbo Zhou, Semih Yavuz, Caiming Xiong, Heng Ji, and Shafiq Joty. 2025. Swerank: Software issue localization with code ranking. arXiv preprint arXiv:2505.07849 .Stephen Robertson and Hugo Zaragoza. 2009. The prob-abilistic relevance framework: BM25 and beyond ,volume 4. Now Publishers Inc. Baptiste Roziere, Jonas Gehring, Fabian Gloeckle, Sten Sootla, Itai Gat, Xiaoqing Ellen Tan, Yossi Adi, Jingyu Liu, Romain Sauvestre, Tal Remez, and 1 others. 2023. Code llama: Open foundation models for code. arXiv preprint arXiv:2308.12950 .Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Xiao Bi, Haowei Zhang, Mingchuan Zhang, YK Li, Yang Wu, and 1 others. 2024. Deepseekmath: Pushing the limits of mathematical reasoning in open language models. arXiv preprint arXiv:2402.03300 .Tarun Suresh, Revanth Gangi Reddy, Yifei Xu, Zach Nussbaum, Andriy Mulyar, Brandon Duderstadt, and Heng Ji. 2025. Cornstack: High-quality contrastive data for better code retrieval and reranking. In In-ternational Conference on Learning Representations ,volume 2025, pages 15800–15817. Lintang Sutawika, Aditya Bharat Soni, Apurva Gandhi, Taha Yassine, Sanidhya Vijayvargiya, Yuchen Li, Xuhui Zhou, Yilin Zhang, Leander Melroy Maben, Graham Neubig, and 1 others. 2026. Codescout: An effective recipe for reinforcement learning of code search agents. arXiv preprint arXiv:2603.17829 .Boshi Wang, Weijian Xu, Yunsheng Li, Mei Gao, Yujia Xie, Huan Sun, and Dongdong Chen. 2025a. Improv-ing code localization with repository memory. arXiv preprint arXiv:2510.01003 .Xingyao Wang, Boxuan Li, Yufan Song, Frank F Xu, Xi-angru Tang, Mingchen Zhuge, Jiayi Pan, Yueqi Song, Bowen Li, Jaskirat Singh, and 1 others. 2025b. Open-hands: An open platform for ai software developers as generalist agents. In International Conference on Learning Representations , volume 2025, pages 65882–65919. Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Fei Xia, Ed Chi, Quoc V Le, Denny Zhou, and 1 others. 2022. Chain-of-thought prompting elic-its reasoning in large language models. Advances in neural information processing systems , 35:24824– 24837. Yuxiang Wei, Olivier Duchenne, Jade Copet, Quentin Carbonneaux, Lingming Zhang, Daniel Fried, Gabriel Synnaeve, Rishabh Singh, and Sida Wang. 2026. Swe-rl: Advancing llm reasoning via reinforce-ment learning on open software evolution. Advances in Neural Information Processing Systems , 38:78500– 78525. Chunqiu Steven Xia, Yinlin Deng, Soren Dunn, and Lingming Zhang. 2024. Agentless: Demystify-ing llm-based software engineering agents. arXiv preprint arXiv:2407.01489 .Shunyu Yao, Jeffrey Zhao, Dian Yu, Nan Du, Izhak Shafran, Karthik Narasimhan, and Yuan Cao. 2022. React: Synergizing reasoning and acting in language models. arXiv preprint arXiv:2210.03629 .Zhongming Yu, Hejia Zhang, Yujie Zhao, Hanxian Huang, Matrix Yao, Ke Ding, and Jishen Zhao. 2025. Orcaloca: An llm agent framework for software issue localization. arXiv preprint arXiv:2502.00350 .Zhaoxi Zhang, Yitong Duan, Yanzhi Zhang, Yiming Xu, Zhixiang Wang, Kun Liang, Yang Li, Jiahui Liang, Deguo Xia, Jizhou Huang, and 1 others. 2025. One tool is enough: Reinforcement learn-ing for repository-level llm agents. arXiv preprint arXiv:2512.20957 .Chujie Zheng, Shixuan Liu, Mingze Li, Xiong-Hui Chen, Bowen Yu, Chang Gao, Kai Dang, Yuqiong Liu, Rui Men, An Yang, and 1 others. 2025. Group sequence policy optimization. arXiv preprint arXiv:2507.18071 .A Tool Specifications 
+
+In this section, we describe the six repository tools comprising the action space A introduced in Sec-tion 4.1. The tools are built on a repository graph index, a BM25-based code search index, a seman-tic file summary index, and a commit history index. We directly adopt the tool infrastructure from prior work (Chen et al., 2025; Wang et al., 2025a), en-suring that any performance gains observed in our experiments are attributable solely to our learning signal design rather than differences in tool design. 
+
+TraverseGraph(start, depth, edges) . Re-turns a subgraph rooted at the given entity, travers-ing up to depth hops along the specified de-pendency types ( contains , imports , invokes ,
+
+inherits ). Serves as the primary entry point for understanding the module hierarchy and depen-dency structure of an unfamiliar repository. 
+
+SearchCodeSnippet(query) . Searches the en-tire codebase via a BM25 index using keywords or identifiers, returning the file path, line range, and a snippet of the top matching results. Most effective when exact identifiers can be extracted from the issue description and used to narrow down candi-dates for subsequent SearchEntity calls. 
+
+SearchEntity(entity) . Returns a path of the form file_path , file_path:Class , or 
+
+file_path:Class.method , and returns the raw source code of the specified entity. Used to di-rectly inspect the logic of a narrowed candidate location and confirm a function-level answer. 
+
+SearchSummary(query) . Searches file sum-maries generated by an LLM by semantic similarity against a natural language query, returning the top file paths and their summaries. Useful for narrowing the file candidate space when the issue is described in domain-level language without explicit identifiers. 
+
+ViewSummary(file) . Returns a file summary generated by an LLM, covering its key responsibili-ties, major classes and functions, and dependencies. Enables rapid understanding of a file’s role without reading its full source. 
+
+SearchCommit(query) . Returns the SHA, mes-sage, date, and list of changed files for past com-mits matching the given query. Provides context from historically similar changes and co-modified                           
+
+> Hyperparameter Value
+> Rollouts per issue N8Max tool calls per trajectory 20 History depth H2Discount factor γ0.9 Batch size 16 Depth weights ωK∝K+1
+> Advantage clip κ5.0 Token-weight temperature β1.5 Token-weight bounds wmin ,wmax 0.1, 3.0 LoRA rank, α16, 16 Learning rate (SFT) 2×10 −4
+> Learning rate (advantage-weighted RL) 5×10 −5
+> Learning rate schedule Linear w/ warmup Optimizer AdamW Weight decay 0.01
+
+Table 6: Hyperparameters used for A 2 AGENT .−3 −2 −1 0 1 2 3   
+
+> Action-level advantage At
+> 0.0 0.5 1.0 1.5 2.0
+> Density
+> μ= -0.006
+> σ= 0.404
+
+Figure 5: Distribution of per-turn action-level advantage 
+
+At computed with history depth H=2 on the training set. The distribution is approximately zero-centered (μ = −0.006 , σ = 0.404 ), indicating that action-history grouping yields a stable and unbiased baseline for action-level credit assignment. 
+
+file dependencies, supplementing static analysis with dynamic repository evolution signals. 
+
+B Algorithm 
+
+Algorithm 1 summarizes the training procedure of our method. We further report the distribution of action-level advantage At in Figure 5, showing that the estimated advantages are well-centered and stable across turns. 
+
+C Benchmark Details 
+
+SWE-Bench (Jimenez et al., 2024) is a benchmark for evaluating LLMs on real-world software engi-neering tasks, where each instance consists of a GitHub issue and its corresponding pull request from popular open-source Python repositories. For our localization task, gold targets at file, module, Method Tool Input Output                                                      
+
+> Agentless (Xia et al., 2024) none (fixed pipeline) problem description, file tree ranked file/class/function list CoSIL (Jiang et al., 2025) symbol-trace symbol name call-graph slice rooted at sym-bol OrcaLoca (Yu et al., 2025)
+> search_file_contents file path file body or skeleton
+> search_class class name class definition
+> search_method_in_class class, method name method body
+> search_callable callable name callable code snippet
+> search_source_code code string matching snippets LocAgent (Chen et al., 2025)
+> SearchEntity entity name matching entity records
+> TraverseGraph start node, direction, depth graph slice
+> RetrieveEntity entity ID entity code block
+> FuzzySearch fuzzy query candidate entities RepoSearcher (Ma et al., 2025)
+> GetRepoStructure repository root directory tree
+> SearchClass class name class body
+> SearchFunction function name function body
+> SearchClassMethod class.method name method body RepoNavigator (Zhang et al., 2025) Jump symbol name in a file symbol definition CodeScout (Sutawika et al., 2026) Terminal Unix shell command command stdout/stderr
+> LocalizationFinish {file, module, function} sets final structured answer A2AGENT
+> SearchEntity entity name entity source code
+> TraverseGraph start node, direction, depth graph slice
+> SearchCodeSnippet keyword or identifier matching code snippets
+> SearchSummary natural language query file paths and summaries
+> ViewSummary file path natural language file summary
+> SearchCommit keyword matching commit history
+
+Table 7: Descriptions of the tool sets of code localization agents. A 2 AGENT adopts the same tool infrastructure as existing methods, focusing on training methodology rather than novel tool design. 
+
+and function granularities are extracted by parsing files, classes, and functions in the gold patch. 
+
+SWE-Bench Verified (Jimenez et al., 2024) . Ahuman-validated subset of 500 instances from SWE-Bench, created in collaboration with Ope-nAI to improve reliability. It serves as the de-facto standard for repository-level issue resolution. 
+
+SWE-Bench Pro (Deng et al., 2025) . A harder benchmark sourced from 41 GPL-licensed and commercial repositories to mitigate data contamina-tion, featuring long-horizon tasks with an average of 107.4 lines of edits across 4.1 files per instance. 
+
+D Baseline Methods 
+
+We describe the baseline methods used for compar-ison. The tool configurations of each method are summarized in Table 7. 
+
+Agentless (Xia et al., 2024) . A fixed-pipeline method that sequentially executes three stages via LLM prompting, namely suspicious file candidate extraction, class and function identification, and line-level localization, relying solely on in-context reasoning without an agent loop. 
+
+CoSIL (Jiang et al., 2025) . Incrementally con-structs a module call graph through function call analysis during exploration, expanding from an entry point toward suspicious regions. Employs context pruning for token budget management. 
+
+OrcaLoca (Yu et al., 2025) . Navigates the repos-itory via priority-based action scheduling, progres-sively decomposing file- and class-level search into function-level candidates with relevance scores. Uses distance-aware context pruning on the code graph to efficiently narrow down bug locations. 
+
+LocAgent (Chen et al., 2025) . Indexes the repos-itory as a heterogeneous graph prior to inference, enabling the agent to search, traverse, and inspect code entities on the graph. Our tool infrastructure directly follows this method. Algorithm 1 Training Procedure of A 2AGENT                                                                                                                            
+
+> Require: SFT policy πsft
+> θ, training queries Q, rollouts per issue N, history depth H, discount factor γ, advantage weights ω0: H
+> 1: θ←θsft
+> 2: repeat
+> 3: D ← ∅
+> 4: for each q∈ Q do
+> 5: Sample {τ(i)}Ni=1 ∼πθ(· | q)
+> 6: for all τ(i)do
+> 7: rt←δft+δmt+δut∀t < T i
+> 8: rTi←rF1 +rDC
+> 9: GTi+1 ←0
+> 10: for t=Tidown to 1do
+> 11: Gt←rt+γ G t+1
+> 12: end for
+> 13: end for
+> 14: A(τ(i))←R(τ(i))−mean jR(τ(j))
+> σGτ+ϵ
+> 15: for all turn tin each τ(i)do
+> 16: for K= 1 to Hdo
+> 17: G(K)
+> t←turns sharing ϕK(t)
+> 18: ˆA(K)
+> t←
+> Gt−mean j∈G (K)
+> t
+> Gtj
+> σG(K)
+> t
+> +ϵ
+> 19: end for
+> 20: At←ω0A(τ(i)) + PHK=1 ωKˆA(K)
+> t
+> 21: wt←f(At)▷Eq. (9) 22: end for
+> 23: D ← D ∪ { (τ(i),{wt})}Ni=1
+> 24: end for
+> 25: θ←arg min θL(θ;D)
+> 26: until maximum iterations reached 27: return θ
+
+RepoSearcher (Ma et al., 2025) . Adopts a two-stage workflow that progressively narrows from file-level to function-level localization, and is the first to introduce a distillation-based training frame-work ( ToolTrain ) for code localization agents using Claude 3.7 Sonnet as the teacher model. 
+
+RepoNavigator (Zhang et al., 2025) . Equips the agent with a single Jump tool to trace Python sym-bol definitions, and trains directly from a pretrained model via GRPO without relying on any closed-source teacher model. 
+
+CodeScout (Sutawika et al., 2026) . Adopts a min-imal toolset consisting of a standard Unix terminal and LocalizationFinish , and trains the policy with reinforcement learning using GSPO. 
+
+E Evaluation Protocol 
+
+We formally define the evaluation protocol de-scribed in Section 5.1. Let ˆYg denote the set of predicted locations and Yg the set of gold locations at granularity g ∈ { F, M, U }. For each instance we compute the scores from the overlap of the two sets and then average them over all instances. 
+
+Recall = | ˆYg ∩ Yg||Yg| , Precision = | ˆYg ∩ Yg|| ˆYg| ,
+
+F1 = 2 | ˆYg ∩ Yg|| ˆYg| + |Yg| (11) Importantly, the denominator of precision is not the set of all functions in the repository but the candidate set | ˆYg| that the model itself submits, and the remaining entities in the repository never enter the score computation. There is therefore no negative class, and the notion of a positive-to-negative ratio is not defined under this protocol. 
+
+F Implementation Details 
+
+All training stages are conducted on 4 NVIDIA RTX Pro 6000 GPUs (96 GB VRAM each). All experiments are implemented using the PyTorch framework with Python v3.12, using HuggingFace Transformers with DeepSpeed ZeRO-3 (Rajbhan-dari et al., 2020). Rollout collection is served with vLLM (Kwon et al., 2023). Hyperparameters spe-cific to our method, including history depth H, are validated through ablation studies in Section 5.3. Basic training hyperparameters such as learning rate, batch size, and LoRA configuration are set to values commonly used in the literature (Hu et al., 2021; Shao et al., 2024). Detailed hyperparameters are provided in Table 6. 
+
+Teacher SFT Warm-up. Using a teacher model 1,we filter 1,410 trajectories that match at least one gold location at each granularity. Training uses a learning rate of 2×10 −4 and sequence length of 36K. Loss is computed only on assistant turns. 
+
+Rollout Collection. Trajectories are sampled with temperature 1.0, top-p 0.8, and repetition penalty 1.05. The maximum number of tool calls per trajectory is capped at 20, and the maximum context length is 40K. All evaluation results are ob-tained from a single run with greedy decoding, con-sistent with the evaluation protocol of prior work. 
+
+Advantage-Weighted Reinforcement Learning. 
+
+Token weights are derived from At as described in Section 4.3. Eq. (10) is not a clipped policy-gradient objective as in PPO or GRPO but a maximum-likelihood objective weighted by advan-tages derived from the environment reward, which         
+
+> 1Qwen3-30B-A3B-Instruct-2507 Model Stage Wall-clock
+> Qwen3-4B-Instruct Teacher SFT 2.1h Rollout + Advantage-weighted training 2d 6h Qwen3-8B Teacher SFT 2.6h Rollout + Advantage-weighted training 3d
+
+Table 8: Training cost of A 2 AGENT measured in wall-clock time on 4 NVIDIA RTX Pro 6000 GPUs. 
+
+falls under advantage-weighted training (Peng et al., 2019). Our procedure iterates rollout col-lection and training updates, re-collecting rollouts from the current policy at each iteration (Gulcehre et al., 2023), and advantage-weighted training is known to be robust to the resulting mild off-policy drift without importance-ratio correction (Peng et al., 2019; Nair et al., 2020). The token-weight temperature β and advantage-clip bound κ are tuned by grid search over β ∈{0.5, 1.0, 1.5, 2.0} and κ ∈ { 3.0, 5.0, 10 .0}, with 
+
+β=1 .5 and κ=5 .0 selected by validation F1. The policy is updated for up to 3 iterations, each con-sisting of rollout collection followed by a training update. Each training update runs for 2 epochs with batch size 16 for 2,046 steps, a learning rate of 5×10 −5, sequence length 40K, and AdamW optimizer (weight decay 0.01, 10 warmup steps, linear schedule). LoRA configuration follows that of Teacher SFT Warm-up. 
+
+Training Cost. We report the wall-clock time on 4 NVIDIA RTX Pro 6000 GPUs for teacher SFT and for rollout collection with advantage-weighted training per iteration in Table 8. 
+
+Token Consumption. Since the number of tool calls does not fully reflect the prompt size and gen-eration per call, we report the average input and out-put tokens per instance over the 500 SWE-Bench Verified instances in Table 9. Input tokens denote the amount the model reads as the prompt, and output tokens denote the amount the model gener-ates. The input tokens of A 2AGENT are compara-ble to those of the multi-turn exploration baselines, whereas the output tokens are among the smallest. This is because our method performs only the nec-essary actions and finishes exploration in relatively few turns, concentrating on a specific area in the later turns, which is consistent with the shift toward targeted search reported in Section 5.5. 
+
+Repository Index Construction. Our method builds a dependency graph and a BM25 index once per repository snapshot, taking 4.7GB with 1h56m                         
+
+> Method 4B Input 4B Output 8B Input 8B Output
+> LocAgent 77.5K 3.6K 178.6K 1.2K CoSIL 62.3K 3.2K 136.1K 1.4K RepoSearcher 108.7K 1.8K 107.9K 1.3K Agentless 8.2K 0.3K 8.2K 0.2K A2AGENT 76.8K 0.9K 129.1K 0.9K
+
+Table 9: Average input and output tokens per instance on SWE-Bench Verified under the 4B and 8B backbones. 
+
+and 2.4GB with 29m respectively over all 500 SWE-Bench Verified instances, and once built they are reused through inference. Such preprocessing is not unique to our method, as graph-based agents also parse repository structure in advance. More-over, since our static index is read-only, all rollouts share the same index, requiring no execution envi-ronment or state restoration per rollout. 
+
+G Case Study 
+
+In this section, we provide case studies comparing A2AGENT and the model trained with only SFT on the same issue, sphinx-doc/sphinx#10449 .Figures 6–7 illustrate the trajectory of A 2AGENT ,which successfully localizes the gold location through appropriate tool calls. In contrast, as shown in Figure 8, the model trained with only SFT fails to reach the correct location, as it is lim-ited to imitating teacher trajectories and cannot adapt its search strategy to unseen codebases effec-tively. The system prompt used for SFT, rollout generation, and inference is unified and provided in Figures 9–11. Issue: sphinx-doc/sphinx#10449 
+
+autodoc_typehints="description" makes autoclass render a spurious Return type for a class (e.g. class Square whose 
+
+__init__ returns None ). 
+
+Gold: sphinx/ext/autodoc/typehints.py / module typehints / function merge_typehints 
+
+Action 1: SearchSummary(query="sphinx autoclass return type", top_k=5) 
+
+Observation 1: 
+
+Found 5 files matching 'sphinx autoclass return type': doc/.../examples/helloworld.py - custom "Hello World!" directive (HelloWorld) sphinx/highlighting.py - Pygments syntax highlighting (PygmentsBridge) sphinx/domains/__init__.py - domains: ObjType, Domain sphinx/search/tr.py - Turkish search stemming sphinx/util/images.py - image size / mimetype utils (none is the autodoc typehints file) 
+
+Action 2: ViewSummary(file_path="sphinx/domains/__init__.py") 
+
+Observation 2: 
+
+Summary for sphinx/domains/__init__.py: Defines the structure/behavior of domains (group directives & roles). Key classes: ObjType (object types in a domain), Domain (manages object types, directives, roles, indices). 
+
+Action 3: TraverseGraph(start=["sphinx/domains/__init__.py"], direction="downstream", depth=2, dep=["imports","invokes"]) 
+
+Observation 3: 
+
+sphinx/domains/__init__.py |-- imports -- sphinx/addnodes.py:pending_xref |-- imports -- sphinx/roles.py:XRefRole |-- imports -- sphinx/roles.py:XRefRole.result_nodes |-- imports -- sphinx/util/typing.py | |-- imports -- sphinx/ext/autodoc/mock.py:ismock | |-- imports -- sphinx/ext/autodoc/mock.py:_MockObject |-- imports -- sphinx/builders/__init__.py:Builder |-- imports -- sphinx/builders/__init__.py:Builder.get_target_uri |-- imports -- sphinx/environment/__init__.py:BuildEnvironment |-- imports -- sphinx/locale/__init__.py |-- imports -- sphinx/util/docutils.py:SphinxDirective |-- imports -- sphinx/util/typing.py:RoleFunction |-- imports -- sphinx/util/typing.py:TitleGetter |-- imports -- sphinx/directives/__init__.py:ObjectDescription |-- imports -- sphinx/directives/__init__.py:ObjectDescription.needs_arglist ... (16 of 36 lines omitted) 
+
+Figure 6: Example trajectory of A 2 AGENT , which successfully localizes the gold location. Continued in Figure 7. Action 4: SearchCodeSnippet(search_terms=["autoclass", "autodoc_typehints"]) 
+
+Observation 4: 
+
+[bm25] sphinx/ext/autosectionlabel.py:setup 51 def setup(app: Sphinx) -> Dict[str, Any]: 52 app.add_config_value('autosectionlabel_prefix_document', False, 'env') [bm25] sphinx/ext/autodoc/mock.py:_make_subclass ... (~100 of 108 lines omitted) 
+
+Action 5: SearchEntity(entity_names=["sphinx/ext/autodoc/typehints.py:merge_typehints"]) 
+
+Observation 5: 
+
+Found function sphinx/ext/autodoc/typehints.py:merge_typehints (exact match) 37 def merge_typehints(app, domain, objtype, contentnode) -> None: 38 if domain != 'py': 39 return 40 if app.config.autodoc_typehints not in ('both', 'description'): # <-- gold 41 return 43 try: 44 signature = cast(addnodes.desc_signature, contentnode.parent[0]) 45 if signature['module']: 46 fullname = '.'.join([signature['module'], signature['fullname']]) 47 else: 48 fullname = signature['fullname'] 49 except KeyError: 50 return 53 annotations = app.env.temp_data.get('annotations', {}) 54 if annotations.get(fullname, {}): 55 field_lists = [n for n in contentnode if isinstance(n, nodes.field_list)] 60 for field_list in field_lists: 61 if app.config.autodoc_typehints_description_target == "all": # <-- gold 62 modify_field_list(field_list, annotations[fullname]) 63 elif ... == "documented_params": # <-- gold 64 augment_descriptions_with_types(field_list, ..., force_rtype=True) 
+
+Action 6: SearchCodeSnippet(search_terms=["autodoc_typehints_description_target"]) 
+
+Observation 6: 
+
+[bm25] -> sphinx/ext/autodoc/typehints.py:merge_typehints (confirms target) 40 if app.config.autodoc_typehints not in ('both','description'): return ... (~90 of 98 lines omitted) 
+
+Finish File: sphinx/ext/autodoc/typehints.py ✓
+
+Module: typehints ✓
+
+Function: merge_typehints ✓
+
+Figure 7: Example trajectory of A 2 AGENT , which successfully localizes the gold location. Issue: sphinx-doc/sphinx#10449 
+
+autodoc_typehints="description" makes autoclass render a spurious Return type for a class (e.g. class Square whose 
+
+__init__ returns None ). 
+
+Gold: sphinx/ext/autodoc/typehints.py / module typehints / function merge_typehints 
+
+Action 1: TraverseGraph(start=[’sphinx’], depth=2, dep=[’contains’]) 
+
+Observation 1: 
+
+sphinx |-- contains -- sphinx/__init__.py |-- contains -- sphinx/addnodes.py | |-- sphinx/addnodes.py:desc_signature | |-- sphinx/addnodes.py:desc_content ... (~200 of 206 lines omitted; ext/autodoc/typehints.py not surfaced) 
+
+Action 2: SearchSummary(query="autodoc typehints") 
+
+Observation 2: 
+
+No files found matching 'autodoc typehints'. 
+
+Action 3: SearchSummary(query="autodoc") 
+
+Observation 3: 
+
+Found 7 files matching 'autodoc': doc/conf.py doc/.../examples/autodoc_intenum.py sphinx/ext/autodoc/__init__.py Classes: Documenter, ModuleDocumenter, ClassDocumenter, ExceptionDocumenter, ... Functions: identity, members_option, ..., setup sphinx/ext/autodoc/directive.py (AutodocDirective) sphinx/ext/autodoc/importer.py (import_object, get_class_members) sphinx/ext/autodoc/mock.py (_make_subclass, ismock) sphinx/ext/autodoc/preserve_defaults.py (typehints.py is NOT among the results) 
+
+Action 4: ViewSummary(file_path="sphinx/ext/autodoc/__init__.py") 
+
+Observation 4: 
+
+Summary for sphinx/ext/autodoc/__init__.py: Classes: Documenter, ModuleDocumenter, ClassDocumenter, ExceptionDocumenter, ... Functions: identity, members_option, ..., autodoc_attrgetter, setup Imports: ..., sphinx/ext/autodoc/importer.py, .../mock.py | Edits: 5 commits (merge_typehints / typehints.py never appears) 
+
+Action 5: SearchEntity(entity_names=["sphinx/ext/autodoc/__init__.py"]) 
+
+Observation 5: 
+
+Found file sphinx/ext/autodoc/__init__.py (exact match) 1 """Extension to create automatic documentation from code docstrings. 8 import re 12 from typing import (TYPE_CHECKING, Any, Callable, Dict, Iterator, List, ...) ... (~200 of 205 lines omitted) 
+
+Finish File: sphinx/ext/autodoc/__init__.py ✗
+
+Module: autodoc ✗
+
+Function: – ✗ (typehints.py not reached) 
+
+Figure 8: Example trajectory of the model trained with only SFT, which fails to localize the gold location. System Prompt for Localization Agent (continued on next page) 
+
+Given the following GitHub problem description, your objective is to localize the * exact* code locations that need modification at THREE granularities: 1. *File* --- the source file containing the bug or new behavior. 2. *Module* --- the class (or top-level module-scope function) inside that file. 3. *Function/Entity* --- the specific method/function that must be edited. You MUST report all three granularities in your final answer. Reporting only file paths is INSUFFICIENT --- module and function predictions are evaluated independently and contribute to your score. Follow these steps to localize the issue: ## Step 1: Categorize and Extract Key Problem Information - Classify the problem statement into the following categories: Problem description, error trace, code to reproduce the bug, and additional context. - Identify candidate modules in the '{package_name}' package mentioned in each category. - Use extracted keywords and line numbers to search for relevant code references for additional context. ## Step 2: Locate Referenced Modules and Functions - Accurately determine specific files -> modules -> functions. - Explore the repository to familiarize yourself with its structure. - Analyze the described execution flow to identify specific classes / methods being referenced. - Inspect class hierarchies and method signatures to pin down the exact function. - Pay special attention to distinguishing between modules with similar names using context and described execution flow. Output format for each location: - File only: 'file_path' - Module (class): 'file_path:ClassName' - Function (method/entity): 'file_path:ClassName.method_name' or 'file_path: top_level_function' Example: for method `calculate_sum ` of class `MathUtils ` in `src/helpers/math_helpers. py `:- file: src/helpers/math_helpers.py - module: src/helpers/math_helpers.py:MathUtils - entity: src/helpers/math_helpers.py:MathUtils.calculate_sum 
+
+Figure 9: System prompt provided to the localization agent. System Prompt for Localization Agent (continued on next page) 
+
+## Step 3: Analyze and Reproduce the Problem - Clarify the purpose of the issue. - If expanding capabilities: identify where and how to incorporate new behavior, fields, or modules. - If addressing unexpected behavior: focus on localizing modules containing potential bugs. - Reconstruct the execution flow: - Identify main entry points triggering the issue. - Trace function calls, class interactions, and sequences of events. - Identify potential breakpoints causing the issue. - Keep the reconstructed flow focused on the problem and avoid irrelevant details. ## Step 4: Locate Areas for Modification (file -> module -> function) - For every candidate file, ALSO determine WHICH class and WHICH method inside it require changes. Do not stop at the file level. - Use `SearchEntity ` to read the actual class/method body and verify the function-level location. - Consider upstream and downstream dependencies that may affect or be affected by the issue. - If applicable, identify where to introduce new fields, functions, or variables. - Think thoroughly: list multiple potential solutions and consider edge cases that could impact the resolution. ## Available Tools and When to Use Them You have 6 tools. Choose the most appropriate tool for each step. Do NOT repeatedly call the same tool. ### Search Tools - `TraverseGraph `: first step --- understand repo layout and module hierarchy. - `SearchSummary `: semantic file discovery. - `SearchCodeSnippet `: find code by keyword. - `SearchCommit `: find related commits and changed files. ### View Tools - `SearchEntity `: read actual code once you know the file/class/function path. - `ViewSummary `: view the LLM-generated summary of a specific file. 
+
+Figure 10: System prompt provided to the localization agent. System Prompt for Localization Agent 
+
+### Finish - `Finish `: submit final answer after you have localized all relevant locations. ### Recommended workflow 1. `TraverseGraph ` -> get repository overview 2. `SearchSummary ` -> find relevant files by concept 3. `ViewSummary ` -> understand key files' purposes 4. `SearchCommit ` -> find related change history and co-changed files 5. `SearchCodeSnippet ` -> locate specific code regions by keyword 6. `SearchEntity ` -> read actual code of key functions/classes 7. `Finish ` -> output your final answer ## Output Format for Final Results Your final output should list the locations requiring modification, wrapped with triple backticks. For EACH location you MUST report all available granularities: - the file path - the class name (module-level), if the change is inside a class - the function name (entity-level): either `ClassName.method ` or top-level `
+
+function_name `
+
+- line numbers when known Order locations by importance. Aim for about 5 files. Within each file, list every relevant module/function, not just one. Module-level and function-level predictions are scored independently from file-level. Reporting only the file path will lose about 2/3 of the available credit. Always include `class: ` and `function: ` when the answer lies inside a class or specific function. ### Examples full_path1/file1.py line: 10 class: MyClass1 function: MyClass1.my_function1 full_path2/file2.py line: 76 class: MyClass2 function: MyClass2.my_function2 full_path3/file3.py line: 24 line: 156 function: my_function3 Return just the location(s). 
+
+Figure 11: System prompt provided to the localization agent.

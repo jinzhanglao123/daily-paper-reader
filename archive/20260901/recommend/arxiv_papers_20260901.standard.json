@@ -1,0 +1,336 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-01T22:02:38.729965+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 4,
+    "deep_cap": 6,
+    "deep_selected": 4,
+    "quick_candidates": 4,
+    "quick_skim_target": 11,
+    "quick_selected": 4
+  },
+  "deep_dive": [
+    {
+      "id": "2608.24870v1",
+      "source": "arxiv",
+      "title": "SPO++: Stream-Aligned Policy Optimization for Asynchronous Agentic RL",
+      "abstract": "Group-relative reinforcement learning waits for sibling rollouts of the same prompt, which is costly for long and variable tool-use trajectories. Single-stream Policy Optimization (SPO) removes this dependency with a persistent prompt-level value estimate, but its recipe whitens one advantage per trajectory before optimizing a token-mean actor loss. We show that trajectory centering generally does not center the token-weighted quantity consumed by the actor, and fix the mismatch by standardizing terminal-outcome advantages under the action-token measure. We additionally organize prompt evidence by the policy event that generated it rather than learner receipt order. Across matched runs on ALFWorld at two model scales and on Math-TIR, SPO++ improves online learning efficiency over SPO. A paired ablation identifies action-token-measure normalization as the strongest tested component.",
+      "authors": [
+        "Kai Ruan",
+        "Jinghao Lin",
+        "Qianshan Wei",
+        "Ziqi Zhou",
+        "Zihe Huang"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-08-25T17:52:19+00:00",
+      "link": "https://arxiv.org/pdf/2608.24870v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "standardizes terminal-outcome advantages for long-horizon agentic RL trajectories",
+      "llm_evidence_cn": "标准化长程智能体RL轨迹的最终结果优势",
+      "llm_evidence": "标准化长程智能体RL轨迹的最终结果优势",
+      "canonical_evidence": "标准化长程智能体RL轨迹的最终结果优势",
+      "llm_tldr_en": "Proposes SPO++ to fix trajectory centering mismatch in single-stream policy optimization for long-horizon agentic RL, standardizing advantages under the action-token measure.",
+      "llm_tldr_cn": "该论文解决长程工具使用轨迹中群组相对强化学习的高成本问题，提出SPO++通过动作-令牌测度下标准化最终结果优势来修正单流策略优化中的轨迹中心化偏差。在ALFWorld和Math-TIR上的实验表明该方法提升在线性能。贡献在于为异步长程RL提供更准确的优势估计和信用分配。",
+      "llm_tldr": "该论文解决长程工具使用轨迹中群组相对强化学习的高成本问题，提出SPO++通过动作-令牌测度下标准化最终结果优势来修正单流策略优化中的轨迹中心化偏差。在ALFWorld和Math-TIR上的实验表明该方法提升在线性能。贡献在于为异步长程RL提供更准确的优势估计和信用分配。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.29831v1",
+      "source": "arxiv",
+      "title": "A^2Agent: Action-Aware Reinforcement Learning for Repository-Level Code Localization Agents",
+      "abstract": "Localizing issue-relevant code regions is a critical step in automated software engineering. However, due to their reliance on sparse trajectory-level signals, existing methods cannot identify which per-turn actions are effective and often discover correct code regions during exploration but fail to commit them. To address these limitations, we propose an action-aware reinforcement learning method that combines a per-turn reward sequence rewarding both the discovery and commitment of gold code regions with an action-level advantage estimation scheme that isolates each action's credit by grouping turns sharing the same exploration context. Extensive evaluations show that our method improves the average F1 over the state-of-the-art (SOTA) by 1.58% on SWE-Bench Verified and 8.55% on SWE-Bench Pro, with our 4B model outperforming baselines up to 8x larger. Our code is available at https://github.com/donian00/A2Agent.",
+      "authors": [
+        "Doyeon Kim",
+        "Suyoung Bae",
+        "Yumin Lee",
+        "Jee-Hyong Lee"
+      ],
+      "primary_category": "cs.CL",
+      "categories": [
+        "cs.CL",
+        "cs.SE"
+      ],
+      "published": "2026-08-30T14:53:35+00:00",
+      "link": "https://arxiv.org/pdf/2608.29831v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "action-aware RL with per-turn reward and advantage estimation isolates action credit for long-horizon tasks",
+      "llm_evidence_cn": "动作感知强化学习通过每步奖励和优势估计隔离动作贡献，适用于长时程任务",
+      "llm_evidence": "动作感知强化学习通过每步奖励和优势估计隔离动作贡献，适用于长时程任务",
+      "canonical_evidence": "动作感知强化学习通过每步奖励和优势估计隔离动作贡献，适用于长时程任务",
+      "llm_tldr_en": "Addressing sparse trajectory-level signals in code localization RL, the paper proposes action-aware RL combining per-turn rewards and action-level advantage estimation for credit assignment. This improves code localization F1, providing a method for long-horizon reward assignment.",
+      "llm_tldr_cn": "针对仓库级代码定位智能体中轨迹级信号稀疏导致无法区分有效动作、正确区域易被放弃的问题，提出动作感知强化学习方法。该方法结合每轮奖励序列与动作级优势估计，通过共享探索上下文的分组来隔离每个动作的贡献，实现细粒度信用分配。实验表明其在平均F1上超越现有方法，为长时程强化学习中的奖励分配提供了有效途径。",
+      "llm_tldr": "针对仓库级代码定位智能体中轨迹级信号稀疏导致无法区分有效动作、正确区域易被放弃的问题，提出动作感知强化学习方法。该方法结合每轮奖励序列与动作级优势估计，通过共享探索上下文的分组来隔离每个动作的贡献，实现细粒度信用分配。实验表明其在平均F1上超越现有方法，为长时程强化学习中的奖励分配提供了有效途径。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.31077v1",
+      "source": "arxiv",
+      "title": "Reconciling Process Supervision with Outcome-Based Credit in Agentic Policy Optimization",
+      "abstract": "Outcome-based reinforcement learning provides verified feedback for language-model agents, but assigns trajectory-level advantage uniformly to all decisions, yielding coarse credit over long-horizon interactions. On-policy self-distillation offers finer supervision by re-evaluating sampled behavior with privileged information (PI) available only during training. However, fine-grained supervision is not necessarily fine-grained credit: PI-induced likelihood changes describe how additional information alters policy preference, but do not directly determine how an executable action should inherit the verified task outcome. This creates a supervision-credit gap. Privileged signals may be irrelevant to the current interaction state, operate at a token granularity misaligned with executable decisions, and lack the outcome semantics required for reinforcement. We introduce TASPO, which converts privileged supervision into outcome-grounded action credit. TASPO constructs decision-applicable PI from verified successful experience, aggregates PI-induced likelihood shifts at the executable-action level, and converts relative action support into positive, bounded, mean-preserving weights on the original trajectory advantage. Thus, the verified outcome determines the update direction and average scale, while PI only redistributes credit across actions. Across three agentic benchmarks, TASPO improves over GRPO by 10.6\\% and generalizes better to unseen tasks. Further analysis indicates that TASPO reduces supervision mismatch and that action-level assignment stabilizes the policy optimization process. These findings offer the community another interesting perspective.",
+      "authors": [
+        "Jingxiao Yang",
+        "Wangjie Gan",
+        "Yingxuan Zhuang",
+        "Wenqi Zhang",
+        "Jintao Chen",
+        "Xuhong Zhang"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-08-31T16:51:50+00:00",
+      "link": "https://arxiv.org/pdf/2608.31077v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "process supervision and outcome-based credit for long-horizon agentic RL",
+      "llm_evidence_cn": "长程智能体RL中过程监督与结果基础信用的协调",
+      "llm_evidence": "长程智能体RL中过程监督与结果基础信用的协调",
+      "canonical_evidence": "长程智能体RL中过程监督与结果基础信用的协调",
+      "llm_tldr_en": "Addresses the supervision-credit gap by reconciling process supervision with outcome-based credit for long-horizon agentic policy optimization.",
+      "llm_tldr_cn": "该论文针对结果基础强化学习在长程交互中赋分粗糙、过程监督与结果信用之间存在监督-信用差距的问题，该方法重新审视特权信息导致的策略偏好变化与实际动作继承结果的关系。实验在智能体策略优化上验证了协调方法能改善信用分配。贡献在于弥合过程监督与结果信用，为长程决策提供更精细的优化信号，可迁移至需要精确奖励分配的无人机巡检任务。",
+      "llm_tldr": "该论文针对结果基础强化学习在长程交互中赋分粗糙、过程监督与结果信用之间存在监督-信用差距的问题，该方法重新审视特权信息导致的策略偏好变化与实际动作继承结果的关系。实验在智能体策略优化上验证了协调方法能改善信用分配。贡献在于弥合过程监督与结果信用，为长程决策提供更精细的优化信号，可迁移至需要精确奖励分配的无人机巡检任务。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2608.31167v1",
+      "source": "arxiv",
+      "title": "SUN: Persistent Programs For Language-Grounded Control-to-Learning-to-Real Policies",
+      "abstract": "Bridging model-based control and learned policies in long-horizon manipulation has harbored a silent disagreement: control executes specified objectives, learning amortizes that behavior into a reactive policy, yet existing protocols discard task semantics, leaving rewards hand-crafted and behavior drifting from what control verified.We introduce Semantically UNified (SUN) Programs, typed executables where geometric and contact relations are defined once and compiled into aligned Model Predictive Control (MPC) costs, satisfaction predicates, RL rewards, transition guards, and diagnostics. Our system, Kuafu, driven by large vision language systems, automatically synthesizes SUN Programs from language and scene semantics, screens feasibility via MPC, and retains semantics while training stage-conditioned policies. Across nine tasks, Kuafu achieves 82.03% macro-success, outperforming sparse-reward (35.67%) and Stage-BC (24.75%) baselines. At 8192-way scale, it generates 10.57x the successful trajectory time per hour of human teleoperation. With 500 trajectories per task, Kuafu data trains DP3 policies to 46.0% simulation success (vs. 22.4% for alternatives) and 34.7% on physical Franka and Kinova robots. These results establish that simulation-screened task semantics can effectively amortize control into robust policies, without demonstrations or manual dense rewards, unifying symbolic planning and data-driven execution.",
+      "authors": [
+        "Weiqi Wang",
+        "Zhi Li",
+        "Yudong Lei",
+        "David Martinez",
+        "Xiaofeng Gao",
+        "Yuxin Jiang",
+        "Chenfanfu Jiang",
+        "Yingnian Wu",
+        "Demetri Terzopoulos",
+        "Ran Gong"
+      ],
+      "primary_category": "cs.RO",
+      "categories": [
+        "cs.RO",
+        "cs.AI"
+      ],
+      "published": "2026-08-31T17:59:16+00:00",
+      "link": "https://arxiv.org/pdf/2608.31167v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "compiles control semantics into RL rewards for long-horizon tasks",
+      "llm_evidence_cn": "将控制语义编译为长程任务的RL奖励",
+      "llm_evidence": "将控制语义编译为长程任务的RL奖励",
+      "canonical_evidence": "将控制语义编译为长程任务的RL奖励",
+      "llm_tldr_en": "Introduces SUN Programs that define geometric and contact relations once and compile them into MPC costs, RL rewards, and diagnostics for long-horizon manipulation.",
+      "llm_tldr_cn": "该论文解决长程操作中基于模型控制与学习策略之间奖励手工设计且行为漂移的问题，提出语义统一程序SUN，将几何与接触关系一次性定义并编译为MPC成本、RL奖励、转换守卫和诊断。系统Kuafu由视觉语言系统自动合成SUN程序并筛选可行性，实验显示能对齐控制与学习。贡献在于为长程RL提供可靠的奖励来源，可迁移至需要长期信用分配的巡检任务。",
+      "llm_tldr": "该论文解决长程操作中基于模型控制与学习策略之间奖励手工设计且行为漂移的问题，提出语义统一程序SUN，将几何与接触关系一次性定义并编译为MPC成本、RL奖励、转换守卫和诊断。系统Kuafu由视觉语言系统自动合成SUN程序并筛选可行性，实验显示能对齐控制与学习。贡献在于为长程RL提供可靠的奖励来源，可迁移至需要长期信用分配的巡检任务。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.30640v1",
+      "source": "arxiv",
+      "title": "Three Steps at a Time: Learning Representations from Action Sequences in Contrastive RL",
+      "abstract": "While self-supervised approaches to reinforcement learning have achieved strong results by learning representations of states and actions, a key open question is the time scale over which actions should be modeled. Departing from the standard formulation relying on single-step actions, we extend contrastive reinforcement learning (CRL), a prototypical self-supervised method, to operate over action chunks, and find that this results in large, pervasive gains across established offline and online benchmarks: +31.7% and +93.1% across 18 and 11 environments respectively. While action-chunking-driven gains are generally explained through the ability to model non-Markovian, temporally extended policies, and to propagate unbiased multi-step returns, interestingly, we find that these arguments only partially apply to CRL. Our empirical studies suggest that, in the context of CRL, an action chunk carries more information about the goal than a single action, measurably improving the critic's representations, and rendering the algorithm significantly more effective.",
+      "authors": [
+        "Michal Korniak",
+        "Kamil Dybek",
+        "Benjamin Eysenbach",
+        "Marco Bagatella",
+        "Michał Bortkiewicz"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-08-31T11:47:03+00:00",
+      "link": "https://arxiv.org/pdf/2608.30640v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Action-chunking contrastive RL for long-horizon reward propagation",
+      "llm_evidence_cn": "动作分块对比强化学习用于长时程奖励传播",
+      "llm_evidence": "动作分块对比强化学习用于长时程奖励传播",
+      "canonical_evidence": "动作分块对比强化学习用于长时程奖励传播",
+      "llm_tldr_en": "The paper extends contrastive RL to action chunks, improving representation learning and multi-step reward propagation for long-horizon tasks, with large gains on benchmarks.",
+      "llm_tldr_cn": "针对标准对比强化学习只建模单步动作、难以有效处理长时程任务的问题，本文将对比强化学习扩展到动作分块，使状态-动作表示能够捕获跨多步的时序结构，并传播无偏多步奖励。在18个离线与11个在线基准环境中，该方法分别带来31.7%和93.1%的大幅性能提升。该工作表明，动作分块是改进长时程信用分配的有效手段，对需要长时程奖励赋值的强化学习场景具有直接借鉴价值。",
+      "llm_tldr": "针对标准对比强化学习只建模单步动作、难以有效处理长时程任务的问题，本文将对比强化学习扩展到动作分块，使状态-动作表示能够捕获跨多步的时序结构，并传播无偏多步奖励。在18个离线与11个在线基准环境中，该方法分别带来31.7%和93.1%的大幅性能提升。该工作表明，动作分块是改进长时程信用分配的有效手段，对需要长时程奖励赋值的强化学习场景具有直接借鉴价值。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2608.22847v1",
+      "source": "arxiv",
+      "title": "GSAR: Goal-State-Anchor Rewards for Mobile GUI Agents with Self-Evolving Data Synthesis",
+      "abstract": "Vision-Language Models (VLMs) based GUI agents stand to benefit significantly from online reinforcement learning (RL). However, their training is bottlenecked by two fundamental issues: current data synthesis methods for GUI Agents rely on specific environments and struggle to generate diverse data, while existing evaluators either suffer from limited scalability or provide inaccurate and unreliable reward signals. To overcome these challenges, we introduce GSAR (Goal-State-Anchor Reward), a RL reward framework that supports scalable task generation and delivers reliable reward signals for stable and efficient policy optimization. Our approach features self-evolving data synthesis, which produces multiple environments through task execution and generates diverse tasks and goal states. Complementing this, a state-anchor mechanism automatically annotates task-relevant UI elements in successful goal states as reference anchors. During RL training, these reference anchors provide accurate, scalable reward signals that substantially enhance efficiency. Extensive evaluations demonstrate that our framework achieves over 90% accuracy on offline trajectory verification and performs closest to rule-based methods. Furthermore, agents trained using our reward framework exhibit strong performance on both AndroidWorld and our constructed benchmark, establishing a scalable approach for GUI agent training.",
+      "authors": [
+        "Long Zhang",
+        "Yuhan Chen",
+        "Chaoran Zhang",
+        "Wanxia Cao",
+        "Kun Huang",
+        "Pengzhi Gao",
+        "Wei Liu",
+        "Jian Luan",
+        "Chenliang Li",
+        "Lixin Zou"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-08-24T06:27:47+00:00",
+      "link": "https://arxiv.org/pdf/2608.22847v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "goal-state-anchor reward framework provides reliable reward signals for RL, relevant to reward assignment",
+      "llm_evidence_cn": "目标状态锚定奖励框架为强化学习提供可靠奖励信号，与奖励分配相关",
+      "llm_evidence": "目标状态锚定奖励框架为强化学习提供可靠奖励信号，与奖励分配相关",
+      "canonical_evidence": "目标状态锚定奖励框架为强化学习提供可靠奖励信号，与奖励分配相关",
+      "llm_tldr_en": "To overcome data diversity and reward unreliability in GUI agent RL, they propose GSAR, a goal-state-anchor reward framework with self-evolving data synthesis. It provides reliable reward signals, offering a reward assignment method relevant to long-horizon RL.",
+      "llm_tldr_cn": "针对视觉语言模型GUI智能体在线强化学习中数据合成多样性不足和奖励信号不可靠的问题，提出目标状态锚定奖励框架GSAR。该方法结合自进化数据合成，生成多个环境，并通过目标状态锚定提供稳定可靠的奖励信号，支持可扩展任务生成。实验表明该框架能提高策略优化的稳定性和效率，为长时程强化学习中的奖励分配提供了可行方案。",
+      "llm_tldr": "针对视觉语言模型GUI智能体在线强化学习中数据合成多样性不足和奖励信号不可靠的问题，提出目标状态锚定奖励框架GSAR。该方法结合自进化数据合成，生成多个环境，并通过目标状态锚定提供稳定可靠的奖励信号，支持可扩展任务生成。实验表明该框架能提高策略优化的稳定性和效率，为长时程强化学习中的奖励分配提供了可行方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.25435v1",
+      "source": "arxiv",
+      "title": "Saliency-Depth Conditioning for Zero-Shot Segmentation of Communication-Tower Components in Cluttered UAV Imagery",
+      "abstract": "Fine-grained segmentation of communication-tower components in UAV imagery is essential for automated inspection, yet task-specific models are hard to develop due to limited instance-level annotations. Zero-shot segmentation models offer a promising alternative, but in cluttered scenes, visually similar background structures interfere with component localization, causing missed instances and false positives. We propose a model-agnostic saliency-depth foreground-conditioning strategy combining appearance-based saliency with monocular relative depth to construct a coarse tower prior and suppress irrelevant content. We integrate this module with Grounded-SAM and SAM 3, yielding SD-Grounded-SAM and SD-SAM 3. SD-Grounded-SAM further applies geometric and depth-aware box refinement before mask generation, while SD-SAM 3 relies on SAM 3's internal setup. On TOW-300, a dataset of 340 communication-tower UAV images, our strategy improves both baselines: SD-SAM 3 achieves the strongest instance-segmentation performance, while SD-Grounded-SAM produces fewer false positives. Ablations confirm complementary gains from saliency, depth, and box refinement, improving robustness in cluttered scenes.",
+      "authors": [
+        "Ali Lesani",
+        "Chul Min Yeum",
+        "Su-Min Kang"
+      ],
+      "primary_category": "cs.CV",
+      "categories": [
+        "cs.CV",
+        "cs.AI",
+        "cs.RO"
+      ],
+      "published": "2026-08-26T06:47:36+00:00",
+      "link": "https://arxiv.org/pdf/2608.25435v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "Zero-shot segmentation of tower components in cluttered UAV imagery for automated inspection",
+      "llm_evidence_cn": "在杂乱的无人机图像中对通信塔组件进行零样本分割以实现自动巡检",
+      "llm_evidence": "在杂乱的无人机图像中对通信塔组件进行零样本分割以实现自动巡检",
+      "canonical_evidence": "在杂乱的无人机图像中对通信塔组件进行零样本分割以实现自动巡检",
+      "llm_tldr_en": "Proposes saliency-depth conditioning to improve zero-shot segmentation of communication tower components in UAV images, reducing false positives.",
+      "llm_tldr_cn": "针对通信塔组件无人机图像中实例级标注有限、背景干扰导致分割错漏的问题，提出一种结合外观显著性与单目相对深度的模型无关前景条件化策略，生成粗略塔先验并抑制无关内容。将该模块与Grounded-SAM和SAM 3集成，得到SD-Grounded-SAM和SD-SAM 3，在杂乱场景中提升了组件定位的准确性和完整性。该策略为无人机基础设施自动巡检中的细粒度分割提供了有效方案。",
+      "llm_tldr": "针对通信塔组件无人机图像中实例级标注有限、背景干扰导致分割错漏的问题，提出一种结合外观显著性与单目相对深度的模型无关前景条件化策略，生成粗略塔先验并抑制无关内容。将该模块与Grounded-SAM和SAM 3集成，得到SD-Grounded-SAM和SD-SAM 3，在杂乱场景中提升了组件定位的准确性和完整性。该策略为无人机基础设施自动巡检中的细粒度分割提供了有效方案。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "transmission line defect detection from UAV imagery",
+      "matched_requirement_id": "req-4",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    },
+    {
+      "id": "2608.30406v1",
+      "source": "arxiv",
+      "title": "Locally-Guided Actor-Critic: Training a Goal-conditioned Actor with a Subgoal-aware Critic",
+      "abstract": "Goal-conditioned reinforcement learning struggles with long horizons when rewards are sparse. While a planner can provide subgoals to guide a low-level policy, its use at test time may introduce practical subgoal management difficulties. An alternative paradigm utilizes a high-level planner to assist learning, while the policy remains conditioned only on the final goal, enabling planner-free deployment. Among these methods, Reinforcement Learning with Imagined Subgoals (RIS) introduces a regularization term that encourages the policy to take the same actions for the final goal as it does for an intermediate goal. This regularization, however, may lead to goal-chaining issues when intermediate goals are low-dimensional. Potential-based reward shaping (PBRS) translates plans into an additional reward while ensuring that the optimal policy remains unchanged. Yet, it can generate deceptive rewards in terminal states. We study these failure cases and first propose an alternative reward shaping method (RS) that removes these deceptive rewards at the expense of theoretical guarantees of PBRS. Similar to this RS variant, we then propose another method named Locally-Guided Actor Critic (LG-AC) that rewards the agent for reaching intermediate goals. Unlike RS, where intermediate rewards are implicit in the shaping signal, we explicitly condition a value estimator on the full sequence of intermediate goals but represent the value function as a sum of subgoal-conditioned value functions, enabling dense hindsight relabeling. We evaluate all these methods in tasks with challenging goal-chaining requirements and empirically highlight specific cases in which either action regularization or reward shaping yield low performance, while LG-AC achieves the best overall performance across tasks.",
+      "authors": [
+        "Olivier Serris",
+        "Stéphane Doncieux",
+        "Olivier Sigaud"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG"
+      ],
+      "published": "2026-08-31T08:00:40+00:00",
+      "link": "https://arxiv.org/pdf/2608.30406v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 6.0,
+      "llm_evidence_en": "goal-conditioned RL for long horizons with subgoal-aware critic",
+      "llm_evidence_cn": "面向长时程目标条件强化学习，利用子目标感知的评论家",
+      "llm_evidence": "面向长时程目标条件强化学习，利用子目标感知的评论家",
+      "canonical_evidence": "面向长时程目标条件强化学习，利用子目标感知的评论家",
+      "llm_tldr_en": "This paper addresses long-horizon goal-conditioned RL with sparse rewards by training a goal-conditioned actor with a subgoal-aware critic, enabling planner-free deployment.",
+      "llm_tldr_cn": "目标条件强化学习在稀疏奖励下难以处理长时程任务。该文提出局部引导的演员-评论家方法，利用子目标感知的评论家辅助训练目标条件演员；实验表明该方法在长时程任务中提升了性能，且无需在测试时使用规划器。",
+      "llm_tldr": "目标条件强化学习在稀疏奖励下难以处理长时程任务。该文提出局部引导的演员-评论家方法，利用子目标感知的评论家辅助训练目标条件演员；实验表明该方法在长时程任务中提升了性能，且无需在测试时使用规划器。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "6"
+    }
+  ]
+}
