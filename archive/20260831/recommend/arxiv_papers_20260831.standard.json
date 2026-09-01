@@ -1,0 +1,56 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-01T00:27:12.863675+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 1,
+    "deep_cap": 6,
+    "deep_selected": 1,
+    "quick_candidates": 0,
+    "quick_skim_target": 11,
+    "quick_selected": 0
+  },
+  "deep_dive": [
+    {
+      "id": "2608.28128v1",
+      "source": "arxiv",
+      "title": "VICT: Verifier-Instrumented Credit Tracing for Long-Horizon LLM Agent Reinforcement Learning",
+      "abstract": "Fine-grained credit assignment is a central challenge in reinforcement learning for long horizon LLM agents. Standard objectives often train from programmatically verifiable terminal rewards by broadcasting each sparse outcome to every action in a trajectory. Existing methods typically seek finer credit from the rollout side, constructing auxiliary trajectory signals or additional comparisons to estimate action importance. Although useful, these approaches still treat the verifier that judged success as a scalar reward, discarding its internal task structure. Our key insight is that many verifiable tasks already encode the relevant checks inside their terminal verifier. We propose VICT (VerifierInstrumented Credit Tracing), a training-time interface that exposes executable or evidence backed atoms and traces them back to actions through dependency-valid proof edges. VICT redistributes group-relative advantage only along those edges, shifting credit assignment from rollout-side inference to verifierside tracing. It preserves the original terminal reward, abstains when evidence is incomplete or ambiguous, and changes only the training-time advantage tensor, requiring no learned critic, process labels, branch rollouts, or inference-time verifier access. On ALFWorld and WebShop, VICT improves substantially over outcome-only training and achieves strong performance alongside recent fine-grained credit methods; ablations rule out dense atom rewards, final-commit credit, temporal proximity, and sparsity as sufficient explanations.",
+      "authors": [
+        "Pengcheng Li",
+        "Zhengyang Zhang",
+        "Dongxu Zhang",
+        "Sui Huang",
+        "Shaohua Ma"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-08-28T09:43:54+00:00",
+      "link": "https://arxiv.org/pdf/2608.28128v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 9.0,
+      "llm_evidence_en": "fine-grained credit assignment for long-horizon RL agents via verifier-instrumented credit tracing",
+      "llm_evidence_cn": "通过验证器辅助信用追踪实现长程强化学习的细粒度信用分配",
+      "llm_evidence": "通过验证器辅助信用追踪实现长程强化学习的细粒度信用分配",
+      "canonical_evidence": "通过验证器辅助信用追踪实现长程强化学习的细粒度信用分配",
+      "llm_tldr_en": "Introduces VICT, which leverages terminal verifier internal structure to provide fine-grained credit assignment for long-horizon LLM agent RL, avoiding scalar reward broadcast.",
+      "llm_tldr_cn": "针对长程LLM智能体强化学习中稀疏终端奖励被广播到每一步导致信用分配粗粒度的问题，提出VICT方法。该方法利用程序化验证器的内部任务结构，将验证器的检查信息转化为细粒度信用信号，用于指导策略训练。实验表明VICT能有效提升长程任务学习效率，优于仅使用标量奖励的基线，为长时程强化学习的奖励分配提供新思路。",
+      "llm_tldr": "针对长程LLM智能体强化学习中稀疏终端奖励被广播到每一步导致信用分配粗粒度的问题，提出VICT方法。该方法利用程序化验证器的内部任务结构，将验证器的检查信息转化为细粒度信用信号，用于指导策略训练。实验表明VICT能有效提升长程任务学习效率，优于仅使用标量奖励的基线，为长时程强化学习的奖励分配提供新思路。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": []
+}

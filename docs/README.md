@@ -6,26 +6,26 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-08-30
-- 运行时间：2026-08-30 22:34:04 UTC
+- 最新运行日期：2026-08-31
+- 运行时间：2026-09-01 00:29:40 UTC
 - 运行状态：成功
 - 本次总论文数：1
-- 精读区：0
-- 速读区：1
+- 精读区：1
+- 速读区：0
 
 ### 今日简报（AI）
-- 今日共生成 1 篇推荐（精读 0 篇，速读 1 篇）
-- 速读：《EDGE: Experience-Distillation for Guided Exploration in Agentic Reinforcement Learning》（6.0/10）
+- 今日共生成 1 篇推荐（精读 1 篇，速读 0 篇）
+- 精读：《VICT: Verifier-Instrumented Credit Tracing for Long-Horizon LLM Agent Reinforcement Learning》（9.0/10）
 - 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
-- 详情：[/202608/30/README](/202608/30/README)
+- 详情：[/202608/31/README](/202608/31/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [VICT: Verifier-Instrumented Credit Tracing for Long-Horizon LLM Agent Reinforcement Learning](/202608/31/2608.28128v1-vict-verifier-instrumented-credit-tracing-for-long-horizon-llm-agent-reinforcement-learning)  
+   标签：评分：9.0/10、query:uav-drl
+   evidence：通过验证器辅助信用追踪实现长程强化学习的细粒度信用分配
 
 ### 速读区论文标签
-1. [EDGE: Experience-Distillation for Guided Exploration in Agentic Reinforcement Learning](/202608/30/2608.21946v2-edge-experience-distillation-for-guided-exploration-in-agentic-reinforcement-learning)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：利用经验蒸馏引导探索的长时程强化学习
+- 本次无速读推荐。
 
 
 <div class="dpr-home-promo-card">

@@ -1,0 +1,24 @@
+{
+  "label": "2026-08-31",
+  "date": "2026-08-31",
+  "generated_at": "2026-09-01T00:30:11",
+  "count": 1,
+  "papers": [
+    {
+      "paper_id": "202608/31/2608.28128v1-vict-verifier-instrumented-credit-tracing-for-long-horizon-llm-agent-reinforcement-learning",
+      "section": "deep",
+      "title_en": "VICT: Verifier-Instrumented Credit Tracing for Long-Horizon LLM Agent Reinforcement Learning",
+      "authors": "Pengcheng Li, Zhengyang Zhang, Dongxu Zhang, Sui Huang, Shaohua Ma",
+      "date": "2026-08-28",
+      "pdf": "https://arxiv.org/pdf/2608.28128v1",
+      "score": "9.0",
+      "evidence": "通过验证器辅助信用追踪实现长程强化学习的细粒度信用分配",
+      "tldr": "长程LLM智能体强化学习将稀疏终端奖励广播至每个动作，导致信用分配困难。现有方法从rollout侧构造信号，仍忽略验证器内部任务结构。VICT利用验证器内可执行原子，通过依赖证明边追溯到动作并沿边重分配优势，无需critic、过程标签或推理时验证器。在ALFWorld和WebShop上显著优于仅结果训练，达到近期细粒度方法水平，消融排除替代解释。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Fine-grained credit assignment is a central challenge in reinforcement learning for long horizon LLM agents. Standard objectives often train from programmatically verifiable terminal rewards by broadcasting each sparse outcome to every action in a trajectory. Existing methods typically seek finer credit from the rollout side, constructing auxiliary trajectory signals or additional comparisons to estimate action importance. Although useful, these approaches still treat the verifier that judged success as a scalar reward, discarding its internal task structure. Our key insight is that many verifiable tasks already encode the relevant checks inside their terminal verifier. We propose VICT (VerifierInstrumented Credit Tracing), a training-time interface that exposes executable or evidence backed atoms and traces them back to actions through dependency-valid proof edges. VICT redistributes group-relative advantage only along those edges, shifting credit assignment from rollout-side inference to verifierside tracing. It preserves the original terminal reward, abstains when evidence is incomplete or ambiguous, and changes only the training-time advantage tensor, requiring no learned critic, process labels, branch rollouts, or inference-time verifier access. On ALFWorld and WebShop, VICT improves substantially over outcome-only training and achieves strong performance alongside recent fine-grained credit methods; ablations rule out dense atom rewards, final-commit credit, temporal proximity, and sparsity as sufficient explanations.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
