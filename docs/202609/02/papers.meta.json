@@ -1,0 +1,69 @@
+{
+  "label": "2026-09-02",
+  "date": "2026-09-02",
+  "generated_at": "2026-09-02T21:26:31",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202609/02/2608.29622v1-agenticrag-r1-agentic-reinforcement-learning-with-stack-memory-for-multi-step-reasoning-retrieval-and-memorizing",
+      "section": "quick",
+      "title_en": "AgenticRag-R1: Agentic Reinforcement Learning with Stack Memory for Multi-Step Reasoning, Retrieval and Memorizing",
+      "authors": "Xinke Jiang, Yue Fang, Zhibang Yang, Jiaran Gao, Zhixin Zhang, Tao Feng, Rihong Qiu, Wentao Zhang, Hongxin Ding, Ruizhe Zhang, Yongxin Xu, Yuheng Huang, Xu Chu, Junfeng Zhao, Yasha Wang",
+      "date": "2026-08-30",
+      "pdf": "https://arxiv.org/pdf/2608.29622v1",
+      "score": "7.0",
+      "evidence": "细粒度动作空间与分层奖励用于解决智能体强化学习中弱奖励分配问题",
+      "tldr": "现有RAG系统在复杂多步推理中难以自适应检索和持续修正中间上下文，基于强化学习的Agentic RAG方法虽部分缓解，但受粗粒度动作空间和轨迹级奖励限制，导致弱奖励分配和短视推理模板。为此提出AgenticRag-R1，通过内存栈和细粒度动作空间深度集成推理、检索与记忆，并结合分层动作感知奖励和信息感知轨迹拒绝策略实现长程学习。在多个多跳、开放域和代理推理基准上，跨多种骨干模型尺寸一致超越强基线。该方法学习到更稳健、可解释、记忆感知的推理行为，展示了细粒度动作建模与信息感知优化对长程推理的贡献。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Retrieval-Augmented Generation (RAG) improves the factuality of large language models (LLMs), yet existing RAG systems often struggle with complex, multi-step reasoning that requires adaptive retrieval and continuous revision of intermediate contexts. Recent reinforcement learning (RL)-based agentic RAG methods partially alleviate this issue, but typically rely on coarse-grained action spaces and trajectory-level rewards, resulting in weak reward assignment and a bias toward short-horizon, stereotyped reasoning template. To address, we propose AgenticRag-R1, a RL framework that deeply integrates reasoning, retrieval, and memory via a memory stack and fine-grained action space, supported by hierarchical action-aware rewards and an information-aware trajectory rejection strategy to enable effective long-horizon learning. Experiments across a diverse set of multi-hop, open-domain, and agentic reasoning benchmarks, spanning multiple backbone model sizes, demonstrate that AgenticRag-R1 consistently outperforms strong baselines. Moreover, AgenticRag-R1 learns more robust, interpretable, and memory-aware reasoning behaviors, highlighting the effect of fine-grained action modeling and information-aware optimization for long-horizon reasoning. Our code is anonymous available at https://github.com/jiangxinke/Harness-RL/tree/AgenticRAG-R1-Whitebox.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/02/2608.29641v1-harness-rl-black-box-reinforcement-learning-with-action-args-decoupling-for-central-agent-multi-agent-harnesses",
+      "section": "quick",
+      "title_en": "Harness-RL: Black-Box Reinforcement Learning with Action-Args Decoupling for Central-Agent Multi-Agent Harnesses",
+      "authors": "Xinke Jiang, Zhixin Zhang, Zhibang Yang, Jiaran Gao, Rihong Qiu, Shijin Chen, Xu Chu, Junfeng Zhao, Yasha Wang",
+      "date": "2026-08-30",
+      "pdf": "https://arxiv.org/pdf/2608.29641v1",
+      "score": "7.0",
+      "evidence": "动作-参数解耦用于混合决策结构强化学习",
+      "tldr": "多智能体 harness 训练中央策略存在动作标签低基数与参数高维条件序列的梯度冲突，且动态调度产生交错会话难以扁平化。Harness-RL 结合冲突感知策略优化 CAPO 与接口级黑盒轨迹构建，将动作与参数梯度路由至对应子空间并对齐奖励。在七个多跳问答与检索基准上，Qwen2.5-1.5B/3B 平均 F1 分别达 42.93 和 47.79。消融验证 CAPO 有效，评估设置中中央智能体单独优化更优。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Large language model agents increasingly solve long-horizon tasks through multi-agent harnesses in which a central agent coordinates specialized sub-agents, tools, and environments. Training the central policy in such a harness raises two challenges. First, an action label is a low-cardinality decision, whereas its args form a high-dimensional conditional sequence; optimizing both with a shared sequence-level signal can produce conflicting gradients. Second, dynamic scheduling creates interdependent sessions with branches, parallel calls, and rewritten contexts, which cannot be faithfully reduced to one flat token sequence. We introduce Harness-RL, a structured reinforcement learning framework that combines Conflict-Aware Policy Optimization (CAPO) with interface-level black-box trajectory construction. The black-box component captures Interface Call Records, builds per-session prefix trees, and aligns outcome and process rewards with trainable tokens. CAPO uses forward activations to identify parameter partitions associated with action and args tokens, then routes their policy gradients to the corresponding subspaces. Harness-RL supports both central-only and joint multi-agent training. Across seven multi-hop question answering and agentic retrieval benchmarks, it reaches average F1 scores of 42.93 and 47.79 with Qwen2.5-1.5B and Qwen2.5-3B, respectively, while ablations validate the contribution of CAPO and favor central-only optimization in the evaluated setting. Our code is available at https://github.com/jiangxinke/Harness-RL.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/02/2609.00833v1-dense-process-supervision-for-search-agents-via-fact-utility-estimation",
+      "section": "quick",
+      "title_en": "Dense Process Supervision for Search Agents via Fact Utility Estimation",
+      "authors": "Rongzhi Zhu, Xiangyu Liu, Yi Liu, Shuo Zhang, Ruirui Zhang, Rui Wu, Tao Jiang, Zequn Sun, Wenhao Xu, Wei Hu",
+      "date": "2026-09-01",
+      "pdf": "https://arxiv.org/pdf/2609.00833v1",
+      "score": "7.0",
+      "evidence": "基于事实效用估计的稠密过程监督用于搜索代理",
+      "tldr": "搜索代理的强化学习通常仅依赖结果奖励，导致中间步骤信用分配困难。本文提出基于事实效用估计的密集过程监督方法，通过提取事实并聚类，用贝叶斯估计推断事实效用，并转化为步骤级奖励。在七个单跳和多跳QA基准上，该方法一致优于现有基线，消融研究验证了多跳QA上的显著改进。该工作为搜索代理提供了更细粒度的过程监督，提升了推理性能。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Reinforcement learning (RL) for search agents typically relies on outcome rewards. However, it often fails to achieve effective credit assignment, due to the unclear value of intermediate steps. It is hard to separate their contributions from the final result. In this paper, we propose a dense process supervision method based on fact utility estimation, which models the reasoning process as the accumulation of discrete evidence facts. We first extract structured facts from raw observations and organize them into an explicit fact store. To support credit assignment, we then cluster semantically equivalent facts and infer the posterior utility of each fact cluster using Bayesian estimation over group rollouts. Finally, we convert the estimated fact utilities into dense step-level rewards to guide RL training. Experiments on seven single-hop and multi-hop QA benchmarks show that our method consistently outperforms existing baselines. Ablation studies validate clear relative improvements on multi-hop QA compared to outcome reward-only training.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/02/2608.26571v1-arrive-and-survive-scaling-safe-goal-conditioned-policy-learning-from-one-bit-failure-signals",
+      "section": "quick",
+      "title_en": "Arrive and Survive: Scaling Safe Goal-Conditioned Policy Learning from One-Bit Failure Signals",
+      "authors": "Guopeng Li, Yiyang Duan, Yiru Jiao, Chengcheng Xu",
+      "date": "2026-08-27",
+      "pdf": "https://arxiv.org/pdf/2608.26571v1",
+      "score": "6.0",
+      "evidence": "基于失败信号的对比强化学习用于安全目标条件策略",
+      "tldr": "在失败终止的马尔可夫决策过程中，现有对比强化学习因忽略失败终止的概率质量，导致目标到达值高估与不安全动作被灾难性失败自举强化。本文提出Safe-CRL，通过质量加权InfoNCE修正短存活未来的过重加权，并用对数存活质量分数恢复缺失的存活质量。在十二个易失败机器人任务上，Safe-CRL显著提升生存率与目标到达性能，超越Scaling-CRL基线。该研究完善了失败终止下的CRL理论，提供了可扩展的安全强化学习框架。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Contrastive reinforcement learning (CRL) scales effectively in goal-conditioned tasks by casting policy learning into a self-supervised contrastive objective. However, in a failure-terminated Markov decision process, established CRL considers pre-failure future goals only when constructing positive samples, without accounting for the probability mass removed by failure termination. Our theoretical analysis shows that this omission induces a systematic overestimation bias in goal-reaching values. Consequently, near-failure trajectories provide disproportionately strong supervision of success despite retaining little future occupancy. Unsafe actions can thereby be reinforced through catastrophic failure bootstrapping, leading to failed policy learning and unsustainable goal-reaching behaviours. To address this problem, we introduce two minimal yet strong corrections: mass-weighted InfoNCE corrects the overweighting of short surviving futures in critic learning, and a log-survival-mass score restores the missing survival mass in policy optimization. The resulting method, Safe Contrastive Reinforcement Learning (Safe-CRL), requires only the one-bit signal provided by failure termination to scale safe goal-conditioned policy learning. Across twelve failure-prone robot navigation and locomotion tasks, Safe-CRL consistently improves survival and substantially outperforms the Scaling-CRL baseline in goal-reaching performance. Additionally, deep Safe-CRL policies exhibit complex failure-avoidance behaviours. This study completes the CRL theory under failure termination and provides a scalable safe RL framework. The code is available via https://github.com/RomainLITUD/safe-crl.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
