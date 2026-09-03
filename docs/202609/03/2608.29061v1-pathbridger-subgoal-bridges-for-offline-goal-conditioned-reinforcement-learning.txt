@@ -1,0 +1,1111 @@
+Title: PathBridger: Subgoal Bridges for Offline Goal-Conditioned Reinforcement Learning
+
+URL Source: https://arxiv.org/pdf/2608.29061v1
+
+Published Time: Tue, 01 Sep 2026 00:29:07 GMT
+
+Number of Pages: 14
+
+Markdown Content:
+# PathBridger: Subgoal Bridges for Offline Goal-Conditioned Reinforcement Learning 
+
+## Soohyun Choi *, Seonvin Cho *, Songnam Hong †
+
+Information and Intelligence Systems Laboratory (IISL) Department of Electronic Engineering, Hanyang University Seoul, Republic of Korea 
+
+{petersun0221,seonbin0319,snhong}@hanyang.ac.kr 
+
+> *
+
+Equal contribution. †Corresponding author. 
+
+Abstract 
+
+Offline goal-conditioned reinforcement learning (GCRL) aims to learn policies for reaching diverse goals entirely from fixed trajectory data. Long-horizon offline GCRL re-mains challenging because sparse goal-reaching signals must be propagated over many steps, while execution errors can-not be corrected through additional environment interaction. Existing methods address these challenges by improving long-range value estimation or reducing the effective decision hori-zon through subgoals, options, and action chunks. In several hierarchical methods, however, a selected subgoal specifies 
+
+where to go , while the intervening state-space path remains implicit in an endpoint-conditioned low-level policy. To ad-dress this interface, we propose PathBridger , a hierarchical offline GCRL method that explicitly connects subgoal selec-tion to short-horizon execution. PathBridger constructs a state-space bridge toward the selected intermediate endpoint and decodes it into a short executable action chunk using an in-verse dynamics model. Experiments across the evaluated OG-Bench tasks demonstrate strong aggregate performance, with particularly large gains on the multi-object Cube manipulation tasks. § Code: https://github.com/SChoish/PathBridger 
+
+## 1 Introduction 
+
+Reinforcement learning (RL) provides a general framework for learning sequential decision-making policies by maxi-mizing cumulative rewards. In complex control problems, however, designing dense reward functions often requires substantial domain expertise and manual engineering, while misspecified proxy rewards can favor unintended short-cuts rather than the desired behavior (Amodei et al. 2016; Hadfield-Menell et al. 2017). For many goal-reaching prob-lems, it is considerably easier to specify a desired outcome, such as a target position, object configuration, or terminal observation, than to assign an informative reward to every in-termediate state and action. Goal-conditioned reinforcement learning (GCRL) addresses this setting by learning a policy 
+
+π(a | s, g ) that reaches goals g drawn from a goal space, typically using sparse goal-reaching supervision (Kaelbling 1993; Andrychowicz et al. 2017). Offline GCRL further aims to learn such goal-reaching policies entirely from fixed trajectory data, without additional environment interaction for training. This setting presents two closely related challenges. First, sparse goal-reaching signals must be propagated over long temporal horizons. For distant goals, the value differences induced by locally distinct decisions can become small relative to approximation and sampling errors, resulting in inaccurate value ordering and unreliable policy-improvement signals (Park et al. 2023; Ahn et al. 2025). Repeated temporal-difference backups can ad-ditionally accumulate estimation bias over the horizon (Park et al. 2026b). Second, long-range goal information must ul-timately be translated into actions that are reliable under the offline data distribution. Errors caused by inaccurate values, policy extrapolation, or insufficient local coverage cannot be repaired through further data collection or online policy updates. Prior work has addressed these challenges by improving long-range value estimation and introducing temporal ab-straction. Option-based objectives and action-chunk meth-ods reduce the number of value backups or policy deci-sions required over the same environment horizon (Sutton, Precup, and Singh 1999; Li, Park, and Levine 2026; Park et al. 2026a). Hierarchical GCRL decomposes long-horizon behavior into a high-level policy that selects intermediate subgoals and a low-level policy that acts toward them (Park et al. 2023; Ahn et al. 2025). In several hierarchical meth-ods, the selected intermediate state is passed directly to an endpoint-conditioned low-level policy, leaving the interven-ing state sequence implicit at inference. Although such poli-cies can accurately reach suitable nearby subgoals in some domains (Ahn et al. 2025), our controlled analyses suggest that endpoint-conditioned execution may not always be suffi-cient and that learned subgoal selection can remain a separate bottleneck. These observations motivate an explicit path-level interface between subgoal selection and action execu-tion. In this work, we introduce PathBridger , a hierarchical offline GCRL framework that explicitly connects subgoal selection to action execution. Given a current state s and goal 
+
+g, PathBridger selects an intermediate subgoal, constructs a state-space bridge toward it, and decodes the bridge into executable actions using an inverse-dynamics model. Across the evaluated OGBench tasks (Park et al. 2025a), PathBridger achieves the highest aggregate performance, with its clearest gains on multi-object Cube manipulation rather than uniform dominance across task families. Con-trolled bridge-removal and oracle-waypoint analyses further support the role of explicit bridge-based execution while sug-arXiv:2608.29061v1 [cs.LG] 29 Aug 2026 gesting that learned subgoal proposal and selection remain a limitation on Puzzle. A dataset-size ablation additionally finds that PBF attains the highest aggregate score at every tested dataset size. Our main contributions are summarized as follows: 
+
+• We identify an underexplored interface in hierarchical of-fline GCRL: in several endpoint-conditioned hierarchies, subgoal selection specifies the destination while leaving the intervening state-space path implicit. 
+
+• We propose PathBridger, which connects distributional endpoint proposal and transitive value-based selection to endpoint-pinned state-space bridge construction, inverse-dynamics action decoding, and receding-horizon exe-cution. We instantiate PathBridger with Gaussian and rectified-flow endpoint proposers, yielding PathBridger-Gaussian (PBG) and PathBridger-Flow (PBF). 
+
+• We demonstrate the highest aggregate performance on the evaluated OGBench tasks, with particularly large gains on multi-object Cube manipulation, and use controlled bridge-removal and oracle-waypoint analyses to distin-guish the role of bridge-based execution from limitations in learned subgoal selection. 
+
+## 2 Related Work 
+
+Offline goal-conditioned reinforcement learning. Of-fline GCRL lies at the intersection of offline RL and goal-conditioned RL, aiming to learn reusable goal-reaching poli-cies from fixed trajectory datasets (Levine et al. 2020; Kael-bling 1993; Andrychowicz et al. 2017). Existing methods mainly differ in how they represent long-horizon reachabil-ity and extract policies from offline data. Goal-conditioned behavioral cloning (GCBC) directly imitates actions con-ditioned on hindsight-relabeled future goals and forms the basis of several goal-conditioned supervised learning ap-proaches (Ghosh et al. 2021; Yang et al. 2022). Goal-conditioned implicit V- and Q-learning (GCIVL and GCIQL) adapt in-sample offline value learning to state–goal pairs and extract policies using advantage-weighted or behavior-regularized objectives (Kostrikov, Nair, and Levine 2022; Park et al. 2023, 2025a). Contrastive RL (CRL) learns behav-ioral goal-reaching values through contrastive classification, whereas quasimetric RL (QRL) and contrastive successor-feature methods learn directed temporal-distance structures for goal reaching (Eysenbach et al. 2022; Wang et al. 2023; Myers et al. 2024). OGBench provides a unified evaluation suite for these approaches across locomotion, manipulation, stitching, long-horizon reasoning, and high-dimensional ob-servations (Park et al. 2025a). 
+
+Hierarchical reinforcement learning and subgoal plan-ning. Hierarchical RL represents temporally extended de-cisions through options, skills, macro-actions, or interme-diate subgoals (Sutton, Precup, and Singh 1999). In goal-conditioned settings, long-horizon tasks have also been ad-dressed by planning over landmarks, replay-buffer graphs, or sequences of intermediate goals (Savinov, Dosovitskiy, and Koltun 2018; Eysenbach, Salakhutdinov, and Levine 2019; Nasiriany et al. 2019; Li et al. 2022). HIQL develops a hi-erarchical approach for offline GCRL by extracting a high-level subgoal policy and a low-level action policy from a shared goal-conditioned value function (Park et al. 2023). OTA studies the high-level policy bottleneck in this frame-work and introduces option-aware value backups to improve subgoal extraction over long horizons (Ahn et al. 2025). 
+
+Long-horizon value learning and action chunk-ing. Temporal-difference learning propagates information through recursive value backups, which can accumulate esti-mation bias over long horizons. Multi-step returns and Monte Carlo objectives reduce the number of recursive backups, but introduce trade-offs involving off-policy bias, variance, and task-dependent backup horizons (Park et al. 2025b). TRL exploits the transitive structure of goal-conditioned values to perform divide-and-conquer updates over trajectory seg-ments, reducing recursive value propagation without fixing a single multi-step horizon (Park et al. 2026b). A comple-mentary approach reduces the effective horizon by treating temporally extended action sequences as the basic unit of policy or value learning. Q-chunking (QC) learns critics and policies over full action chunks, enabling multi-step value backups directly in the chunked action space (Li, Zhou, and Levine 2025). DQC decouples the critic and policy chunk lengths by distilling a partial-chunk critic from a longer action-chunk critic, preserving long-horizon value propaga-tion while allowing shorter and more reactive execution (Li, Park, and Levine 2026). Related horizon-reduction methods combine multi-step targets with hierarchical policies and ex-pressive behavioral models (Park et al. 2025b). In model-based offline RL, MAC uses action-chunk dynamics and action-chunk policies to reduce autoregressive model errors during long imaginary rollouts (Park et al. 2026a). 
+
+Trajectory generation and inverse dynamics. A com-plementary class of approaches models state or state–action sequences for planning and control. Trajectory Transformer models offline trajectories autoregressively, while Diffuser formulates planning as conditional denoising of trajecto-ries (Janner, Li, and Levine 2021; Janner et al. 2022). Hier-archical and latent trajectory models, including TAP and hi-erarchical diffusion planning, reduce long-horizon planning complexity by generating compact latent plans or decom-posing trajectories across multiple temporal scales (Jiang et al. 2023; Chen et al. 2024). Graph-based and model-based goal planners similarly search over intermediate states us-ing learned reachability or dynamics models (Eysenbach, Salakhutdinov, and Levine 2019; Li et al. 2022). Inverse-dynamics models provide a mechanism for translating de-sired state transitions into actions and have been widely used in imitation learning and learning from observation (Torabi, Warnell, and Stone 2018; Schmeckpeper et al. 2020). 
+
+## 3 Background 
+
+3.1 Offline Goal-Conditioned Reinforcement Learning 
+
+We consider a Markov process with state space S ⊂ Rds ,action space A ⊂ Rda , dynamics p(s′ | s, a ), and goal space G ⊆ S . Thus, each goal g ∈ G is itself a target state. Offline GCRL assumes access to a fixed dataset D = {τ (i)}Ni=1 of trajectories τ = ( s0, a 0, s 1, a 1, . . . , s T ) collected by one or more unknown behavior policies. Let ϕ : S → Rgrep denote a task-dependent goal-representation map, and let ρ be a metric on Rgrep . We define the goal region, sparse binary reward, and first hitting time as 
+
+Bϵ(g) := s ∈ S ρ ϕ(s), ϕ (g) ≤ ϵ ,r(s, g ) := 1 {s ∈ Bϵ(g)} ,τg := inf {t ≥ 0 | st ∈ Bϵ(g)} ,
+
+where τg = ∞ if the goal region is never reached. We adopt a hitting-time convention in which the process terminates upon its first entry into Bϵ(g), so the goal reward is received at most once. The objective and corresponding goal-conditioned value function are 
+
+J(π) = Es0,g,π,p 
+
+" ∞X
+
+> t=0
+
+γtr(st, g )
+
+#
+
+= Es0,g,π,p [γτg 1{τg < ∞} ] ,V π (s, g ) = Eπ,p 
+
+" ∞X
+
+> t=0
+
+γtr(st, g ) s0 = s
+
+#
+
+= Eπ,p [γτg 1{τg < ∞} | s0 = s] .
+
+When rewards are sparse, hindsight relabeling uses future states from the same trajectory as goals, thereby construct-ing successful state–goal pairs directly from the offline dataset (Andrychowicz et al. 2017). Nevertheless, reach-ing distant goals still requires long-range value propagation, stitching across trajectory segments, or an explicit form of temporal abstraction. 
+
+3.2 Transitive Structure in Goal Reaching 
+
+Goal reaching admits a natural compositional structure through intermediate states. To state this structure pre-cisely, we consider exact state goals, corresponding to the special case B0(g) = {g}. In a deterministic environ-ment, let d⋆(s, g ) denote the minimum number of transi-tions required to reach g from s, with d⋆(s, g ) = ∞ if 
+
+g is unreachable. This directed temporal distance satisfies 
+
+d⋆(s, g ) ≤ d⋆(s, z ) + d⋆(z, g ) for any intermediate state 
+
+z ∈ S , with equality when z lies on a shortest path (Kael-bling 1993; Park et al. 2026b). Under the binary hitting reward, V ⋆(s, g ) = γd⋆(s,g ), with the convention γ∞ = 0 . Since 0 < γ < 1, the distance inequality yields the value-space relation 
+
+V ⋆(s, g ) ≥ V ⋆(s, z )V ⋆(z, g ). (1) Thus, V ⋆(s, z )V ⋆(z, g ) provides a compositional lower bound on V ⋆(s, g ), with equality when z lies on a shortest path. TRL turns this relation into a divide-and-conquer value-learning algorithm, thereby reducing the number of recur-sive value updates required for long-horizon goal-reaching tasks (Park et al. 2026b). In the tolerance-based formula-tion above, Bϵ(g) remains the practical goal-success region, while the point-goal relation provides the structural motiva-tion for transitive state-pair value composition. 
+
+## 4 PathBridger 
+
+PathBridger is a bridge policy that maps a current state and final goal to a short executable action chunk. Given (st, g ),it proposes candidate K-step endpoints, selects an endpoint using a transitive value score, expands the selected endpoint into an endpoint-pinned state-space bridge, and decodes the first ha bridge transitions through inverse dynamics. The decoded action chunk is executed directly, after which Path-Bridger observes the resulting state and replans. In this de-sign, transitive values determine where to bridge , while the generated bridge specifies how to execute it . Figure 1 pro-vides an overview. 
+
+4.1 Local Displacement Parameterization and Horizons 
+
+Directly predicting future states in absolute coordinates can be poorly conditioned when the absolute-state scale is sub-stantially larger than the local variation over a short trajectory window. PathBridger therefore represents endpoints and state paths in a displacement frame anchored at the current state. This removes the shared state-dependent offset, places pre-diction targets on the scale of local transitions, and improves numerical conditioning. We apply this parameterization in the Euclidean state representation used by the bridge model. For a dataset window (sD 
+
+> t
+
+, . . . , s D 
+
+> t+K
+
+), define 
+
+∆D 
+
+> i
+
+:= sD 
+
+> t+i
+
+− sD 
+
+> t
+
+, i = 0 , . . . , K. (2) Hence, ∆D 
+
+> 0
+
+= 0 and ∆D 
+
+> K
+
+= sD 
+
+> t+K
+
+− sD 
+
+> t
+
+. A predicted dis-placement path is mapped back to absolute states by 
+
+ˆst+i := st + ˆ∆i, i = 0 , . . . , K. (3) The bridge horizon K determines the endpoint prediction and state-space bridge, whereas the execution horizon ha ≤ K
+
+determines the bridge prefix decoded by inverse dynamics and the number of actions executed before replanning. 
+
+4.2 Transitive Value Learning 
+
+Motivated by the compositional relation in Equation (1), PathBridger learns a bounded transitive value Vη (s, g ) ∈
+
+(0 , 1) on the discounted hitting-time scale introduced in Section 3.2. Let ¯V¯η denote an exponentially averaged tar-get network whose outputs are treated as fixed when con-structing regression targets. Under deterministic dynamics, an observed d-step segment connecting s to g is a feasible path, so d⋆(s, g ) ≤ d and therefore γd ≤ V ⋆(s, g ). We use these in-sample lower-bound targets to anchor short tempo-ral distances and propagate them to longer distances through transitive composition. Let ℓBCE (v, y ) denote binary cross-entropy between a prediction v ∈ (0 , 1) and a soft target y ∈ [0 , 1] . Self-reachability and short in-trajectory pairs are anchored by 
+
+Lself = Es∼D [ℓBCE (Vη (s, s ), 1)] ,
+
+Lbase = Eτ ∼D , i<j j−i≤Hb
+
+ℓBCE 
+
+ Vη (sD 
+
+> i
+
+, s D 
+
+> j
+
+), γ j−i .Figure 1: Overview of PathBridger. Candidate K-step endpoints are ranked using a transitive value score, and the selected endpoint z⋆ is expanded into an endpoint-pinned state-space bridge. Inverse dynamics decodes an ha-transition bridge prefix into an executable action chunk. PathBridger executes the chunk for up to ha steps and then replans from the resulting state. For a longer pair (sD 
+
+> i
+
+, g = sD 
+
+> j
+
+), we sample an in-trajectory intermediate state z = sD 
+
+> k
+
+, where i < k < j . For each constituent segment, we use its observed target inside the base horizon and the target-network prediction otherwise: 
+
+eV (sD 
+
+> a
+
+, s D 
+
+> b
+
+) := 
+
+γb−a, b − a ≤ Hb,
+
+¯V¯η (sD 
+
+> a
+
+, s D 
+
+> b
+
+), b − a > H b. (4) Using Equation (4), the corresponding transitive target is 
+
+ytr (i, k, j ) := eV (sD 
+
+> i
+
+, s D 
+
+> k
+
+) eV (sD 
+
+> k
+
+, s D 
+
+> j
+
+). (5) To approximate in-sample maximization over intermediate states, we use the expectile-weighted loss ℓτV
+
+> BCE
+
+(v, y ) := 
+
+|τV − 1{v > y }| ℓBCE (v, y ), with τV ∈ [0 .5, 1) . The target in Equation (5) yields the transitive loss 
+
+Ltr = E τ ∼D 
+
+> i<k<j
+
+ℓτV
+
+> BCE
+
+ Vη (sD 
+
+> i
+
+, s D 
+
+> j
+
+), y tr (i, k, j ) . (6) Combining the transitive loss in Equation (6) with the self-reachability and short-range anchors, the complete objective is 
+
+LV = λself Lself + λbase Lbase + λtr Ltr . (7) Following TRL, our implementation additionally applies distance-based re-weighting to emphasize shorter state–goal pairs, whose estimates serve as the constituents of longer transitive targets. Detailed implementation choices are pro-vided in Appendix A. The bridge policy ranks a candidate endpoint z using the transitive score 
+
+Str (s, z, g ) := Vη (s, z )Vη (z, g ). (8) The first factor estimates reachability from the current state to the candidate endpoint, while the second estimates con-tinuation from the candidate to the final goal. 
+
+4.3 Bridge Policy 
+
+The bridge policy maps (st, g ) to an executable action chunk through endpoint proposal, transitive selection, endpoint-pinned bridge construction, and inverse-dynamics decoding. The transitive value, endpoint proposer, bridge generator, and inverse-dynamics model are learned entirely from real offline trajectory segments; Algorithm 1 summarizes the resulting training procedure. 
+
+Value-weighted endpoint proposal. For each dataset win-dow, we pair the current state and K-step endpoint with a hindsight-relabeled future goal from the same trajectory. Let 
+
+pK 
+
+> D
+
+(∆ | s, g ) denote the resulting empirical conditional dis-tribution of K-step endpoint displacements. The bridge pol-icy models ∆K ∼ qχ(∆ K | s, g ) and maps the sampled displacement to the endpoint z = s + ∆ K . We define the advantage-style centered continuation-value score 
+
+δ¯η (s, g, ∆) := ¯V¯η (s + ∆ , g ) − ¯V¯η (s, g ),q⋆
+
+> sg
+
+(∆ | s, g ) := exp( csg δ¯η (s, g, ∆)) 
+
+Z¯η (s, g ) pK 
+
+> D
+
+(∆ | s, g ). (9) Here, csg > 0 controls the strength of value tilting. Since 
+
+¯V¯η (s, g ) is independent of ∆, the baseline term is absorbed into Z¯η (s, g ) and does not change the normalized conditional target. We retain this advantage-style centering in the unnor-malized sample weights used for stochastic optimization to improve their numerical conditioning. We consider two parameterizations of qχ. PathBridger-Gaussian (PBG) uses a diagonal Gaussian proposal, whereas PathBridger-Flow (PBF) represents the proposal as the ter-minal distribution of a conditional rectified flow and can cap-ture multimodal endpoint distributions (Lipman et al. 2023). Both variants are fit by reweighting dataset endpoint samples according to the unnormalized tilt in Equation (9); neither the empirical conditional density nor the normalizing con-stant Z¯η (s, g ) needs to be evaluated explicitly. Their concrete optimization objectives and goal-sampling rules are given in Appendix A. Using the transitive score in Equation (8), the bridge policy samples and selects an endpoint at each replanning step by 
+
+∆(n) 
+
+> K
+
+∼ qχ(· | st, g ), n = 1 , . . . , N, zn = st + ∆ (n) 
+
+> K
+
+,n⋆ = arg max 
+
+> 1≤n≤N
+
+Str (st, z n, g ), z⋆ = zn⋆ .
+
+(10) 
+
+Endpoint-pinned bridge construction. For the selected endpoint, define ∆⋆K := z⋆ − st. A fixed monotone se-quence {αi}Ki=0 , with α0 = 0 and αK = 1 , specifies a linear reference bridge. A learned residual deforms only the bridge interior: 
+
+ˆ∆i = αi∆⋆K + miRθ
+
+
+
+st, ∆⋆K , iK
+
+
+
+, i = 0 , . . . , K. 
+
+(11) The fixed endpoint mask satisfies m0 = mK = 0 . Conse-quently, ˆ∆0 = 0 and ˆ∆K = ∆ ⋆K , so the bridge is structurally pinned to both the current state and selected endpoint. The corresponding absolute states follow from Equation (3). For a real dataset window, the bridge is conditioned on the true K-step endpoint, while reconstruction is applied only to the first ha transitions used for action decoding: 
+
+ˆ∆D 
+
+> i
+
+= αi∆D 
+
+> K
+
++ miRθ
+
+
+
+sD 
+
+> t
+
+, ∆D 
+
+> K
+
+, iK
+
+
+
+,
+
+Lbridge = E
+
+"
+
+1
+
+hahaX
+
+> i=1
+
+ˆ∆D 
+
+> i
+
+− ∆D 
+
+> i1
+
+#
+
+.
+
+(12) Since only this prefix is decoded into actions, restricting supervision to the execution-relevant transitions avoids un-necessary computation on the unexecuted remainder of the bridge. The interpolation sequence and endpoint mask used in our experiments are specified in Appendix A. 
+
+Inverse-dynamics decoding. The first ha +1 bridge states define an ha-transition prefix. Each consecutive state pair is decoded as 
+
+ˆat+i = Iω (ˆ st+i, ˆst+i+1 ), i = 0 , . . . , h a − 1. (13) The resulting bridge-induced action chunk is 
+
+ˆAt(z⋆) := (ˆ at, . . . , ˆat+ha−1) ∈ A ha . (14) The inverse-dynamics model is trained on real adjacent tran-sitions: 
+
+Lidm = E(st,a t,s t+1 )∼D 
+
+h
+
+∥Iω (st, s t+1 ) − at∥22
+
+i
+
+. (15) PathBridger executes the decoded action chunk and replans from the resulting state, translating the selected endpoint into short-horizon actions through an explicit state-space path. 
+
+## 5 Experimental Results 
+
+5.1 Experimental Setup 
+
+Tasks. We evaluate PathBridger on eight state-based OG-Bench tasks: two AntMaze navigation tasks, three Cube ma-nipulation tasks, two Puzzle tasks, and one Scene task. We 
+
+Algorithm 1 PathBridger Training 
+
+Require: Offline dataset D, bridge horizon K 
+
+> 1:
+
+Initialize Vη , target value ¯V¯η , endpoint proposer qχ,bridge generator Rθ , and inverse dynamics Iω 
+
+> 2:
+
+while not converged do  
+
+> 3:
+
+Sample the required trajectory segments and hindsight goals from D 
+
+> 4:
+
+Update Vη using (7) and update ¯V¯η by exponential moving average  
+
+> 5:
+
+Update qχ to approximate the value-tilted endpoint distribution in (9)  
+
+> 6:
+
+Update Rθ using (12)  
+
+> 7:
+
+Update Iω using (15)  
+
+> 8:
+
+end while  
+
+> 9:
+
+return Vη , q χ, R θ , I ω
+
+choose OGBench because it provides a standardized multi-goal evaluation across diverse offline GCRL domains, en-abling consistent comparison with prior methods (Park et al. 2025a). The selected tasks span long-horizon navigation, coordinated multi-object manipulation, and combinatorial control, allowing us to evaluate PathBridger across quali-tatively different planning and execution challenges. We use the standard navigate datasets for AntMaze and the play 
+
+datasets for the manipulation tasks. 
+
+Baselines and evaluation. We compare PathBridger against GCIVL, CRL, HIQL, OTA, TRL, and DQC, and include Hierarchical Transitive Value Learning (HTVL) as a controlled baseline. For GCIVL, CRL, and HIQL, we use the official OGBench implementations without modifica-tion (Park et al. 2025a). For DQC (Li, Park, and Levine 2026), we use the implementation of Song et al. (Song, Park, and Lee 2026), which provides hyperparameters tuned for the 1M-transition setting considered here. For OTA and TRL, we follow the default settings from the original papers (Ahn et al. 2025; Park et al. 2026b) and tune only task-specific settings left unspecified by the authors. HTVL uses the same transi-tive value learner and Gaussian endpoint proposer as PBG but executes the selected endpoint with HIQL’s endpoint-conditioned low-level actor. It therefore serves as a bridge-removal baseline for assessing bridge-based execution. For the main benchmark, all methods are trained for 1M gradi-ent steps using four random seeds. Each seed score averages success over the five predefined OGBench goals at the 800k, 900k, and 1M checkpoints, and we report the mean and stan-dard deviation across seeds. The experiments are run on NVIDIA H200 GPUs and Intel Xeon Platinum 8480C CPUs. Table 2 reports the estimated steady-state training time for 1M gradient steps on a single H200 GPU. PBG and PBF require approximately 1.20 and 
+
+1.23 hours, respectively. Under the same setup, both variants train faster than HIQL, OTA, TRL, and DQC, while requiring more time than GCIVL and CRL. Table 1: Average success rates on OGBench. Values are mean ± one standard deviation over four seeds. Each seed score averages evaluations at 800k, 900k, and 1M gradient steps. PBG and PBF use Gaussian and rectified-flow endpoint proposers, respectively. Bold indicates mean performance at or above 95% of the best mean in each row.                                                                                           
+
+> Environment GCIVL CRL HIQL OTA TRL HTVL DQC PBG PBF
+> antmaze-medium-navigate-v0 73.2 ±5.4 95.6 ±2.4 96.2 ±0.6 96.4 ±0.6 90.1 ±1.8 93.1 ±0.9 86.9 ±1.6 95.3 ±0.6 96.4 ±0.6
+> antmaze-large-navigate-v0 22.2 ±4.2 86.8 ±589.8 ±3.8 90.9 ±346.2 ±6.7 86.2 ±0.6 72.9 ±5.4 85.3 ±384.6 ±6.4
+> cube-single-play-v0 48.7 ±1.8 10.3 ±11.2 14.4 ±2.1 17.5 ±0.8 93.2 ±3.5 86.2 ±2.8 77.0 ±4.5 93.0 ±1.7 99.4 ±0.5
+> cube-double-play-v0 38.1 ±4.4 4.8 ±5.6 7.2 ±0.6 1.3 ±0.5 21.6 ±8.4 40.5 ±13 19.0 ±475.7 ±1.9 85.1 ±2.2
+> cube-triple-play-v0 1.2 ±0.8 1.4 ±2.1 2.9 ±1.2 0.5 ±0.5 14.3 ±0.5 22.5 ±7.6 31.8 ±1.1 45.1 ±5.8 79.8 ±4.5
+> puzzle-3x3-play-v0 6.7 ±1.7 7.1 ±4.7 10.2 ±1.4 56.0 ±4.4 99.8 ±0.2 24.5 ±4.9 100.0 ±028.9 ±3.6 69.3 ±3.3
+> puzzle-4x4-play-v0 10.5 ±1.1 0.3 ±0.4 6.7 ±3.2 11.9 ±3.2 34.2 ±2.2 3.3 ±1.8 100.0 ±02.7 ±1.6 78.1 ±6
+> scene-play-v0 43.1 ±5.1 18.2 ±0.9 43.3 ±2.4 31.1 ±3.2 73.5 ±5.1 12.9 ±291.1 ±4.8 59.5 ±3.8 69.1 ±3
+> Average 30 .528 .133 .838 .259 .146 .072 .360 .782.7
+
+Table 2: Estimated training time for 1M gradient steps on a single NVIDIA H200 GPU.                 
+
+> Method GCIVL CRL HIQL OTA TRL DQC PBG PBF Time (h) 0.94 0.94 1.40 2.00 1.34 1.88 1.20 1.23
+
+5.2 Main Benchmark Results 
+
+Table 1 reports the main OGBench results. PBF attains the highest overall average of 82.7, outperforming the strongest prior method by 10.4 points. Notably, PBG also achieves a strong average of 60.7, slightly outperforming TRL and sub-stantially surpassing HIQL and OTA despite using a Gaus-sian endpoint proposer, indicating that the core PathBridger design remains competitive without the rectified-flow pro-poser. PathBridger’s clearest gains occur on Cube, where PBF achieves the best result on all three tasks and the margin grows on the double- and triple-cube variants. On AntMaze, PathBridger matches the best result on antmaze-medium 
+
+and remains competitive on antmaze-large . On Puz-zle and Scene, PBF substantially outperforms HIQL and OTA but remains below DQC, with TRL also near-perfect on Puzzle-3x3. 
+
+5.3 Ablation and Diagnostic Analyses 
+
+To better understand the source of PathBridger’s benchmark gains and its remaining limitations on Puzzle, we conduct three complementary analyses: a bridge-removal ablation, an oracle-waypoint diagnostic, and a dataset-size sensitivity study. 
+
+Bridge-removal ablation. HTVL shares PBG’s transitive value learner, Gaussian endpoint proposer, and endpoint-selection procedure, but replaces bridge-based execution with HIQL’s endpoint-conditioned low-level actor. HTVL improves the overall average from 33 .8 for HIQL to 46 .0,while PBG further reaches 60 .7, a 14 .7-point gain over HTVL. Since HTVL and PBG differ primarily in endpoint execution, this gap supports the contribution of bridge con-struction and inverse-dynamics decoding. Table 3: Mean success rates (%) with oracle Puzzle way-points. A waypoint is supplied either as the current task goal, retaining learned subgoal proposal and selection, or directly as the selected subgoal, evaluating execution alone. All re-sults are averaged over two seeds. 
+
+Environment Waypoint role PBG HIQL 
+
+puzzle-3x3 Task goal 40.0 12.8 Selected subgoal 98.7 37.2 
+
+puzzle-4x4 Task goal 52.0 7.2 Selected subgoal 98.7 2.4 
+
+Oracle-waypoint diagnostic on Puzzle. We precompute a valid sequence of board configurations for each evaluation state–goal pair using lookup tables derived from the stan-dard linear-algebraic formulation of Lights Out (Anderson and Feil 1998). Each waypoint specifies the board configu-ration after the next prescribed button press in a valid solu-tion. When a waypoint is supplied as the current task goal, the original long-horizon task is decomposed into shorter goal-reaching problems while each method retains its learned subgoal proposal and selection mechanism. When the same waypoint is supplied directly as the selected subgoal, learned proposal and selection are bypassed, leaving only execution. As shown in Table 3, PBG achieves 98 .7 on both tasks when the waypoint is supplied as the selected subgoal, but achieves 
+
+40 .0 and 52 .0 when it is supplied as the task goal. This gap suggests that learned subgoal proposal and selection remain challenging even after the long-horizon task is externally decomposed. Under directly supplied subgoals, PBG also substantially outperforms HIQL, supporting the benefit of bridge-based execution over endpoint-conditioned low-level control. Together, these results identify learned subgoal pro-posal and selection as a key remaining bottleneck on Puzzle. 
+
+Dataset-size sensitivity. To examine sensitivity to the amount of offline data, we construct 100k-, 300k-, and 500k-transition subsets from each original 1M-transition dataset. We train PBF, PBG, DQC, HIQL, and TRL for 1M gradient steps at each data budget and evaluate them across all eight Figure 2: Dataset-size ablation averaged over all eight OG-Bench tasks. Each point reports the aggregate success rate with 100k, 300k, 500k, or 1M offline transitions while fixing training to 1M gradient steps. benchmark tasks. Figure 2 reports the average success rate over these tasks. PBF attains the highest aggregate success rate at every tested dataset size, including 100k transitions. This result indicates that PBF’s relative ranking is maintained across the evaluated data budgets. 
+
+## 6 Conclusion 
+
+We introduced PathBridger, a hierarchical offline GCRL framework that connects transitive value-based endpoint se-lection to endpoint-pinned state-space bridges and inverse-dynamics action decoding. Across eight state-based OG-Bench tasks, PBF achieves the highest aggregate perfor-mance, with its clearest gains on multi-object Cube manipu-lation. Controlled analyses clarify both the benefit and the re-maining limitation of this design. Removing the bridge lowers average performance, supporting the contribution of bridge-based execution beyond endpoint-conditioned low-level control. On Puzzle, supplying oracle waypoints directly as fixed subgoals yields nearly perfect success on both evalu-ated tasks, whereas performance remains substantially lower when learned subgoal proposal and selection are retained. These results suggest that PathBridger can reliably execute suitable intermediate states, while subgoal proposal and se-lection remain a key bottleneck under discrete, combina-torial board dynamics. Future work may therefore develop structure-aware or hybrid continuous–discrete subgoal mod-els for such domains (Gat et al. 2024; Holderrieth et al. 2025). 
+
+## References 
+
+Ahn, H.; Choi, H.; Han, J.; and Moon, T. 2025. Option-Aware Temporally Abstracted Value for Offline Goal-Conditioned Reinforcement Learning. In Advances in Neural Information Processing Systems , volume 38. Amodei, D.; Olah, C.; Steinhardt, J.; Christiano, P.; Schul-man, J.; and Mané, D. 2016. Concrete Problems in AI Safety. 
+
+arXiv preprint arXiv:1606.06565 .Anderson, M.; and Feil, T. 1998. Turning Lights Out with Linear Algebra. Mathematics Magazine , 71(4): 300–303. Andrychowicz, M.; Wolski, F.; Ray, A.; Schneider, J.; Fong, R.; Welinder, P.; McGrew, B.; Tobin, J.; Abbeel, P.; and Zaremba, W. 2017. Hindsight Experience Replay. In 
+
+Advances in Neural Information Processing Systems , vol-ume 30, 5048–5058. Chen, C.; Deng, F.; Kawaguchi, K.; Gulcehre, C.; and Ahn, S. 2024. Simple Hierarchical Planning with Diffusion. In 
+
+International Conference on Learning Representations .Eysenbach, B.; Salakhutdinov, R.; and Levine, S. 2019. Search on the Replay Buffer: Bridging Planning and Re-inforcement Learning. In Advances in Neural Information Processing Systems , volume 32. Eysenbach, B.; Zhang, T.; Levine, S.; and Salakhutdinov, R. 2022. Contrastive Learning as Goal-Conditioned Re-inforcement Learning. In Advances in Neural Information Processing Systems , volume 35, 35603–35620. Gat, I.; Remez, T.; Shaul, N.; Kreuk, F.; Chen, R. T. Q.; Synnaeve, G.; Adi, Y.; and Lipman, Y. 2024. Discrete Flow Matching. In Advances in Neural Information Processing Systems , volume 37. Ghosh, D.; Gupta, A.; Reddy, A.; Fu, J.; Devin, C.; Eysen-bach, B.; and Levine, S. 2021. Learning to Reach Goals via Iterated Supervised Learning. In International Conference on Learning Representations .Hadfield-Menell, D.; Milli, S.; Abbeel, P.; Russell, S. J.; and Dragan, A. D. 2017. Inverse Reward Design. In Advances in Neural Information Processing Systems , volume 30, 6765– 6774. Holderrieth, P.; Havasi, M.; Yim, J.; Shaul, N.; Gat, I.; Jaakkola, T.; Karrer, B.; Chen, R. T. Q.; and Lipman, Y. 2025. Generator Matching: Generative Modeling with Ar-bitrary Markov Processes. In International Conference on Learning Representations .Janner, M.; Du, Y.; Tenenbaum, J. B.; and Levine, S. 2022. Planning with Diffusion for Flexible Behavior Synthesis. In 
+
+Proceedings of the 39th International Conference on Ma-chine Learning , volume 162 of Proceedings of Machine Learning Research , 9902–9915. PMLR. Janner, M.; Li, Q.; and Levine, S. 2021. Offline Reinforce-ment Learning as One Big Sequence Modeling Problem. In 
+
+Advances in Neural Information Processing Systems , vol-ume 34, 1273–1286. Jiang, Z.; Zhang, T.; Janner, M.; Li, Y.; Rocktäschel, T.; Grefenstette, E.; and Tian, Y. 2023. Efficient Planning in a Compact Latent Action Space. In International Conference on Learning Representations .Kaelbling, L. P. 1993. Learning to Achieve Goals. In Pro-ceedings of the Thirteenth International Joint Conference on Artificial Intelligence , 1094–1099. Morgan Kaufmann. Kostrikov, I.; Nair, A.; and Levine, S. 2022. Offline Rein-forcement Learning with Implicit Q-Learning. In Interna-tional Conference on Learning Representations .Levine, S.; Kumar, A.; Tucker, G.; and Fu, J. 2020. Offline Reinforcement Learning: Tutorial, Review, and Perspectives on Open Problems. arXiv preprint arXiv:2005.01643 .Li, J.; Tang, C.; Tomizuka, M.; and Zhan, W. 2022. Hier-archical Planning Through Goal-Conditioned Offline Rein-forcement Learning. IEEE Robotics and Automation Letters ,7(4): 10216–10223. Li, Q.; Park, S.; and Levine, S. 2026. Decoupled Q-Chunking. In International Conference on Learning Rep-resentations .Li, Q.; Zhou, Z.; and Levine, S. 2025. Reinforcement Learn-ing with Action Chunking. In Advances in Neural Informa-tion Processing Systems , volume 38. Lipman, Y.; Chen, R. T. Q.; Ben-Hamu, H.; Nickel, M.; and Le, M. 2023. Flow Matching for Generative Modeling. In 
+
+International Conference on Learning Representations .Myers, V.; Zheng, C.; Dragan, A.; Levine, S.; and Eysenbach, B. 2024. Learning Temporal Distances: Contrastive Succes-sor Features Can Provide a Metric Structure for Decision-Making. In Proceedings of the 41st International Confer-ence on Machine Learning , volume 235 of Proceedings of Machine Learning Research , 37076–37096. PMLR. Nasiriany, S.; Pong, V. H.; Lin, S.; and Levine, S. 2019. Planning with Goal-Conditioned Policies. In Advances in Neural Information Processing Systems , volume 32, 14843– 14854. Park, K.; Park, S.; Lee, Y.; and Levine, S. 2026a. Scalable Of-fline Model-Based RL with Action Chunks. In International Conference on Learning Representations .Park, S.; Frans, K.; Eysenbach, B.; and Levine, S. 2025a. OGBench: Benchmarking Offline Goal-Conditioned RL. In 
+
+International Conference on Learning Representations .Park, S.; Frans, K.; Mann, D.; Eysenbach, B.; Kumar, A.; and Levine, S. 2025b. Horizon Reduction Makes RL Scal-able. In Advances in Neural Information Processing Systems ,volume 38. Park, S.; Ghosh, D.; Eysenbach, B.; and Levine, S. 2023. HIQL: Offline Goal-Conditioned RL with Latent States as Actions. In Advances in Neural Information Processing Sys-tems , volume 36. Park, S.; Oberai, A.; Atreya, P.; and Levine, S. 2026b. Tran-sitive RL: Value Learning via Divide and Conquer. In Inter-national Conference on Learning Representations .Savinov, N.; Dosovitskiy, A.; and Koltun, V. 2018. Semi-Parametric Topological Memory for Navigation. In Interna-tional Conference on Learning Representations .Schmeckpeper, K.; Xie, A.; Rybkin, O.; Tian, S.; Daniilidis, K.; Levine, S.; and Finn, C. 2020. Learning Predictive Mod-els from Observation and Interaction. In Computer Vision – ECCV 2020 , 708–725. Springer. Song, G.; Park, K.; and Lee, Y. 2026. Chunk-Guided Q-Learning. In International Conference on Machine Learning .Sutton, R. S.; Precup, D.; and Singh, S. 1999. Between MDPs and Semi-MDPs: A Framework for Temporal Abstraction in Reinforcement Learning. Artificial Intelligence , 112(1–2): 181–211. Torabi, F.; Warnell, G.; and Stone, P. 2018. Behavioral Cloning from Observation. In Proceedings of the Twenty-Seventh International Joint Conference on Artificial Intelli-gence , 4950–4957. International Joint Conferences on Arti-ficial Intelligence Organization. Wang, T.; Torralba, A.; Isola, P.; and Zhang, A. 2023. Opti-mal Goal-Reaching Reinforcement Learning via Quasimetric Learning. In Proceedings of the 40th International Confer-ence on Machine Learning , volume 202 of Proceedings of Machine Learning Research , 36411–36430. PMLR. Yang, R.; Lu, Y.; Li, W.; Sun, H.; Fang, M.; Du, Y.; Li, X.; Han, L.; and Zhang, C. 2022. Rethinking Goal-Conditioned Supervised Learning and Its Connection to Offline RL. In 
+
+International Conference on Learning Representations .A Implementation Details 
+
+A.1 Distance Reweighting for Transitive Values 
+
+The value objective is computed from logits with binary cross-entropy. Following TRL, we estimate a value-implied temporal distance and down-weight long state–goal pairs: 
+
+bdη (s, g ) = log γ
+
+ clip   ¯V¯η (s, g ), ε γ , 1 , (16) 
+
+wλ(s, g ) = 
+
+
+
+1 + bdη (s, g )
+
+−λ
+
+. (17) We multiply the base and transitive losses by wλ, and stop gradients through both the target values and the distance weights. 
+
+A.2 Endpoint-Proposer Objectives 
+
+For a dataset endpoint displacement ∆D 
+
+> K
+
+, define 
+
+δ¯η (s, g, ∆) = ¯V¯η (s + ∆ , g ) − ¯V¯η (s, g ),
+
+ewη (s, g, ∆D 
+
+> K
+
+) = min wmax , exp  csg δ¯η (s, g, ∆D 
+
+> K
+
+) .
+
+(18) We retain the centered form in the unnormalized empirical weights to improve numerical conditioning. PBG minimizes 
+
+LPBG = −ED
+
+ ewη (s, g, ∆D 
+
+> K
+
+) log qG 
+
+> χ
+
+(∆ D 
+
+> K
+
+| s, g ) . (19) For PBF, let x0 ∼ N (0 , I ), x1 = ∆ D 
+
+> K
+
+, u ∼ Unif(0 , 1) , and 
+
+xu = (1 − u)x0 + ux 1. Its weighted flow-matching objective is 
+
+LPBF = E
+
+hewη (s, g, x 1) ∥vχ(s, g, x u, u ) − (x1 − x0)∥22
+
+i
+
+.
+
+(20) The target value and endpoint weight are treated as constants in both updates. 
+
+A.3 Bridge and Sampling Details 
+
+For i = 0 , . . . , K , the bridge interpolation and endpoint mask are 
+
+αi =
+
+ iK
+
+0.8
+
+, mi = i(K − i)
+
+K2 ,
+
+b∆i = αi∆K + miRθ
+
+
+
+s, ∆K , iK
+
+
+
+.
+
+(21) Because m0 = mK = 0 , the generated path is pinned to both endpoints. The temperature T is used only for endpoint sampling at evaluation. PBG samples 
+
+∆(n) = μχ(s, g ) + T σ χ(s, g ) ⊙ ϵ(n), ϵ(n) ∼ N (0 , I ).
+
+(22) Thus, T = 0 evaluates the Gaussian mean. For PBF, the ODE is initialized with x(n)0 = T ϵ (n) and integrated using eight forward-Euler steps. Training always uses x0 ∼ N (0 , I ),independently of the evaluation temperature.                                
+
+> Hyperparameter Value
+> Learning rate 3×10 −4
+> Optimizer Adam Batch size 1024 MLP hidden dimensions [512 ,512 ,512]
+> Activation GELU Target EMA rate 0.005 Layer normalization Enabled Base horizon Hb5Transitive expectile τV0.7 Distance-value clipping constant εγ10 −6
+> Execution horizon ha5Endpoint-weight cap wmax 5.0 Critic goal-sampling probabilities (0 ,1,0,0)
+> Endpoint goal-sampling probabilities (0 ,0,1,0)
+> Flow steps (PBF) 8
+
+Table 4: Shared PathBridger hyperparame-ters. Goal-sampling probabilities are ordered as 
+
+(pcur , p geom , p traj , p rand ).
+
+## B Experimental Protocol and Hyperparameters 
+
+B.1 Evaluation Protocol 
+
+Each OGBench environment provides five predefined evalu-ation goals. At each of the 800k, 900k, and 1M checkpoints, we run 50 episodes per goal. We average the three check-points within each seed and then report the mean and stan-dard deviation across seeds. Throughout the tables, amm ,
+
+aml , cs , cd , ct , p3 , p4 , and scene denote AntMaze-medium, AntMaze-large, Cube-single, Cube-double, Cube-triple, Puzzle-3x3, Puzzle-4x4, and Scene, respectively. 
+
+B.2 PathBridger Hyperparameters 
+
+Tables 4 and 5 summarize the shared and environment-specific PathBridger hyperparameters, respectively. Unless otherwise specified, all loss coefficients are set to 1. In partic-ular, the self-reachability, base, and transitive value losses are equally weighted, and the value, endpoint-proposal, bridge-reconstruction, and inverse-dynamics objectives are summed with unit coefficients. The environment-specific λ in Table 5 denotes the distance-reweighting exponent. 
+
+## C Baseline Details 
+
+C.1 Objectives 
+
+GCIVL, CRL, and HIQL use the official OGBench imple-mentations without modification (Park et al. 2025a). OTA and TRL follow their released implementations and default objectives (Ahn et al. 2025; Park et al. 2026b). For DQC, we use the implementation of Song et al. (Song, Park, and Lee 2026) with the DQC objectives (Li, Park, and Levine 2026). We summarize the objectives used in our experiments and refer to the original papers for full derivations. PBF PBG Environment K γ csg λ N T K γ csg λ N T
+
+amm 25 0.99 10 0 2 0.25 25 0.99 10 0 1 0
+
+aml 25 0.995 10 0 16 0.5 25 0.995 10 0 1 0
+
+cs 40 0.99 5 0.7 1 0 25 0.99 10 0.7 1 0
+
+cd 40 0.99 10 1 2 0.25 25 0.99 10 1 1 0
+
+ct 40 0.995 10 1 1 0 25 0.995 10 1 1 0
+
+p3 25 0.99 10 0.5 32 1 40 0.99 10 0.5 2 0.25 
+
+p4 25 0.99 10 2 32 1 40 0.995 10 2 16 0.5 
+
+scene 25 0.99 5 1 16 0.5 40 0.99 5 1 16 0.5 
+
+Table 5: Environment-specific PathBridger hyperparameters. Let 
+
+ℓτ
+
+> exp
+
+(u) = |τ − 1{u < 0}| u2, (23) 
+
+ℓτ
+
+> quant
+
+(u) = |τ − 1{u < 0}| | u|, (24) 
+
+ℓBCE (p, y ) = −y log p − (1 − y) log(1 − p), (25) 
+
+¯wβ (A) = min {exp( βA ), w max }. (26) We write r−(s, g ) = −1{s / ∈ Bϵ(g)}, and bars denote target networks. 
+
+GCIVL (Kostrikov, Nair, and Levine 2022; Park et al. 2025a). GCIVL learns an action-free state–goal value and extracts a flat policy by advantage-weighted regression: 
+
+LGCIVL  
+
+> V
+
+= Eℓκ
+
+> exp
+
+ r−(s, g ) + γ ¯V (s′, g ) − V (s, g ) ,
+
+(27) 
+
+LGCIVL  
+
+> π
+
+= −E[ ¯ wβ (V (s′, g ) − V (s, g )) log π(a | s, g )] .
+
+(28) 
+
+CRL (Eysenbach et al. 2022; Park et al. 2025a). Let 
+
+fθ (s, a, g ) denote the contrastive logit, let g+ be sampled from the future of (s, a ), let g− be sampled independently from the dataset, and let σ denote the logistic sigmoid. CRL minimizes 
+
+LCRL  
+
+> f
+
+= − Elog σ(fθ (s, a, g +)) 
+
+− Elog  1 − σ(fθ (s, a, g −))  . (29) The policy objective is 
+
+LCRL  
+
+> π
+
+= −E[fθ (s, μ ψ (s, g ), g ) + α log πψ (a | s, g )] .
+
+(30) The implementation uses in-batch negatives and twin con-trastive critics. 
+
+HIQL (Park et al. 2023). HIQL uses the GCIVL value loss and extracts a high-level subgoal policy and a low-level action policy. For z = st+K ,
+
+Ah(st, z, g ) = V (z, g ) − V (st, g ), (31) 
+
+Aℓ(st, s t+1 , z ) = V (st+1 , z ) − V (st, z ), (32) and 
+
+LHIQL  
+
+> πh
+
+= −E ¯wβH (Ah) log πh(z | st, g ) ,
+
+LHIQL  
+
+> πℓ
+
+= −E ¯wβL (Aℓ) log πℓ(at | st, z ) . (33) We suppress the learned subgoal representation in the nota-tion. 
+
+OTA (Ahn et al. 2025). OTA retains HIQL’s two-level pol-icy extraction but trains a separate option-aware high-level value. Let sΩ be the state reached after an n-step dataset op-tion or upon reaching g. The low-level value uses the GCIVL loss, while the high-level value minimizes 
+
+LOTA   
+
+> Vh
+
+= Eℓκ
+
+> exp
+
+ r−(sΩ, g ) + γ ¯V h(sΩ, g ) − V h(s, g ) .
+
+(34) The actor losses follow Equation (33), using the separate high-level value V h and low-level value V ℓ.
+
+TRL (Park et al. 2026b). For an in-trajectory triplet i < k < j , define 
+
+eQab =
+
+γb−a, b − a ≤ 1,
+
+¯Q(sa, a a, s b), b − a > 1, yikj = eQik eQkj .
+
+(35) With 
+
+wλ(si, s j ) =  1 + log γ clip( Q(si, a i, s j ), ε γ , 1) −λ ,
+
+(36) TRL minimizes 
+
+LTRL  
+
+> Q
+
+= E
+
+h
+
+wλ(si, s j ) |κ − 1{Q(si, a i, s j ) > y ikj }| · ℓBCE (Q(si, a i, s j ), y ikj )
+
+i
+
+.
+
+(37) The default policy uses DDPG+BC, 
+
+LTRL  
+
+> π
+
+= −E[Q(s, a π , g ) + α log π(a | s, g )] , (38) while the Puzzle tasks use rejection sampling from a behav-ioral policy, following the original implementation. 
+
+DQC (Li, Park, and Levine 2026). DQC uses a full critic chunk Aht = ( at, . . . , a t+h−1) and a shorter execution chunk 
+
+Aha 
+
+> t
+
+= ( at, . . . , a t+ha−1), where ha < h . Let Rht (g) = 
+
+Ph−1 
+
+> ℓ=0
+
+γℓr(st+ℓ, g ). Its three value losses are 
+
+LDQC  
+
+> Q
+
+= E
+
+h Qϕ(st, A ht , g ) − Rht (g) − γh ¯Vξ (st+h, g )2i
+
+,
+
+(39) 
+
+LDQC  
+
+> QP
+
+= E
+
+h
+
+ℓκd
+
+> exp
+
+ ¯Qϕ(st, A ht , g ) − QPψ (st, A ha 
+
+> t
+
+, g )
+
+i 
+
+,
+
+(40) 
+
+LDQC  
+
+> V
+
+= E
+
+h
+
+ℓκb
+
+> quant
+
+ ¯QPψ (st, A ha 
+
+> t
+
+, g ) − Vξ (st, g )
+
+i 
+
+. (41) The partial critic optimistically distills the value of full chunks sharing the same prefix. DQC also trains a state-conditioned flow behavior model over partial chunks. With 
+
+x0 ∼ N (0 , I ), x1 = Aha 
+
+> t
+
+, u ∼ Unif(0 , 1) , and xu =(1 − u)x0 + ux 1,
+
+LDQC flow = E
+
+h
+
+∥vβ (st, x u, u ) − (x1 − x0)∥22
+
+i
+
+. (42) At inference, DQC samples N partial chunks from this be-havior model and selects 
+
+A⋆t = arg max 
+
+> 1≤n≤N
+
+QPψ (st, A (n) 
+
+> t
+
+, g ), A(n) 
+
+> t
+
+∼ πβ (· | st).
+
+(43) Thus, the behavior model is not goal-conditioned; goal-directed improvement is performed by the partial critic. 
+
+HTVL. HTVL uses the same transitive value objective, Gaussian endpoint proposer, and endpoint-selection rule as PBG, but replaces bridge construction and inverse-dynamics decoding with HIQL’s endpoint-conditioned low-level actor. For a future-state subgoal z,
+
+Aℓ 
+
+> HTVL
+
+= Vη (st+1 , z ) − Vη (st, z ), (44) 
+
+LHTVL  
+
+> πℓ
+
+= −E ¯wβL (Aℓ
+
+> HTVL
+
+) log πℓ(at | st, z ) . (45) At inference, HTVL samples and ranks endpoints exactly as PBG and directly passes the selected endpoint to the low-level actor. 
+
+C.2 Baseline Hyperparameters 
+
+Table 6 summarizes the optimization, architecture, and goal-sampling settings shared across the baseline algorithms. Un-less otherwise specified, all baselines use the default config-uration in this table. Method-specific settings for OTA, TRL, and DQC are reported subsequently. 
+
+Shared settings. The goal-sampling probability vectors are ordered as (pcur , p geom , p traj , p rand ).                            
+
+> Hyperparameter Value
+> Learning rate 3×10 −4
+> Optimizer Adam Batch size 1024 (default) 256 for DQC and OTA †
+> MLP hidden dimensions [512 ,512 ,512] (default)
+> [512 ,512 ,512 ,512] for DQC Target EMA rate 0.005 Policy goal-sampling probabilities (0 ,0,1,0)
+> Critic goal-sampling probabilities (0 .2,0,0.5,0.3) (default)
+> (0 ,1,0,0) for TRL
+
+Table 6: Shared hyperparameters for the baseline algorithms. 
+
+† OTA uses a batch size of 1024 for AntMaze tasks and 256 for all other tasks. 
+
+OTA. Table 7 reports the environment-specific policy weights, temporal-abstraction settings, and discount factors used for OTA.                                              
+
+> Environment βHβLKnγ
+> amm 3.0 3.0 25 50.99
+> aml 3.0 3.0 25 50.99
+> cs 1.0 3.0 20 40.99
+> cd 0.5 3.0 25 40.99
+> ct 3.0 3.0 20 40.99
+> p3 0.5 3.0 25 40.99
+> p4 1.0 3.0 20 40.99
+> scene 1.0 3.0 10 40.99
+
+Table 7: Environment-specific OTA hyperparameters.                                     
+
+> Environment αλκγ
+> amm 0.7 0.0 0.7 0.99
+> aml 0.7 0.0 0.7 0.99
+> cs 1.0 0.7 0.7 0.99
+> cd 10.0 1.0 0.7 0.99
+> ct 1.0 1.0 0.7 0.99
+> p3 2.0 0.5 0.7 0.99
+> p4 2.0 2.0 0.7 0.99
+> scene 1.0 1.0 0.7 0.99
+
+Table 8: Environment-specific TRL hyperparameters. 
+
+TRL. Table 8 reports the environment-specific weighting, regularization, and discount settings used for TRL. 
+
+DQC. Across all environments, DQC uses 32 best-of-N
+
+samples, expectile distillation, quantile implicit backups, and 10 flow steps. Table 9 reports the environment-specific ex-ecution horizon ha, critic horizon h, and implicit-backup parameters.                                              
+
+> Environment hahκbκdγ
+> amm 125 0.5 0.8 0.999
+> aml 125 0.5 0.8 0.999
+> cs 150.99 0.8 0.999
+> cd 150.99 0.8 0.999
+> ct 525 0.7 0.8 0.999
+> p3 510 0.7 0.8 0.999
+> p4 150.7 0.5 0.999
+> scene 150.9 0.5 0.999
+
+Table 9: Environment-specific DQC hyperparameters. 
+
+Baseline hyperparameter tuning. For TRL, we tuned α ∈{0.1, 0.3, 0.7} on amm while fixing λ = 0 . On ct , we jointly tuned α ∈ { 1, 10 } and λ ∈ { 0.7, 1}. For OTA, we tuned 
+
+βH ∈ { 0.5, 1, 3} and K ∈ { 20 , 25 } on the Cube and Puzzle tasks while fixing βL = 3 and n = 4 . On scene , we tuned 
+
+βH ∈ { 0.5, 1, 3} and K ∈ { 10 , 20 }, again fixing βL = 3 
+
+and n = 4 . The selected settings are reported in Tables 7 and 8. Environment Str (s, z, g ) V (z, g ) Uniform                                                          
+
+> amm 96 .4±0.695 .8±0.595 .1±1.4
+> aml 84 .6±6.483 .1±5.971 .1±7.0
+> cd 85 .1±2.283 .7±2.482 .4±2.1
+> p3 69 .3±3.361 .4±5.76.9±1.9
+> p4 78 .1±6.065 .1±9.04.4±0.5
+> scene 69 .1±3.068 .6±3.856 .0±4.0
+> Average 80 .476 .352 .6
+
+Table 10: Endpoint-selection-score ablation using the final trained proposer. Values are mean ± std over four seeds. 
+
+## D Ablation and Diagnostic Analyses 
+
+The following analyses separate endpoint proposal, endpoint selection, and bridge-based execution. Training ablations are retrained from scratch with the main four-seed protocol. Inference-only ablations reuse the same trained checkpoints and evaluation episode seeds; candidate samples are matched when applicable to reduce variation unrelated to the analyzed component. 
+
+D.1 Bridge-Removal Ablation 
+
+HTVL retains PBG’s transitive value learner, Gaussian endpoint proposer, and endpoint-selection procedure, but replaces bridge-based execution with HIQL’s endpoint-conditioned low-level actor. HTVL improves the overall av-erage from 33 .8 for HIQL to 46 .0, while PBG further reaches 
+
+60 .7. Since HTVL and PBG share the high-level endpoint pipeline, the 14 .7-point gap supports the contribution of bridge construction and inverse-dynamics decoding. 
+
+D.2 Endpoint Proposal and Selection 
+
+PBF selection-score decomposition. We evaluate the endpoint-selection rule on the six environments whose fi-nal PBF configuration uses multiple endpoint candidates (N > 1), for which candidate ranking is nontrivial. We focus on PBF because several tasks benefit from broader candidate sampling, whereas PBG generally favors determin-istic or low-breadth sampling and does not consistently im-prove as the candidate count increases. We therefore omit the corresponding PBG analysis. Using the main environment-specific (N, T ) settings and the same sampled candidate sets across all selection rules, we compare the full transitive score Str (s, z, g ) = V (s, z )V (z, g ) against continuation-only ranking with V (z, g ) and uniform candidate selection. 
+
+D.3 Oracle-Waypoint Diagnostic on Puzzle 
+
+We compute a valid sequence of board configurations using the standard linear-algebraic solution of Lights Out (Ander-son and Feil 1998). Each waypoint is supplied in one of two roles. When used as the current task goal, the long-horizon problem is decomposed into shorter goal-reaching problems while learned subgoal proposal and selection remain active. When supplied directly as the selected subgoal, learned pro-posal and selection are bypassed, leaving only execution.                                                                                                        
+
+> Environment (1 ,0) (2 ,0.25) (16 ,0.5) (32 ,1)
+> amm 94 .4±0.696 .4±0.693 .5±0.288 .9±2.0
+> aml 79 .7±4.580 .9±3.384 .6±6.476 .2±9.7
+> cs 99 .4±0.596 .9±0.492 .3±1.063 .7±4.1
+> cd 86 .8±7.685 .1±2.284 .8±8.9 71 .4±10 .2
+> ct 79 .8±4.578 .2±1.676 .2±1.358 .1±0.8
+> p3 17 .0±3.321 .1±3.754 .1±3.769 .3±3.3
+> p4 19 .5±3.827 .2±5.470 .6±3.578 .1±6.0
+> scene 63 .1±4.964 .9±4.269 .1±3.057 .7±6.4
+
+Table 11: PBF success rates across the joint (N, T ) sweep. Values are mean ± one standard deviation over four seeds. Bold indicates the setting used in the main benchmark. As reported in the main paper, performance improves markedly when the waypoint is supplied as the selected sub-goal. In this condition, PBG executes the oracle sequence with near-perfect success on both p3 and p4 . The gap be-tween the two waypoint roles therefore suggests that learned subgoal proposal and selection remain a key bottleneck on Puzzle. Under the same selected subgoals, PBG also sub-stantially outperforms HIQL, supporting the contribution of bridge-based execution over endpoint-conditioned low-level control. 
+
+## E Hyperparameter Sensitivity 
+
+We examine three PathBridger hyperparameters: the endpoint-sampling configuration (N, T ), bridge horizon K,and endpoint-weighting scale csg . For each sweep, all re-maining settings are fixed within each environment and vari-ant. The (N, T ) sweep changes only inference-time sampling and reuses the trained checkpoints, whereas K and csg affect training and therefore use separately trained models. Bold indicates the setting used in the main benchmark; because the final configurations are selected jointly, the bold entry need not be the largest value in every individual sweep. 
+
+E.1 Endpoint-Sampling Sweep 
+
+We evaluate four paired (N, T ) configurations, 
+
+(1 , 0) , (2 , 0.25) , (16 , 0.5) , (32 , 1) ,
+
+ordered by increasing inference-time sampling breadth. Here, 
+
+N is the number of endpoint candidates and T controls sam-pling dispersion. The (1 , 0) setting produces one determinis-tic endpoint: the Gaussian mean for PBG and the zero-source flow endpoint for PBF. At the other extreme, (32 , 1) uses full-temperature sampling with 32 candidates. Because N and T
+
+vary jointly, this sweep characterizes the overall breadth of the candidate set rather than the isolated effect of either pa-rameter. The preferred sampling breadth is task-dependent. PBG generally favors narrow sampling, with (1 , 0) performing best on five of the eight environments. PBF also favors con-centrated sampling on amm and the Cube tasks, where PBG is relatively competitive. In contrast, broader PBF sampling is important on Puzzle: performance rises from 17 .0/19 .5
+
+under (1 , 0) to 69 .3/78 .1 under (32 , 1) on p3 /p4 . The aml Environment (1 , 0) (2 , 0.25) (16 , 0.5) (32 , 1)                                                                                          
+
+> amm 95 .3±0.693 .3±2.191 .0±0.7 79 .5±2.3
+> aml 85 .3±3.081 .8±4.075 .1±4.0 60 .5±3.1
+> cs 93 .0±1.779 .1±4.167 .1±4.0 28 .7±3.7
+> cd 75 .7±1.958 .9±4.243 .6±4.9 16 .6±4.3
+> ct 45 .1±5.829 .7±1.422 .1±1.6 11 .0±0.8
+> p3 25 .8±5.728 .9±3.626 .3±3.7 12 .4±0.6
+> p4 1.5±1.11.7±1.02.7±1.60.6±0.2
+> scene 39 .9±12 .4 45 .5±5.859 .5±3.836 .9±4.3
+
+Table 12: PBG success rates across the joint (N, T ) sweep. Values are mean ± one standard deviation over four seeds. Bold indicates the setting used in the main benchmark.                                          
+
+> PBF PBG Environment K=25 K=40 K=25 K=40
+> amm 97.3 91.5 96.0 87.7
+> aml 93.3 83.5 89.1 82.1
+> cs 95.7 97.1 94.9 87.2
+> cd 80.4 82.4 77.3 64.3
+> ct 55.5 77.3 42.4 6.9
+> p3 68.5 55.7 15.5 33.9
+> p4 82.1 56.5 0.0 4.3
+> scene 53.6 64.3 31.7 65.2 Average 78.3 76.0 55.9 54.0
+
+Table 13: Success rates across the bridge-horizon sweep. All non-K settings are fixed within each environment and vari-ant. Bold indicates the setting used in the main benchmark. and scene tasks peak at the intermediate (16 , 0.5) setting. This pattern is consistent with concentrated sampling being sufficient on several tasks, whereas Puzzle benefits strongly from broader candidate coverage. 
+
+E.2 Bridge-Horizon Sweep 
+
+The bridge horizon K determines both the endpoint-prediction horizon and the length of the generated state-space bridge. We compare K ∈ { 25 , 40 } while fixing all non-K
+
+settings within each environment and variant on a single seed. The preferred horizon is also task-dependent. PBF bene-fits from K = 40 on all Cube tasks, with the largest increase on ct (55 .5 → 77 .3), whereas K = 25 performs better on AntMaze and Puzzle. PBG generally favors K = 25 on AntMaze and Cube, while K = 40 performs better on Puz-zle and scene . Averaged across tasks, K = 25 is slightly better for both PBF ( 78 .3 vs. 76 .0) and PBG ( 55 .9 vs. 54 .0). The contrasting Cube trend is consistent with the flow pro-poser handling the endpoint distributions induced by longer horizons more effectively than the Gaussian proposer. 
+
+E.3 Endpoint-Weighting Sweep 
+
+The endpoint-weighting scale csg controls how strongly the continuation-value improvement tilts the empirical endpoint                                              
+
+> PBF PBG Environment csg = 5 csg = 10 csg = 5 csg = 10
+> amm 94.9 97.3 91.2 95.7
+> aml 78.1 78.4 70.1 82.1
+> cs 99.7 98.9 83.2 92.5
+> cd 82.9 87.9 55.7 77.1
+> ct 74.1 77.3 33.1 42.4
+> p3 64.3 68.5 21.3 33.9
+> p4 76.3 82.1 0.3 4.3
+> scene 70.9 48.5 57.6 54.8
+> Average 80.2 79.9 51.6 60.4
+
+Table 14: Success rates across the endpoint-weighting sweep. All non-csg settings are fixed within each environment and variant. Bold indicates the setting used in the main bench-mark. distribution. We compare csg ∈ { 5, 10 } while fixing all re-maining settings within each environment and variant on a single seed. A stronger value tilt generally benefits PBG: csg = 10 im-proves seven of the eight environments and raises the average from 51 .6 to 60 .4. PBF is less sensitive in aggregate ( 80 .2
+
+vs. 79 .9), but its preferred scale remains task-dependent. The stronger tilt improves most AntMaze, Cube, and Puzzle set-tings, whereas csg = 5 performs better on cs and especially 
+
+scene . Thus, stronger value weighting is generally useful for the Gaussian proposer. PBF is less sensitive in aggregate, although individual tasks, most notably scene , remain sen-sitive to the endpoint-weighting scale. 
+
+## F Additional Results and Diagnostics 
+
+F.1 Full Data-Scaling Results 
+
+The main paper reports the aggregate trend across dataset sizes. Table 15 provides the available per-environment results at 100k, 300k, 500k, and 1M transitions. All methods are trained for 1M gradient steps at each data budget. Values are mean ± one standard deviation over two seeds. Transitions Method amm aml cs cd ct p3 p4 scene Average 
+
+100k HIQL 24 .6 ± 0.1 12 .3 ± 1.4 4.9 ± 1.7 0.2 ± 0.2 0.1 ± 0.1 1.7 ± 0.3 0.0 ± 0.0 4.5 ± 1.4 6.0
+
+TRL 9.2 ± 2.8 0.0 ± 0.0 21 .4 ± 0.1 0.1 ± 0.2 0.1 ± 0.2 1.5 ± 0.5 0.1 ± 0.1 2.4 ± 3.3 4.3
+
+DQC 18 .4 ± 0.0 5.7 ± 0.0 13 .9 ± 0.0 0.5 ± 0.0 0.0 ± 0.0 56 .4 ± 0.0 0.5 ± 0.0 10 .8 ± 0.0 13 .3
+
+PBG 81 .2 ± 12 .0 28 .6 ± 6.6 10 .2 ± 2.1 0.7 ± 0.4 0.0 ± 0.0 5.3 ± 4.7 0.0 ± 0.0 4.1 ± 0.5 16 .3
+
+PBF 87 .4 ± 2.6 37 .5 ± 4.2 22 .4 ± 0.4 5.4 ± 0.3 0.3 ± 0.3 38 .0 ± 4.0 34 .8 ± 0.1 14 .3 ± 4.5 30 .0
+
+300k HIQL 90 .4 ± 1.2 80 .5 ± 2.1 4.6 ± 0.2 0.6 ± 0.4 0.0 ± 0.0 2.5 ± 0.6 0.1 ± 0.2 11 .6 ± 2.7 23 .8
+
+TRL 55 .5 ± 1.4 11 .6 ± 0.1 46 .3 ± 1.4 0.7 ± 0.3 0.1 ± 0.1 17 .4 ± 0.4 3.1 ± 0.8 11 .9 ± 3.4 18 .3
+
+DQC 88 .0 ± 1.6 68 .5 ± 7.9 27 .8 ± 1.4 4.0 ± 2.8 0.0 ± 0.0 87 .1 ± 1.1 98 .5 ± 0.6 55 .4 ± 4.7 53 .7
+
+PBG 91 .3 ± 0.6 61 .2 ± 2.1 69 .8 ± 6.6 5.1 ± 0.9 0.1 ± 0.1 14 .0 ± 1.7 0.1 ± 0.1 15 .8 ± 2.0 32 .2
+
+PBF 93 .8 ± 0.7 72 .0 ± 0.6 73 .3 ± 2.0 37 .0 ± 0.8 12 .6 ± 1.6 53 .3 ± 0.6 48 .0 ± 5.2 64 .1 ± 1.7 56 .8
+
+500k HIQL 93 .5 ± 1.4 87 .2 ± 0.7 9.4 ± 2.1 1.2 ± 0.1 0.1 ± 0.2 2.1 ± 0.3 0.2 ± 0.1 25 .0 ± 1.0 27 .3
+
+TRL 81 .9 ± 5.7 24 .1 ± 0.0 62 .4 ± 6.4 0.9 ± 0.1 0.2 ± 0.4 79 .1 ± 1.1 7.2 ± 10 .2 15 .5 ± 20 .7 33 .9
+
+DQC 82 .6 ± 3.1 68 .0 ± 6.6 35 .1 ± 0.3 5.0 ± 0.3 0.3 ± 0.1 90 .4 ± 13 .4 99 .9 ± 0.0 68 .8 ± 8.5 56 .3
+
+PBG 89 .4 ± 0.1 80 .8 ± 6.7 85 .9 ± 0.0 35 .0 ± 9.8 0.1 ± 0.1 16 .1 ± 1.3 0.1 ± 0.0 23 .4 ± 11 .7 41 .3
+
+PBF 89 .2 ± 6.2 83 .0 ± 3.0 93 .2 ± 6.9 73 .9 ± 9.7 35 .2 ± 2.3 56 .2 ± 6.9 56 .2 ± 4.9 38 .6 ± 29 .8 65 .7
+
+1M HIQL 95 .8 ± 0.3 88 .1 ± 5.2 15 .4 ± 1.6 6.8 ± 0.1 2.3 ± 1.4 9.4 ± 0.8 8.6 ± 3.8 44 .6 ± 2.0 33 .9
+
+TRL 87 .2 ± 1.2 48 .5 ± 10 .3 92 .8 ± 3.8 22 .5 ± 1.7 14 .9 ± 0.6 99 .8 ± 0.1 33 .8 ± 4.2 70 .3 ± 0.1 58 .7
+
+DQC 87 .6 ± 1.3 70 .9 ± 8.5 75 .2 ± 3.4 16 .9 ± 1.8 32 .3 ± 1.4 100 .0 ± 0.0 100 .0 ± 0.0 93 .1 ± 3.0 72 .0
+
+PBG 95 .2 ± 0.4 83 .2 ± 1.6 93 .7 ± 1.7 75 .2 ± 2.7 44 .4 ± 2.8 29 .6 ± 6.1 2.4 ± 2.7 58 .0 ± 0.6 60 .2
+
+PBF 96 .4 ± 1.0 81 .6 ± 4.5 99 .1 ± 0.6 85 .2 ± 3.9 81 .8 ± 6.4 67 .7 ± 1.1 82 .1 ± 0.0 68 .9 ± 2.8 82 .8
+
+Table 15: Per-environment dataset-size results. Values are mean ± one standard deviation over two seeds. All methods are trained for 1M gradient steps at each data budget. Bold indicates mean performance at or above 95% of the best mean in each setting.

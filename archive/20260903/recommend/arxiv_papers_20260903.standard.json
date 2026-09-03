@@ -1,0 +1,170 @@
+{
+  "mode": "standard",
+  "generated_at": "2026-09-03T22:29:01.000253+00:00",
+  "stats": {
+    "mode": "standard",
+    "tag_count": 1,
+    "deep_divecandidates": 2,
+    "deep_cap": 6,
+    "deep_selected": 2,
+    "quick_candidates": 2,
+    "quick_skim_target": 11,
+    "quick_selected": 2
+  },
+  "deep_dive": [
+    {
+      "id": "2609.02237v1",
+      "source": "arxiv",
+      "title": "Recursive Value Learning for Long-Horizon Offline Goal-Conditioned RL",
+      "abstract": "Scaling offline goal-conditioned reinforcement learning (GCRL) to long-horizon tasks is difficult because (1) long-range value learning depends on shorter-range estimates that may still be inaccurate, and (2) max-based value backups can amplify overestimation through repeated propagation. We propose DCRL (Divide-and-Conquer RL), which recursively decomposes each trajectory segment into a balanced binary tree and trains the values from leaves to root. Each parent is therefore updated only after its children, using an exact factorization of the observed route rather than selecting among noisy alternatives. Since this objective learns values along demonstrated routes that are not necessarily optimal, DCRL jointly propagates values across trajectories to discover shorter routes. Thanks to the balanced binary tree, DCRL reduces worst-case bootstrap depth from linear to logarithmic, and this shorter dependency structure empirically corresponds to much slower error accumulation. Across diverse goal-reaching tasks, DCRL substantially outperforms prior flat offline GCRL methods, and on the five most challenging long-horizon OGBench tasks, it improves the best prior average score from 55 to 64, surpassing all flat and hierarchical baselines.",
+      "authors": [
+        "Hyeonseong Jeon",
+        "Youngwoon Lee"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.RO"
+      ],
+      "published": "2026-09-02T07:45:16+00:00",
+      "link": "https://arxiv.org/pdf/2609.02237v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "recursive value learning for long-horizon offline goal-conditioned RL",
+      "llm_evidence_cn": "长时程离线目标条件强化学习的递归值学习",
+      "llm_evidence": "长时程离线目标条件强化学习的递归值学习",
+      "canonical_evidence": "长时程离线目标条件强化学习的递归值学习",
+      "llm_tldr_en": "DCRL recursively decomposes trajectories into a balanced binary tree and trains values from leaves to root, using exact factorization to avoid overestimation in long-horizon offline GCRL.",
+      "llm_tldr_cn": "针对离线目标条件强化学习在长时程任务中价值学习不准确与过估计问题，提出DCRL（分治强化学习），将轨迹段递归分解为平衡二叉树，自叶向根训练价值，利用观测路径的精确因子化而非噪声最大化。该方法传播跨轨迹价值以应对示范路径非最优性，在长时程离线控制基准上验证了稳定性与样本效率。DCRL为具有长时程奖励分配需求的强化学习任务提供了新的价值估计框架。",
+      "llm_tldr": "针对离线目标条件强化学习在长时程任务中价值学习不准确与过估计问题，提出DCRL（分治强化学习），将轨迹段递归分解为平衡二叉树，自叶向根训练价值，利用观测路径的精确因子化而非噪声最大化。该方法传播跨轨迹价值以应对示范路径非最优性，在长时程离线控制基准上验证了稳定性与样本效率。DCRL为具有长时程奖励分配需求的强化学习任务提供了新的价值估计框架。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "id": "2609.02417v1",
+      "source": "arxiv",
+      "title": "Coverage, Not Targeting: A Structural Regime in Multi-Turn Agent Credit Assignment",
+      "abstract": "Multi-turn agentic RL increasingly treats credit assignment as a targeting problem: given a terminal verifiable reward, per-turn methods localize credit onto the turns that mattered. We identify the structural quantity that predicts when this is the right move, the verifier information density V_d = k/C (the fraction of an agent's C-step causal chain whose per-turn correctness the verifier exposes), and show that terminal-state verifiers sit deep in a low-V_d regime where targeting is the wrong axis. In controlled shared-rollout comparisons on tau^2-bench that separate reward density from credit geometry, a continuous dense reward spread uniformly beats the sparse binary outcome reward (net-harmful on 4/5 seeds), while concentrating the same advantage on progress turns or on random turns is equally harmful: targeting is second-order. The mechanism is coverage: terminal-state verification collapses the observable signal to a single final-write turn (k=1 in 98% of rollouts) while success requires a 5-8 step chain of prerequisite tool calls. A synthetic phase boundary places the crossover at V_d* ~ 0.8, whereas measured V_d is ~0.15 on tau^2-bench and ~0.4 on BFCL V3; uniform also wins on BFCL, where a matched-concentration shuffled control is negative on 8/8 seeds. The effect reproduces across model families on ToolACE-2-8B (Delta = -0.048 over 32 pre-registered seeds; an independent 20-seed replication is itself significant), and a pre-registered matched-budget breadth sweep traces a monotone dose-response whose deficit vanishes only at full chain coverage, with a reward-to-go arm reaching full-coverage parity. Uniform redistribution is the zero-information coverage default that per-turn schemes must beat; we contribute the matched-concentration shuffled control that any targeting claim should clear.",
+      "authors": [
+        "Chenyu Zhou",
+        "Qiliang Jiang",
+        "Shuning Wu",
+        "Xu Zhou"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.AI"
+      ],
+      "published": "2026-09-02T10:37:12+00:00",
+      "link": "https://arxiv.org/pdf/2609.02417v1",
+      "tags": [
+        "keyword:UAV-DRL"
+      ],
+      "llm_score": 8.0,
+      "llm_evidence_en": "structural analysis of credit assignment in multi-turn RL",
+      "llm_evidence_cn": "多轮智能体信用分配的结构分析",
+      "llm_evidence": "多轮智能体信用分配的结构分析",
+      "canonical_evidence": "多轮智能体信用分配的结构分析",
+      "llm_tldr_en": "Identifies verifier information density as a structural predictor for when dense reward beats targeted credit assignment in multi-turn agentic RL. Controlled shared-rollout experiments show terminal verifiers sit in a low-density regime where uniformly spread continuous dense rewards outperform sparse binary outcome rewards; concentrating the same dense reward is harmful.",
+      "llm_tldr_cn": "该论文针对多轮智能体强化学习中信用分配通常被当作目标定位问题这一现状，引入验证器信息密度Vd来刻画何时应该使用密集奖励而非逐轮定位。通过在共享轨迹控制实验中隔离奖励密度与信用几何，发现终端验证器处于低Vd区域，均匀分布的连续密集奖励优于稀疏二元结果奖励，而集中相同奖励则有害。该工作揭示了信用分配的结构性规律，对长时程奖励设计具有指导意义。",
+      "llm_tldr": "该论文针对多轮智能体强化学习中信用分配通常被当作目标定位问题这一现状，引入验证器信息密度Vd来刻画何时应该使用密集奖励而非逐轮定位。通过在共享轨迹控制实验中隔离奖励密度与信用几何，发现终端验证器处于低Vd区域，均匀分布的连续密集奖励优于稀疏二元结果奖励，而集中相同奖励则有害。该工作揭示了信用分配的结构性规律，对长时程奖励设计具有指导意义。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "quick_skim": [
+    {
+      "id": "2608.29061v1",
+      "source": "arxiv",
+      "title": "PathBridger: Subgoal Bridges for Offline Goal-Conditioned Reinforcement Learning",
+      "abstract": "Offline goal-conditioned reinforcement learning (GCRL) aims to learn policies for reaching diverse goals entirely from fixed trajectory data. Long-horizon offline GCRL remains challenging because sparse goal-reaching signals must be propagated over many steps, while execution errors cannot be corrected through additional environment interaction. Existing methods address these challenges by improving long-range value estimation or reducing the effective decision horizon through subgoals, options, and action chunks. In several hierarchical methods, however, a selected subgoal specifies where to go, while the intervening state-space path remains implicit in an endpoint-conditioned low-level policy. To address this interface, we propose PathBridger, a hierarchical offline GCRL method that explicitly connects subgoal selection to short-horizon execution. PathBridger constructs a state-space bridge toward the selected intermediate endpoint and decodes it into a short executable action chunk using an inverse dynamics model. Experiments across the evaluated OGBench tasks demonstrate strong aggregate performance, with particularly large gains on the multi-object Cube manipulation tasks. Code: https://github.com/SChoish/PathBridger",
+      "authors": [
+        "Soohyun Choi",
+        "Seonvin Cho",
+        "Songnam Hong"
+      ],
+      "primary_category": "cs.LG",
+      "categories": [
+        "cs.LG",
+        "cs.RO"
+      ],
+      "published": "2026-08-29T05:33:01+00:00",
+      "link": "https://arxiv.org/pdf/2608.29061v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Offline goal-conditioned RL for long-horizon tasks with subgoal bridges to propagate sparse rewards",
+      "llm_evidence_cn": "面向长时程任务的离线目标条件强化学习，通过子目标桥接传播稀疏奖励",
+      "llm_evidence": "面向长时程任务的离线目标条件强化学习，通过子目标桥接传播稀疏奖励",
+      "canonical_evidence": "面向长时程任务的离线目标条件强化学习，通过子目标桥接传播稀疏奖励",
+      "llm_tldr_en": "Addresses long-horizon offline GCRL by bridging selected subgoals and their state-space paths, improving value estimation and credit assignment in sparse reward settings.",
+      "llm_tldr_cn": "针对离线目标条件强化学习中长时程任务稀疏奖励难以传播、执行错误无法修正的挑战，提出PathBridger方法，通过子目标桥接显式建模状态空间路径，解决子目标指定目的地但中间路径隐式的问题。该方法改善长程价值估计并缩短有效决策时程。实验表明PathBridger在基准上优于现有方法，为长时程信用分配提供了通用工具，可潜在用于无人机巡检的长期决策。",
+      "llm_tldr": "针对离线目标条件强化学习中长时程任务稀疏奖励难以传播、执行错误无法修正的挑战，提出PathBridger方法，通过子目标桥接显式建模状态空间路径，解决子目标指定目的地但中间路径隐式的问题。该方法改善长程价值估计并缩短有效决策时程。实验表明PathBridger在基准上优于现有方法，为长时程信用分配提供了通用工具，可潜在用于无人机巡检的长期决策。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    },
+    {
+      "id": "2609.02236v1",
+      "source": "arxiv",
+      "title": "PGPO: Potential-Guided Policy Optimization for Multi-Turn Agentic Tasks",
+      "abstract": "Group-based reinforcement learning (RL) has become an effective paradigm for LLM post-training, but in multi-turn agentic tasks with sparse terminal rewards, it often provides coarse credit for intermediate actions. To obtain more fine-grained credit assignment, recent work such as GiGPO introduces step-level advantages for intermediate actions. However, these step-level signals still rely on the final outcome of each individual trajectory. As a result, actions within failed trajectories can remain poorly differentiated, so effective actions can receive the same unfavorable credit as erroneous ones. In this work, we propose Potential-Guided Policy Optimization (PGPO) for multi-turn agentic tasks. PGPO estimates empirical state potentials from anchor-state-group return statistics within each rollout group. It then derives action advantages from potential differences between adjacent states, enabling cross-trajectory credit propagation. This provides finer-grained step-level credit assignment, especially within failed trajectories. Experiments on ALFWorld and WebShop show strong overall performance relative to recent group-based RL methods. Further analysis provides evidence that PGPO yields more informative failure-side credit signals with negligible training overhead.",
+      "authors": [
+        "Yuyao Zheng",
+        "Haipeng Sun",
+        "Junwei Bao",
+        "Lemao Liu",
+        "Hongfei Jiang",
+        "Yang Song",
+        "Dejing Dou"
+      ],
+      "primary_category": "cs.AI",
+      "categories": [
+        "cs.AI"
+      ],
+      "published": "2026-09-02T07:44:16+00:00",
+      "link": "https://arxiv.org/pdf/2609.02236v1",
+      "tags": [
+        "keyword:UAV-DRL",
+        "query:UAV-DRL"
+      ],
+      "llm_score": 7.0,
+      "llm_evidence_en": "Potential-guided policy optimization for multi-turn agentic tasks with fine-grained credit assignment",
+      "llm_evidence_cn": "面向多轮智能体任务的势能引导策略优化，实现细粒度信用分配",
+      "llm_evidence": "面向多轮智能体任务的势能引导策略优化，实现细粒度信用分配",
+      "canonical_evidence": "面向多轮智能体任务的势能引导策略优化，实现细粒度信用分配",
+      "llm_tldr_en": "Proposes PGPO to address coarse credit assignment in multi-turn agentic RL by estimating state potentials and using them to guide policy optimization, improving differentiation of effective actions.",
+      "llm_tldr_cn": "针对多轮智能体任务中稀疏终止奖励导致中间动作信用分配粗糙、失败轨迹内有效动作难以区分的问题，提出势能引导策略优化PGPO，通过从锚状态估计经验状态势能，为中间动作提供更细粒度的信用信号。该方法在多个多轮任务上验证能更好地区分有效与无效动作。PGPO为长时程奖励分配提供了新手段，对无人机巡检等顺序决策任务有借鉴意义。",
+      "llm_tldr": "针对多轮智能体任务中稀疏终止奖励导致中间动作信用分配粗糙、失败轨迹内有效动作难以区分的问题，提出势能引导策略优化PGPO，通过从锚状态估计经验状态势能，为中间动作提供更细粒度的信用信号。该方法在多个多轮任务上验证能更好地区分有效与无效动作。PGPO为长时程奖励分配提供了新手段，对无人机巡检等顺序决策任务有借鉴意义。",
+      "llm_tags": [
+        "query:uav-drl"
+      ],
+      "matched_query_tag": "query:uav-drl",
+      "matched_query_text": "long-horizon reward assignment in reinforcement learning",
+      "matched_requirement_id": "req-6",
+      "selection_source": "fresh_fetch",
+      "quick_tier": "7"
+    }
+  ]
+}

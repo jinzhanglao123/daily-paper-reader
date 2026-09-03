@@ -6,35 +6,35 @@
 </div>
 
 ## 每次日报
-- 最新运行日期：2026-09-02
-- 运行时间：2026-09-02 21:26:01 UTC
+- 最新运行日期：2026-09-03
+- 运行时间：2026-09-03 22:34:22 UTC
 - 运行状态：成功
 - 本次总论文数：4
-- 精读区：0
-- 速读区：4
+- 精读区：2
+- 速读区：2
 
 ### 今日简报（AI）
-- 今日共生成 4 篇推荐（精读 0 篇，速读 4 篇）
-- 速读：《AgenticRag-R1: Agentic Reinforcement Learning with Stack Memory for Multi-Step Reasoning, Retrieval and Memorizing》（7.0/10）, 《Harness-RL: Black-Box Reinforcement Learning with Action-Args Decoupling for Central-Agent Multi-Agent Harnesses》（7.0/10）, 《Dense Process Supervision for Search Agents via Fact Utility Estimation》（7.0/10）
+- 今日共生成 4 篇推荐（精读 2 篇，速读 2 篇）
+- 精读：《Recursive Value Learning for Long-Horizon Offline Goal-Conditioned RL》（8.0/10）, 《Coverage, Not Targeting: A Structural Regime in Multi-Turn Agent Credit Assignment》（8.0/10）
+- 速读：《PathBridger: Subgoal Bridges for Offline Goal-Conditioned Reinforcement Learning》（7.0/10）, 《PGPO: Potential-Guided Policy Optimization for Multi-Turn Agentic Tasks》（7.0/10）
 - 这些结果覆盖了当下较热的方向，建议先看精读区论文的关键问题与方法。
-- 详情：[/202609/02/README](/202609/02/README)
+- 详情：[/202609/03/README](/202609/03/README)
 
 ### 精读区论文标签
-- 本次无精读推荐。
+1. [Recursive Value Learning for Long-Horizon Offline Goal-Conditioned RL](/202609/03/2609.02237v1-recursive-value-learning-for-long-horizon-offline-goal-conditioned-rl)  
+   标签：评分：8.0/10、query:uav-drl
+   evidence：长时程离线目标条件强化学习的递归值学习
+2. [Coverage, Not Targeting: A Structural Regime in Multi-Turn Agent Credit Assignment](/202609/03/2609.02417v1-coverage-not-targeting-a-structural-regime-in-multi-turn-agent-credit-assignment)  
+   标签：评分：8.0/10、query:uav-drl
+   evidence：多轮智能体信用分配的结构分析
 
 ### 速读区论文标签
-1. [AgenticRag-R1: Agentic Reinforcement Learning with Stack Memory for Multi-Step Reasoning, Retrieval and Memorizing](/202609/02/2608.29622v1-agenticrag-r1-agentic-reinforcement-learning-with-stack-memory-for-multi-step-reasoning-retrieval-and-memorizing)  
+1. [PathBridger: Subgoal Bridges for Offline Goal-Conditioned Reinforcement Learning](/202609/03/2608.29061v1-pathbridger-subgoal-bridges-for-offline-goal-conditioned-reinforcement-learning)  
    标签：评分：7.0/10、query:uav-drl
-   evidence：细粒度动作空间与分层奖励用于解决智能体强化学习中弱奖励分配问题
-2. [Harness-RL: Black-Box Reinforcement Learning with Action-Args Decoupling for Central-Agent Multi-Agent Harnesses](/202609/02/2608.29641v1-harness-rl-black-box-reinforcement-learning-with-action-args-decoupling-for-central-agent-multi-agent-harnesses)  
+   evidence：面向长时程任务的离线目标条件强化学习，通过子目标桥接传播稀疏奖励
+2. [PGPO: Potential-Guided Policy Optimization for Multi-Turn Agentic Tasks](/202609/03/2609.02236v1-pgpo-potential-guided-policy-optimization-for-multi-turn-agentic-tasks)  
    标签：评分：7.0/10、query:uav-drl
-   evidence：动作-参数解耦用于混合决策结构强化学习
-3. [Dense Process Supervision for Search Agents via Fact Utility Estimation](/202609/02/2609.00833v1-dense-process-supervision-for-search-agents-via-fact-utility-estimation)  
-   标签：评分：7.0/10、query:uav-drl
-   evidence：基于事实效用估计的稠密过程监督用于搜索代理
-4. [Arrive and Survive: Scaling Safe Goal-Conditioned Policy Learning from One-Bit Failure Signals](/202609/02/2608.26571v1-arrive-and-survive-scaling-safe-goal-conditioned-policy-learning-from-one-bit-failure-signals)  
-   标签：评分：6.0/10、query:uav-drl
-   evidence：基于失败信号的对比强化学习用于安全目标条件策略
+   evidence：面向多轮智能体任务的势能引导策略优化，实现细粒度信用分配
 
 
 <div class="dpr-home-promo-card">
