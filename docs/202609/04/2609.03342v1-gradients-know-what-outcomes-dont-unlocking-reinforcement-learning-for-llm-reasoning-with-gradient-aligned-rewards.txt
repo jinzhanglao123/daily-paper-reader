@@ -1,0 +1,1207 @@
+Title: Gradients Know What Outcomes Don't: Unlocking Reinforcement Learning for LLM Reasoning with Gradient-Aligned Rewards
+
+URL Source: https://arxiv.org/pdf/2609.03342v1
+
+Published Time: Fri, 04 Sep 2026 00:29:49 GMT
+
+Number of Pages: 21
+
+Markdown Content:
+# Gradients Know What Outcomes Don’t: Unlocking Reinforcement Learning for LLM Reasoning with Gradient-Aligned Rewards 
+
+Leqi Zheng 1,† , Jinbo Su 2,† , Fang Niu 1,† , Chaokun Wang* 1,Weiping Wang 3, Jiajun Zhang 4, Shannan Yan 1,
+
+Jie Wu 5, Zhaolu Kang 6, Rong Fu 7, Hang Zhang 1
+
+1Tsinghua University, 2Renmin University of China, 3Institute of Information Engineering, CAS, 
+
+4USTC, 5The Australian National University, 6Peking University, 7University of Macau  
+
+> †
+
+Equal contribution. 
+
+* Correspondence: chaokun@tsinghua.edu.cn 
+
+Abstract 
+
+Reinforcement learning from verifiable rewards (RLVR) drives chain-of-thought reasoning in large language models, yet its binary outcome reward cannot distinguish among correct trajec-tories. Existing dense reward alternatives, from surface heuristics to process reward models, ei-ther ignore the expert solutions already present in training corpora or require expensive offline annotation. We propose Gradient-Aligned Re-ward (GAR) , which operates in the policy’s own gradient space: truncated backpropagation through the output projection layer extracts a compact gradient vector for each rollout, and cosine similarity with an expert-anchor gradi-ent yields a dense, reasoning-aware reward with less than 9% wall-clock overhead. We prove that this cosine admits a multiplicative decom-position into prediction-error and activation-pattern factors, providing a concrete characteri-zation of what the alignment signal measures. On Qwen3-4B and Qwen3-8B, GAR consis-tently improves over GRPO and other base-lines on competition-level math benchmarks and transfers to GPQA Diamond and MMLU-Pro without domain-specific data. Code and data are available at https://github.com/ LQgdwind/GAR .
+
+1 Introduction 
+
+Reinforcement learning from verifiable rewards (RLVR) has emerged as a compelling paradigm for eliciting chain-of-thought reasoning in large lan-guage models without supervised fine-tuning (Guo et al., 2025; Shao et al., 2024; Yu et al., 2025; Zheng et al., 2025b, 2026, 2025a). Under this setting, a base model is optimized solely with a binary outcome reward that verifies final-answer correctness, and DeepSeek-R1-Zero (Guo et al., 2025) demonstrated that structured reasoning (Wei et al., 2022; Kojima et al., 2022) can emerge spon-taneously from such sparse supervision. Despite this success, the exclusive reliance on binary re-wards introduces a fundamental credit assignment 3 2 1 0 1 2 3         
+
+> Gradient Component 1 (t-SNE)
+> 3
+> 2
+> 1
+> 0123
+> Gradient Component 2 (t-SNE)
+> high alignment medium alignment low alignment
+> Expert Anchor a
+> cos=0.81 cos=0.55 cos=0.19
+> Outcome-only: all receive r= 1 (indistinguishable)
+> GAR: reward varies by cos( yi,a)
+> Incorrect ( r= 0 )Correct (GAR-scored)
+> 0.2 0.4 0.6 0.8 1.0
+> GAR Reward Bonus  b(yi)
+
+Figure 1: Gradient-space visualization of GAR. The expert anchor va (star) defines the reference direction in the param-eter update manifold. Correct rollouts (circles) are scored by cosine similarity with the anchor: high-alignment rollouts (dark) receive a large GAR bonus, while low-alignment roll-outs (light) receive a smaller bonus despite also being correct. Incorrect rollouts (crosses) are gated out and receive zero re-ward regardless of their gradient direction. 
+
+problem: once multiple rollouts produce correct answers, the reward signal becomes flat over the correct subset, and the resulting policy gradient carries no information to preferentially reinforce higher-quality reasoning trajectories. This pathology motivates a search for denser, process-level supervision, yet existing remedies each suffer from significant limitations: (1) Expert solutions remain unused. Outcome-only RLVR assigns identical reward to every correct response, collapsing the group-relative advantage among the correct subset to zero (Shao et al., 2024). Widely used math corpora such as NuminaMath-CoT (Li et al., 2024) already ship expert chain-of-thought solutions alongside each problem, yet no exist-ing reward mechanism exploits them to provide a process-level training signal. (2) Surface-level heuristic shaping. Rule-based reward shaping methods (Wen et al., 2025; Aggarwal and Welleck, arXiv:2609.03342v1 [cs.LG] 3 Sep 2026 Table 1: Comparison of reward paradigms. GAR is the only method that leverages expert CoT in gradient space.                     
+
+> Method Dense Sig. Expert CoT Grad.-Space No Extra Model
+> GRPO ✗✗✗✓
+> Grad2Reward ✓✗✓✗
+> G2RL ✓✗✓✓
+> GAR (Ours) ✓✓✓✓
+
+2025) introduce length or format penalties as prox-ies for reasoning quality, but such heuristics op-erate on surface attributes and cannot evaluate whether the underlying chain of thought genuinely engages the reasoning structures required by the task. (3) Expensive and offline process supervi-sion. Process reward models (PRMs) provide step-level feedback but require large-scale expert anno-tations (Lightman et al., 2023; Uesato et al., 2022); even automated alternatives (Wang et al., 2024; Cui et al., 2025; Setlur et al., 2024) are trained offline on fixed distributions that diverge from the evolv-ing policy. A detailed comparison is provided in Table 1. These limitations point to a natural ques-tion: can we turn the expert solutions that training corpora already provide into a gradient-space sig-nal that differentiates among correct rollouts? 
+
+We find that we can, and introduce Gradient-Aligned Reward (GAR) , a lightweight online pro-cess reward mechanism for RLVR. The central in-sight is that if two correct trajectories implement substantively similar reasoning, their gradient di-rections through the output projection layer must remain close, irrespective of surface-level textual variation. GAR operationalizes this hypothesis by performing truncated backpropagation through only the LM head and scoring each rollout by its cosine similarity with an expert-anchor gradient derived from existing chain-of-thought solutions in the training corpus (Figure 1). This design ad-dresses all three limitations: gradient cosine with expert anchors turns readily available CoT solu-tions into a dense reward; the gradient signal cap-tures reasoning-level structure beyond surface at-tributes; and the online, truncated computation eliminates dependence on step-level annotations or external reward models. In summary, our contributions are four-fold: (1) Gradient-Space Process Rewards from Expert Anchors. We introduce a reward mech-anism that converts readily available expert chain-of-thought solutions into gradient-space reference vectors, enabling dense, per-rollout process super-vision without additional annotation. We ground the signal via the empirical neural tangent kernel and potential-based reward shaping theory. (2) Multiplicative Decomposition of the Align-ment Signal. We prove that the gradient co-sine decomposes multiplicatively into a prediction-error factor and an activation-pattern factor (The-orem 2), providing a concrete characterization of the two complementary axes along which GAR distinguishes correct trajectories. (3) Lightweight Online Computation. Trun-cated backpropagation through the output projec-tion layer reduces alignment cost to O(V × d),adding less than 9% wall-clock overhead to stan-dard GRPO training. (4) Empirical Validation. On Qwen3-4B and 8B base models, GAR yields consistent pass@ k
+
+gains on four competition-level math benchmarks and transfers to GPQA Diamond and MMLU-Pro without domain-specific training data. 
+
+2 Method 
+
+GAR is motivated by a fundamental limitation of outcome-only reinforcement learning. Under a bi-nary verifier reward r(x, y ) = 1[Verify (x, y )] , all correct responses within a rollout group receive the same reward, so GRPO’s group-relative advantage collapses to an identical value across all Kc cor-rect trajectories and cannot preferentially reinforce higher-quality reasoning. As training progresses and Kc → K, this further induces instabilities in the policy update. GAR addresses both pathologies by introducing intra-group variance among correct responses through gradient-space alignment with expert reasoning traces. An end-to-end overview is provided in Figure 2. 
+
+2.1 The Gradient Alignment Hypothesis 
+
+Let L(θ; x, y ) = − 1
+
+> |y|
+
+P|y| 
+
+> t=1
+
+log πθ(yt | x, y <t ) de-note the teacher-forcing negative log-likelihood of a response y under the current policy. Consider a prompt x together with two correct responses: a candidate y generated by the policy and an ex-pert anchor a. Define the (full-parameter) gradient operator 
+
+g(x, y ) = ∇θL(θ; x, y ) ∈ R|θ|. (1) The gradient alignment hypothesis posits that whenever the candidate response implements the same underlying reasoning process as the an-chor, the two gradients are close in direction, i.e., 
+
+cos( g(x, y ), g(x, a )) ≈ 1, whereas trajectories Figure 2: GAR pipeline within one GRPO step. (A) The policy generates K rollouts; a verifier gates correct responses (all receiving r=1 under standard GRPO). (B) For each correct rollout, a teacher-forcing forward pass produces hidden states eH,which are detached at the output projection boundary and backpropagated through Wo only to obtain gradient-activation vector     
+
+> vi. The expert CoT undergoes the same procedure (cached) to yield va; their cosine similarity gives the alignment bonus.
+> (C) Rollouts whose gradient directions cluster near vareceive higher rewards, breaking the flat-reward pathology.
+
+that arrive at the correct answer through qualita-tively different computational pathways yield gra-dients that are only weakly aligned. The intuition is that a policy gradient step on either trajectory nudges the same set of reasoning-relevant computa-tional circuits, whereas semantically incompatible trajectories modify non-overlapping subnetworks. Computing the full gradient g(x, y ) ∈ R|θ| for every rollout is prohibitive in practice. Our key algorithmic contribution is to replace the full gradi-ent with a truncated surrogate obtained by freezing the Transformer body and backpropagating only through the output projection layer, resulting in a vector of dimension d rather than |θ|. We show in Section 3 that the cosine similarity of these trun-cated surrogates is bi-Lipschitz equivalent to the normalized output-layer NTK similarity, preserv-ing relative ordering among trajectories under mild regularity conditions. 
+
+2.2 Truncated Gradient Signal 
+
+For a prompt-response pair (x, y ), we perform a no-grad forward pass through the full Transformer and intercept the hidden state H ∈ Rn×d at the input of the output projection via a forward pre-hook, de-tach it to block gradient flow into the Transformer body, and compute a truncated cross-entropy loss through only the LM head: 
+
+L = 1
+
+|T y|
+
+X
+
+> t∈T y
+
+ℓ
+
+
+
+Wo eht + bo, y t+1 
+
+
+
+, (2) where Ty indexes the response span (or, when de-limited, the explicit thinking span), eht is the de-tached hidden state at position t, yt+1 is the next-token target, and Wo, bo are the output projection parameters. The gradient Gt = ∂L/∂ eht is then combined element-wise with the activation to form the gradient-activation signal 
+
+St = Gt ⊙ eht, ∀ t ∈ T y, (3) The element-wise product emphasizes dimensions where loss sensitivity and activation magnitude jointly concentrate, making the signal more ro-bust to surface-level wording variation than the raw gradient alone. Proposition 1 shows that St
+
+admits a first-order interpretation as the linearized per-dimension contribution to the log-likelihood. The per-token signals are averaged across response positions and L2-normalized, 
+
+v = ¯s
+
+∥¯s∥2
+
+, ¯s = 1
+
+|T y|
+
+X
+
+> t∈T y
+
+St, (4) which removes magnitude drift across training steps so that cosine comparisons remain commen-surate across trajectories of different lengths. 
+
+2.3 Reward Formulation Verifier Gate. GAR retains the outcome veri-fier as a hard gate: a response yi with binary out-come reward rraw (x, y i) = 0 receives no alignment bonus and triggers no gradient computation, which both prevents the policy from inflating its reward through spurious directions in gradient space and confines the additional cost of GAR to verifier-passing rollouts. 
+
+Anchor and Cosine Score. For each prompt x
+
+we designate an expert anchor a(x): the chain-of-thought solution shipped with the training dataset. Crucially, widely used math corpora such as NuminaMath-CoT (Li et al., 2024) already provide such solutions as standard metadata, yet conven-tional GRPO pipelines ignore them entirely. GAR repurposes these annotations as gradient-space ref-erences, converting an underutilized resource into dense process supervision at no additional anno-tation cost. The anchor is mapped to its gradient vector va via the same truncated procedure, with the anchor vector cached per prompt across the roll-out batch to avoid redundant computation. For a verifier-passing response yi with gradient vector vi,the alignment score is the cosine similarity with the anchor, which reduces to the inner product because both vectors are L2-normalized: 
+
+b(yi) = v⊤ 
+
+> i
+
+va. (5) 
+
+Final Reward. The final GAR reward applies the gated, group-centered, non-negatively clipped bonus on top of the base reward: 
+
+rGAR (x, y i) = 
+
+(
+
+rbase + β · max(0 , ˆb(yi)) + p(yi), rraw > 0,p(yi), otherwise ,
+
+(6) where ˆb(yi) = b(yi) − 1
+
+> |P (x)|
+
+P  
+
+> yj∈P (x)
+
+b(yj ) is the bonus centered over the correct subset P(x) of the rollout group, rbase (default 1.0) is the base re-ward for correctness, β ≥ 0 (default 0.5) scales the alignment bonus, and p(yi) ≤ 0 is a small format penalty on responses that violate the pre-scribed think/answer structure. The max(0 , ·) clip keeps the GAR reward weakly above the outcome-only baseline on every correct trajectory and is essential for the safe reward-shaping guarantee of Theorem 3. 
+
+3 Theoretical Analysis 
+
+All proofs are deferred to the appendix. 
+
+3.1 NTK Interpretation and Multiplicative Decomposition 
+
+Let go(x, y ) = ∇Wo L(Wo; x, y ) ∈ R|V|× d denote the output-layer gradient. Straightforward differen-tiation yields go(x, y ) = 1 
+
+> |T y|
+
+P
+
+> t
+
+(pt − eyt+1 ) ⊗ ht.
+
+Proposition 1 (Gradient-activation product as lin-earized log-likelihood) . Let Hy ∈ Rn×d denote the matrix of final-layer hidden states at the in-put of the output projection, obtained from a no-gradient forward pass. The per-token signal ut =
+
+Gt ⊙ht of Eq. (3) satisfies ddη L (1+ η)Hy
+
+ 
+
+> η=0
+
+= 
+
+> 1
+> |T y|
+
+P 
+
+> t
+
+1⊤ut, so the aggregated signal ¯s captures the linearized contribution of each hidden dimen-sion to the log-likelihood. 
+
+Theorem 1 (NTK-induced functional alignment) .
+
+Let Θo(y, a ) = ⟨vec( go(x, y )) , vec( go(x, a )) ⟩ de-note the output-layer empirical NTK, and let vy, va
+
+denote the L2-normalized gradient-activation vec-tors of Eq. (4) . Under bounded error signals (∥¯δy∥2 ≤ Bδ) and hidden states ( ∥¯hy∥2 ≤ Bh), there exist constants c1, c 2 > 0 such that 
+
+c1 cos( vy, va) ≤ Θo(y, a )
+
+∥go(x, y )∥F ∥go(x, a )∥F
+
+≤ c2 cos( vy, va) + O(κy + κa),
+
+(7) 
+
+where κy, κ a measure the per-token error disper-sion around the trajectory means. 
+
+Theorem 1 shows that rewarding high-cosine trajectories is equivalent, up to bounded distortion, to rewarding high output-layer NTK similarity with the expert anchor. 
+
+Theorem 2 (Multiplicative decomposition of gradi-ent alignment) . Under the same assumptions, the NTK inner product decomposes as 
+
+⟨go(x, y ), go(x, a )⟩
+
+=  ¯δy⊤ ¯δa| {z }
+
+> gradient-direction
+
+ ¯hy⊤ ¯ha| {z }
+
+> activation-pattern
+
++ O B2
+
+> h
+
+κyκa + Bδ(κy + κa)Bh
+
+.
+
+(8) The multiplicative structure requires agreement in both prediction-error profile and activation pat-tern; a trajectory reaching the correct answer through a different computational pathway receives a low cosine score. Empirically, across six training-set problems where correct rollouts use identifi-ably different solution methods, same-method roll-outs receive 3.5× higher cosine scores than alter-native correct methods (mean ¯bsame = 0 .45 vs. 
+
+¯bdiff = 0 .13 ; Appendix M), confirming that the sig-nal discriminates based on the underlying deriva-tion strategy rather than surface-level correlates such as length or formatting. 
+
+Corollary 1 (Orthogonality under subspace sepa-ration) . If the ε-effective supports Syε and Saε are disjoint, then | cos( vy, va)| ≤ 2εd + O(κy + κa).
+
+3.2 Safe Reward Shaping Definition 1 (Outcome-verified optimal policy) . Apolicy π⋆ is outcome-verified optimal if it maxi-mizes J0(π) = Ex,y ∼π 1[Verify( x, y )] .
+
+Theorem 3 (Safe reward shaping) . The GAR re-ward of Eq. (6) satisfies two properties. (i) Non-degradation : for every correct response y with 
+
+rraw (x, y ) > 0, rGAR (x, y ) − p(y) ≥ rbase > 0, so GAR never reduces the reward of a correct response below the outcome-only baseline. (ii) Strict incen-tive separation : for every incorrect response y′
+
+with rraw (x, y ′) = 0 , rGAR (x, y ′) = p(y′) ≤ 0 <rbase ≤ rGAR (x, y ) − p(y), so the policy gradient consistently assigns higher advantage to correct responses than to incorrect ones. 
+
+Direction (i) follows from the verifier gate and 
+
+max(0 , ˆb) clip ensuring every correct response con-tributes at least rbase ; direction (ii) follows from the verifier gate assigning rGAR (x, y ′) = p(y′) ≤ 0 to incorrect responses, while every correct response receives at least rbase > 0 on top of the format penalty. 
+
+3.3 Variance and Unbiasedness 
+
+Proposition 2 (Variance amplification) . Under the flat outcome reward, Var i:rraw =1 [Aoutcome  
+
+> i
+
+] = 0.Under GAR, Var i:rraw =1 [AGAR  
+
+> i
+
+] > 0 whenever the alignment bonuses have non-zero variance within the correct subset. 
+
+Proposition 3 (Unbiasedness of prompt-group nor-malization) . The group-normalized bonus satisfies 
+
+Ey:rraw =1 [ˆb(y)] = 0 for every prompt x.
+
+3.4 Monotonic Alignment Improvement 
+
+Proposition 4 (Monotonic alignment improvement) .
+
+Let ¯Ct = Ex,y ∼πt,r raw =1 [cos( vy, va)] denote the expected cosine alignment at iteration t. Under GAR-shaped GRPO updates with sufficiently small KL penalty, ¯Ct+1 ≥ ¯Ct.This follows because GAR assigns positive ad-vantages exclusively to above-mean-cosine trajec-tories, so Cov[ Ai, c i] ≥ 0.
+
+4 Experimental Setup 
+
+4.1 Training 
+
+GAR is implemented within the SLIME / Mega-tron training stack as an online reward hook in-voked before GRPO advantage computation (Ap-pendix C). We train Qwen3-4B-Base and Qwen3-8B-Base (Yang et al., 2025) from their base check-points without SFT warmup using full-parameter reinforcement learning, for 400 steps with batch size 128 and K=16 rollouts per prompt on ∼10k NuminaMath-CoT (Li et al., 2024) problems; each problem’s chain-of-thought solution serves as the expert anchor. Each optimization step therefore contains 2,048 sampled trajectories before verifier gating, which provides multiple candidate solu-tions per prompt for estimating within-group re-ward differences. Training directly from the base checkpoints prevents the observed gains from being attributed to an SFT warmup and isolates the con-tribution of the reward signal. The default GAR hy-perparameters are β=0 .5, max GAR span L=768 
+
+tokens, activation threshold τa=0 .05 , and anchor filter pf =0 .7. The expert-anchor vector is cached within each rollout group, and the alignment bonus is evaluated only for verifier-passing responses, lim-iting additional computation to the trajectories for which process-level differentiation is meaningful. 
+
+4.2 Baselines 
+
+We compare against GRPO (Shao et al., 2024; Yu et al., 2025), REINFORCE++ (Hu et al., 2025), 
+
+MASPO (Fu et al., 2026), Grad2Reward (Zhang et al., 2026), and G2RL (Liang et al., 2025). We report GAR-GRPO and GAR-REINFORCE++ 
+
+to isolate GAR’s contribution from the optimizer. GRPO and REINFORCE++ provide two distinct policy optimization backbones, while MASPO, Grad2Reward, and G2RL test whether GAR re-mains competitive with recent methods designed to improve signal reliability or exploit gradient in-formation. All methods share the same base check-point, training data, compute budget, and rollout in-frastructure; only the reward function differs. Con-sequently, each comparison between an optimizer and its GAR variant measures the effect of reward Table 2: Pass@ k accuracy (%, abbreviated as P@ k in headers) on competition-level math benchmarks, averaged over 10 independent runs (standard deviations in gray; all GAR improvements over the corresponding base optimizer are statistically significant with p < 0.05 by paired t-test across runs). All methods train from Qwen3 base checkpoints without SFT warmup using identical training data and compute budget. Best results per model in bold .
+
+IMO-AnswerBench HMMT ’26 HMMT ’25 AIME ’26 Method P@1 P@4 P@16 P@1 P@4 P@16 P@1 P@4 P@16 P@1 P@4 P@16 
+
+Qwen3-4B-Base 
+
+Base (no RL) 3.05 ±0.9 9.72 ±1.1 21.91 ±1.0 0.61 ±1.0 2.62 ±1.1 5.76 ±2.2 0.17 ±1.3 1.36 ±1.0 4.34 ±1.7 1.17 ±1.2 4.85 ±1.9 13.00 ±2.7 
+
++ REINFORCE++ 6.86 ±0.9 16.22 ±1.0 29.76 ±1.7 3.33 ±1.4 9.01 ±1.6 18.03 ±1.8 3.17 ±0.8 7.18 ±1.5 15.33 ±2.0 7.67 ±0.9 17.86 ±1.4 29.34 ±2.1 
+
++ GRPO 7.96 ±0.7 17.91 ±1.2 31.72 ±1.3 2.42 ±1.1 7.90 ±1.6 15.30 ±1.6 3.83 ±0.8 8.32 ±1.1 13.51 ±2.0 6.83 ±1.3 16.81 ±2.1 27.67 ±2.5 
+
++ MASPO 7.01 ±0.8 16.21 ±1.0 30.32 ±1.5 2.73 ±1.2 8.27 ±1.4 15.76 ±2.4 3.67 ±1.0 8.37 ±1.2 16.49 ±2.2 7.83 ±1.3 18.28 ±2.1 30.33 ±2.4 
+
++ Grad2Reward 7.76 ±0.7 17.56 ±0.9 31.46 ±1.2 2.58 ±1.0 7.85 ±1.2 15.60 ±2.2 3.33 ±1.0 7.35 ±1.2 13.17 ±2.3 6.50 ±1.5 17.09 ±2.0 30.50 ±2.8 
+
++ G2RL 8.10 ±0.7 18.27 ±1.0 32.59 ±1.4 2.88 ±1.3 8.24 ±1.5 16.06 ±2.3 3.50 ±0.9 7.51 ±1.1 13.50 ±2.1 7.33 ±1.1 17.66 ±1.6 30.67 ±2.9 
+
++ GAR-REINFORCE++ 7.05 ±0.7 16.57 ±0.9 30.88 ±1.1 4.39 ±0.9 10.70 ±1.2 19.24 ±2.3 4.83 ±1.0 9.79 ±1.4 17.00 ±2.0 8.00 ±1.1 18.39 ±1.7 31.50 ±2.5 
+
+Improv. +2.8% +2.2% +3.8% +31.8% +18.8% +6.7% +52.4% +36.4% +10.9% +4.3% +3.0% +7.4% + GAR-GRPO 8.76 ±0.6 19.06 ±1.2 33.76 ±1.2 3.18 ±1.2 9.00 ±1.6 16.52 ±1.8 5.00 ±0.8 9.19 ±1.1 15.50 ±2.0 8.50 ±0.9 18.05 ±1.6 29.66 ±3.0 
+
+Improv. +10.1% +6.4% +6.4% +31.4% +13.9% +8.0% +30.5% +10.5% +14.7% +24.5% +7.4% +7.2% 
+
+Qwen3-8B-Base 
+
+Base (no RL) 3.54 ±0.8 11.03 ±0.9 23.79 ±1.2 0.91 ±1.1 2.69 ±1.2 7.57 ±2.4 0.67 ±1.2 1.81 ±1.2 6.49 ±2.4 2.00 ±1.0 5.84 ±2.0 12.16 ±2.8 
+
++ REINFORCE++ 6.83 ±0.5 16.27 ±0.8 29.74 ±1.3 4.09 ±1.0 8.12 ±1.5 14.85 ±2.3 4.33 ±0.9 7.50 ±1.6 19.84 ±1.7 8.17 ±1.3 18.44 ±1.9 33.00 ±3.0 
+
++ GRPO 6.99 ±0.6 16.50 ±1.2 31.05 ±1.7 4.24 ±1.4 9.38 ±1.6 15.46 ±1.9 4.50 ±1.0 8.01 ±1.4 18.00 ±2.1 8.00 ±1.3 18.79 ±1.6 33.83 ±3.2 
+
++ MASPO 6.60 ±0.8 15.70 ±0.7 30.89 ±1.6 4.70 ±1.0 8.71 ±1.2 15.00 ±1.7 4.50 ±1.0 9.51 ±1.1 19.67 ±1.9 8.50 ±1.4 19.17 ±1.7 34.17 ±3.1 
+
++ Grad2Reward 6.24 ±0.7 15.29 ±0.9 29.76 ±1.0 4.09 ±0.9 7.77 ±1.5 13.94 ±2.3 3.67 ±0.9 8.82 ±1.2 17.84 ±2.0 7.17 ±1.4 17.49 ±1.5 34.66 ±3.2 
+
++ G2RL 7.53 ±0.8 17.31 ±1.0 31.93 ±1.0 4.39 ±0.8 9.88 ±1.8 16.21 ±2.5 4.83 ±1.0 8.63 ±1.6 18.83 ±1.8 8.33 ±1.1 19.34 ±1.6 35.00 ±2.9 
+
++ GAR-REINFORCE++ 7.76 ±0.8 18.14 ±0.7 32.38 ±1.0 4.85 ±1.0 9.78 ±1.4 17.88 ±2.4 5.83 ±1.2 10.04 ±1.4 21.84 ±2.3 8.67 ±1.0 18.77 ±1.8 35.50 ±2.9 
+
+Improv. +13.6% +11.5% +8.9% +18.6% +20.4% +20.4% +34.6% +33.9% +10.1% +6.1% +1.8% +7.6% + GAR-GRPO 8.14 ±0.5 18.13 ±1.1 33.73 ±1.3 5.15 ±1.0 10.62 ±1.3 17.73 ±2.5 6.00 ±1.0 10.83 ±1.3 19.83 ±2.3 9.17 ±1.5 19.95 ±2.0 36.49 ±2.4 
+
+Improv. +16.5% +9.9% +8.6% +21.5% +13.2% +14.7% +33.3% +35.2% +10.2% +14.6% +6.2% +7.9% 
+
+shaping without conflating it with additional data, supervised initialization, or a larger rollout budget. 
+
+4.3 Evaluation 
+
+We report pass@ k (k∈{ 1, 4, 16 }) on four held-out math benchmarks (IMO-AnswerBench, HMMT ’25/’26, AIME ’26) and two general reasoning benchmarks (GPQA Diamond, MMLU-Pro) to assess cross-domain transfer. Correctness is determined by exact answer match after normalization. Pass@1 measures whether training concentrates probability mass on a correct solution in a single attempt, whereas pass@16 measures whether the policy preserves broader solution coverage across repeated samples. We average every configuration over 10 independently trained runs and use paired significance tests under matched sampling conditions; complete decoding, statistical, and contamination-control protocols are provided in Appendix H. 
+
+5 Results 
+
+5.1 Main Results 
+
+Table 2 presents the main results across four competition-level benchmarks. GAR improves over the corresponding base optimizer on every benchmark–model combination, with relative gains of up to 52.4% at pass@1 (HMMT 2025, 4B). The improvements are most pronounced at lower 
+
+k, indicating that GAR steers the policy toward higher-probability correct solutions rather than merely expanding coverage. For GAR-GRPO at the 4B scale, pass@1 increases from 2.42 to 3.18 on HMMT 2026 and from 3.83 to 5.00 on HMMT 2025, corresponding to relative gains of 31.4% and 30.5%, respectively. The same compar-isons at the 8B scale increase from 4.24 to 5.15 and from 4.50 to 6.00, showing that the benefit persists as model capacity grows. Improvements also re-main positive at pass@16 across every dataset and optimizer, which indicates that concentrating prob-ability on strong solutions does not reduce the over-all coverage of correct reasoning paths. Layering GAR on REINFORCE++ (Hu et al., 2025) yields comparable gains to the GRPO variant, demon-strating that the reward signal is complementary to optimizer-side design choices. The largest rel-ative gain occurs for GAR-REINFORCE++ on HMMT 2025 at the 4B scale, where pass@1 rises from 3.17 to 4.83. Among gradient-based com-petitors, Grad2Reward (Zhang et al., 2026) and G2RL (Liang et al., 2025) underperform GAR across all benchmarks, while MASPO (Fu et al., 2026) provides only modest improvement over GRPO. Together, these results indicate that the principal advantage arises from aligning the reward with expert reasoning in gradient space rather than from the choice of policy optimizer alone. 
+
+6 Empirical Analysis 
+
+6.1 General Reasoning Transfer 
+
+To assess whether gradient-aligned rewards trans-fer beyond the training domain, Table 3 evaluates all methods, trained exclusively on mathematical Table 3: General reasoning transfer (Qwen3-4B-Base, 10 runs). All methods are trained exclusively on mathematical data and evaluated zero-shot. GPQA reports pass@ k and maj@16; MMLU-Pro reports micro-averaged pass@1. 
+
+GPQA Diamond MMLU-Pro Method P@1 P@4 Maj@16 Avg. P@1 GRPO 28.31 47.73 41.52 48.17 MASPO 29.82 48.94 42.68 48.24 G2RL 30.20 47.25 41.06 47.13 GAR-GRPO 30.88 49.52 43.46 50.58 
+
+data, on two general reasoning benchmarks. GAR-GRPO outperforms all baselines on both GPQA Diamond and MMLU-Pro, indicating that the gra-dient alignment signal captures domain-general rea-soning structure rather than math-specific heuris-tics. Relative to GRPO, the 4B model gains 2.57 points on GPQA pass@1, 1.79 points on pass@4, 1.94 points on majority voting, and 2.41 points on MMLU-Pro. GAR-GRPO also exceeds the strongest alternative baseline in every reported col-umn, so the transfer improvement is not explained solely by a weak GRPO reference. Results on Qwen3-8B-Base (Appendix L) confirm consistent improvements at the larger scale. At 8B, the ab-solute gains over GRPO remain between 2.02 and 2.29 points across all four metrics, indicating stable transfer across model scales. 
+
+6.2 Ablation Study Pass@1 Pass@4 Pass@16 0510 15 20 25 30 35 40      
+
+> AIME 2026 (%)
+> 4.18 9.53 18.17 6.98 15.63 29.83 8.42 17.81 34.50 9.26 19.14 36.83
+> (a) GAR-GRPO
+> Pass@1 Pass@4 Pass@16
+> 3.86 8.77 16.50 7.40 14.56 26.83 7.23 14.18 25.83 7.98 15.55 33.17
+> (b) GAR-REINFORCE++
+> GAR-only Outcome-Only Raw-Gradient GAR (full)
+
+Figure 3: Ablation on Qwen3-8B-Base (AIME 2026), remov-ing one GAR component at a time from (a) GAR-GRPO and (b) GAR-REINFORCE++. Activation weighting is essential for consistent gains across both optimizers. 
+
+Figure 3 isolates the contribution of each GAR component on Qwen3-8B across two optimizers. Full GAR consistently achieves the best perfor-mance regardless of optimizer choice. Dropping the outcome reward entirely (GAR-only) degrades performance well below the baseline, confirming that the verifier gate is essential. This result shows 0.1 0.0 0.1 0.2 0.3 0.4 0.5 0.6 0.7   
+
+> Cosine Alignment b(yi) = cos( vi,va)
+> Step 400 Step 200 Step 100 Step 0
+
+Figure 4: Cosine alignment distribution among correct rollouts at training steps 0, 100, 200, 400 (Qwen3-8B). Red dashed lines mark means. 
+
+that gradient alignment is effective as a process-level refinement of correctness but is not a substi-tute for the binary outcome signal. Interestingly, using raw gradients without activation weighting yields inconsistent results: it helps with GRPO but slightly hurts with REINFORCE++, suggesting that the unweighted gradient signal is noisy and optimizer-sensitive. The activation-weighted for-mulation of Eq. (3) resolves this instability, deliver-ing reliable gains in both settings. The agreement across both optimizer backbones further indicates that activation weighting is a structural component of the reward rather than an optimizer-specific tun-ing effect. 
+
+6.3 Reward Distribution 
+
+Figure 4 shows how the cosine alignment distri-bution evolves during training. The mean b(yi)
+
+increases from 0.10 to 0.42 while variance nar-rows, confirming progressive alignment with ex-pert anchors. Because the distribution contains only verifier-passing rollouts, the fourfold increase cannot be attributed merely to a higher fraction of correct answers. Instead, it reflects a redistribu-tion within the correct subset toward trajectories whose gradient directions more closely match the expert solution. The simultaneous reduction in variance suggests that this behavior becomes sys-tematic across rollouts rather than being driven by a small number of highly aligned outliers. 
+
+6.4 Computational Overhead 
+
+Figure 5 compares per-step training cost across gradient-based methods. GAR’s truncated back-propagation through only the lm_head layer adds GRPO GAR-GRPO G2RL Grad2R 160 180 200 220 240 260 280 300 320   
+
+> Wall-clock Time per Step (s)
+> 185s 200s
+> (+8.3%)
+> 254s
+> (+37.1%)
+> 266s
+> (+43.7%) Figure 5: Per-step wall-clock time distribution (Qwen3-8B, 4×A100, K=16 , 100 steps). GAR adds only 8.3% overhead via lm_head -only backpropagation.
+
+just 8.3% overhead over outcome-only GRPO. G2RL’s pairwise gradient diversity computation requires multi-layer backpropagation (+37.1%), while Grad2Reward (Zhang et al., 2026) performs a full backward pass through the Judge for each rubric (+43.7%). Thus, GAR incurs less than one quarter of G2RL’s additional cost and less than one fifth of Grad2Reward’s additional cost under the reported setup. This efficiency is consistent with the design of GAR: gradients are truncated at the output projection layer, incorrect responses are removed by the verifier gate before gradient extraction, and each expert anchor is cached across the rollout group. The measured overhead also falls within the analytical range derived in Appendix J, connecting the implementation-level cost model with observed wall-clock behavior. 
+
+6.5 Additional Analysis 
+
+We provide further empirical analysis in the ap-pendix: hyperparameter sensitivity (Appendix K), analysis of alignment and solution diversity (Ap-pendix M), and Qwen3-8B general reasoning trans-fer results (Appendix L). 
+
+7 Related Work 
+
+RL for LLM reasoning and reward design. 
+
+Critic-free policy gradient methods (Shao et al., 2024; Yu et al., 2025; Fu et al., 2026; Hu et al., 2025; Liu et al., 2025; Melo et al., 2025) and direct RL from base models (Guo et al., 2025; Zeng et al., 2025; Wen et al., 2025; Aggarwal and Welleck, 2025; Yue et al., 2025) have shown that chain-of-thought reasoning (Wei et al., 2022) emerges from outcome rewards alone. Process reward mod-els (Lightman et al., 2023; Uesato et al., 2022; Wang et al., 2024; Luo et al., 2024; Cui et al., 2025; Khalifa et al., 2025; Zhao et al., 2026; Wang et al., 2026; Cobbe et al., 2021; Snell et al., 2024) of-fer denser supervision but require step-level anno-tations or a separately trained verifier. Classical potential-based shaping (Ng et al., 1999; Harutyun-yan et al., 2015; Devlin and Kudenko, 2012) estab-lishes when shaped rewards preserve the optimal policy yet leaves the potential function unspecified. 
+
+Gradient signals in LLM training. Gradi-ent information has been used for data attribu-tion (Koh and Liang, 2017; Pruthi et al., 2020; Park et al., 2023), curriculum learning (Minder-mann et al., 2022; Fifty et al., 2021), and rep-resentation engineering (Zou et al., 2023), with NTK theory (Jacot et al., 2018; Mohamadi et al., 2023; Tomihari, 2026) providing formal grounding. Grad2Reward (Zhang et al., 2026), G2RL (Liang et al., 2025), and GradAlign (Yang et al., 2026) recently apply gradient signals to LLM reward design, exploration diversity, and data selection, respectively. GAR differs from these by anchor-ing the gradient signal to expert chain-of-thought solutions, combining the information richness of reference-based methods with the structural depth of gradient-space operation, while requiring no ex-ternal judge or offline annotations. Unlike recent distillation approaches that study information trans-fer and on-policy optimization granularity (Fang et al., 2026; Li et al., 2026), GAR does not optimize toward a fixed reference distribution: it preserves the RL exploration loop and uses expert CoTs only as a gradient-space reference signal. 
+
+8 Conclusion 
+
+We have presented Gradient-Aligned Reward (GAR), which converts readily available expert chain-of-thought solutions into gradient-space ref-erence vectors and scores rollouts by cosine simi-larity with these anchors, providing dense process supervision within standard RLVR training at less than 9% wall-clock overhead. Experiments on four competition-level math benchmarks with Qwen3-4B and 8B base models show consistent pass@ k
+
+gains over GRPO, REINFORCE++, and gradient-based competitors, with positive transfer to GPQA Diamond and MMLU-Pro. 
+
+Acknowledgments 
+
+This work is supported in part by the National Nat-ural Science Foundation of China (No. 62372264 and No. 92467203 ). Chaokun Wang is the corre-sponding author. Limitations 
+
+While GAR demonstrates consistent improvements across two model scales and multiple benchmarks, it has not yet been deployed in an industrial pro-duction environment. 
+
+Ethics Statement 
+
+GAR operates exclusively on publicly available mathematical reasoning benchmarks with open li-censes, and does not involve human subjects, pri-vate data, or dual-use applications. 
+
+References 
+
+Pranjal Aggarwal and Sean Welleck. 2025. L1: Controlling how long a reasoning model thinks with reinforcement learning. arXiv preprint arXiv:2503.04697 .Karl Cobbe, Vineet Kosaraju, Mohammad Bavarian, Mark Chen, Heewoo Jun, Lukasz Kaiser, Matthias Plappert, Jerry Tworek, Jacob Hilton, Reiichiro Nakano, and 1 others. 2021. Training verifiers to solve math word problems. arXiv preprint arXiv:2110.14168 .Ganqu Cui, Lifan Yuan, Zefan Wang, Hanbin Wang, Yuchen Zhang, Jiacheng Chen, Wendi Li, Bingxiang He, Yuchen Fan, Tianyu Yu, and 1 others. 2025. Pro-cess reinforcement through implicit rewards. arXiv preprint arXiv:2502.01456 .Sam Michael Devlin and Daniel Kudenko. 2012. Dy-namic potential-based reward shaping. In 11th In-ternational Conference on Autonomous Agents and Multiagent Systems (AAMAS 2012) , pages 433–440. IFAAMAS. Hao Fang, Tianyi Zhang, Tianqu Zhuang, Jiawei Kong, Kuofeng Gao, Bin Chen, Leqi Zheng, Shu-Tao Xia, and Ke Xu. 2026. Towards distillation-resistant large language models: An information-theoretic perspec-tive. Preprint , arXiv:2602.03396. Chris Fifty, Ehsan Amid, Zhe Zhao, Tianhe Yu, Rohan Anil, and Chelsea Finn. 2021. Efficiently identifying task groupings for multi-task learning. Advances in Neural Information Processing Systems , 34:27503– 27516. Xiaoliang Fu, Jiaye Lin, Yangyi Fang, Binbin Zheng, Chaowen Hu, Zekai Shao, Cong Qin, Lu Pan, Ke Zeng, and Xunliang Cai. 2026. Maspo: Unifying gradient utilization, probability mass, and signal reli-ability for robust and sample-efficient llm reasoning. 
+
+arXiv preprint arXiv:2602.17550 .Daya Guo, Dejian Yang, Haowei Zhang, Junxiao Song, Peiyi Wang, Qihao Zhu, Runxin Xu, Ruoyu Zhang, Shirong Ma, Xiao Bi, and 1 others. 2025. Deepseek-r1: Incentivizing reasoning capability in llms via reinforcement learning. arXiv preprint arXiv:2501.12948 .Anna Harutyunyan, Sam Devlin, Peter Vrancx, and Ann Nowé. 2015. Expressing arbitrary reward func-tions as potential-based advice. In Proceedings of the AAAI conference on artificial intelligence , vol-ume 29. Jian Hu, Jason Klein Liu, Haotian Xu, and Wei Shen. 2025. Reinforce++: Stabilizing critic-free policy optimization with global advantage normalization. 
+
+arXiv preprint arXiv:2501.03262 .Arthur Jacot, Franck Gabriel, and Clément Hongler. 2018. Neural tangent kernel: Convergence and gen-eralization in neural networks. Advances in neural information processing systems , 31. Muhammad Khalifa, Rishabh Agarwal, Lajanugen Lo-geswaran, Jaekyeom Kim, Hao Peng, Moontae Lee, Honglak Lee, and Lu Wang. 2025. Process reward models that think. arXiv preprint arXiv:2504.16828 .Pang Wei Koh and Percy Liang. 2017. Understanding black-box predictions via influence functions. In 
+
+International conference on machine learning , pages 1885–1894. PMLR. Takeshi Kojima, Shixiang Shane Gu, Machel Reid, Yu-taka Matsuo, and Yusuke Iwasawa. 2022. Large lan-guage models are zero-shot reasoners. Advances in neural information processing systems , 35:22199– 22213. Jia Li, Edward Beeching, Lewis Tunstall, Ben Lip-kin, Roman Soletskyi, Shengyi Huang, Kashif Rasul, Longhui Yu, Albert Q Jiang, Ziju Shen, and 1 oth-ers. 2024. Numinamath: The largest public dataset in ai4maths with 860k pairs of competition math problems and solutions. Hugging Face repository ,13(9):9. Yuying Li, Leqi Zheng, Yongzi Yu, Wenrui Zhou, Xuchang Zhong, Xing Hu, Jing Jin, Hangjie Yuan, and Tao Feng. 2026. Filter, then reweight: Rethink-ing optimization granularity in on-policy distillation. 
+
+Preprint , arXiv:2606.02684. Zhenwen Liang, Sidi Lu, Wenhao Yu, Kishan Panaganti, Yujun Zhou, Haitao Mi, and Dong Yu. 2025. Can llms guide their own exploration? gradient-guided reinforcement learning for llm reasoning. arXiv preprint arXiv:2512.15687 .Hunter Lightman, Vineet Kosaraju, Yuri Burda, Harri-son Edwards, Bowen Baker, Teddy Lee, Jan Leike, John Schulman, Ilya Sutskever, and Karl Cobbe. 2023. Let’s verify step by step. In The twelfth inter-national conference on learning representations .Zichen Liu, Changyu Chen, Wenjun Li, Penghui Qi, Tianyu Pang, Chao Du, Wee Sun Lee, and Min Lin. 2025. Understanding r1-zero-like training: A critical perspective. arXiv preprint arXiv:2503.20783 .Liangchen Luo, Yinxiao Liu, Rosanne Liu, Samrat Phatale, Meiqi Guo, Harsh Lara, Yunxuan Li, Lei Shu, Yun Zhu, Lei Meng, and 1 others. 2024. Im-prove mathematical reasoning in language models by automated process supervision. arXiv preprint arXiv:2406.06592 .Luckeciano C Melo, Alessandro Abate, and Yarin Gal. 2025. Stabilizing policy gradients for sample-efficient reinforcement learning in llm reasoning. 
+
+arXiv preprint arXiv:2510.00819 .Sören Mindermann, Jan M Brauner, Muhammed T Raz-zak, Mrinank Sharma, Andreas Kirsch, Winnie Xu, Benedikt Höltgen, Aidan N Gomez, Adrien Morisot, Sebastian Farquhar, and 1 others. 2022. Prioritized training on points that are learnable, worth learning, and not yet learnt. In International Conference on Machine Learning , pages 15630–15649. PMLR. Mohamad Amin Mohamadi, Wonho Bae, and Danica J Sutherland. 2023. A fast, well-founded approxima-tion to the empirical neural tangent kernel. In In-ternational conference on machine learning , pages 25061–25081. PMLR. Andrew Y Ng, Daishi Harada, and Stuart Russell. 1999. Policy invariance under reward transformations: The-ory and application to reward shaping. In Icml , vol-ume 99, pages 278–287. Citeseer. Sung Min Park, Kristian Georgiev, Andrew Ilyas, Guil-laume Leclerc, and Aleksander Madry. 2023. Trak: Attributing model behavior at scale. arXiv preprint arXiv:2303.14186 .Garima Pruthi, Frederick Liu, Satyen Kale, and Mukund Sundararajan. 2020. Estimating training data influ-ence by tracing gradient descent. Advances in Neural Information Processing Systems , 33:19920–19930. Amrith Setlur, Chirag Nagpal, Adam Fisch, Xinyang Geng, Jacob Eisenstein, Rishabh Agarwal, Alekh Agarwal, Jonathan Berant, and Aviral Kumar. 2024. Rewarding progress: Scaling automated pro-cess verifiers for llm reasoning. arXiv preprint arXiv:2410.08146 .Zhihong Shao, Peiyi Wang, Qihao Zhu, Runxin Xu, Junxiao Song, Xiao Bi, Haowei Zhang, Mingchuan Zhang, YK Li, Yang Wu, and 1 others. 2024. Deepseekmath: Pushing the limits of mathematical reasoning in open language models. arXiv preprint arXiv:2402.03300 .Charlie Snell, Jaehoon Lee, Kelvin Xu, and Aviral Ku-mar. 2024. Scaling llm test-time compute optimally can be more effective than scaling model parameters. 
+
+arXiv preprint arXiv:2408.03314 .Akiyoshi Tomihari. 2026. Learning dynamics in rl post-training for language models. arXiv preprint arXiv:2601.04670 .Jonathan Uesato, Nate Kushman, Ramana Kumar, Fran-cis Song, Noah Siegel, Lisa Wang, Antonia Creswell, Geoffrey Irving, and Irina Higgins. 2022. Solv-ing math word problems with process-and outcome-based feedback. arXiv preprint arXiv:2211.14275 .Jingyi Wang, Lei Zhu, Tengjin Weng, Song-Li Wu, Haochen Tan, Jierun Chen, Chaofan Tao, Haoli Bai, Lu Hou, Lifeng Shang, and 1 others. 2026. Grpo-vps: Enhancing group relative policy optimization with verifiable process supervision for effective reasoning. 
+
+arXiv preprint arXiv:2604.20659 .Peiyi Wang, Lei Li, Zhihong Shao, Runxin Xu, Damai Dai, Yifei Li, Deli Chen, Yu Wu, and Zhifang Sui. 2024. Math-shepherd: Verify and reinforce llms step-by-step without human annotations. In Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers) ,pages 9426–9439. Jason Wei, Xuezhi Wang, Dale Schuurmans, Maarten Bosma, Fei Xia, Ed Chi, Quoc V Le, Denny Zhou, and 1 others. 2022. Chain-of-thought prompting elic-its reasoning in large language models. Advances in neural information processing systems , 35:24824– 24837. Liang Wen, Yunke Cai, Fenrui Xiao, Xin He, Qi An, Zhenyu Duan, Yimin Du, Junchen Liu, Tanglifu Tan-glifu, Xiaowei Lv, and 1 others. 2025. Light-r1: Curriculum sft, dpo and rl for long cot from scratch and beyond. In Proceedings of the 63rd Annual Meet-ing of the Association for Computational Linguistics (Volume 6: Industry Track) , pages 318–327. An Yang, Anfeng Li, Baosong Yang, Beichen Zhang, Binyuan Hui, Bo Zheng, Bowen Yu, Chang Gao, Chengen Huang, Chenxu Lv, and 1 others. 2025. Qwen3 technical report. arXiv preprint arXiv:2505.09388 .Ningyuan Yang, Weihua Du, Weiwei Sun, Sean Welleck, and Yiming Yang. 2026. Gradalign: Gradient-aligned data selection for llm reinforcement learning. 
+
+arXiv preprint arXiv:2602.21492 .Qiying Yu, Zheng Zhang, Ruofei Zhu, Yufeng Yuan, Xiaochen Zuo, Yu Yue, Weinan Dai, Tiantian Fan, Gaohong Liu, Lingjun Liu, and 1 others. 2025. Dapo: An open-source llm reinforcement learning system at scale. arXiv preprint arXiv:2503.14476 .Yu Yue, Yufeng Yuan, Qiying Yu, Xiaochen Zuo, Ruofei Zhu, Wenyuan Xu, Jiaze Chen, Chengyi Wang, TianTian Fan, Zhengyin Du, and 1 others. 2025. Vapo: Efficient and reliable reinforcement learn-ing for advanced reasoning tasks. arXiv preprint arXiv:2504.05118 .Weihao Zeng, Yuzhen Huang, Qian Liu, Wei Liu, Ke-qing He, Zejun Ma, and Junxian He. 2025. Simplerl-zoo: Investigating and taming zero reinforcement learning for open base models in the wild. arXiv preprint arXiv:2503.18892 .Zheng Zhang, Ao Lu, Yuanhao Zeng, Ziwei Shan, Jin-jin Guo, Lufei Li, Yexin Li, and Kan Ren. 2026. Grad2reward: From sparse judgment to dense re-wards for improving open-ended llm reasoning. 
+
+arXiv preprint arXiv:2602.01791 .Jian Zhao, Runze Liu, Kaiyan Zhang, Zhimu Zhou, Junqi Gao, Dong Li, Jiafei Lyu, Zhouyi Qian, Biqing Qi, Xiu Li, and 1 others. 2026. Genprm: Scaling test-time compute of process reward models via gen-erative reasoning. In Proceedings of the AAAI Con-ference on Artificial Intelligence , volume 40, pages 34932–34940. Leqi Zheng, Chaokun Wang, Canzhi Chen, Jiajun Zhang, Cheng Wu, Zixin Song, Shannan Yan, Ziyang Liu, and Hongwei Li. 2025a. LAGCL4Rec: When LLMs activate interactions potential in graph con-trastive learning for recommendation. In Findings of the Association for Computational Linguistics: EMNLP 2025 , pages 1163–1184, Suzhou, China. As-sociation for Computational Linguistics. Leqi Zheng, Chaokun Wang, Zixin Song, Cheng Wu, Shannan Yan, Jiajun Zhang, and Ziyang Liu. 2025b. Negative feedback really matters: Signed dual-channel graph contrastive learning framework for recommendation. In Advances in Neural Information Processing Systems , volume 38, Main Conference, pages 107595–107624. Curran Associates, Inc. Leqi Zheng, Jiajun Zhang, Canzhi Chen, Chaokun Wang, Hongwei Li, Yuying Li, Yaoxin Mao, Shan-nan Yan, Zixin Song, Zhiyuan Feng, Zhaolu Kang, Zirong Chen, Hang Zhang, Qiang Liu, Liang Wang, and Ziyang Liu. 2026. What should i cite? a rag benchmark for academic citation prediction. In Pro-ceedings of the ACM Web Conference 2026 , WWW ’26, pages 1852–1863, New York, NY, USA. Associ-ation for Computing Machinery. Andy Zou, Long Phan, Sarah Chen, James Campbell, Phillip Guo, Richard Ren, Alexander Pan, Xuwang Yin, Mantas Mazeika, Ann-Kathrin Dombrowski, and 1 others. 2023. Representation engineering: A top-down approach to ai transparency. arXiv preprint arXiv:2310.01405 .A Notation 
+
+We denote by πθ an autoregressive language model policy parameterized by θ, where for any prompt x
+
+and response y = ( y1, . . . , y T ) of length T the pol-icy factorizes as πθ(y | x) = QTt=1 πθ(yt | x, y <t ).The model consists of an embedding matrix, a stack of L Transformer layers, and an output projection layer with weight Wo ∈ R|V|× d and optional bias 
+
+bo ∈ R|V| , where V is the vocabulary and d the hidden dimension. For a prompt-response pair 
+
+(x, y ), we write ht ∈ Rd for the hidden state at position t immediately before the output projec-tion, and H = ( h1, . . . , hn)⊤ ∈ Rn×d for the stacked hidden states of the full sequence of length 
+
+n = |x| + |y|. The per-token log-likelihood of a response under the policy is log πθ(yt | x, y <t ) = log softmax( Woht +bo)yt . For brevity, we denote by Ty ⊆ { 1, . . . , n } the set of token positions that correspond to the response span of y (or, when available, the explicit thinking span delimited by the special tags ⟨think ⟩ and ⟨/think ⟩). 
+
+B Algorithm 
+
+Algorithm 1 presents the complete GAR online re-ward computation within a single GRPO step. For each prompt, the procedure first gates on outcome verification, skipping gradient computation for in-correct or malformed responses (lines 4–6). For each verified-correct rollout, it captures the hidden state via a forward pre-hook on the output pro-jection layer and computes the truncated gradient-activation vector through Eq. (3)–(4) (lines 7–8). Expert-anchor gradient vectors are computed on demand and cached per prompt to avoid redundant computation across the K rollouts (lines 9–11). Each correct rollout is then scored by cosine simi-larity with the expert anchor via Eq. (5) (line 12). Finally, the bonuses are group-centered over the correct subset and combined with the base reward through the non-negatively clipped formulation of Eq. (6) (lines 15–17). 
+
+C Implementation Details 
+
+This appendix provides the low-level engineer-ing details for deploying GAR within the SLIME / Megatron training stack. 
+
+C.1 Forward Pre-Hook and Hidden State Capture 
+
+The forward pre-hook is registered once at actor initialization time and captures the hidden state tensor passed as input to the output projection. In tensor-parallel configurations with sequence paral-lelism enabled, the hook fires on each TP rank and captures only the local shard. We subsequently all-gather the shards across the tensor-parallel group to reconstruct the full hidden state of shape (n, d ),where n is the padded sequence length. The re-construction is necessary because the gradient-activation signal is defined over the full response span, whereas sequence parallelism typically parti-tions the sequence axis. To avoid re-gathering the hidden state for every rollout, we batch the forward pass across rollouts that share the same prompt and call the hook only once per batch. 
+
+C.2 Truncated Backpropagation and Loss Computation 
+
+The cross-entropy loss of Eq. (2) is computed through the same Megatron output-layer wrapper used for training, but with per-token reduction so that losses can be summed over the response span alone. We then invoke a non-graph-creating, non-graph-retaining backward call to obtain ∂L/∂ eH,after which the computational graph is immediately released. Although the output-layer weight Wo is large ( |V| × d), the backward pass does not accu-mulate gradients in Wo itself because eH is the only leaf carrying a gradient requirement, and Wo is ac-cessed as a frozen constant through the standard column-parallel linear call. 
+
+C.3 Anchor Caching and Deduplication 
+
+Anchor gradients are cached in a dictionary keyed by the tuple 
+
+(tokenized_prompt , anchor_text , max_resp_tokens )
+
+for the duration of a rollout batch. This design ensures that within a single GRPO step, an expert anchor that is shared across all K rollouts contributes only a single gradient computation rather than K.
+
+C.4 Anchor Text Extraction 
+
+When an anchor is provided as a full decoded re-sponse, we extract the supervised span by first at-tempting to locate the content between ⟨think ⟩ and 
+
+⟨/think ⟩ tags; if these tags are absent, we fall back to stripping trailing special tokens while preserv-ing a small set of semantically meaningful closing tags. This mirrors the extraction logic applied to candidate responses, so that the candidate and an-chor gradient vectors are computed over compa-rable surface forms and are not contaminated by Algorithm 1: Gradient-Aligned Reward (GAR) online computation within a single GRPO step. 
+
+Input: Model πθ, rollout batch {(xj , {yj, 1, . . . , y j,K })}, outcome verifier, anchor a(xj ) per prompt 
+
+Output: GAR rewards {rGAR (xj , y j,i )}
+
+Initialize anchor gradient cache C ← {} ;
+
+foreach prompt xj in batch do foreach response yj,i , i = 1 , . . . , K do if Verify (yj,i ) = False or FormatValid (yj,i ) = False then 
+
+rGAR (xj , y j,i ) ← p(yj,i );
+
+continue ;Capture hidden state H via forward pre-hook on output layer; Compute vi ← GradAct (H, W o, Tyj,i ) ; // Eq. (3) –(4) 
+
+if a(xj ) /∈ C then 
+
+C[a(xj )] ← GradAct (Ha, W o, Ta);
+
+b(yj,i ) ← v⊤ 
+
+> i
+
+C[a(xj )] ; // Eq. (5) Compute ¯bj ← 1 
+
+> |P (xj)|
+
+P  
+
+> y∈P (xj)
+
+b(y);
+
+foreach correct yj,i ∈ P (xj ) do 
+
+rGAR (xj , y j,i ) ← rbase + β · max(0 , b (yj,i ) − ¯bj ) + p(yj,i ) ; // Eq. (6) 
+
+return {rGAR };formatting-specific tokens such as ⟨bos ⟩ or ⟨eos ⟩.
+
+C.5 Failure Handling and Graceful Degradation 
+
+Several edge cases are handled defensively. If an anchor text is absent or empty, the candidate falls back to the outcome-only reward plus penalties. If the gradient norm is below 10 −8, the corresponding vector is set to zero and the bonus reduces to zero, equivalent to the unshaped baseline. If the verifier reports format invalidity, the response is excluded from gradient computation regardless of whether the numerical answer is correct, because numeri-cal correctness without the mandated think/answer structure is considered suspect and is therefore not rewarded. 
+
+D Reward Formulation Details 
+
+This appendix expands on the design choices in the GAR reward formulation of Section 2.3. 
+
+D.1 Verifier Gate 
+
+The verifier gate serves two complementary pur-poses. First, it ensures that GAR never rewards an incorrect answer regardless of how closely its gradient aligns with any expert anchor, eliminat-ing the possibility that the policy exploits spurious directions in gradient space to inflate the reward without solving the underlying problem. Second, it confines the additional cost of GAR to the verifier-passing fraction of rollouts, which is particularly valuable in the initial low-accuracy phase of train-ing when the majority of rollouts fail verification and would otherwise trigger unnecessary truncated-backward computation. 
+
+D.2 Anchor Source Specification 
+
+In our SLIME-based implementation, the loader inspects each per-prompt metadata record for the expert anchor (an expert-written solution or verified chain-of-thought trace), accepting a configurable, ordered list of field names so that datasets following different naming conventions are supported without additional configuration. In our experiments with NuminaMath-CoT, each problem provides exactly one chain-of-thought solution, which serves as the sole anchor; the underlying cache key structure is described in Appendix C.3. 
+
+D.3 Anchor-Cache Cost Reduction 
+
+For each prompt x with K rollouts that share the same anchor, a naive implementation would re-compute the anchor gradient vector for every roll-out, incurring a cost of O(K) truncated forward-backward pairs per prompt. Caching the anchor vector at the start of the batch and reusing it across all K rollouts reduces this cost to O(1) , a K-fold reduction that is the single largest source of anchor-pathway savings in practice and corresponds to the anchor-cache amortization term in the overhead analysis of Appendix J. 
+
+D.4 Group Centering of the Bonus 
+
+Following the group-relative philosophy of GRPO, the bonus b(yi) of Eq. (5) is centered over the cor-rect subset P(x) = {yj : rraw (x, y j ) > 0} of the rollout group before being passed to the final re-ward of Eq. (6): 
+
+ˆb(yi) = b(yi) − 1
+
+|P (x)|
+
+X 
+
+> yj∈P (x)
+
+b(yj ). (9) The centering removes the confound that easy prompts systematically attract higher cosine scores than hard ones and makes the bonus measure how much better yi aligns with the expert reference than the other correct rollouts of the same prompt. The prompt-group mean is computed only over P(x)
+
+rather than over the full rollout group of size K:incorrect responses are gated out at rraw = 0 and produce no cosine score, so including them in the centering with a default bonus of zero would bias the empirical mean downward and inflate the cen-tered bonus ˆb of every correct rollout, defeating the purpose of group normalization. Restricting the mean to P(x) keeps the centering unbiased over the set of trajectories that actually receive the align-ment bonus, which is the precise condition under which Proposition 3 holds. 
+
+D.5 Role of the Non-Negative Clip and Format Penalty 
+
+The max(0 , ·) clip in Eq. (6) keeps the GAR re-ward weakly above the outcome-only baseline on every correct trajectory. Concretely, a correct re-sponse with below-mean alignment receives only 
+
+rbase + p(yi), identical to what it would receive under outcome-only RLVR augmented with the same format penalty, while a correct response with above-mean alignment receives a strictly larger re-ward. This non-decreasing-in-alignment structure prevents the shaped reward from ever penalizing a correct response relative to outcome-only training and is essential for the safe reward-shaping guar-antee of Theorem 3. The format penalty p(yi) ≤ 0
+
+applies to responses that violate the prescribed out-put structure (typically a missing or malformed think/answer delimiter) and is applied symmetri-cally to both correct and incorrect responses, so that the policy is encouraged to produce well-formed reasoning traces alongside correct final answers. 
+
+E Integration with GRPO 
+
+GAR builds on Group Relative Policy Optimization (GRPO) (Shao et al., 2024), which samples K re-sponses {y1, . . . , y K } per prompt x and computes a group-relative advantage 
+
+Ai = r(x, y i) − μx
+
+σx + ϵ , (10) where μx and σx are the intra-group mean and standard deviation of the rewards. The policy is updated via a clipped surrogate objective with KL regularization: 
+
+LGRPO = Ex,y i
+
+h
+
+min  ρiAi, clip (ρi, 1−ϵc, 1+ ϵc)Ai
+
+
+
+− βKL DKL (πθ∥πref )
+
+i
+
+,
+
+(11) where ρi = πθ(yi | x)/π old (yi | x). Under the outcome-only reward, all correct responses share reward 1, collapsing the intra-correct advantage to 
+
+Aoutcome  
+
+> i
+
+= 1 − Kc/K 
+
+p(Kc/K )(1 − Kc/K ) + ϵ , (12) which is identical across all Kc correct trajectories. GAR is implemented as an online reward hook within the GRPO training pipeline and is activated by pointing SLIME’s custom-reward entry point to the GAR module. The integration proceeds in the following stages. First, the rollout engine (SGLang-based) generates K responses for each prompt and evaluates them with the outcome verifier, produc-ing the binary reward rraw . Second, the rollout data, including token sequences, response lengths, raw rewards, and the metadata carrying the anchor texts, is forwarded from the rollout workers to the ac-tor through the standard SLIME sample-metadata channel. Third, before advantage computation, the actor invokes the GAR reward hook, which per-forms the truncated gradient computation described above for each verified-correct response and its anchors, computes the prompt-group normalized bonus, and overwrites the raw reward with the GAR reward rGAR . Fourth, the standard GRPO advan-tage computation and policy update proceed using the enriched reward signal through Eq. (10)–(11). Because GAR performs gradient computation only through the output projection layer and only for responses that pass the verifier gate, its compu-tational cost is a small fraction of the full model forward-backward pass. The gradient vectors have dimensionality d (the hidden size of the model), and all operations are local to the actor process, re-quiring no additional inter-node communication be-yond the standard tensor-parallel all-gather used to reconstruct the full sequence of hidden states. We make the following parallelism assumptions in the current implementation: the model uses the packed token-sequence (thd) attention format, the context-parallel size equals one, GAR executes only on the last pipeline stage, and only a single Megatron model chunk is supported. Each of these assump-tions is a convenience rather than a fundamental constraint and could be relaxed with additional en-gineering. 
+
+F Proofs 
+
+We first state the output-layer gradient derivation referenced in Section 3.1. Let L(Wo; x, y ) denote the truncated cross-entropy loss of Eq. (2) viewed as a function of Wo with hidden states held fixed. The per-example output-layer gradient is 
+
+go(x, y ) = ∇Wo L(Wo; x, y ) ∈ R|V|× d. (13) Straightforward differentiation yields the rank-one expansion 
+
+go(x, y ) = 1
+
+|T y|
+
+X
+
+> t∈T y
+
+ pt − eyt+1 
+
+ ⊗ ht,
+
+pt = softmax( Woht + bo).
+
+(14) 
+
+F.1 Proof of Proposition 1 
+
+By the chain rule applied to the scaling ht 7 → (1 + 
+
+η)ht,
+
+ddη L (1 + η)Hy
+
+ 
+
+> η=0
+
+= 1
+
+|T y|
+
+X
+
+> t∈T y
+
+G⊤ 
+
+> t
+
+ht
+
+= 1
+
+|T y|
+
+X
+
+> t∈T y
+
+1⊤(Gt ⊙ ht),
+
+(15) where the second equality follows from G⊤ 
+
+> t
+
+ht =P 
+
+> j
+
+Gt,j ht,j = 1⊤(Gt ⊙ ht). This is precisely the claim of Proposition 1. 
+
+F.2 Proof of Theorem 1 
+
+We formalize the connection between the gradient-activation cosine similarity and NTK similarity through a three-step argument. 
+
+Step 1: Rank-one expansion of the NTK inner product. By straightforward differentiation, the output-layer gradient admits the rank-one decom-position go(x, y ) = 1 
+
+> |T y|
+
+P 
+
+> t∈T y
+
+δyt ⊗ hyt , where 
+
+δyt = pt − eyt+1 ∈ RV and hyt ∈ Rd. The Frobe-nius inner product therefore expands as 
+
+Θo(y, a ) = ⟨go(x, y ), go(x, a )⟩F
+
+= 1
+
+|T y||T a|
+
+X
+
+> t∈T y
+
+X
+
+> s∈T a
+
+ δy⊤ 
+
+> t
+
+δas
+
+  hy⊤ 
+
+> t
+
+has
+
+.
+
+(16) 
+
+Step 2: Mean-residual splitting with bounded dispersion. Write δyt = ¯δy + ˜δyt and hyt =¯hy + ˜hyt , where ¯δy = 1 
+
+> |T y|
+
+P 
+
+> t
+
+δyt and ˜δyt is the mean-zero residual satisfying ∥˜δyt ∥2 ≤ κy by as-sumption, and analogously for ¯hy, ˜hyt . Substi-tuting into Eq. (16) and expanding the product 
+
+(¯δy + ˜δyt )⊤(¯δa + ˜δas ) · (¯hy + ˜hyt )⊤(¯ha + ˜has ) yields the leading term (¯δy⊤ ¯δa)( ¯hy⊤ ¯ha). The cross terms involving exactly one residual factor van-ish upon averaging over the trajectory index of the residual, because 1 
+
+> |T y|
+
+P 
+
+> t
+
+˜δyt = 0 and similarly for ˜hyt . The remaining terms involve products of two or more residuals and are bounded by Cauchy– Schwarz: 
+
+1
+
+|T y||T a|
+
+X
+
+> t,s
+
+˜δy⊤ 
+
+> t
+
+˜δas · hy⊤ 
+
+> t
+
+has
+
+≤ κyκaB2 
+
+> h
+
++ Bδ(κyBh + κaBh),
+
+(17) where we used ∥¯δy∥ ≤ Bδ and ∥¯hy∥ ≤ Bh. This establishes that Θo(y, a ) = ( ¯δy⊤ ¯δa)( ¯hy⊤ ¯ha) + R,where |R| ≤ κyκaB2 
+
+> h
+
++ Bδ(κy + κa)Bh.
+
+Step 3: Relating gradient-activation cosine to NTK cosine via Wo conditioning. The gradient-activation vector for trajectory y is sy = 
+
+> 1
+> |T y|
+
+P 
+
+> t
+
+Gyt ⊙ hyt , where Gyt = W ⊤ 
+
+> o
+
+δyt ∈ Rd.To leading order, sy ≈ (W ⊤ 
+
+> o
+
+¯δy) ⊙ ¯hy, and the normalized vector is vy = sy/∥sy∥2. Let S de-note the subspace spanned by {¯δy, ¯δa} and let 
+
+σmin , σ max denote the extreme singular values of 
+
+Wo restricted to S. Define the condition number 
+
+κW = σmax /σ min . The cosine cos( vy, va) = 
+
+⟨sy, sa⟩/(∥sy∥∥ sa∥) can be related to the nor-malized leading term of Θo via the substitution 
+
+W ⊤ 
+
+> o
+
+¯δy = σywy where σmin ≤ σy ≤ σmax and 
+
+∥wy∥ = ∥¯δy∥. After algebraic manipulation, we obtain 
+
+1
+
+κ2
+
+> W
+
+cos( vy, va) ≤ Θo(y, a )
+
+∥go(x, y )∥F ∥go(x, a )∥F
+
+≤ κ2 
+
+> W
+
+cos( vy, va) + O(κy+κa),
+
+(18) which yields the claimed bound with c1 = 1 /κ 2
+
+> W
+
+and c2 = κ2 
+
+> W
+
+. When Wo is approximately isotropic (i.e., κW ≈ 1), the bound collapses to a tight bi-Lipschitz equivalence between the gradient-activation cosine and NTK cosine. 
+
+F.3 Proof of Theorem 3 
+
+We argue each direction in turn. (i) For any cor-rect response y with rraw (x, y ) = 1, we have 
+
+rGAR (x, y ) − p(y) = rbase + β max(0 , ˆb(y)) ≥
+
+rbase , where the inequality follows from non-negativity of the clipped bonus. Thus GAR never reduces the reward contribution of a correct re-sponse below rbase . (ii) For any incorrect response 
+
+y′ with rraw (x, y ′) = 0 , the verifier gate yields 
+
+rGAR (x, y ′) = p(y′) ≤ 0. Since rbase > 0,we have rGAR (x, y ′) = p(y′) ≤ 0 < r base ≤
+
+rGAR (x, y ) − p(y) for any correct y. The strict separation between the reward contributions of cor-rect and incorrect responses ensures that the policy gradient consistently reinforces producing correct answers; GAR’s contribution is to additionally dif-ferentiate among correct trajectories by their rea-soning quality. 
+
+F.4 Proof of Proposition 2 
+
+Under the outcome-only reward, every correct re-sponse has reward 1, so the empirical variance restricted to correct responses is identically zero. Under the GAR reward, correct responses have reward rbase + β max(0 , ˆb(yi)) + p(yi). Assum-ing the penalty p has zero intra-correct variance (a reasonable approximation when format con-straints are satisfied by all correct responses), the intra-correct variance of the GAR reward equals 
+
+β2 · Var i:rraw =1 [max(0 , ˆb(yi))] . By the clipping op-eration this variance is at least min(1 , β 2σ2 
+
+> b
+
+) > 0
+
+whenever σ2 
+
+> b
+
+> 0. Scaling by the denominator 
+
+σx + ϵ of Eq. (10) (which is bounded in expecta-tion) yields the claim. 
+
+F.5 Proof of Proposition 3 
+
+By definition ˆb(y) = b(y) − ¯b(x) where ¯b(x) is the empirical mean of b over the correct subset of the rollout group. For every prompt x,
+
+Ey:rraw (y)=1 [ˆb(y)] = E[b(y)] − ¯b(x)= ¯b(x) − ¯b(x) = 0 , (19) where the inner expectation is over the uniform distribution over correct rollouts. 
+
+F.6 Proof of Proposition 5 
+
+The forward through the output layer costs 
+
+O(NydV ) for the matrix multiply and O(NyV )
+
+for the softmax. The backward through the out-put layer similarly costs O(NydV ) for the gradient with respect to the hidden states, because Wo is ap-plied as a frozen constant and no weight gradients are accumulated. The gradient-activation multipli-cation and normalization cost O(Nyd), which is dominated by the output-layer cost. With anchor caching, each unique anchor incurs these costs once per rollout batch, reducing the amortized anchor cost by a factor of K.
+
+F.7 Proof of Theorem 2 
+
+We prove the multiplicative decomposition of the NTK inner product stated in Theorem 2. Starting from the rank-one expansion established in Eq. (16) of the proof of Theorem 1, 
+
+Θo(y, a ) = 1
+
+|T y||T a|
+
+X
+
+> t,s
+
+(δy⊤ 
+
+> t
+
+δas )( hy⊤ 
+
+> t
+
+has ). (20) Write δyt = ¯δy + ˜δyt and hyt = ¯hy + ˜hyt (similarly for anchor a), where the tildes denote mean-zero residuals with ∥˜δyt ∥ ≤ κy and ∥˜hyt ∥ ≤ Bh. Ex-panding the product (¯δy + ˜δyt )⊤(¯δa + ˜δas ) · (¯hy +˜hyt )⊤(¯ha + ˜has ) yields sixteen terms, which we classify by the number of residual factors. 
+
+Zero-residual term (leading order). The single term with no residuals is (¯δy⊤ ¯δa)( ¯hy⊤ ¯ha), which survives the double average unchanged. 
+
+One-residual terms. There are four such terms. Consider (˜δy⊤ 
+
+> t
+
+¯δa)( ¯hy⊤ ¯ha); averaging over t gives 
+
+( 1 
+
+> |T y|
+
+P 
+
+> t
+
+˜δyt )⊤ ¯δa · (¯hy⊤ ¯ha) = 0 because P 
+
+> t
+
+˜δyt =
+
+0. The same argument eliminates the other three one-residual terms. 
+
+Two-residual terms. There are six such terms. The dominant ones are: (a) 1 
+
+> |T y||T a|
+
+P
+
+> t,s
+
+(˜δy⊤ 
+
+> t
+
+˜δas )( ¯hy⊤ ¯ha),bounded in absolute value by κyκaB2
+
+> h
+
+;(b) 1 
+
+> |T y||T a|
+
+P
+
+> t,s
+
+(¯δy⊤ ¯δa)( ˜hy⊤ 
+
+> t
+
+˜has ), bounded by B2 
+
+> δ
+
+B2
+
+> h
+
+; and cross terms of the form 
+
+(˜δy⊤ 
+
+> t
+
+¯δa)( ˜hy⊤ 
+
+> t
+
+¯ha), which do not vanish upon averaging over t because ˜δyt and ˜hyt are correlated at the same position, but are bounded by κyBδB2
+
+> h
+
+via Cauchy–Schwarz. 
+
+Three- and four-residual terms. These are bounded by products of three or four dispersion terms and are absorbed into the O notation. Collecting all bounds, we obtain 
+
+Θo(y, a ) = ( ¯δy⊤ ¯δa)( ¯hy⊤ ¯ha)+ O(B2
+
+> h
+
+κyκa + Bδ(κyBh + κaBh)) ,
+
+(21) which is precisely Eq. (8). 
+
+F.8 Proof of Corollary 1 Setup. Recall the definition: the ε-effective sup-port of the gradient-activation signal ¯sz for trajec-tory z is Szε = {j ∈ [d] : |¯szj | > ε ∥¯sz ∥∞}. We assume Syε ∩ S aε = ∅.
+
+Decomposition of the inner product. Con-sider the un-normalized inner product ⟨¯sy, ¯sa⟩ =Pdj=1 ¯syj ¯saj . We split this sum into three parts: (i) j ∈ S yε \S aε , where |¯saj | ≤ ε∥¯sa∥∞; (ii) j ∈ S aε \Syε , where |¯syj | ≤ ε∥¯sy∥∞; and (iii) j / ∈ S yε ∪ S aε ,where both signals are at most ε times their respec-tive maxima. For part (i), using |S yε | ≤ d and |¯syj | ≤ ∥ ¯sy∥∞:
+
+X 
+
+> j∈S yε\S aε
+
+¯syj ¯saj ≤ |S yε | · ∥ ¯sy∥∞ · ε∥¯sa∥∞
+
+≤ dε ∥¯sy∥∞∥¯sa∥∞.
+
+(22) Part (ii) yields the same bound by symmetry. For part (iii), both factors are bounded by ε
+
+times their respective maxima, giving a bound of 
+
+dε 2∥¯sy∥∞∥¯sa∥∞.
+
+Normalization. Since ∥¯sz ∥2 ≥ ∥ ¯sz ∥∞ (the ℓ2
+
+norm is at least the ℓ∞ norm), we have 
+
+| cos( vy, va)| = |⟨ ¯sy, ¯sa⟩| ∥¯sy∥2∥¯sa∥2
+
+≤ (2 dε +dε 2)∥¯sy∥∞∥¯sa∥∞
+
+∥¯sy∥2∥¯sa∥2
+
+≤ 2dε + dε 2.
+
+(23) For small ε, the ε2 term is negligible, and incorpo-rating the dispersion correction from Theorem 1 adds an O(κy + κa) term, yielding the bound 
+
+| cos( vy, va)| ≤ 2εd +O(κy +κa) as claimed. 
+
+F.9 Proof of Proposition 4 
+
+We prove that a single GRPO step with GAR-shaped advantages does not decrease the expected cosine alignment of correct rollouts. 
+
+Setup. Let πt denote the current policy and let 
+
+ci = cos( vyi , va) denote the cosine alignment of rollout yi. For a prompt x with K rollouts, the GAR reward for a correct response yi is ri = rbase +
+
+β max(0 , c i − ¯c), where ¯c = 1
+
+> Kc
+
+P  
+
+> j:rraw (yj)=1
+
+cj
+
+is the prompt-group mean cosine and Kc is the number of correct responses. The GRPO advantage is Ai = ( ri − ¯r)/(σr + ϵ).
+
+One-step improvement. After a policy gradi-ent step with learning rate α, the log-probability of each response changes by approximately 
+
+∆ log π(yi | x) ≈ αA i. The expected cosine at the next iteration, restricted to correct responses, is 
+
+¯Ct+1 ≈
+
+P 
+
+> i:rraw =1
+
+πt(yi | x)eαA i · ci
+
+P 
+
+> i:rraw =1
+
+πt(yi | x)eαA i
+
+≈ ¯Ct + α · Cov πt
+
+Ai, c i | rraw (yi) = 1 ,
+
+(24) where the approximation uses eαA i ≈ 1 + αA i for small α.
+
+Sign of the covariance. The GAR advantage among correct responses is a monotonically non-decreasing function of ci: responses with ci > ¯c
+
+receive positive bonus and hence above-mean ad-vantage, while responses with ci ≤ ¯c receive zero bonus (due to the max(0 , ·) clipping) and hence below-mean advantage. Formally, Ai =
+
+f (ci) where f is non-decreasing, which implies 
+
+Cov[ f (ci), c i] ≥ 0 by the covariance inequality for comonotone random variables. The covariance is strictly positive whenever Var[ ci | rraw = 1] > 0,i.e., whenever the correct rollouts are not all equally aligned. 
+
+KL penalty. The KL divergence penalty 
+
+−λD KL (πt+1 ∥πref ) reduces the effective step size but does not change the sign of the improvement, provided λ satisfies the condition stated in the proposition. Combining these observations, 
+
+¯Ct+1 ≥ ¯Ct as claimed. G Extended Discussion of Theoretical Results 
+
+G.1 NTK Interpretation: Functional Meaning of Gradient Alignment 
+
+Theorem 1 states that gradient cosine similarity in the gradient-activation space is, up to a low-order dispersion term, equivalent to the normalized output-layer NTK similarity of the two responses, and therefore measures how similarly a gradient step induced by y would influence the model’s pre-dictions on a, and vice versa. In the idealized case where both trajectories fit their targets with com-parable token-level error distributions, κy, κ a → 0
+
+and the bound collapses to a bi-Lipschitz equiva-lence. This provides a functional interpretation of GAR: rewarding high-cosine trajectories amounts to rewarding responses whose parameter-space in-fluence on the expert anchor is large, i.e., trajec-tories that, if used for a gradient update, would improve the model’s prediction of the expert solu-tion. 
+
+G.2 Multiplicative Decomposition: What Gradient Alignment Measures 
+
+The decomposition in Theorem 2 reveals that two trajectories can achieve high gradient alignment only if they agree in both their prediction-error profile (the gradient-direction factor ¯δy⊤ ¯δa) and their internal representation usage (the activation-pattern factor ¯hy⊤ ¯ha). A trajectory that reaches the correct answer through a qualitatively differ-ent computational pathway, for example one that activates a substantially different subset of hidden dimensions or produces a different distribution of token-level prediction residuals, diverges from the expert reference in at least one of these two fac-tors and therefore receives a low cosine score even when its surface-level output appears plausible. Corollary 1 further formalizes this mecha-nism: if two trajectories concentrate their gradient-activation signals on disjoint subsets of hidden di-mensions, the resulting cosine similarity is near zero regardless of whether both produce the correct final answer. In practice, expert solutions tend to ac-tivate a broad set of features spanning intermediate derivation steps, whereas alternative correct trajec-tories that arrive at the answer through different rea-soning pathways may concentrate on narrower or qualitatively different feature subsets, which makes subspace separation a structurally meaningful prop-erty of the alignment signal. 
+
+G.3 Safe Reward Shaping: Detailed Proof Sketch 
+
+Theorem 3 establishes that GAR is a safe reward-shaping mechanism: it re-weights preferences among correct responses to favor expert-aligned reasoning without degrading the reward signal for correctness. The proof hinges on two observa-tions. First, the verifier gate ensures rGAR (x, y ) = 
+
+p(y) ≤ 0 on incorrect responses, maintaining a strict separation between the rewards assigned to correct and incorrect trajectories. Second, the max(0 , ˆb) clipping ensures that the alignment bonus is non-negative, so every correct response receives at least rbase and the shaped reward never falls below the outcome-only baseline. Together, these properties guarantee that the policy gradi-ent under GAR consistently reinforces correctness while using the alignment bonus to differentiate among correct trajectories. 
+
+G.4 Variance Amplification and Unbiasedness 
+
+Proposition 2 quantifies the pathology of the flat reward identified in Section 2: under the outcome-only reward, the intra-correct variance of the advan-tage is identically zero, so the policy gradient can-not distinguish among correct trajectories. GAR strictly increases this variance, which, under stan-dard assumptions on the log-likelihood ratio, trans-lates into a non-trivial gradient signal in the direc-tion of higher-alignment trajectories. Crucially, the prompt-group normalization keeps the global mean reward invariant, so the extra variance does not come at the cost of bias. Propositions 2 and 3, taken together with The-orem 3, justify our design choice to always cen-ter the bonus before applying β: centering is a free variance-increasing and bias-removing trans-formation, and the downstream max(0 , ·) clip then ensures non-negativity of the final reward contri-bution, preserving the strict separation between correct and incorrect responses. 
+
+G.5 Monotonic Improvement: Interpretation 
+
+The monotonic improvement result of Proposi-tion 4 follows from the observation that GAR as-signs positive advantages exclusively to correct trajectories whose cosine similarity exceeds the prompt-group mean, and zero or negative advan-tages to the remainder. The resulting policy gradi-ent therefore increases the log-probability of high-alignment trajectories relative to low-alignment ones, and the expected cosine in the next iteration is the current expected cosine plus a non-negative covariance term that vanishes only when all correct trajectories are equally aligned. This provides a convergence-like guarantee: GAR training cannot decrease the average alignment of the policy’s cor-rect rollouts with the expert reference, as measured by gradient cosine. 
+
+H Evaluation Protocol Details 
+
+We evaluate using sampling-based decoding with 
+
+16 independent responses per problem. Pass@ k
+
+(k ∈ { 1, 4, 16 }) is estimated as the fraction of prob-lems for which at least one of k randomly sampled responses (without replacement from the 16 sam-ples) is correct; we report the expectation over all  16 
+
+> k
+
+ subsets. Maj@ k takes the plurality answer among k sampled responses. 
+
+Statistical methodology. Each configuration is independently trained with a different random seed, yielding 10 runs per method. We report the mean and standard deviation of each metric across these 10 runs. Statistical significance is as-sessed by a two-sided paired t-test: for each run 
+
+r ∈ { 1, . . . , 10 }, both the baseline (e.g., GRPO) and the GAR variant (e.g., GAR-GRPO) are evalu-ated under identical sampling conditions, and the test statistic is computed over the 10 paired dif-ferences in per-run pass@ k scores. Each config-uration is trained for 400 optimization steps with a global batch size of 128 prompts ( ∼8 epochs). All runs use tensor parallelism of size 4, context-parallel size of 1, and rollout group size K=16 .
+
+Mathematical benchmarks. IMO-AnswerBench (400 problems), HMMT Feb 2025 (30), HMMT Feb 2026 (33), and AIME 2026 (30) are strictly held out from training data and anchor corpora. Correctness is determined by exact match of the final numerical answer after normalization. 
+
+General reasoning benchmarks. GPQA Dia-mond (198 graduate-level science questions) and MMLU-Pro (12k broad-domain reasoning ques-tions) are evaluated zero-shot to assess cross-domain transfer from mathematical training. Both benchmarks use multiple-choice format; correct-ness is determined by exact match of the predicted answer choice after normalization. 
+
+Contamination control. All mathematical evaluation benchmarks post-date the Qwen3 base model’s pretraining cutoff (HMMT ’25/’26 and AIME ’26 were released after the model’s train-ing data was frozen), and we further verify that none of the evaluation problems appear verba-tim in our training corpus by running exact-match deduplication against the NuminaMath-CoT train-ing set. IMO-AnswerBench and GPQA Diamond were released before the pretraining cutoff; how-ever, the base model’s low zero-shot accuracy on these benchmarks (below 4% pass@1 on IMO-AnswerBench and below 29% on GPQA Diamond, see Tables 2 and 3) is consistent with minimal mem-orization. 
+
+I Hyperparameter Details 
+
+In all experiments, we set the base reward rbase =1.0, the alignment bonus coefficient β = 0 .5, and the maximum response length for GAR gradient computation to 768 tokens. The format penalty is set to −0.6, and the rollout group size is K = 16 
+
+for all runs. 
+
+J Computational Overhead Analysis 
+
+This appendix expands on the theoretical cost anal-ysis summarized in Section 6.4. 
+
+Proposition 5 (GAR overhead) . The additional per-response cost of GAR is O(NydV ) + O(Nyd),corresponding to one output-layer forward and one truncated backward. With anchor caching, the amortized per-prompt anchor cost reduces from 
+
+O(KN ydV ) to O(NydV ).For Qwen3-8B ( d=4096 , V =152064 , L=36 ), the ratio V / (Ld ) ≈ 1.03 , so each truncated back-ward pass is comparable in cost to a single full forward, yielding a practical overhead of 5–12% 
+
+after amortization. 
+
+Per-operation cost. GAR adds a single trun-cated backward pass through the output projec-tion layer for each verified-correct response. For a Qwen3-8B model with hidden dimension d =4096 , vocabulary size V = 152064 , number of Transformer layers L = 36 , and response length 
+
+Ny ≈ 1024 , the ratio of the GAR per-response cost to a full-model forward pass is approximately 
+
+V / (Ld ) = 152064 /(36 · 4096) ≈ 1.03 , so each truncated backward pass is comparable in cost to a single full forward. The overhead is domi-nated by the output-layer matrix multiply of shape 
+
+V × d = 152064 × 4096 , which is intrinsic to the LM head and cannot be avoided as long as the gradient is defined with respect to the next-token logits. Verifier-gate amortization. Because GAR com-putes gradients only for responses that pass the outcome verifier, the per-rollout cost is further re-duced by the verifier rejection rate. In the early training phase, typically 40 –70% of rollouts fail verification and therefore incur no gradient compu-tation at all, which makes the effective overhead substantially smaller than the per-response figure above suggests. As training progresses and the ver-ifier pass rate increases, this amortization weakens, but by then the policy is also producing shorter and more focused responses, partially offsetting the increase. 
+
+Anchor-cache amortization. For each prompt group of K rollouts that share the same anchor, a naive implementation would invoke the anchor gradient computation once per rollout, incurring a cost of O(KN ydV ). Anchor caching computes the anchor gradient vector once at the start of the batch and reuses it across all K rollouts of the same prompt, reducing the anchor component to 
+
+O(NydV ) and yielding a K-fold reduction. For the default rollout group size K = 16 used in our experiments, this amortization is the single largest source of practical savings in the anchor pathway. 
+
+Aggregate prediction. Combining the per-response cost, the verifier-gate amortization, and the anchor-cache amortization, the predicted end-to-end overhead falls within the range of approxi-mately 5% to 12% . The measured wall-clock over-head reported in Section 6.4 agrees with this ana-lytical envelope. 
+
+K Hyperparameter Sensitivity 
+
+Figure 6 sweeps four GAR hyperparameters on AIME 2026. A consistent pattern emerges: pass@1 peaks at the defaults ( β=0 .5, L=768 , τa=0 .05 ,
+
+pf =0 .7), while pass@16 favors slightly more ag-gressive settings (higher β, longer span, lower acti-vation threshold, and less token filtering), because coverage-oriented metrics benefit from retaining broader gradient signal. All four curves exhibit smooth, inverted-U shapes with pass@16 degrad-ing more gracefully than pass@1, indicating that GAR is robust across a wide hyperparameter range. 
+
+L General Reasoning Transfer: 8B Results 
+
+Table 4 presents the 8B counterpart of the general reasoning transfer evaluation. The pattern observed                      
+
+> Table 4: General reasoning transfer (Qwen3-8B-Base, 10 runs). All methods are trained exclusively on mathematical data and evaluated zero-shot.
+> GPQA Diamond MMLU-Pro Method P@1 P@4 Maj@16 Avg. P@1 GRPO 32.83 51.44 45.92 52.44 MASPO 33.17 52.08 46.38 52.31 G2RL 33.94 51.76 45.15 51.58 GAR-GRPO 34.85 53.67 48.21 54.72
+
+at the 4B scale carries over: GAR-GRPO achieves the highest scores across all four metrics, with the largest margin on MMLU-Pro (+2.28 absolute over GRPO), confirming that gradient-aligned rewards capture domain-general reasoning structure at both model scales. 
+
+M Alignment and Solution Diversity 
+
+To verify that gradient alignment captures genuine reasoning-process similarity rather than superficial features such as response length or answer format, we analyze a representative set of training-set prob-lems where multiple well-known solution methods exist. For each problem, we collect correct roll-outs from GAR training, classify them by solution method, and report the mean cosine alignment b(yi)
+
+within each method category. Table 5 confirms that same-method rollouts re-ceive substantially higher cosine scores (mean 
+
+¯bsame = 0 .45 ) than different-method rollouts (mean 
+
+¯bdiff = 0 .13 ), a 3.5× gap. This validates that the gradient alignment signal is structurally meaning-ful: it discriminates based on the underlying com-putational pathway rather than surface-level corre-lates. 
+
+Why surface-level confounds are unlikely to explain the gap. The multiplicative decompo-sition of Theorem 2 provides a structural argument: the cosine factorizes into a prediction-error fac-tor ¯δy⊤ ¯δa and an activation-pattern factor ¯hy⊤ ¯ha.Surface features such as response length, answer format, or template phrasing affect at most the activation-pattern factor, but two trajectories that follow genuinely different derivation paths will di-verge in their prediction-error profiles, since the sequence of intermediate tokens (and hence the per-token prediction residuals) differs substantially. Concretely, a complex-number rotation solution and a distance-formula solution share neither the set of mathematical operations nor the intermediate numerical quantities, producing divergent ¯δ vec-0.1 0.25 0.5 0.75 1.0              
+
+> -15 -10 -5 0
+> Decrease from Peak (%)  (a) Bonus coeff.
+> 256 512 768 1024 1536
+> L(tokens)
+> (b) Max GAR span L
+> 00.01 0.05 0.1 0.2
+> a
+> (c) Activ. threshold a
+> 0.3 0.5 0.7 0.9 1.0
+> pf
+> (d) Anchor filter pf
+> Pass@1 Pass@4 Pass@16
+
+Figure 6: Sensitivity of GAR-GRPO (Qwen3-8B-Base, AIME 2026) to four hyperparameters, measured as percentage decrease from each metric’s peak. Pass@1 peaks at the defaults; pass@16 favors slightly more aggressive settings and degrades more gracefully. Table 5: Mean cosine alignment b(yi) grouped by solution method across six training-set problems. “Same” denotes rollouts following the same method as the expert anchor; “Different” denotes rollouts using an alternative correct method. The consistent 
+
+3.5× gap confirms that gradient alignment captures reasoning-process similarity. 
+
+Problem Expert Method Alt. Method ¯bsame ¯bdiff Ratio 
+
+(0 , 0) , (a, 11) , (b, 37) equilateral △; find ab Complex rotation Distance algebra 0.52 0.11 4.7 ×
+
+Sum of bases b > 9 s.t. 17 b | 97 b Modular arithmetic Exhaustive search 0.41 0.09 4.6 ×√n2+85 n+2017 ∈ Z; find P n Completing square Quadratic subst. 0.46 0.14 3.3 ×
+
+Cube vertices P, Q, R ; find surface area Vector cross-prod. Coordinate geom. 0.38 0.12 3.2 ×
+
+Even integers in [4000 , 7000] , 4 diff. digits Digit casework Inclusion-exclusion 0.43 0.16 2.7 ×
+
+10 chairs in circle; subsets w/ no adj. pair Recurrence Burnside / complement 0.48 0.13 3.7 ×
+
+Average 0.45 0.13 3.5 ×
+
+tors regardless of stylistic overlap. This is further corroborated by Corollary 1: when two trajecto-ries concentrate their gradient-activation signals on disjoint hidden-dimension subsets, the result-ing cosine is near zero, a condition that holds for genuinely different reasoning pathways even when both are correct and similarly formatted. 
+
+Effect on alternative correct strategies. The 
+
+max(0 , ˆb) clip in the final reward (Eq. 6) guaran-tees that every correct rollout receives a raw re-ward of at least rbase , strictly above the zero reward assigned to incorrect responses. Under GRPO’s group-normalized advantage, this raw-reward floor does not prevent the relative advantage of low-alignment correct rollouts from being lower than that of high-alignment ones; this relative reweight-ing within the correct set is precisely the intended mechanism by which GAR steers toward expert-aligned reasoning. Crucially, the verifier gate en-sures that correct responses always receive higher raw reward than incorrect ones, so the policy gra-dient consistently reinforces producing correct an-swers; GAR’s contribution is to additionally differ-entiate among correct trajectories by their reason-ing quality. The expert CoTs from NuminaMath-CoT pre-dominantly employ concise, theorem-driven ap-proaches (e.g., complex-number rotation over co-ordinate brute-force, modular arithmetic over ex-haustive enumeration), and the consistent accuracy gains across all benchmarks (Section 5.1) confirm that steering the policy toward such strategies pro-vides effective reasoning-quality supervision.

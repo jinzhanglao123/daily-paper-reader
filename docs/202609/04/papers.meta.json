@@ -1,0 +1,69 @@
+{
+  "label": "2026-09-04",
+  "date": "2026-09-04",
+  "generated_at": "2026-09-04T22:40:43",
+  "count": 4,
+  "papers": [
+    {
+      "paper_id": "202609/04/2608.30378v2-pave-predictive-alignment-and-value-guided-evolution-for-world-action-policies",
+      "section": "quick",
+      "title_en": "PAVE: Predictive Alignment and Value-Guided Evolution for World-Action Policies",
+      "authors": "Botong Zhao, Fang Yu, Tim Yu, Senhua Zhu, Xinyuan Chen, Yue Lu",
+      "date": "2026-08-31",
+      "pdf": "https://arxiv.org/pdf/2608.30378v2",
+      "score": "7.0",
+      "evidence": "多尺度转换对齐与价值引导策略改进",
+      "tldr": "直接视觉-语言-动作策略虽能高效生成连续动作，但标准行为克隆未显式建模多时间尺度场景演变，也无法区分不同质量部署轨迹。PAVE 在局部 JEPA 目标上增加轨迹相对多尺度过渡对齐，并训练分布值 critic 计算优势，将其转为正/负/空文本条件指导 flow-matching actor。在三个模拟基准上，PAVE 取得最强整体性能，同时保留直接 actor 在线执行路径。该方法仅训练时使用预测器和 critic，在线部署保持轻量，为世界-动作策略提供有效改进。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Direct vision-language-action policies generate continuous robot actions efficiently, but standard behavior cloning leaves two complementary gaps: their representations are not explicitly required to describe how the scene evolves over multiple time scales, and deployment trajectories of unequal quality are often reused without separating useful dynamics from undesirable behavior. We introduce \\method, a direct world-action policy that combines outcome-agnostic predictive learning with outcome-aware policy improvement. \\method first retains a local fixed-offset JEPA objective and adds trajectory-relative multi-horizon transition alignment at 25%, 50%, 75%, and 100% of the remaining episode. These training-only targets require the current policy representation to preserve both local physical changes and longer-range task progress, without supplying explicit future tokens to the action head. \\method then trains an independent distributional value critic on cumulative deployment trajectories, computes action-chunk-aligned $N$-step advantages, and converts them into positive, negative, or null text conditions for a flow-matching actor. Thus, every valid trajectory can teach what physically happened, while the actor is deployed only under the condition associated with relatively better actions. The multi-horizon predictor and critic are removed from online execution, preserving direct action generation from the current observation, language instruction, and proprioception. \\redclaim{Across the three simulation benchmarks, \\method achieves the strongest overall performance while preserving the direct actor's online execution path.}",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/04/2609.02042v1-act-more-decide-less-skill-guided-adaptive-action-chunking-for-long-horizon-llm-agents",
+      "section": "quick",
+      "title_en": "Act More, Decide Less: Skill-Guided Adaptive Action Chunking for Long-Horizon LLM Agents",
+      "authors": "Yanting Yang, Can Jin, Jinman Zhao, Jiahao Wu, Yang Zhou, Zhepeng Wang, Zhendong Wang, Mu Zhou, Dimitris N. Metaxas",
+      "date": "2026-09-02",
+      "pdf": "https://arxiv.org/pdf/2609.02042v1",
+      "score": "7.0",
+      "evidence": "长时程强化学习智能体与自适应动作分块",
+      "tldr": "长程交互任务中，LLM智能体采用ReAct式单动作决策导致大量轮次消耗在常规序列上，效率低下；而直接学习变长动作块又容易崩溃为单动作或过度承诺过长序列。SPACE通过从成功轨迹诱导两级程序化技能，将子技能边界作为块边界监督蒸馏到策略中，并采用混合在线/离线优化与块感知信用分配。在ALFWorld和ScienceWorld上，成功率较最强基线提升7.0%-31.3%，平均LLM决策轮次最多降低78.9%。该方法为长程LLM智能体提供了高效的时序抽象与决策压缩手段。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Large language model (LLM) agents for long-horizon interactive tasks typically follow a ReAct-style protocol, issuing one primitive action per LLM round. While this enables frequent replanning, it is inefficient for long-horizon tasks where many rounds are spent on routine action sequences. A natural alternative is to let the agent emit variable-length action chunks. However, naively training such policies with standard reinforcement learning fails: the agent either collapses to single-action behavior or over-commits to excessively long sequences. Both failures share a common root cause: the inability to learn chunk boundaries. We propose SPACE, which addresses this challenge by distilling chunk-boundary supervision from trajectory-induced programmatic skills. We induce two-level programmatic skills from successful trajectories, where subskill boundaries serve as direct chunk-boundary supervision. This temporal structure is then distilled into a primitive-chunk policy via hybrid on-/off-policy optimization with chunk-aware credit assignment. Experiments on ALFWorld and ScienceWorld show that SPACE improves success rates by 7.0%-31.3% over the strongest baseline in each setting while reducing average LLM decision rounds by up to 78.9%.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/04/2609.03342v1-gradients-know-what-outcomes-dont-unlocking-reinforcement-learning-for-llm-reasoning-with-gradient-aligned-rewards",
+      "section": "quick",
+      "title_en": "Gradients Know What Outcomes Don't: Unlocking Reinforcement Learning for LLM Reasoning with Gradient-Aligned Rewards",
+      "authors": "Leqi Zheng, Jinbo Su, Fang Niu, Chaokun Wang, Weiping Wang, Jiajun Zhang, Shannan Yan, Jie Wu, Zhaolu Kang, Rong Fu, Hang Zhang",
+      "date": "2026-09-03",
+      "pdf": "https://arxiv.org/pdf/2609.03342v1",
+      "score": "7.0",
+      "evidence": "提出梯度对齐的稠密奖励用于稀疏结果强化学习",
+      "tldr": "针对二元结果奖励无法区分正确轨迹的问题，本文提出梯度对齐奖励（GAR），在策略自身的梯度空间中提取梯度向量，与专家锚点梯度的余弦相似度生成稠密奖励。实验表明GAR以低于9%的额外计算成本显著提升长时程推理任务的强化学习效果，为长时程奖励分配提供了有效方法。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Reinforcement learning from verifiable rewards (RLVR) drives chain-of-thought reasoning in large language models, yet its binary outcome reward cannot distinguish among correct trajectories. Existing dense reward alternatives, from surface heuristics to process reward models, either ignore the expert solutions already present in training corpora or require expensive offline annotation. We propose Gradient-Aligned Reward (GAR), which operates in the policy's own gradient space: truncated backpropagation through the output projection layer extracts a compact gradient vector for each rollout, and cosine similarity with an expert-anchor gradient yields a dense, reasoning-aware reward with less than 9% wall-clock overhead. We prove that this cosine admits a multiplicative decomposition into prediction-error and activation-pattern factors, providing a concrete characterization of what the alignment signal measures. On Qwen3-4B and Qwen3-8B, GAR consistently improves over GRPO and other baselines on competition-level math benchmarks and transfers to GPQA Diamond and MMLU-Pro without domain-specific data. Code and data are available at https://github.com/LQgdwind/GAR.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    },
+    {
+      "paper_id": "202609/04/2609.01764v1-curriculum-guided-reinforcement-learning-for-energy-efficient-uav-isac-in-post-disaster-search-and-rescue-operations",
+      "section": "quick",
+      "title_en": "Curriculum-Guided Reinforcement Learning for Energy-Efficient UAV-ISAC in Post-Disaster Search-and-Rescue Operations",
+      "authors": "Tai-You Guo, Chuan-Chi Lai",
+      "date": "2026-09-01",
+      "pdf": "https://arxiv.org/pdf/2609.01764v1",
+      "score": "6.0",
+      "evidence": "无人机轨迹优化的深度强化学习，可迁移到巡检",
+      "tldr": "针对无人机通感一体化中机载能量受限导致感知、通信与推进成本强耦合的问题，本文提出课程引导的软演员-评论家框架，联合优化三维轨迹、通感功率分配和用户功率分配。该方法引入旋翼推进模型推导经济巡航速度，并构建包含导航、推进感知的复合奖励。实验表明所提方法能提升能效并满足通感性能，为无人机任务中的深度强化学习应用提供了可借鉴的轨迹优化思路。",
+      "tags": "query:uav-drl",
+      "abstract_en": "Uncrewed aerial vehicles (UAVs) are promising platforms for integrated sensing and communication (ISAC), but their limited onboard energy creates a strong coupling among sensing accuracy, communication quality, and propulsion cost. This paper proposes a curriculum-guided soft actor-critic (CG-SAC) framework with propulsion-aware reward shaping for energy-efficient UAV-ISAC, jointly optimizing the 3D trajectory, communication-sensing power split, and per-user power allocation. A rotary-wing propulsion model is incorporated to derive a closed-form propulsion-economic cruising speed, which is used to construct a propulsion-aware speed-shaping term within a normalized composite reward together with navigation, node-visiting, energy-efficiency, and constraint-penalty terms. A log-linear curriculum progressively tightens the communication, sensing, and proximity requirements during training. Across 2000 randomized scenarios, CG-SAC achieves an average energy efficiency of 0.72 Mbits/J, substantially outperforming the evaluated DRL baselines. Among successfully completed missions, it requires 107.6 steps on average, corresponding to a 66%--82% reduction in flight steps relative to the baselines. Crucially, the learned policy exhibits mission-aware speed adaptation by decelerating near service points and accelerating during transit, while achieving a 99.6% communication-rate satisfaction ratio at service instants. Ablation results further demonstrate the complementary roles of the reward components in balancing mission feasibility and energy efficiency.",
+      "source": "arxiv",
+      "selection_source": "fresh_fetch"
+    }
+  ],
+  "errors": []
+}
